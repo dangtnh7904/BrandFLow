@@ -1,6 +1,14 @@
-unstructured
-pytesseract
-pdf2image
+llama-parse
+python-dotenv
+beautifulsoup4
 python-docx
+pdfplumber
 langchain-community
 langchain-text-splitters
+fastapi
+uvicorn
+python-multipart
+chromadb
+langchain-chroma
+langchain-ollama
+pydantic

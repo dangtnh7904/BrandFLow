@@ -86,5 +86,10 @@ Add a "CustomerReviewer" agent that provides feedback and satisfaction scoring o
   - valid LLM output
   - invalid output -> fallback
 
+## Defaults
+- `satisfaction_threshold = 70`
+- `max_customer_rounds = 3`
+- `score_weights`: `rule = 0.7`, `self = 0.3`
+
 ## Open Questions
 - None for this phase (criteria weights can be tuned later)

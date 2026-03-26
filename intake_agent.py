@@ -57,19 +57,41 @@ Hãy phân tích đoạn văn bản người dùng cung cấp và DỪNG LẠI S
 def check_required_info(parsed_data: dict) -> dict:
     """
     Kiểm tra các trường thiết yếu. Nếu thiếu trả về trạng thái cần làm rõ.
+    Bao gồm: kiểm tra ngân sách null, ngân sách phi lý, ngành hàng chung, và đầu vào rác.
     """
     budget = parsed_data.get("budget")
     industry = parsed_data.get("industry", "General")
+    goal = parsed_data.get("goal", "")
     
+    # --- Bẫy 1: Văn bản rác / quá ngắn / không xác định được ý định ---
+    general_variations = ["general", "null", "none", "", "không rõ"]
+    goal_is_empty = not goal or len(str(goal).strip()) < 5
+    industry_is_unknown = str(industry).strip().lower() in general_variations
+    
+    if goal_is_empty and industry_is_unknown:
+        print("⚠️ [INTAKE] Phát hiện đầu vào rác hoặc quá ngắn, yêu cầu làm rõ.")
+        return {
+            "status": "clarification_needed", 
+            "message": "Dạ em chưa hiểu rõ ý định của mình lắm. Anh/chị có thể mô tả rõ hơn về sản phẩm và mục tiêu chiến dịch không ạ?"
+        }
+    
+    # --- Bẫy 2: Ngân sách chưa cung cấp ---
     if budget is None:
         return {
             "status": "clarification_needed", 
             "message": "Dạ, để BrandFlow phân bổ chi phí và lên kế hoạch tối ưu nhất, anh/chị có thể bật mí mức ngân sách dự kiến cho chiến dịch này khoảng bao nhiêu không ạ?"
         }
     
-    # Kiểm tra kĩ các biến thể của "General" để an toàn
-    general_variations = ["general", "null", "none", "", "không rõ"]
-    if str(industry).strip().lower() in general_variations:
+    # --- Bẫy 3: Ngân sách phi lý (dưới 1 triệu VNĐ) ---
+    if isinstance(budget, (int, float)) and budget < 1000000:
+        print(f"⚠️ [INTAKE] Ngân sách phi lý: {budget} VND (< 1,000,000). Yêu cầu điều chỉnh.")
+        return {
+            "status": "clarification_needed", 
+            "message": "Dạ, hệ thống BrandFlow hiện tại tối ưu nhất cho các chiến dịch có ngân sách từ 1.000.000 VNĐ trở lên. Anh/chị có muốn điều chỉnh lại mức ngân sách không ạ?"
+        }
+    
+    # --- Bẫy 4: Ngành hàng chưa xác định ---
+    if industry_is_unknown:
         return {
             "status": "clarification_needed", 
             "message": "Dạ, anh/chị đang kinh doanh sản phẩm/dịch vụ trong ngành hàng nào ạ? (Ví dụ: F&B, Mỹ phẩm, Công nghệ...)"
@@ -79,3 +101,41 @@ def check_required_info(parsed_data: dict) -> dict:
         "status": "ready",
         "data": parsed_data
     }
+
+def extract_document_summary(raw_text: str) -> dict:
+    """
+    Dùng Gemini để tóm tắt các thông tin cốt lõi từ tài liệu doanh nghiệp.
+    """
+    model = get_gemini_model()
+    
+    prompt = f"""Bạn là AI phân tích tài liệu doanh nghiệp chuyên nghiệp. Khách hàng vừa tải lên một tài liệu (Brand Guidelines, Company Profile, Product Deck...).
+Hãy đọc tài liệu sau và trích xuất các thông tin cốt lõi dưới định dạng JSON với CÁC TRƯỜNG BẮT BUỘC sau:
+
+1. "company_name" (string): Tên công ty hoặc thương hiệu.
+2. "industry" (string): Ngành nghề kinh doanh (VD: F&B, Mỹ phẩm...).
+3. "target_audience" (string): Tệp khách hàng mục tiêu mà thương hiệu hướng tới.
+4. "core_usps" (list of strings): Danh sách 3-5 điểm bán hàng độc nhất (Unique Selling Propositions) hoặc điểm khác biệt cốt lõi.
+5. "tone_of_voice" (string): Giọng văn hoặc phong cách ngôn ngữ của thương hiệu.
+6. "key_products" (list of strings): Danh sách các sản phẩm/dịch vụ chính yếu.
+
+Nếu thông tin nào không có trong tài liệu, hãy trả về string "Chưa rõ" hoặc mảng rỗng tương ứng. Tuyệt đối không tự bịa thông tin.
+DỪNG LẠI SAU KHI TẠO ĐÚNG MỘT JSON HỢP LỆ.
+
+Đoạn tài liệu trích xuất:
+"{raw_text[:20000]}"
+"""
+    
+    try:
+        response = model.generate_content(prompt)
+        parsed_data = json.loads(response.text)
+        return parsed_data
+    except Exception as e:
+        print(f"Lỗi khi trích xuất tài liệu qua Gemini: {e}")
+        return {
+            "company_name": "Không trích xuất được",
+            "industry": "Không rõ",
+            "target_audience": "Không rõ",
+            "core_usps": [],
+            "tone_of_voice": "Không rõ",
+            "key_products": []
+        }

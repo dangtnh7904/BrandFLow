@@ -11,7 +11,7 @@ from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import PresetRequest, InterviewRequest, RawInputRequest
 # from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
-# from intake_agent import analyze_raw_input, check_required_info
+from intake_agent import analyze_raw_input, check_required_info, extract_document_summary
 from workflow_graph import run_pipeline
 # from document_processor import DocumentIngestor
 from pydantic import BaseModel
@@ -312,6 +312,41 @@ async def onboarding_upload(files: List[UploadFile] = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/v1/onboarding/extract-summary")
+async def onboarding_extract_summary(files: List[UploadFile] = File(...)):
+    """
+    Nhận file, đọc nội dung và trả về tóm tắt ngắn gọn thông qua Gemini.
+    """
+    if not files:
+        raise HTTPException(status_code=400, detail="Không có file nào được tải lên.")
+
+    try:
+        temp_dir = "./temp_uploads"
+        os.makedirs(temp_dir, exist_ok=True)
+        from document_processor import DocumentIngestor
+        ingestor = DocumentIngestor()
+        
+        combined_text = ""
+        for file in files:
+            unique_filename = f"{uuid.uuid4()}_{file.filename}"
+            temp_file_path = os.path.join(temp_dir, unique_filename)
+            
+            with open(temp_file_path, "wb") as buffer:
+                content = await file.read()
+                buffer.write(content)
+            
+            raw_text = ingestor.ingest_file(temp_file_path)
+            combined_text += raw_text + "\n"
+            
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
+                
+        # Phân tích qua LLM Gemini
+        summary_data = extract_document_summary(combined_text)
+        return {"status": "success", "data": summary_data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/v1/planning/intake")
 async def process_intake(request: RawInputRequest):
     """
@@ -331,6 +366,13 @@ async def process_intake(request: RawInputRequest):
             mock_result = parse_mock_md(mock_file)
             
             plan = mock_result["final_plan"]
+            
+            if isinstance(plan, str):
+                import json
+                try:
+                    plan = json.loads(plan)
+                except json.JSONDecodeError:
+                    plan = {}
             
             # Tính lại cost thực tế theo plan mock
             actual_cost = 0
@@ -379,8 +421,13 @@ async def process_intake(request: RawInputRequest):
             "agent_logs": result["agent_logs"]
         }
     except Exception as e:
-        print(f"Lỗi hệ thống Intake: {e}")
-        raise HTTPException(status_code=500, detail=f"Lỗi hệ thống: {str(e)}")
+        print(f"🔴 [INTAKE] Lỗi hệ thống nghiêm trọng: {e}")
+        # Trả về payload JSON chuẩn để Frontend xử lý được (tắt loading, hiện thông báo lỗi)
+        raise HTTPException(status_code=500, detail={
+            "status": "error",
+            "message": "Hệ thống AI đang quá tải hoặc gặp sự cố, vui lòng thử lại sau giây lát.",
+            "debug_info": str(e)
+        })
 
 @app.get("/api/v1/onboarding/stats")
 def get_db_stats():

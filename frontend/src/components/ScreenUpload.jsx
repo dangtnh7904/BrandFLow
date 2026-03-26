@@ -6,6 +6,35 @@ export default function ScreenUpload({ onGenerate }) {
   const [urlInput, setUrlInput] = useState("");
   const [campaignName, setCampaignName] = useState("");
   const [userRequest, setUserRequest] = useState("");
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractedSummary, setExtractedSummary] = useState(null);
+
+  const handleExtractSummary = async () => {
+    if (selectedFiles.length === 0) {
+      alert("Vui lòng tải lên ít nhất một tài liệu trước khi phân tích.");
+      return;
+    }
+    setIsExtracting(true);
+    try {
+      const formData = new FormData();
+      selectedFiles.forEach(f => formData.append("files", f));
+      
+      const res = await fetch("http://localhost:8000/api/v1/onboarding/extract-summary", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        setExtractedSummary(data.data);
+      } else {
+        alert("Có lỗi xảy ra: " + (data.detail || data.message));
+      }
+    } catch (err) {
+      alert("Không kết nối được với máy chủ: " + err.message);
+    } finally {
+      setIsExtracting(false);
+    }
+  };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -82,6 +111,57 @@ export default function ScreenUpload({ onGenerate }) {
                     </button>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {selectedFiles.length > 0 && (
+              <button 
+                onClick={handleExtractSummary}
+                disabled={isExtracting}
+                className="w-full mt-4 mb-2 py-3 bg-[#111C44] border border-[#0075FF] hover:bg-[#0075FF]/10 text-[#0075FF] rounded-xl font-bold text-sm flex items-center justify-center transition-all"
+              >
+                {isExtracting ? "Đang phân tích tài liệu bằng AI..." : "Phân tích & Tóm tắt Nhanh Tài liệu (Tùy chọn)"}
+              </button>
+            )}
+
+            {extractedSummary && (
+              <div className="mt-4 mb-6 bg-[#0B1437] border border-emerald-500/30 rounded-xl p-4 shadow-[0_4px_15px_rgba(16,185,129,0.1)]">
+                <div className="flex items-center mb-4">
+                  <CheckCircle className="text-emerald-400 w-5 h-5 mr-2" />
+                  <h3 className="text-white font-bold text-[15px] tracking-wide">Brand DNA Đã Trích Xuất</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-[#111C44] rounded-lg p-3">
+                      <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Tên Thương hiệu / Doanh nghiệp</span>
+                      <span className="text-sm text-white font-medium">{extractedSummary.company_name}</span>
+                    </div>
+                    <div className="bg-[#111C44] rounded-lg p-3">
+                      <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Ngành nghề (Industry)</span>
+                      <span className="text-sm text-cyan-400 font-medium">{extractedSummary.industry}</span>
+                    </div>
+                  </div>
+                  <div className="bg-[#111C44] rounded-lg p-3">
+                    <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Khách hàng Mục tiêu (Target Audience)</span>
+                    <span className="text-[13px] text-slate-300 leading-relaxed block">{extractedSummary.target_audience}</span>
+                  </div>
+                  <div className="bg-[#111C44] rounded-lg p-3">
+                    <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Điểm bán hàng độc nhất (Core USPs)</span>
+                    <ul className="list-disc pl-4 text-[13px] text-slate-300 space-y-1">
+                      {extractedSummary.core_usps && extractedSummary.core_usps.map((usp, i) => <li key={i}>{usp}</li>)}
+                    </ul>
+                  </div>
+                  <div className="bg-[#111C44] rounded-lg p-3">
+                    <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Sản phẩm/Dịch vụ chính</span>
+                    <ul className="list-disc pl-4 text-[13px] text-slate-300 space-y-1">
+                      {extractedSummary.key_products && extractedSummary.key_products.map((kp, i) => <li key={i}>{kp}</li>)}
+                    </ul>
+                  </div>
+                  <div className="bg-[#111C44] rounded-lg p-3">
+                    <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Giọng văn (Tone of Voice)</span>
+                    <span className="text-[13px] text-purple-400 font-medium block">{extractedSummary.tone_of_voice}</span>
+                  </div>
+                </div>
               </div>
             )}
 

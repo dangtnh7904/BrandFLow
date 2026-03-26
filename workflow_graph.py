@@ -75,10 +75,10 @@ def run_pipeline(
 
     # ── KẾT QUẢ CUỐI CÙNG ──
     agent_logs = [
-        {"agent": "CMO", "role": "MasterPlanner", "message": f"Đã lập xong kế hoạch '{final_plan.get('executive_summary', {}).get('campaign_name', 'N/A')}'. Tổng chi phí ban đầu: {interceptor_result['raw_total']:,} VND."},
-        {"agent": "SYSTEM", "role": "Python Interceptor", "message": f"Đã cắt {len(cut_items)} hạng mục COULD_HAVE. Tổng sau cắt: {interceptor_result['final_total']:,} VND."},
-        {"agent": "CFO", "role": "Financial Controller", "message": cfo_comment},
-        {"agent": "PERSONA", "role": "Customer Voice", "message": persona_comment},
+        {"agent": "CMO", "role": "Giám đốc Marketing", "message": f"Tôi đã lập xong kế hoạch '{final_plan.get('executive_summary', {}).get('campaign_name', 'N/A')}'. Tổng chi phí ban đầu là {interceptor_result['raw_total']:,} VND."},
+        {"agent": "SYSTEM", "role": "Hệ thống Kiểm toán", "message": f"Đã rà soát và cắt giảm {len(cut_items)} hạng mục có thể bỏ. Tổng ngân sách sau điều chỉnh: {interceptor_result['final_total']:,} VND."},
+        {"agent": "CFO", "role": "Giám đốc Tài chính", "message": cfo_comment},
+        {"agent": "PERSONA", "role": "Đại diện Khách hàng", "message": persona_comment},
     ]
 
     print(f"\n{'═' * 70}")

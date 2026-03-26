@@ -212,16 +212,24 @@ def python_interceptor(plan: dict, budget: int) -> dict:
     if overflow > 0:
         print(f"   ⚠️ Vượt ngân sách : {overflow:,} VND → Bắt đầu cắt COULD_HAVE...")
 
-    # Cắt bỏ COULD_HAVE từ dưới lên
+    # Cắt bỏ hoặc ép giá COULD_HAVE từ dưới lên
     if overflow > 0:
         for phase in plan.get("activity_and_financial_breakdown", []):
             remaining_acts = []
             for act in phase.get("activities", []):
                 if act.get("moscow_tag") == "COULD_HAVE" and overflow > 0:
-                    cut_cost = int(act.get("cost_vnd", 0))
-                    overflow -= cut_cost
-                    cut_items.append(f"{act.get('activity_name')} ({cut_cost:,}đ)")
-                    print(f"   ✂️ Cắt bỏ: {act.get('activity_name')} — {cut_cost:,} VND")
+                    item_cost = int(act.get("cost_vnd", 0))
+                    if item_cost <= overflow:
+                        overflow -= item_cost
+                        cut_items.append(f"{act.get('activity_name')} ({item_cost:,}đ)")
+                        print(f"   ✂️ Cắt bỏ: {act.get('activity_name')} — {item_cost:,} VND")
+                    else:
+                        new_cost = item_cost - overflow
+                        act["cost_vnd"] = new_cost
+                        print(f"   📉 Ép giá: {act.get('activity_name')} — Giảm {overflow:,} VND (Còn {new_cost:,} VND)")
+                        cut_items.append(f"{act.get('activity_name')} (Ép giá: -{overflow:,}đ)")
+                        overflow = 0
+                        remaining_acts.append(act)
                 else:
                     remaining_acts.append(act)
             phase["activities"] = remaining_acts

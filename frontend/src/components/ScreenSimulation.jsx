@@ -7,16 +7,16 @@ export default function ScreenSimulation({ iteration, feedback, isReady, error, 
   const [activeAgent, setActiveAgent] = useState('SYSTEM');
   
   const chatSequence = iteration === 1 ? [
-    { sender: 'CMO', role: 'MasterPlanner', text: 'Phân tích tệp khách hàng: Người hướng nội, stress sau Tết. Tôi đề xuất đẩy mạnh Workshop và Ads Facebook để kéo Traffic với nội dung chữa lành.', delay: 1000 },
-    { sender: 'CFO', role: 'Financial Controller', text: 'Ngân sách chỉ có 20 triệu! Rất eo hẹp. Phải tuân thủ nghiêm ngặt chuẩn MoSCoW. Bắt buộc khóa cứng 15 triệu (75%) cho kênh cốt lõi sinh khách.', delay: 3500 },
-    { sender: 'CMO', role: 'MasterPlanner', text: 'Đồng ý. Vậy FB Ads và Workshop Trà đạo là MUST_HAVE. Còn mục ngân sách tặng quà Mứt (3tr)?', delay: 6000 },
-    { sender: 'CFO', role: 'Financial Controller', text: 'Quà Mứt nằm ở COULD_HAVE. Chú ý: Nếu rủi ro thâm hụt Ads xảy ra, tôi sẽ cắt bỏ lập tức số tiền mứt này và đổi sang hình thức "mời thêm 1 ly trà mộc" (vốn bằng 0) để bảo toàn dòng tiền.', delay: 8500 },
-    { sender: 'SYSTEM', role: 'Workflow Engine', text: 'Lưu phương án bảo vệ dòng tiền. Xuất Kế Hoạch Bản Khởi Tạo...', delay: 11000 }
+    { sender: 'CMO', role: 'Giám đốc Marketing', text: 'Tôi vừa phân tích xong tệp khách hàng — phần lớn là người hướng nội, đang stress sau Tết. Đề xuất của tôi: đẩy mạnh Workshop trải nghiệm kết hợp quảng cáo Facebook hướng đến nội dung chữa lành để kéo traffic.', delay: 1000 },
+    { sender: 'CFO', role: 'Giám đốc Tài chính', text: 'Khoan đã, ngân sách chỉ có 20 triệu thôi — rất eo hẹp! Tôi yêu cầu khóa cứng ít nhất 15 triệu (75%) cho các kênh cốt lõi sinh khách. Phải tuân thủ nghiêm ngặt phân loại ưu tiên MoSCoW.', delay: 3500 },
+    { sender: 'CMO', role: 'Giám đốc Marketing', text: 'Đồng ý với anh. Vậy Facebook Ads và Workshop Trà đạo sẽ là hạng mục bắt buộc. Nhưng còn khoản tặng quà Mứt truyền thống khoảng 3 triệu thì sao?', delay: 6000 },
+    { sender: 'CFO', role: 'Giám đốc Tài chính', text: 'Quà Mứt tôi xếp vào nhóm "có thể cắt". Nếu chi phí Ads phát sinh vượt dự kiến, tôi sẽ cắt ngay khoản này và chuyển sang hình thức "tặng 1 ly trà mộc" — chi phí gần bằng 0 — để bảo toàn dòng tiền.', delay: 8500 },
+    { sender: 'SYSTEM', role: 'Hệ thống', text: 'Đã lưu phương án bảo vệ dòng tiền. Đang xuất Kế Hoạch Bản Khởi Tạo...', delay: 11000 }
   ] : [
-    { sender: 'SYSTEM', role: 'USER FEEDBACK', text: `Yêu cầu can thiệp từ User: "${feedback}". Đang cấu trúc lại Roadmap...`, delay: 1000 },
-    { sender: 'CMO', role: 'MasterPlanner', text: 'Ghi nhận. Đang lập trình lại thông điệp và vị trí thả ngân sách.', delay: 3500 },
-    { sender: 'CFO', role: 'Financial Controller', text: 'Đã check hạch toán lại dòng tiền. Biểu đồ rủi ro vẫn trong vùng an toàn.', delay: 6000 },
-    { sender: 'SYSTEM', role: 'Workflow Engine', text: 'Tạo tài liệu phiên bản V' + iteration + ' thành công...', delay: 8500 }
+    { sender: 'SYSTEM', role: 'Hệ thống', text: `Nhận được yêu cầu chỉnh sửa từ người dùng: "${feedback}". Đang cấu trúc lại Roadmap...`, delay: 1000 },
+    { sender: 'CMO', role: 'Giám đốc Marketing', text: 'Đã ghi nhận. Tôi đang điều chỉnh lại thông điệp truyền thông và phân bổ lại vị trí ngân sách cho phù hợp.', delay: 3500 },
+    { sender: 'CFO', role: 'Giám đốc Tài chính', text: 'Tôi đã kiểm tra lại dòng tiền. Biểu đồ rủi ro vẫn nằm trong vùng an toàn, có thể tiếp tục.', delay: 6000 },
+    { sender: 'SYSTEM', role: 'Hệ thống', text: 'Hoàn tất. Tài liệu kế hoạch phiên bản V' + iteration + ' đã sẵn sàng.', delay: 8500 }
   ];
 
   useEffect(() => {

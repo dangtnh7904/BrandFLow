@@ -16,8 +16,9 @@ import json
 from typing import TypedDict, Optional
 from langgraph.graph import StateGraph, END
 
-from agents_core import build_planner_chain, build_cfo_chain, safe_invoke_chain
+from agents_core import build_planner_chain, build_cfo_chain, build_customer_chain, safe_invoke_chain
 from memory_rag import get_relevant_guidelines
+from customer_review import calculate_customer_rule_score, DEFAULT_CRITERIA_WEIGHTS
 
 # =============================================================================
 # HELPER — Tính toán Toán học bằng Python & In Terminal
@@ -33,42 +34,46 @@ def calculate_actual_cost(plan: dict) -> int:
     total = 0
     if not plan: return 0
     try:
-        phases = plan.get("phases", [])
-        for phase in phases:
+        breakdown = plan.get("activity_and_financial_breakdown", [])
+        for phase in breakdown:
             activities = phase.get("activities", [])
             for act in activities:
-                # Đảm bảo cost là số nguyên hợp lệ
-                total += int(act.get("cost", 0))
+                total += int(act.get("cost_vnd", 0))
     except (ValueError, TypeError):
         pass
     return total
 
 def print_master_plan(plan: dict):
-    exec_summary = plan.get("executive_summary", "N/A")
-    target_aud = plan.get("target_audience", "N/A")
-    phases = plan.get("phases", [])
+    exec_summary = plan.get("executive_summary", {})
+    target_info = plan.get("target_audience_and_brand_voice", {})
     
-    print(f"\n   [Tóm Tắt Khách Hàng]: {target_aud}")
-    print(f"   [Chiến Lược Cốt Lõi]: {exec_summary}")
+    if not isinstance(exec_summary, dict): exec_summary = {}
+    if not isinstance(target_info, dict): target_info = {}
     
-    for p_idx, phase in enumerate(phases, 1):
-        p_name = phase.get("phase_name", f"Phase {p_idx}")
-        p_dur = phase.get("duration", "N/A")
-        p_obj = phase.get("objective", "N/A")
-        subtotal = phase.get("phase_subtotal_cost", 0)
+    print(f"\n   [Tóm Tắt Khách Hàng]: {target_info.get('target_audience', 'N/A')}")
+    print(f"   [Chiến Lược Cốt Lõi]: {exec_summary.get('campaign_summary', 'N/A')}")
+    print(f"   [Mục Tiêu Chính]: {exec_summary.get('core_objectives', 'N/A')}")
+    
+    phases = plan.get("phased_execution", [])
+    breakdown = plan.get("activity_and_financial_breakdown", [])
+    
+    phase_map = {p.get("phase_id"): p.get("phase_name") for p in phases if isinstance(p, dict)}
+    
+    for b in breakdown:
+        pid = b.get("phase_id")
+        pname = phase_map.get(pid, pid)
+        activities = b.get("activities", [])
         
         print(f"\n   {'─' * 65}")
-        print(f"   ► {p_name.upper()} ({p_dur}) | Phân bổ nháp: {subtotal:,} ₫")
-        print(f"   Mục Tiêu: {p_obj}")
+        print(f"   ► {str(pname).upper()}")
         print(f"   {'─' * 65}")
         
-        activities = phase.get("activities", [])
         for act in activities:
-            name = act.get("name", "N/A")
+            name = act.get("activity_name", "N/A")
             desc = act.get("description", "")
-            cost = act.get("cost", 0)
-            priority = act.get("priority", "N/A")
-            kpi = act.get("expected_kpi", "N/A")
+            cost = act.get("cost_vnd", 0)
+            priority = act.get("moscow_tag", "N/A")
+            kpi = act.get("kpi_commitment", "N/A")
             
             icon = PRIORITY_ICON.get(priority, "⚪")
             
@@ -83,7 +88,10 @@ def print_master_plan(plan: dict):
 
 class StrategyState(TypedDict):
     goal: str
+    industry: str
     budget: int
+    target_audience: str
+    special_constraints: str
     feedback: str
     company_guidelines: str
     previous_plan: Optional[dict]
@@ -93,6 +101,13 @@ class StrategyState(TypedDict):
     over_budget: int
     iteration_count: int
     is_approved: bool
+    customer_round: int
+    satisfaction_threshold: int
+    max_customer_rounds: int
+    customer_feedback: str
+    rule_score: int
+    client_self_score: int
+    final_score: int
     needs_human_intervention: bool
 
 
@@ -102,6 +117,7 @@ class StrategyState(TypedDict):
 
 planner_chain = build_planner_chain()
 cfo_chain = build_cfo_chain()
+customer_chain = build_customer_chain()
 
 def planner_node(state: StrategyState) -> dict:
     iteration = state.get("iteration_count", 0) + 1
@@ -125,19 +141,17 @@ def planner_node(state: StrategyState) -> dict:
     
     def validate_plan(plan):
         # 🛑 HARD VALIDATION: KIỂM TRA BẢN NHÁP RỖNG
-        phases = plan.get("phases", [])
-        if not phases:
-            print(f"   ❌ [LỖI NGHIÊM TRỌNG]: LLM trả về Plan không có Phase nào. Kích hoạt thử lại...")
-            raise ValueError("Master Plan bị rỗng. LLM phải tạo ít nhất 1 phase.")
-            
-        total_cost = plan.get("total_estimated_cost", 0)
-        if total_cost == 0:
-            print(f"   ❌ [LỖI NGHIÊM TRỌNG]: LLM trả về Plan có tổng chi phí = 0. Kích hoạt thử lại...")
-            raise ValueError("Tổng chi phí không được bằng 0.")
+        breakdown = plan.get("activity_and_financial_breakdown", [])
+        if not breakdown:
+            print(f"   ❌ [LỖI NGHIÊM TRỌNG]: LLM trả về Plan rỗng hoặc thiếu activity_and_financial_breakdown. Kích hoạt thử lại...")
+            raise ValueError("Master Plan bị rỗng hoặc thiếu activity_and_financial_breakdown.")
 
     plan_output = safe_invoke_chain(planner_chain, {
         "goal": state["goal"],
+        "industry": state.get("industry", "General"),
         "budget": state["budget"],
+        "target_audience": state.get("target_audience", ""),
+        "constraints": state.get("special_constraints", "Không có"),
         "actual_total_cost": state.get("actual_total_cost", 0),
         "over_budget": state.get("over_budget", 0),
         "feedback": state.get("feedback", "Không có"),
@@ -167,6 +181,46 @@ def planner_node(state: StrategyState) -> dict:
         "company_guidelines": guidelines,
     }
 
+
+
+
+def customer_node(state: StrategyState) -> dict:
+    print("\n\ud83e\udd1d [Khach hang] Dang danh gia ke hoach...")
+
+    plan = state.get("current_plan") or {}
+    rule_score = calculate_customer_rule_score(plan, DEFAULT_CRITERIA_WEIGHTS)
+
+    customer_output = safe_invoke_chain(customer_chain, {
+        "budget": state["budget"],
+        "company_guidelines": state.get("company_guidelines", ""),
+        "rule_score": rule_score,
+        "master_plan": json.dumps(plan, ensure_ascii=False)
+    })
+
+    client_self_score = int(customer_output.get("client_self_score", 50))
+    feedback = customer_output.get("feedback", "Khong co phan hoi bo sung")
+    reasoning_summary = customer_output.get("reasoning_summary", "")
+
+    final_score = int(0.7 * rule_score + 0.3 * client_self_score)
+    customer_round = state.get("customer_round", 0) + 1
+
+    is_approved = final_score >= state.get("satisfaction_threshold", 70)
+    needs_human = customer_round >= state.get("max_customer_rounds", 3)
+
+    print(f"   [Customer] Rule score: {rule_score}")
+    print(f"   [Customer] Self score: {client_self_score}")
+    print(f"   [Customer] Final score: {final_score}")
+
+    return {
+        "customer_round": customer_round,
+        "customer_feedback": feedback,
+        "rule_score": rule_score,
+        "client_self_score": client_self_score,
+        "final_score": final_score,
+        "feedback": feedback,
+        "is_approved": is_approved,
+        "needs_human_intervention": needs_human,
+    }
 
 def cfo_node(state: StrategyState) -> dict:
     print(f"\n💼 [Giám Đốc Tài Chính] Đã nhận Master Plan. Bắt đầu audit...")
@@ -236,27 +290,52 @@ def route_after_cfo(state: StrategyState) -> str:
         return "END"
     
     print(f"\n   ⏭️ [Hệ Thống] Yêu cầu CMO sửa lại bản nháp Master Plan...")
-    return "continue_to_planner"
+    return "continue_to_customer"
 
 
 # =============================================================================
+
+
+def route_after_customer(state: StrategyState) -> str:
+    if state.get("is_approved") is True:
+        return "END"
+
+    if state.get("needs_human_intervention") is True:
+        print(f"\n{'=' * 70}")
+        print("\ud83d\udee1 Khach hang chua hai long sau nhieu vong. Can can thiep thu cong.")
+        print(f"{'=' * 70}")
+        return "END"
+
+    return "continue_to_cfo"
+
 # 4. CHUẨN BỊ GRAPH
 # =============================================================================
 
 builder = StateGraph(StrategyState)
 
 builder.add_node("planner", planner_node)
+builder.add_node("customer", customer_node)
 builder.add_node("cfo", cfo_node)
 
 builder.set_entry_point("planner")
-builder.add_edge("planner", "cfo")
+builder.add_edge("planner", "customer")
+
+builder.add_conditional_edges(
+    "customer",
+    route_after_customer,
+    {
+        "END": END,
+        "continue_to_cfo": "cfo"
+    }
+)
 
 builder.add_conditional_edges(
     "cfo",
     route_after_cfo,
     {
         "END": END,
-        "continue_to_planner": "planner"
+        "continue_to_planner": "planner",
+        "continue_to_customer": "customer"
     }
 )
 
@@ -269,7 +348,10 @@ strategy_app = builder.compile()
 if __name__ == "__main__":
     initial_state = {
         "goal": "Tổ chức sự kiện ra mắt mỹ phẩm cho nam giới tại AEON Mall",
+        "industry": "Mỹ phẩm/Làm đẹp",
         "budget": 20_000_000,
+        "target_audience": "Nam giới 18-25 tuổi",
+        "special_constraints": "Khách mời có KOL",
         "feedback": "Chưa có",
         "company_guidelines": "",
         "previous_plan": None,
@@ -279,7 +361,14 @@ if __name__ == "__main__":
         "over_budget": 0,
         "iteration_count": 0,
         "is_approved": False,
-        "needs_human_intervention": False
+        "needs_human_intervention": False,
+        "customer_round": 0,
+        "satisfaction_threshold": 70,
+        "max_customer_rounds": 3,
+        "customer_feedback": "",
+        "rule_score": 0,
+        "client_self_score": 0,
+        "final_score": 0
     }
     
     print("\n" + "═" * 70)

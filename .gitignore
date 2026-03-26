@@ -79,3 +79,5 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+.worktrees/

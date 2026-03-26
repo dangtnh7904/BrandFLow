@@ -80,7 +80,14 @@ def test_workflow_graph_fast_convergence(mock_invoke, mock_rag):
         "over_budget": 0,
         "iteration_count": 0,
         "is_approved": False,
-        "needs_human_intervention": False
+        "needs_human_intervention": False,
+        "customer_round": 0,
+        "satisfaction_threshold": 70,
+        "max_customer_rounds": 3,
+        "customer_feedback": "",
+        "rule_score": 0,
+        "client_self_score": 0,
+        "final_score": 0,
     }
 
     final_state = strategy_app.invoke(initial_state)
@@ -89,7 +96,7 @@ def test_workflow_graph_fast_convergence(mock_invoke, mock_rag):
     assert final_state["iteration_count"] == 1
     assert final_state["needs_human_intervention"] is False
     assert final_state["actual_total_cost"] == 15000000
-    mock_invoke.assert_called_once()
+    assert mock_invoke.call_count == 2
 
 
 @patch('workflow_graph.get_relevant_guidelines', return_value="")
@@ -102,11 +109,18 @@ def test_workflow_graph_infinite_loop_protection(mock_invoke, mock_rag):
     # Hàm side effect để trả về plan đắt hoặc CFO feedback tùy context chain
     def side_effect_invoke(chain, inputs, validator=None):
         if "budget" in inputs and "actual_total_cost" in inputs and "master_plan" in inputs:
-            # Đây là CFO
+            # ????y l?? CFO
             return mock_cfo_decision
-        else:
-            # Đây là Planner
-            return mock_expensive_plan
+        if "rule_score" in inputs and "master_plan" in inputs:
+            # ????y l?? Customer Reviewer
+            return {
+                "client_self_score": 50,
+                "feedback": "Can tinh gon ke hoach.",
+                "reasoning_summary": "Chua dat ky vong."
+            }
+        # ????y l?? Planner
+        return mock_expensive_plan
+
 
     mock_invoke.side_effect = side_effect_invoke
     
@@ -122,12 +136,53 @@ def test_workflow_graph_infinite_loop_protection(mock_invoke, mock_rag):
         "over_budget": 0,
         "iteration_count": 0,
         "is_approved": False,
-        "needs_human_intervention": False
+        "needs_human_intervention": False,
+        "customer_round": 0,
+        "satisfaction_threshold": 70,
+        "max_customer_rounds": 3,
+        "customer_feedback": "",
+        "rule_score": 0,
+        "client_self_score": 0,
+        "final_score": 0,
     }
 
     final_state = strategy_app.invoke(initial_state)
 
     assert final_state["is_approved"] is False
-    assert final_state["iteration_count"] == 3
+    assert final_state["iteration_count"] == 1
     assert final_state["needs_human_intervention"] is True
+    assert final_state["customer_round"] == 3
     assert final_state["actual_total_cost"] == 25000000
+@patch('workflow_graph.safe_invoke_chain')
+def test_customer_review_threshold_stops_loop(mock_invoke):
+    mock_invoke.return_value = {
+        "campaign_name": "Plan",
+        "executive_summary": "Summary",
+        "target_audience": "Gen Z",
+        "total_estimated_cost": 10000000,
+        "phases": [
+            {"phase_name": "P1", "duration": "1w", "objective": "O", "phase_subtotal_cost": 10000000,
+             "activities": [{"name": "A", "description": "D", "cost": 10000000, "priority": "MUST_HAVE", "expected_kpi": "K"}]}
+        ]
+    }
+
+    initial_state = {
+        "goal": "Test",
+        "budget": 20000000,
+        "feedback": "",
+        "company_guidelines": "",
+        "previous_plan": None,
+        "current_plan": None,
+        "cfo_decision": None,
+        "actual_total_cost": 0,
+        "over_budget": 0,
+        "iteration_count": 0,
+        "is_approved": False,
+        "needs_human_intervention": False,
+        "customer_round": 0,
+        "satisfaction_threshold": 60,
+        "max_customer_rounds": 2
+    }
+
+    final_state = strategy_app.invoke(initial_state)
+    assert final_state["is_approved"] is True

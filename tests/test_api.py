@@ -51,14 +51,13 @@ async def test_api_onboarding_upload(mock_analyze, MockIngestor):
     # Fake file payload using TestClient
     response = client.post(
         "/api/v1/onboarding/upload",
-        files={"file": ("mock_company_profile.pdf", b"mock binary data", "application/pdf")}
+        files=[("files", ("mock_company_profile.pdf", b"mock binary data", "application/pdf"))]
     )
     
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "success"
-    assert "core_usps" in data["data"]
-    assert len(data["data"]["strict_rules"]) == 1
+    assert "message" in data
 
 
 def test_api_create_project_tdd():

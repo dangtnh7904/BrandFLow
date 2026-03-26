@@ -26,30 +26,37 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 # 1. PYDANTIC SCHEMAS — v6: Tối giản CFO, ép MasterPlanner chặt hơn
 # =============================================================================
 
-class ActionItem(BaseModel):
-    name: str = Field(description="Tên hoạt động marketing")
-    description: str = Field(description="Mô tả cách thực hiện (ngắn gọn 2-3 câu)")
-    cost: int = Field(description="Chi phí dự kiến (VND), số nguyên thuần túy")
-    priority: Literal["MUST_HAVE", "SHOULD_HAVE", "COULD_HAVE"] = Field(
-        description="Mức độ ưu tiên để CFO biết đường cắt giảm"
-    )
-    expected_kpi: str = Field(description="Kết quả đo lường (VD: Tiếp cận 10,000 người, Bán 50 đơn)")
+class ExecutiveSummary(BaseModel):
+    campaign_name: str
+    campaign_summary: str
+    core_objectives: str
+    total_budget_vnd: int
 
+class TargetAudienceAndBrandVoice(BaseModel):
+    target_audience: str
+    brand_voice: str
 
-class CampaignPhase(BaseModel):
-    phase_name: str = Field(description="Tên giai đoạn (VD: Giai đoạn 1: Hâm nóng / Teasing)")
-    duration: str = Field(description="Thời gian triển khai dự kiến")
-    objective: str = Field(description="Mục tiêu chính của giai đoạn này")
-    activities: List[ActionItem] = Field(min_length=1, description="Danh sách các hành động trong giai đoạn này (Bắt buộc ít nhất 1)")
-    phase_subtotal_cost: int = Field(description="Tổng chi phí của riêng giai đoạn này (VND)")
+class PhasedExecution(BaseModel):
+    phase_id: str
+    phase_name: str
+    duration: str
 
+class Activity(BaseModel):
+    activity_name: str
+    description: str
+    cost_vnd: int
+    kpi_commitment: str
+    moscow_tag: Literal["MUST_HAVE", "SHOULD_HAVE", "COULD_HAVE"]
+
+class ActivityAndFinancialBreakdown(BaseModel):
+    phase_id: str
+    activities: List[Activity]
 
 class MasterPlanOutput(BaseModel):
-    campaign_name: str = Field(description="Tên chiến dịch")
-    executive_summary: str = Field(description="Tóm tắt định hướng chiến lược (3-4 câu)")
-    target_audience: str = Field(description="Phân tích khách hàng mục tiêu")
-    phases: List[CampaignPhase] = Field(min_length=1, description="Danh sách các giai đoạn triển khai (Bắt buộc ít nhất 1)")
-    total_estimated_cost: int = Field(description="Tổng chi phí toàn bộ chiến dịch (bằng tổng các phase_subtotal_cost)")
+    executive_summary: ExecutiveSummary
+    target_audience_and_brand_voice: TargetAudienceAndBrandVoice
+    phased_execution: List[PhasedExecution]
+    activity_and_financial_breakdown: List[ActivityAndFinancialBreakdown]
 
 
 class CFODecision(BaseModel):
@@ -63,12 +70,19 @@ class CFODecision(BaseModel):
     )
 
 
+class CustomerReview(BaseModel):
+    client_self_score: int = Field(description="Customer self score (1-100)")
+    feedback: str = Field(description="Customer feedback details")
+    reasoning_summary: str = Field(description="Short reasoning summary")
+
+
 # =============================================================================
 # 2. OUTPUT PARSERS
 # =============================================================================
 
 planner_parser = JsonOutputParser(pydantic_object=MasterPlanOutput)
 cfo_parser = JsonOutputParser(pydantic_object=CFODecision)
+customer_parser = JsonOutputParser(pydantic_object=CustomerReview)
 
 
 # =============================================================================
@@ -85,59 +99,39 @@ JSON_ENFORCEMENT = (
 planner_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
-        """Bạn là Giám đốc Marketing (CMO) dày dặn kinh nghiệm.
-Nhiệm vụ: Lập (hoặc ĐiỀU CHỈNH) Bản Kế hoạch Chiến lược (Master Plan) chi tiết.
+        """Role: Bạn là một Giám đốc Marketing (CMO) cấp C-level tại một Agency hàng đầu. Trách nhiệm của bạn là lập Báo cáo Chiến lược (Executive Report) cho doanh nghiệp.
 
-BẢNG GIÁ THAM CHIẾU THỊ TRƯỜNG (để ước lượng chi phí thực tế):
-- Bài PR báo chí: 5000000 - 15000000 VND/bài.
-- Booking KOL/Influencer (Micro): 3000000 - 10000000 VND/người.
-- Chạy Ads (Facebook/TikTok): Tối thiểu 10000000 - 20000000 VND/tháng để có hiệu quả.
-- Sản xuất Video ngắn (Reels/TikTok): 2000000 - 5000000 VND/video.
-- Tổ chức Event mini: 5000000 - 15000000 VND/sự kiện.
-
-LƯU Ý CỰC KỲ QUAN TRỌNG: Dưới đây là quy chuẩn công ty và các bài học rút ra từ sai lầm trong quá khứ:
+CRITICAL RULES (LUẬT SỐNG CÒN BẮT BUỘC TUÂN THỦ):
+1. GIỌNG VĂN: Chuyên nghiệp, sắc bén. Không dùng từ ngữ sáo rỗng.
+2. TỪ ĐIỂN KPI NGÀNH BẮT BUỘC (Phải áp dụng đúng ngành của khách hàng vào trường 'kpi_commitment'):
+   - Ngành F&B: Footfall (Lượng khách đến quán), CPA (Cost per Action/Voucher), AOV (Giá trị trung bình đơn), Tỷ lệ quay lại (Retention Rate).
+   - Ngành Mỹ phẩm/Làm đẹp: CPL (Cost per Lead), ROAS (Return on Ad Spend), CVR% (Tỷ lệ chuyển đổi dùng thử), Lượng UGC (User-Generated Content).
+   - Ngành Công nghệ/B2B: MQL (Marketing Qualified Lead), Demo Booking Rate (Tỷ lệ đặt lịch), CAC (Chi phí thu thập khách hàng), CPA (Chi phí mỗi người dự sự kiện).
+   - Ngành General (Chưa xác định): Tập trung vào Sales, Conversion Rate, và Brand Awareness reach.
+3. LUẬT TÀI CHÍNH (DÀNH CHO CFO KIỂM DUYỆT): 
+   - Tổng chi phí (cost_vnd) của tất cả hoạt động phải CỐ TÌNH vượt ngân sách được giao khoảng 10% - 20%. Bạn CHỈ ĐƯỢC PHÉP cố tình vượt ngân sách nếu đây là LẦN LẬP KẾ HOẠCH ĐẦU TIÊN (khi previous_plan là "Không có").
+   - Để làm được điều này, hãy tạo ra 1-2 hạng mục mồi nhử mang tính chất "Nice-to-have" (Ví dụ: Tặng quà đắt tiền, Thuê KOL lớn) và GẮN NHÃN 'moscow_tag' LÀ "COULD_HAVE". 
+   - Các hoạt động cốt lõi mang lại doanh thu phải gắn nhãn "MUST_HAVE" và "SHOULD_HAVE".
+4. QUY TRÌNH HỒI TƯỞNG VÀ CHỈNH SỬA:
+   - KHI SỬA KẾ HOẠCH DO BỊ CFO TỪ CHỐI (vì vượt ngân sách quá lớn): BẠN CHỈ ĐƯỢC PHÉP CHỈNH SỬA bản nháp cũ (giảm tiền, xóa hoặc tắt hạng mục COULD_HAVE) DỰA THEO YÊU CẦU CỦA CFO. 
+   - Ở vòng lặp chỉnh sửa, BẮT BUỘC phải làm cho `total_budget_vnd` TỪ BẰNG ĐẾN NHỎ HƠN ngân sách ban đầu, KHÔNG THÊM HẠNG MỤC MỚI, KHÔNG cố tình vượt ngân sách nữa.
+   
+HƯỚNG DẪN TỪ BỘ NHỚ CÔNG TY:
 {company_guidelines}
-BẠN BẮT BUỘC PHẢI TUÂN THỦ CÁC QUY TẮC NÀY KHI LẬP KẾ HOẠCH.
 
-QUY TẮC BẮT BUỘC:
-1. BẮT BUỘC chia chiến dịch thành các Giai đoạn logic (Teasing -> Launching -> Sustaining).
-2. Mỗi hoạt động PHẢI có mức độ ưu tiên: MUST_HAVE, SHOULD_HAVE, HOẶC COULD_HAVE.
-3. KHI SỬA KẾ HOẠCH DO BỊ TỪ CHỐI (vượt ngân sách): BẠN CHỈ ĐƯỢC PHÉP CHỈNH SỬA bản nháp cũ (giảm tiền, xóa hạng mục COULD_HAVE) DỰA THEO YÊU CẦU CỦA CFO. TUYỆT ĐỐI KHÔNG SÁNG TÁC THÊM HẠNG MỤC MỚI.
-4. Tổng `total_estimated_cost` PHẢI KHỚP với tổng chi phí các activities của các phần. Nếu có thể, không được vượt budget.
-
-VÍ DỤ ĐẦU RA JSON BẮT BUỘC (Bạn phải tuân thủ đúng cấu trúc này):
-{{
-  "campaign_name": "Tên chiến dịch",
-  "executive_summary": "Tóm tắt ngắn gọn",
-  "target_audience": "Khách hàng mục tiêu",
-  "total_estimated_cost": 15000000,
-  "phases": [
-    {{
-      "phase_name": "Giai đoạn 1: Teasing",
-      "duration": "Tuần 1",
-      "objective": "Thu hút sự chú ý",
-      "phase_subtotal_cost": 15000000,
-      "activities": [
-        {{
-          "name": "Chạy Facebook Ads",
-          "description": "Chạy video teaser",
-          "cost": 15000000,
-          "priority": "MUST_HAVE",
-          "expected_kpi": "100k reach"
-        }}
-      ]
-    }}
-  ]
-}}
-
-""" + JSON_ENFORCEMENT + """
+BẮT BUỘC TRẢ VỀ CHUỖI JSON HỢP LỆ, KHÔNG VĂN BẢN THỪA.
 
 {format_instructions}"""
     ),
     (
         "human",
-        """Mục tiêu chiến dịch: {goal}
-Ngân sách tối đa: {budget} VND
+        """Context:
+- Ngành hàng (Industry): {industry}
+- Mục tiêu (Goal): {goal}
+- Ngân sách tối đa (Budget): {budget} VNĐ
+- Khách hàng mục tiêu: {target_audience}
+- Ràng buộc/Lưu ý (Constraints): {constraints}
+
 TỔNG CHI PHÍ THỰC TẾ CỦA BẢN NHÁP TRƯỚC ĐÓ: {actual_total_cost} VND (Vượt ngân sách: {over_budget} VND).
 
 Feedback YÊU CẦU CẮT GIẢM từ CFO: {feedback}
@@ -145,9 +139,8 @@ Feedback YÊU CẦU CẮT GIẢM từ CFO: {feedback}
 BẢN NHÁP TRƯỚC ĐÓ CỦA BẠN (previous_plan):
 {previous_plan}
 
-NẾU previous_plan là "Không có", hãy tạo bản Master Plan mới hoàn toàn. 
-NẾU CÓ previous_plan, HÃY CẮT GIẢM/SỬA TRÊN ĐÓ ĐỂ KHÔNG BỊ VƯỢT NGÂN SÁCH.
-"""
+NẾU previous_plan là "Không có", hãy lập một bản Kế hoạch Marketing cực kỳ thực dụng, data-driven và bám sát phương pháp MoSCoW. Nhớ TỰ ĐỘNG THÊM 10-20% NGÂN SÁCH ẢO bằng các hạng mục COULD_HAVE.
+NẾU CÓ previous_plan, HÃY CẮT GIẢM/SỬA TRÊN ĐÓ THEO ĐÚNG Ý CFO ĐỂ TỔNG CHI PHÍ BẰNG HOẶC NHỎ HƠN NGÂN SÁCH {budget} VNĐ. TUYỆT ĐỐI KHÔNG VƯỢT NGÂN SÁCH NỮA."""
     ),
 ])
 
@@ -184,6 +177,21 @@ Kế hoạch tổng thể (Master Plan):
     ),
 ])
 
+# ---- Customer Reviewer Prompt ----
+customer_prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        "You are the customer reviewing the marketing plan. Score satisfaction from 1-100.\n"
+        "Consider: activity/KPI clarity, feasibility vs budget, strategic coherence, target fit, brand fit.\n"
+        "Provide clear feedback for improvements. Return JSON only."
+        + JSON_ENFORCEMENT + "\n\n{format_instructions}"
+    ),
+    (
+        "human",
+        "Budget: {budget}\n\nBrand guidelines:\n{company_guidelines}\n\nRule score (Python): {rule_score}\n\nPlan:\n{master_plan}"
+    ),
+])
+
 
 # =============================================================================
 # 4. LLM INITIALIZATION
@@ -216,6 +224,14 @@ def build_cfo_chain():
         format_instructions=cfo_parser.get_format_instructions()
     )
     return prompt_with_format | llm | cfo_parser
+
+
+def build_customer_chain():
+    llm = get_llm(temperature=0.2)
+    prompt_with_format = customer_prompt.partial(
+        format_instructions=customer_parser.get_format_instructions()
+    )
+    return prompt_with_format | llm | customer_parser
 
 
 # =============================================================================

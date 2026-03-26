@@ -6,12 +6,16 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import HTMLResponse
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import PresetRequest, InterviewRequest
+from schemas import PresetRequest, InterviewRequest, RawInputRequest
 from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
+from intake_agent import analyze_raw_input, check_required_info
+from workflow_graph import strategy_app
 from document_processor import DocumentIngestor
 from pydantic import BaseModel
 import os
 import uuid
+import asyncio
+from mock_manager import parse_mock_md
 
 app = FastAPI(
     title="BrandFlow APIs",
@@ -299,6 +303,94 @@ async def onboarding_upload(files: List[UploadFile] = File(...)):
         return {"status": "success", "message": f"Đã lưu thành công {len(files)} tài liệu vào ChromaDB."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/planning/intake")
+async def process_intake(request: RawInputRequest):
+    """
+    Intake Agent: Bóc tách ngôn ngữ tự nhiên, kiểm tra ràng buộc ngân sách/ngành hàng.
+    Nếu đủ thì chạy Multi-Agent AI (Planner -> CFO -> Persona).
+    """
+    try:
+        raw_text = request.raw_text
+        
+        # --- SECRET MOCK MODE INTERCEPTOR ---
+        secret_keywords = ["hương viên trà quán", "mã demo 1"]
+        if any(keyword in raw_text.lower() for keyword in secret_keywords):
+            print("🕵️‍♂️ [MOCK MODE] Kích hoạt dữ liệu giả lập an toàn do có nhắc tới từ khóa...")
+            await asyncio.sleep(5)  # Trễ 5s giả lập AI thinking để hiện Loading Spinner trên UI
+            
+            mock_file = "mock_data/huong_vien_tra.md"
+            mock_result = parse_mock_md(mock_file)
+            
+            plan = mock_result["final_plan"]
+            
+            # Tính lại cost thực tế theo plan mock
+            actual_cost = 0
+            for phase in plan.get("activity_and_financial_breakdown", []):
+                for act in phase.get("activities", []):
+                    actual_cost += int(act.get("cost_vnd", 0))
+                    
+            print("✅ Đủ thông tin, bắt đầu gọi MasterPlanner (MOCK MODE)...")
+            return {
+                "status": "success",
+                "is_approved": True,
+                "iteration_count": 2,
+                "actual_total_cost": actual_cost,
+                "plan": plan,
+                "agent_logs": mock_result["agent_logs"]
+            }
+        # ------------------------------------
+
+        # 1. Bóc tách
+        parsed_data = analyze_raw_input(raw_text)
+        
+        # 2. Kiểm tra
+        check_result = check_required_info(parsed_data)
+        
+        # 3. Trả về câu hỏi nếu thiếu thông tin
+        if check_result.get("status") == "clarification_needed":
+            return check_result
+            
+        # 4. Đủ thông tin -> Gọi Graph
+        print("✅ Đủ thông tin, bắt đầu gọi MasterPlanner...")
+        
+        initial_state = {
+            "goal": parsed_data.get("goal", request.raw_text),
+            "industry": parsed_data.get("industry", "General"),
+            "budget": parsed_data.get("budget", 0),
+            "target_audience": parsed_data.get("target_audience", ""),
+            "special_constraints": parsed_data.get("special_constraints", ""),
+            "feedback": "Chưa có",
+            "company_guidelines": "",
+            "previous_plan": None,
+            "current_plan": None,
+            "cfo_decision": None,
+            "actual_total_cost": 0,
+            "over_budget": 0,
+            "iteration_count": 0,
+            "is_approved": False,
+            "needs_human_intervention": False,
+            "customer_round": 0,
+            "satisfaction_threshold": 70,
+            "max_customer_rounds": 3,
+            "customer_feedback": "",
+            "rule_score": 0,
+            "client_self_score": 0,
+            "final_score": 0
+        }
+        
+        final_state = strategy_app.invoke(initial_state)
+        
+        return {
+            "status": "success",
+            "is_approved": final_state.get("is_approved"),
+            "iteration_count": final_state.get("iteration_count"),
+            "actual_total_cost": final_state.get("actual_total_cost"),
+            "plan": final_state.get("current_plan")
+        }
+    except Exception as e:
+        print(f"Lỗi hệ thống Intake: {e}")
+        raise HTTPException(status_code=500, detail=f"Lỗi hệ thống: {str(e)}")
 
 @app.get("/api/v1/onboarding/stats")
 def get_db_stats():

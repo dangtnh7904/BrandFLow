@@ -1,4 +1,4 @@
-﻿DEFAULT_CRITERIA_WEIGHTS = {
+DEFAULT_CRITERIA_WEIGHTS = {
     "kpi_activity_clarity": 35,
     "feasibility_budget": 25,
     "strategic_coherence": 20,
@@ -8,14 +8,14 @@
 
 
 def calculate_customer_rule_score(plan: dict, criteria_weights: dict) -> int:
-    if not plan or not plan.get("phases"):
+    if not plan or not plan.get("activity_and_financial_breakdown"):
         return 50
 
     score = 0
     has_kpi = False
-    for phase in plan.get("phases", []):
+    for phase in plan.get("activity_and_financial_breakdown", []):
         for act in phase.get("activities", []):
-            if act.get("expected_kpi"):
+            if act.get("kpi_commitment"):
                 has_kpi = True
 
     if has_kpi:

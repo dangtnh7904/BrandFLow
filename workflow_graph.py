@@ -34,42 +34,46 @@ def calculate_actual_cost(plan: dict) -> int:
     total = 0
     if not plan: return 0
     try:
-        phases = plan.get("phases", [])
-        for phase in phases:
+        breakdown = plan.get("activity_and_financial_breakdown", [])
+        for phase in breakdown:
             activities = phase.get("activities", [])
             for act in activities:
-                # Đảm bảo cost là số nguyên hợp lệ
-                total += int(act.get("cost", 0))
+                total += int(act.get("cost_vnd", 0))
     except (ValueError, TypeError):
         pass
     return total
 
 def print_master_plan(plan: dict):
-    exec_summary = plan.get("executive_summary", "N/A")
-    target_aud = plan.get("target_audience", "N/A")
-    phases = plan.get("phases", [])
+    exec_summary = plan.get("executive_summary", {})
+    target_info = plan.get("target_audience_and_brand_voice", {})
     
-    print(f"\n   [Tóm Tắt Khách Hàng]: {target_aud}")
-    print(f"   [Chiến Lược Cốt Lõi]: {exec_summary}")
+    if not isinstance(exec_summary, dict): exec_summary = {}
+    if not isinstance(target_info, dict): target_info = {}
     
-    for p_idx, phase in enumerate(phases, 1):
-        p_name = phase.get("phase_name", f"Phase {p_idx}")
-        p_dur = phase.get("duration", "N/A")
-        p_obj = phase.get("objective", "N/A")
-        subtotal = phase.get("phase_subtotal_cost", 0)
+    print(f"\n   [Tóm Tắt Khách Hàng]: {target_info.get('target_audience', 'N/A')}")
+    print(f"   [Chiến Lược Cốt Lõi]: {exec_summary.get('campaign_summary', 'N/A')}")
+    print(f"   [Mục Tiêu Chính]: {exec_summary.get('core_objectives', 'N/A')}")
+    
+    phases = plan.get("phased_execution", [])
+    breakdown = plan.get("activity_and_financial_breakdown", [])
+    
+    phase_map = {p.get("phase_id"): p.get("phase_name") for p in phases if isinstance(p, dict)}
+    
+    for b in breakdown:
+        pid = b.get("phase_id")
+        pname = phase_map.get(pid, pid)
+        activities = b.get("activities", [])
         
         print(f"\n   {'─' * 65}")
-        print(f"   ► {p_name.upper()} ({p_dur}) | Phân bổ nháp: {subtotal:,} ₫")
-        print(f"   Mục Tiêu: {p_obj}")
+        print(f"   ► {str(pname).upper()}")
         print(f"   {'─' * 65}")
         
-        activities = phase.get("activities", [])
         for act in activities:
-            name = act.get("name", "N/A")
+            name = act.get("activity_name", "N/A")
             desc = act.get("description", "")
-            cost = act.get("cost", 0)
-            priority = act.get("priority", "N/A")
-            kpi = act.get("expected_kpi", "N/A")
+            cost = act.get("cost_vnd", 0)
+            priority = act.get("moscow_tag", "N/A")
+            kpi = act.get("kpi_commitment", "N/A")
             
             icon = PRIORITY_ICON.get(priority, "⚪")
             
@@ -84,7 +88,10 @@ def print_master_plan(plan: dict):
 
 class StrategyState(TypedDict):
     goal: str
+    industry: str
     budget: int
+    target_audience: str
+    special_constraints: str
     feedback: str
     company_guidelines: str
     previous_plan: Optional[dict]
@@ -134,19 +141,17 @@ def planner_node(state: StrategyState) -> dict:
     
     def validate_plan(plan):
         # 🛑 HARD VALIDATION: KIỂM TRA BẢN NHÁP RỖNG
-        phases = plan.get("phases", [])
-        if not phases:
-            print(f"   ❌ [LỖI NGHIÊM TRỌNG]: LLM trả về Plan không có Phase nào. Kích hoạt thử lại...")
-            raise ValueError("Master Plan bị rỗng. LLM phải tạo ít nhất 1 phase.")
-            
-        total_cost = plan.get("total_estimated_cost", 0)
-        if total_cost == 0:
-            print(f"   ❌ [LỖI NGHIÊM TRỌNG]: LLM trả về Plan có tổng chi phí = 0. Kích hoạt thử lại...")
-            raise ValueError("Tổng chi phí không được bằng 0.")
+        breakdown = plan.get("activity_and_financial_breakdown", [])
+        if not breakdown:
+            print(f"   ❌ [LỖI NGHIÊM TRỌNG]: LLM trả về Plan rỗng hoặc thiếu activity_and_financial_breakdown. Kích hoạt thử lại...")
+            raise ValueError("Master Plan bị rỗng hoặc thiếu activity_and_financial_breakdown.")
 
     plan_output = safe_invoke_chain(planner_chain, {
         "goal": state["goal"],
+        "industry": state.get("industry", "General"),
         "budget": state["budget"],
+        "target_audience": state.get("target_audience", ""),
+        "constraints": state.get("special_constraints", "Không có"),
         "actual_total_cost": state.get("actual_total_cost", 0),
         "over_budget": state.get("over_budget", 0),
         "feedback": state.get("feedback", "Không có"),
@@ -343,7 +348,10 @@ strategy_app = builder.compile()
 if __name__ == "__main__":
     initial_state = {
         "goal": "Tổ chức sự kiện ra mắt mỹ phẩm cho nam giới tại AEON Mall",
+        "industry": "Mỹ phẩm/Làm đẹp",
         "budget": 20_000_000,
+        "target_audience": "Nam giới 18-25 tuổi",
+        "special_constraints": "Khách mời có KOL",
         "feedback": "Chưa có",
         "company_guidelines": "",
         "previous_plan": None,

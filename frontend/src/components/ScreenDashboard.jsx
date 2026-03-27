@@ -3,6 +3,7 @@ import {
   Briefcase, Target, DollarSign, Sparkles, Users, AlertTriangle, XCircle, Map, ShieldAlert, BarChart3, History, PenTool, Send, ArrowLeft, Edit2, Check, Bot
 } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
+import KanbanPdfExporter from './KanbanPdfExporter';
 
 export const CAT_CONFIG = {
   MUST_HAVE: { label: 'BẮT BUỘC LÕI', color: '#10B981', bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
@@ -86,6 +87,7 @@ export default function ScreenDashboard({
             <span className="font-bold tracking-wide text-white">BrandFlow Executive <span className="text-xs bg-[#0075FF]/20 text-[#0075FF] ml-2 px-2 py-0.5 rounded-full border border-[#0075FF]/30">VER {iteration}</span></span>
           </div>
         </div>
+        <KanbanPdfExporter campaignData={campaignData} budgetData={budgetData} iteration={iteration} />
       </div>
 
       <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">

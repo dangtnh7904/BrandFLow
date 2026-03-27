@@ -332,7 +332,7 @@ def python_interceptor(plan: dict, budget: int) -> dict:
 
 
 # =============================================================================
-# 4. AGENT 2: CFO COMMENTARY (Groq — llama3-8b-8192)
+# 4. AGENT 2: CFO COMMENTARY (Groq — llama-3.1-8b-instant)
 # =============================================================================
 
 CFO_PROMPT = """Bạn là CFO (Giám đốc Tài chính) khó tính, lạnh lùng.
@@ -348,9 +348,9 @@ QUY TẮC:
 
 
 def run_cfo_commentary(overflow_amount: int, cut_items: list, budget: int) -> str:
-    """Agent 2: Gọi Groq llama3-8b-8192 để sinh 1 câu bình luận CFO."""
+    """Agent 2: Gọi Groq llama-3.1-8b-instant để sinh 1 câu bình luận CFO."""
     print(f"\n💼 [AGENT 2 — CFO] Đang bình luận tài chính...")
-    print(f"   API: Groq | Model: llama3-8b-8192")
+    print(f"   API: Groq | Model: llama-3.1-8b-instant")
 
     try:
         from groq import Groq
@@ -363,7 +363,7 @@ def run_cfo_commentary(overflow_amount: int, cut_items: list, budget: int) -> st
         )
 
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=100,
@@ -378,7 +378,7 @@ def run_cfo_commentary(overflow_amount: int, cut_items: list, budget: int) -> st
 
 
 # =============================================================================
-# 5. AGENT 3: PERSONA VALIDATOR (Groq — mixtral-8x7b-32768)
+# 5. AGENT 3: PERSONA VALIDATOR (Groq — llama-3.1-8b-instant)
 # =============================================================================
 
 PERSONA_PROMPT = """Bạn là một khách hàng thực tế thuộc tệp: "{target_audience}".
@@ -394,9 +394,9 @@ QUY TẮC:
 
 
 def run_persona_validator(plan: dict, target_audience: str) -> str:
-    """Agent 3: Gọi Groq mixtral-8x7b-32768 để nhập vai khách hàng mục tiêu."""
+    """Agent 3: Gọi Groq llama-3.1-8b-instant để nhập vai khách hàng mục tiêu."""
     print(f"\n🎭 [AGENT 3 — PERSONA VALIDATOR] Đang nhập vai khách hàng...")
-    print(f"   API: Groq | Model: mixtral-8x7b-32768")
+    print(f"   API: Groq | Model: llama-3.1-8b-instant")
 
     # Tóm tắt danh sách hoạt động
     activities = []
@@ -415,7 +415,7 @@ def run_persona_validator(plan: dict, target_audience: str) -> str:
         )
 
         response = client.chat.completions.create(
-            model="mixtral-8x7b-32768",
+            model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
             max_tokens=200,

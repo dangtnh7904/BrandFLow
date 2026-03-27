@@ -111,7 +111,7 @@ export default function App() {
   const [generateError, setGenerateError] = useState('');
   const [agentLogs, setAgentLogs] = useState(null);
 
-  const handleGenerate = async (files, url, name, requestText) => {
+  const handleGenerate = async (files, url, name, requestText, budgetNum) => {
     setCurrentView('simulation');
     setIteration(1);
     setFeedback('');
@@ -136,11 +136,11 @@ export default function App() {
         });
       }
 
-      const rawText = `Tên chiến dịch: ${name || 'N/A'}. Yêu cầu: ${requestText || 'Không mô tả'}`;
+      const rawText = `Tên chiến dịch: ${name || 'N/A'}. Ngân sách: ${budgetNum} VND. Yêu cầu: ${requestText || 'Không mô tả'}`;
       const res = await fetch("http://localhost:8000/api/v1/planning/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ raw_text: rawText })
+        body: JSON.stringify({ raw_text: rawText, budget: budgetNum })
       });
       const result = await res.json();
       
@@ -154,6 +154,11 @@ export default function App() {
          }
          setCampaignData(completePlan);
          setAgentLogs(result.agent_logs || []);
+      } else if (result.status === "clarification_needed") {
+         alert(result.message || "Thiếu thông tin. Vui lòng bổ sung.");
+         setCurrentView('upload');
+         setIsGenerating(false);
+         return;
       } else {
          throw new Error(result.detail || result.message || "Lỗi tạo kế hoạch từ Agent.");
       }

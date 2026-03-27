@@ -16,7 +16,6 @@ import json
 import os
 from typing import List, Literal
 from pydantic import BaseModel, Field
-import google.generativeai as genai
 
 # =============================================================================
 # 1. PYDANTIC SCHEMAS (giữ nguyên cấu trúc output cho Frontend)

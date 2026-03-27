@@ -395,6 +395,10 @@ async def process_intake(request: RawInputRequest):
         # 1. Bóc tách
         parsed_data = analyze_raw_input(raw_text)
         
+        # Override budget nếu Frontend gửi lên giá trị cố định
+        if request.budget and request.budget >= 1000000:
+            parsed_data["budget"] = request.budget
+        
         # 2. Kiểm tra
         check_result = check_required_info(parsed_data)
         

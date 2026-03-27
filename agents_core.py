@@ -171,19 +171,12 @@ NHIỆM VỤ CỦA BẠN:
 Trả về toàn bộ Kế hoạch sau khi chỉnh sửa thành JSON hợp lệ ngay lập tức (KHÔNG bọc trong markdown):"""
 
 def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
-    """Agent 1 (Refine): Gọi Gemini xử lý Feedback của CEO để sửa Plan cũ."""
+    """Agent 1 (Refine): Gọi Groq xử lý Feedback của CEO để sửa Plan cũ."""
     print(f"\n{'═' * 70}")
     print(f"👑 [AGENT 1 — REFINER] Đang cập nhật chiến lược theo Feedback...")
     print(f"   Feedback: {feedback}")
+    print(f"   API: Groq | Model: llama-3.3-70b-versatile")
     print(f"{'═' * 70}")
-
-    model = genai.GenerativeModel(
-        model_name="gemini-2.5-flash",
-        generation_config={
-            "temperature": 0.4,
-            "response_mime_type": "application/json",
-        },
-    )
 
     prompt = REFINE_PLANNER_PROMPT.format(
         previous_plan=json.dumps(previous_plan, ensure_ascii=False),
@@ -191,8 +184,21 @@ def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
         budget=budget,
     )
 
-    response = model.generate_content(prompt)
-    raw_text = response.text.strip()
+    try:
+        from groq import Groq
+        client = Groq()
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4,
+            max_tokens=4096,
+            response_format={"type": "json_object"},
+        )
+        raw_text = response.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"🔴 [REFINER] Groq API Error: {e}, trả về plan cũ.")
+        return previous_plan
+
     if raw_text.startswith("```json"):
         raw_text = raw_text[7:]
     elif raw_text.startswith("```"):
@@ -205,27 +211,18 @@ def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
         plan = json.loads(raw_text)
     except Exception as e:
         print(f"🔴 [REFINER] JSON Parse Error: {e}")
-        print(f"🔴 [REFINER] Raw Output:\n{response.text}")
-        plan = previous_plan # Fallback
+        plan = previous_plan
         
     print(f"   ✅ Đã cập nhật xong Kế hoạch mới!")
     return plan
 
 
 def run_master_planner(goal: str, industry: str, budget: int, target_audience: str, constraints: str) -> dict:
-    """Agent 1: Gọi Gemini 1.5 Flash để sinh Master Plan (JSON mode)."""
+    """Agent 1: Gọi Groq llama-3.3-70b-versatile để sinh Master Plan (JSON mode)."""
     print(f"\n{'═' * 70}")
     print(f"👑 [AGENT 1 — MASTER PLANNER] Đang lên chiến lược Marketing...")
-    print(f"   API: Google Gemini 1.5 Flash | Mode: JSON")
+    print(f"   API: Groq | Model: llama-3.3-70b-versatile | Mode: JSON")
     print(f"{'═' * 70}")
-
-    model = genai.GenerativeModel(
-        model_name="gemini-2.0-flash",
-        generation_config={
-            "temperature": 0.4,
-            "response_mime_type": "application/json",
-        },
-    )
 
     prompt = MASTER_PLANNER_PROMPT.format(
         industry=industry,
@@ -235,9 +232,17 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
         constraints=constraints or "Không có",
     )
 
-    response = model.generate_content(prompt)
-    raw_text = response.text.strip()
-    # Sanitize markdown ticks if any
+    from groq import Groq
+    client = Groq()
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.4,
+        max_tokens=4096,
+        response_format={"type": "json_object"},
+    )
+    raw_text = response.choices[0].message.content.strip()
+
     if raw_text.startswith("```json"):
         raw_text = raw_text[7:]
     elif raw_text.startswith("```"):
@@ -250,7 +255,7 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
         plan = json.loads(raw_text)
     except Exception as e:
         print(f"🔴 [MASTER PLANNER] JSON Parse Error: {e}")
-        print(f"🔴 [MASTER PLANNER] Raw Output:\n{response.text}")
+        print(f"🔴 [MASTER PLANNER] Raw Output:\n{raw_text}")
         raise e
 
     # Log ra terminal

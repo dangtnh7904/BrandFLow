@@ -146,7 +146,70 @@ Trả về JSON hợp lệ theo schema sau (KHÔNG bọc trong markdown):
       ]
     }}
   ]
+    }}
+  ]
 }}"""
+
+REFINE_PLANNER_PROMPT = """Bạn là Giám đốc Marketing (CMO) cấp cao của hệ thống BrandFlow.
+Bạn đã lập ra một Kế hoạch ban đầu, nhưng CEO/Khách hàng vừa phản hồi yêu cầu thay đổi.
+
+1. KẾ HOẠCH CŨ TRƯỚC ĐÓ:
+```json
+{previous_plan}
+```
+
+2. YÊU CẦU THAY ĐỔI TỪ CEO:
+"{feedback}"
+
+3. NGÂN SÁCH DỰ KIẾN: {budget} VND
+
+NHIỆM VỤ CỦA BẠN:
+- Cắt giảm, gỡ bỏ, hoặc thêm mới các hoạt động (activities) theo ĐÚNG Ý CEO.
+- Sửa lại "cost_vnd", "activity_name" hoặc "moscow_tag" cho phù hợp với nhận xét.
+- Giữ nguyên cấu trúc JSON (phải trả về đúng format cũ, không thêm hay bớt khóa ngoài).
+
+Trả về toàn bộ Kế hoạch sau khi chỉnh sửa thành JSON hợp lệ ngay lập tức (KHÔNG bọc trong markdown):"""
+
+def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
+    """Agent 1 (Refine): Gọi Gemini xử lý Feedback của CEO để sửa Plan cũ."""
+    print(f"\n{'═' * 70}")
+    print(f"👑 [AGENT 1 — REFINER] Đang cập nhật chiến lược theo Feedback...")
+    print(f"   Feedback: {feedback}")
+    print(f"{'═' * 70}")
+
+    model = genai.GenerativeModel(
+        model_name="gemini-2.5-flash",
+        generation_config={
+            "temperature": 0.4,
+            "response_mime_type": "application/json",
+        },
+    )
+
+    prompt = REFINE_PLANNER_PROMPT.format(
+        previous_plan=json.dumps(previous_plan, ensure_ascii=False),
+        feedback=feedback,
+        budget=budget,
+    )
+
+    response = model.generate_content(prompt)
+    raw_text = response.text.strip()
+    if raw_text.startswith("```json"):
+        raw_text = raw_text[7:]
+    elif raw_text.startswith("```"):
+        raw_text = raw_text[3:]
+    if raw_text.endswith("```"):
+        raw_text = raw_text[:-3]
+    raw_text = raw_text.strip()
+    
+    try:
+        plan = json.loads(raw_text)
+    except Exception as e:
+        print(f"🔴 [REFINER] JSON Parse Error: {e}")
+        print(f"🔴 [REFINER] Raw Output:\n{response.text}")
+        plan = previous_plan # Fallback
+        
+    print(f"   ✅ Đã cập nhật xong Kế hoạch mới!")
+    return plan
 
 
 def run_master_planner(goal: str, industry: str, budget: int, target_audience: str, constraints: str) -> dict:
@@ -157,7 +220,7 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
     print(f"{'═' * 70}")
 
     model = genai.GenerativeModel(
-        model_name="gemini-2.5-flash",
+        model_name="gemini-2.0-flash",
         generation_config={
             "temperature": 0.4,
             "response_mime_type": "application/json",
@@ -174,6 +237,7 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
 
     response = model.generate_content(prompt)
     raw_text = response.text.strip()
+    # Sanitize markdown ticks if any
     if raw_text.startswith("```json"):
         raw_text = raw_text[7:]
     elif raw_text.startswith("```"):
@@ -181,7 +245,7 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
     if raw_text.endswith("```"):
         raw_text = raw_text[:-3]
     raw_text = raw_text.strip()
-    
+
     try:
         plan = json.loads(raw_text)
     except Exception as e:

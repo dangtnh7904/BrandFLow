@@ -9,3 +9,8 @@ class InterviewRequest(BaseModel):
 
 class RawInputRequest(BaseModel):
     raw_text: str = Field(..., description="Ngôn ngữ tự nhiên từ người dùng")
+
+class RefineRequest(BaseModel):
+    previous_plan: dict = Field(..., description="Kế hoạch cũ dạng JSON")
+    budget: int = Field(..., description="Ngân sách (để kiểm duyệt lại)")
+    feedback: str = Field(..., description="Yêu cầu thay đổi từ CEO")

@@ -174,23 +174,64 @@ export default function App() {
     });
   };
 
-  const handleImproveFeedback = (userFeedback) => {
+  const handleImproveFeedback = async (userFeedback) => {
+    if (!userFeedback) return;
+    
     setChartHistory(prev => [...prev, { v: iteration, data: getBudgetData(campaignData) }]);
     setFeedback(userFeedback);
     setIteration(prev => prev + 1);
     setCurrentView('simulation');
     
-    if (userFeedback) {
-      setTimeout(() => {
-        setCampaignData(prev => {
-          const newBreakdown = prev.activity_and_financial_breakdown.map(phase => ({
-            ...phase,
-            activities: phase.activities.filter(a => a.moscow_tag !== 'COULD_HAVE')
-          }));
-          return { ...prev, activity_and_financial_breakdown: newBreakdown };
-        });
-      }, 500);
+    setIsGenerating(true);
+    // Keep a copy to send to API, but clear local state for loading simulation
+    const currentPlan = campaignData;
+    setCampaignData(null);
+    setAgentLogs(null);
+    setGenerateError('');
+
+    try {
+      const payload = {
+         previous_plan: currentPlan,
+         budget: currentPlan.executive_summary?.total_budget_vnd || 20000000,
+         feedback: userFeedback
+      };
+      const res = await fetch("http://localhost:8000/api/v1/planning/refine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const result = await res.json();
+      
+      if (result.status === "success" && result.plan) {
+         let completePlan = result.plan;
+         let idCounter = 1;
+         if (completePlan.activity_and_financial_breakdown) {
+             completePlan.activity_and_financial_breakdown.forEach(phase => {
+                 phase.activities.forEach(act => { act.id = idCounter++; });
+             });
+         }
+         setCampaignData(completePlan);
+         setAgentLogs(result.agent_logs || []);
+      } else {
+         throw new Error(result.detail || result.message || "Lỗi cập nhật kế hoạch từ Agent.");
+      }
+    } catch(err) {
+      setGenerateError(err.message || "Đã xảy ra lỗi kết nối Backend khi thực hiện Refine");
+    } finally {
+      setIsGenerating(false);
     }
+  };
+
+  const handleUpdateActivity = (id, newFieldValues) => {
+    setCampaignData(prev => {
+      const newBreakdown = prev.activity_and_financial_breakdown.map(phase => ({
+        ...phase,
+        activities: phase.activities.map(a => 
+          a.id === id ? { ...a, ...newFieldValues } : a
+        )
+      }));
+      return { ...prev, activity_and_financial_breakdown: newBreakdown };
+    });
   };
 
   const handleNavigate = (view) => {
@@ -231,6 +272,7 @@ export default function App() {
               onRestart={() => setCurrentView('dashboard')}
               onRemoveActivity={handleRemoveActivity}
               onImproveFeedback={handleImproveFeedback}
+              onUpdateActivity={handleUpdateActivity}
             />
           )}
 

@@ -10,10 +10,10 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import HTMLResponse
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import PresetRequest, InterviewRequest, RawInputRequest
+from schemas import PresetRequest, InterviewRequest, RawInputRequest, RefineRequest
 from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
 from intake_agent import analyze_raw_input, check_required_info, extract_document_summary
-from workflow_graph import run_pipeline
+from workflow_graph import run_pipeline, run_refinement_pipeline
 from document_processor import DocumentIngestor
 from pydantic import BaseModel
 import os
@@ -427,6 +427,35 @@ async def process_intake(request: RawInputRequest):
         raise HTTPException(status_code=500, detail={
             "status": "error",
             "message": "Hệ thống AI đang quá tải hoặc gặp sự cố, vui lòng thử lại sau giây lát.",
+            "debug_info": str(e)
+        })
+
+@app.post("/api/v1/planning/refine")
+async def process_refine(request: RefineRequest):
+    """
+    Endpoint mới: Nhận phản hồi từ user và plan cũ, chạy lại refinement pipeline.
+    """
+    try:
+        print(f"\n[REFINE API] Receive feedback: {request.feedback}")
+        
+        result = run_refinement_pipeline(
+            previous_plan=request.previous_plan,
+            feedback=request.feedback,
+            budget=request.budget
+        )
+        
+        return {
+            "status": "success",
+            "is_approved": True,
+            "actual_total_cost": result.get("actual_total_cost", 0),
+            "plan": result["final_plan"],
+            "agent_logs": result["agent_logs"]
+        }
+    except Exception as e:
+        print(f"🔴 [REFINE API] Lỗi xử lý feedback: {e}")
+        raise HTTPException(status_code=500, detail={
+            "status": "error",
+            "message": "AI gặp sự cố khi đang phân tích lại kế hoạch. Vui lòng thử lại.",
             "debug_info": str(e)
         })
 

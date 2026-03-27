@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { 
-  Briefcase, Target, DollarSign, Sparkles, Users, AlertTriangle, XCircle, Map, ShieldAlert, BarChart3, History, PenTool, Send, ArrowLeft
+  Briefcase, Target, DollarSign, Sparkles, Users, AlertTriangle, XCircle, Map, ShieldAlert, BarChart3, History, PenTool, Send, ArrowLeft, Edit2, Check, Bot
 } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
@@ -12,9 +12,25 @@ export const CAT_CONFIG = {
 
 export default function ScreenDashboard({ 
   campaignData, budgetData, chartHistory, iteration, 
-  onRestart, onRemoveActivity, onImproveFeedback 
+  onRestart, onRemoveActivity, onImproveFeedback, onUpdateActivity
 }) {
   const feedbackInputRef = useRef(null);
+  const [editingActId, setEditingActId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editCost, setEditCost] = useState(0);
+
+  const startEdit = (act) => {
+    setEditingActId(act.id);
+    setEditName(act.activity_name);
+    setEditCost(act.cost_vnd);
+  };
+
+  const saveEdit = () => {
+    if (editingActId && onUpdateActivity) {
+      onUpdateActivity(editingActId, { activity_name: editName, cost_vnd: parseInt(editCost) || 0 });
+      setEditingActId(null);
+    }
+  };
 
   const submitFeedback = () => {
     if(feedbackInputRef.current) {
@@ -102,6 +118,29 @@ export default function ScreenDashboard({
             </div>
           </div>
 
+          {/* Feedback Input Section (CEO Directives) */}
+          <div className="bg-gradient-to-r from-[#0075FF]/20 to-[#111C44] rounded-[20px] border border-[#0075FF]/30 p-6 flex flex-col md:flex-row items-center shadow-[0_0_30px_rgba(0,117,255,0.15)] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#0075FF] blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            <div className="bg-[#0B1437] p-4 flex items-center justify-center rounded-2xl text-[#0075FF] mr-0 md:mr-6 mb-4 md:mb-0 shadow-lg border border-[#0075FF]/20 h-16 w-16 shrink-0 aspect-square">
+              <Bot size={32}/>
+            </div>
+            <div className="flex-1 w-full relative z-10">
+              <h4 className="font-black text-white text-lg mb-1 tracking-wide uppercase">CEO Directives <span className="text-[#0075FF] text-[10px] ml-2 bg-[#0075FF]/10 px-2 py-0.5 rounded border border-[#0075FF]/30 tracking-widest relative -top-0.5">AI RE-PLAN</span></h4>
+              <p className="text-sm text-[#A0AEC0] mb-3">Chưa hài lòng với bảng kế hoạch do AI đề xuất? Bạn có thể yêu cầu AI tái cơ cấu hoặc tự tay điều chỉnh bên dưới.</p>
+              <div className="flex w-full shadow-lg">
+                <input 
+                  type="text"
+                  ref={feedbackInputRef}
+                  placeholder="Nhập mệnh lệnh... VD: Cắt giảm 10 triệu ở nhóm TikTok, tập trung vào chi phí FB Ads cho giới trẻ."
+                  className="flex-1 bg-[#0B1437] border border-[#1B254B] text-white px-5 py-3 md:py-4 rounded-l-xl text-sm outline-none focus:border-[#0075FF] transition-colors placeholder-[#A0AEC0]"
+                />
+                <button onClick={submitFeedback} className="bg-[#0075FF] hover:bg-[#0055c4] text-white font-bold px-6 md:px-8 py-3 md:py-4 rounded-r-xl transition-all flex items-center whitespace-nowrap shadow-[0_0_15px_rgba(0,117,255,0.4)]">
+                  Gửi Lệnh <Send size={18} className="ml-2 hidden sm:block"/>
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Target Audience */}
           <div className="bg-[#111C44] rounded-[20px] shadow-[0_4px_24px_rgba(0,0,0,0.1)] overflow-hidden">
             <div className="bg-[#0B1437] px-6 py-4 border-b border-[#1B254B] flex items-center">
@@ -170,29 +209,53 @@ export default function ScreenDashboard({
                       <div className="space-y-3">
                         {phaseGroup.acts.map(act => (
                           <div key={act.id} className="group flex items-center justify-between p-4 border border-[#1B254B] rounded-xl hover:border-[#0075FF] transition-all bg-[#0B1437] relative ml-2">
-                            <div className="flex-1 w-full pr-12">
-                              <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                                <h4 className="font-bold text-white text-[15px]">{act.activity_name}</h4>
-                                <span className="text-sm font-black text-white">{act.cost_vnd.toLocaleString()} đ</span>
-                              </div>
-                              <div className="flex items-center text-xs flex-wrap gap-y-2">
-                                <span className={`${CAT_CONFIG[act.moscow_tag].bg} ${CAT_CONFIG[act.moscow_tag].text} px-2 py-0.5 rounded font-black tracking-wider border border-${CAT_CONFIG[act.moscow_tag].text}/20`}>
-                                  {CAT_CONFIG[act.moscow_tag].label}
-                               </span>
-                                <span className="mx-2 text-[#1B254B]">•</span>
-                                <span className="text-[#A0AEC0] font-medium block leading-relaxed max-w-2xl">{act.description}</span>
-                              </div>
-                              <div className="mt-3 text-[#0075FF] font-medium text-xs flex items-center bg-[#0075FF]/10 inline-flex px-2 py-1 rounded">
-                                <Target size={12} className="mr-1.5"/> KPI: {act.kpi_commitment}
-                              </div>
-                            </div>
-                            <button 
-                              onClick={() => onRemoveActivity(act.id)}
-                              className="absolute right-4 bg-rose-500/20 text-rose-500 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-500 hover:text-white border border-rose-500/30"
-                              title="Gạch Bỏ Hạng Mục Này"
-                            >
-                              <XCircle size={18} />
-                            </button>
+                            {editingActId === act.id ? (
+                                <div className="flex-1 w-full pr-12 space-y-4 pt-1">
+                                   <div>
+                                      <label className="text-[10px] text-[#A0AEC0] uppercase font-bold mb-1.5 block">Tên Hoạt Động (Activity Name)</label>
+                                      <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full bg-[#111C44] border border-[#0075FF]/50 focus:border-[#0075FF] outline-none text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-inner" />
+                                   </div>
+                                   <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+                                      <div className="flex-1">
+                                        <label className="text-[10px] text-[#A0AEC0] uppercase font-bold mb-1.5 block">Ngân sách (VND)</label>
+                                        <div className="relative">
+                                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A0AEC0] font-bold">₫</span>
+                                           <input type="number" value={editCost} onChange={e => setEditCost(e.target.value)} className="w-full bg-[#111C44] border border-[#0075FF]/50 focus:border-[#0075FF] outline-none text-emerald-400 px-4 pl-8 py-2.5 rounded-lg text-sm font-black transition-colors shadow-inner" />
+                                        </div>
+                                      </div>
+                                      <button onClick={saveEdit} className="bg-emerald-500 hover:bg-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] text-white px-6 py-2.5 rounded-lg flex items-center justify-center text-[13px] font-black uppercase tracking-wider transition-all h-10 w-full sm:w-auto"><Check size={18} className="mr-2"/> Lưu Trực Tiếp</button>
+                                   </div>
+                                </div>
+                            ) : (
+                                <>
+                                  <div className="flex-1 w-full pr-16">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                                      <h4 className="font-bold text-white text-[15px] flex items-center">
+                                        {act.activity_name}
+                                        <button onClick={() => startEdit(act)} className="ml-3 p-1.5 opacity-0 group-hover:opacity-100 bg-[#111C44] text-[#0075FF] rounded-md hover:bg-[#0075FF] hover:text-white transition-all shadow border border-[#0075FF]/30 tooltip-trigger"><Edit2 size={13}/></button>
+                                      </h4>
+                                      <span className="text-sm font-black text-white bg-[#111C44] px-3 py-1 rounded-lg border border-[#1B254B]">{act.cost_vnd.toLocaleString()} đ</span>
+                                    </div>
+                                    <div className="flex items-center text-xs flex-wrap gap-y-2 mt-2">
+                                      <span className={`${CAT_CONFIG[act.moscow_tag].bg} ${CAT_CONFIG[act.moscow_tag].text} px-2 py-0.5 rounded font-black tracking-wider border border-${CAT_CONFIG[act.moscow_tag].text}/20`}>
+                                        {CAT_CONFIG[act.moscow_tag].label}
+                                      </span>
+                                      <span className="mx-2 text-[#1B254B]">•</span>
+                                      <span className="text-[#A0AEC0] font-medium block leading-relaxed max-w-2xl">{act.description}</span>
+                                    </div>
+                                    <div className="mt-3 text-[#0075FF] font-medium text-xs flex items-center bg-[#0075FF]/10 inline-flex px-2 py-1 rounded border border-[#0075FF]/20">
+                                      <Target size={12} className="mr-1.5"/> KPI: {act.kpi_commitment}
+                                    </div>
+                                  </div>
+                                  <button 
+                                    onClick={() => onRemoveActivity(act.id)}
+                                    className="absolute right-4 top-4 bg-rose-500/10 text-rose-500 p-2.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500 hover:text-white border border-rose-500/30 hover:shadow-[0_0_15px_rgba(244,63,94,0.4)]"
+                                    title="Chỉ thị CFO: Cắt bỏ hạng mục"
+                                  >
+                                    <XCircle size={20} />
+                                  </button>
+                                </>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -203,24 +266,7 @@ export default function ScreenDashboard({
             </div>
           </div>
 
-           {/* Feedback Input Section */}
-           <div className="bg-[#0B1437] rounded-[20px] border border-[#1B254B] p-6 flex items-start shadow-inner">
-            <div className="bg-[#0075FF] p-3 rounded-xl text-white mr-4 shadow-sm"><PenTool size={20}/></div>
-            <div className="flex-1 w-full">
-              <h4 className="font-bold text-white mb-2">Không hài lòng? Viết Feedback để AI lên lại Plan</h4>
-              <div className="flex">
-                <input 
-                  type="text"
-                  ref={feedbackInputRef}
-                  placeholder="Nhập yêu cầu. VD: Nhấn mạnh vào Workshop trải nghiệm trực tiếp..."
-                  className="flex-1 bg-[#111C44] border border-[#1B254B] text-white p-3 rounded-l-xl text-sm outline-none focus:ring-2 focus:ring-[#0075FF] shadow-sm placeholder-[#A0AEC0]"
-                />
-                <button onClick={submitFeedback} className="bg-[#0075FF] hover:bg-[#0055c4] text-white font-bold px-6 py-3 rounded-r-xl transition-colors flex items-center shadow-sm whitespace-nowrap">
-                  Gửi Yêu Cầu <Send size={16} className="ml-2"/>
-                </button>
-              </div>
-            </div>
-          </div>
+
 
         </div>
 

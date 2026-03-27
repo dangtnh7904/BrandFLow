@@ -27,7 +27,7 @@ import docx
 from fastapi import UploadFile
 
 # ---- LangChain imports ----
-from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -39,9 +39,9 @@ from langchain_core.documents import Document
 
 CHROMA_PERSIST_DIR = "./chroma_db"
 
-def get_embeddings() -> OllamaEmbeddings:
-    """Khởi tạo Embedding model Local (nomic-embed-text via Ollama)."""
-    return OllamaEmbeddings(model="nomic-embed-text")
+def get_embeddings() -> GoogleGenerativeAIEmbeddings:
+    """Khởi tạo Embedding model (Gemini)."""
+    return GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
 
 def get_vectorstore() -> Chroma:
@@ -102,7 +102,7 @@ def extract_and_save_rule(human_feedback: str, rejected_plan: str) -> str:
         rule_summary (str) đã lưu thành công, hoặc chuỗi lỗi.
     """
     try:
-        llm = ChatOllama(model="llama3.2", format="json", temperature=0.0)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.0)
         chain = (
             learner_prompt.partial(
                 format_instructions=learner_parser.get_format_instructions()
@@ -216,7 +216,7 @@ def analyze_and_extract_dna(document_content: str) -> dict:
     safe_content = document_content[:15000]
 
     try:
-        llm = ChatOllama(model="llama3.2", format="json", temperature=0.1)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1)
         chain = (
             dna_prompt.partial(
                 format_instructions=dna_parser.get_format_instructions()
@@ -305,7 +305,7 @@ def generate_guideline_from_qa(qa_pairs: dict) -> dict:
     ])
     
     try:
-        llm = ChatOllama(model="llama3.2", temperature=0.2)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
         chain = prompt | llm
         
         response = chain.invoke({"qa_text": qa_text})

@@ -157,7 +157,7 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
     print(f"{'═' * 70}")
 
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
+        model_name="gemini-2.5-flash",
         generation_config={
             "temperature": 0.4,
             "response_mime_type": "application/json",
@@ -173,7 +173,21 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
     )
 
     response = model.generate_content(prompt)
-    plan = json.loads(response.text)
+    raw_text = response.text.strip()
+    if raw_text.startswith("```json"):
+        raw_text = raw_text[7:]
+    elif raw_text.startswith("```"):
+        raw_text = raw_text[3:]
+    if raw_text.endswith("```"):
+        raw_text = raw_text[:-3]
+    raw_text = raw_text.strip()
+    
+    try:
+        plan = json.loads(raw_text)
+    except Exception as e:
+        print(f"🔴 [MASTER PLANNER] JSON Parse Error: {e}")
+        print(f"🔴 [MASTER PLANNER] Raw Output:\n{response.text}")
+        raise e
 
     # Log ra terminal
     campaign_name = plan.get("executive_summary", {}).get("campaign_name", "N/A")

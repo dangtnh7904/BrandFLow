@@ -48,6 +48,14 @@ export default function ScreenUpload({ onGenerate }) {
     setSelectedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  const handleGenerateClick = () => {
+    if (selectedFiles.length === 0 || campaignName.trim() === "") {
+      alert("Vui lòng tải lên tài liệu và nhập tên chiến dịch trước khi giao việc cho Agent.");
+      return;
+    }
+    onGenerate(selectedFiles, urlInput, campaignName, userRequest);
+  };
+
   return (
     <div className="h-full bg-transparent flex items-center justify-center p-6 font-sans">
       <div className="max-w-4xl w-full bg-[#111C44] rounded-[20px] shadow-[0_4px_24px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row">
@@ -190,7 +198,7 @@ export default function ScreenUpload({ onGenerate }) {
           </div>
 
           <button 
-            onClick={() => onGenerate(selectedFiles, urlInput, campaignName, userRequest)}
+            onClick={handleGenerateClick}
             className="w-full py-4 bg-[#0075FF] hover:bg-[#0055c4] text-white rounded-xl font-bold text-lg flex items-center justify-center transition-all shadow-[0_4px_15px_rgba(0,117,255,0.4)]"
           >
             Giao Việc Cho Agents <ArrowRight className="ml-2" />

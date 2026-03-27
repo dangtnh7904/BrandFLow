@@ -14,7 +14,7 @@ def get_gemini_model():
     }
     
     return genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
+        model_name="gemini-2.5-flash",
         generation_config=generation_config,
     )
 
@@ -56,46 +56,17 @@ Hãy phân tích đoạn văn bản người dùng cung cấp và DỪNG LẠI S
 
 def check_required_info(parsed_data: dict) -> dict:
     """
-    Kiểm tra các trường thiết yếu. Nếu thiếu trả về trạng thái cần làm rõ.
-    Bao gồm: kiểm tra ngân sách null, ngân sách phi lý, ngành hàng chung, và đầu vào rác.
+    Tự động chuẩn hóa các trường thiết yếu để hỗ trợ Demo mượt mà mà không bị chặn lại.
     """
-    budget = parsed_data.get("budget")
-    industry = parsed_data.get("industry", "General")
-    goal = parsed_data.get("goal", "")
-    
-    # --- Bẫy 1: Văn bản rác / quá ngắn / không xác định được ý định ---
-    general_variations = ["general", "null", "none", "", "không rõ"]
-    goal_is_empty = not goal or len(str(goal).strip()) < 5
-    industry_is_unknown = str(industry).strip().lower() in general_variations
-    
-    if goal_is_empty and industry_is_unknown:
-        print("⚠️ [INTAKE] Phát hiện đầu vào rác hoặc quá ngắn, yêu cầu làm rõ.")
-        return {
-            "status": "clarification_needed", 
-            "message": "Dạ em chưa hiểu rõ ý định của mình lắm. Anh/chị có thể mô tả rõ hơn về sản phẩm và mục tiêu chiến dịch không ạ?"
-        }
-    
-    # --- Bẫy 2: Ngân sách chưa cung cấp ---
-    if budget is None:
-        return {
-            "status": "clarification_needed", 
-            "message": "Dạ, để BrandFlow phân bổ chi phí và lên kế hoạch tối ưu nhất, anh/chị có thể bật mí mức ngân sách dự kiến cho chiến dịch này khoảng bao nhiêu không ạ?"
-        }
-    
-    # --- Bẫy 3: Ngân sách phi lý (dưới 1 triệu VNĐ) ---
-    if isinstance(budget, (int, float)) and budget < 1000000:
-        print(f"⚠️ [INTAKE] Ngân sách phi lý: {budget} VND (< 1,000,000). Yêu cầu điều chỉnh.")
-        return {
-            "status": "clarification_needed", 
-            "message": "Dạ, hệ thống BrandFlow hiện tại tối ưu nhất cho các chiến dịch có ngân sách từ 1.000.000 VNĐ trở lên. Anh/chị có muốn điều chỉnh lại mức ngân sách không ạ?"
-        }
-    
-    # --- Bẫy 4: Ngành hàng chưa xác định ---
-    if industry_is_unknown:
-        return {
-            "status": "clarification_needed", 
-            "message": "Dạ, anh/chị đang kinh doanh sản phẩm/dịch vụ trong ngành hàng nào ạ? (Ví dụ: F&B, Mỹ phẩm, Công nghệ...)"
-        }
+    if parsed_data.get("budget") is None or parsed_data.get("budget") < 1000000:
+        parsed_data["budget"] = 20000000  # Default 20 triệu cho Demo
+        
+    general_variations = ["general", "null", "none", "", "không rõ", "chưa rõ"]
+    if str(parsed_data.get("industry", "")).strip().lower() in general_variations:
+        parsed_data["industry"] = "F&B" # Default F&B cho Demo
+        
+    if not parsed_data.get("goal"):
+        parsed_data["goal"] = "Chạy một chiến dịch hiệu quả để quảng bá thương hiệu"
         
     return {
         "status": "ready",

@@ -1,5 +1,6 @@
 import sys
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
+
     sys.stdout.reconfigure(encoding='utf-8')
 
 from dotenv import load_dotenv
@@ -10,10 +11,10 @@ from fastapi.responses import HTMLResponse
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import PresetRequest, InterviewRequest, RawInputRequest
-# from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
+from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
 from intake_agent import analyze_raw_input, check_required_info, extract_document_summary
 from workflow_graph import run_pipeline
-# from document_processor import DocumentIngestor
+from document_processor import DocumentIngestor
 from pydantic import BaseModel
 import os
 import uuid

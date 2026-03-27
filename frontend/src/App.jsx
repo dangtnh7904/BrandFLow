@@ -109,12 +109,14 @@ export default function App() {
   const [chartHistory, setChartHistory] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateError, setGenerateError] = useState('');
+  const [agentLogs, setAgentLogs] = useState(null);
 
   const handleGenerate = async (files, url, name, requestText) => {
     setCurrentView('simulation');
     setIteration(1);
     setFeedback('');
     setCampaignData(null);
+    setAgentLogs(null);
     setChartHistory([]);
     setIsGenerating(true);
     setGenerateError('');
@@ -151,6 +153,7 @@ export default function App() {
              });
          }
          setCampaignData(completePlan);
+         setAgentLogs(result.agent_logs || []);
       } else {
          throw new Error(result.detail || result.message || "Lỗi tạo kế hoạch từ Agent.");
       }
@@ -214,6 +217,7 @@ export default function App() {
               feedback={feedback} 
               isReady={!!campaignData}
               error={generateError}
+              agentLogs={agentLogs}
               onComplete={() => setCurrentView('result')} 
             />
           )}

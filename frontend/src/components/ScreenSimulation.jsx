@@ -1,189 +1,210 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, ShieldAlert, Bot, Users, ArrowRight } from 'lucide-react';
+import { MessageSquare, ShieldAlert, Bot, ArrowRight, Sparkles, Target, BarChart3, Cpu, Zap } from 'lucide-react';
+
+const AGENT_STYLES = {
+  SYSTEM: { 
+    name: 'HỆ THỐNG', icon: Cpu, 
+    bg: 'bg-[#0075FF]', ring: 'ring-[#0075FF]/30', 
+    bubbleBg: 'bg-gradient-to-r from-[#0075FF]/20 to-[#111C44] border border-[#0075FF]/30',
+    textColor: 'text-[#88b6ff]', labelColor: 'text-[#0075FF]',
+    align: 'justify-center',
+  },
+  CMO: { 
+    name: 'CMO', icon: Sparkles, 
+    bg: 'bg-emerald-500', ring: 'ring-emerald-500/30', 
+    bubbleBg: 'bg-[#1B254B] border border-emerald-500/20',
+    textColor: 'text-white', labelColor: 'text-emerald-400',
+    align: 'justify-start',
+  },
+  CFO: { 
+    name: 'CFO', icon: ShieldAlert, 
+    bg: 'bg-amber-500', ring: 'ring-amber-500/30', 
+    bubbleBg: 'bg-[#0B1437] border border-amber-500/20',
+    textColor: 'text-white', labelColor: 'text-amber-400',
+    align: 'justify-end',
+  },
+  PERSONA: { 
+    name: 'PERSONA', icon: Target, 
+    bg: 'bg-purple-500', ring: 'ring-purple-500/30', 
+    bubbleBg: 'bg-[#1B254B] border border-purple-500/20',
+    textColor: 'text-white', labelColor: 'text-purple-400',
+    align: 'justify-start',
+  },
+};
+
+function TypingIndicator({ agent }) {
+  const style = AGENT_STYLES[agent] || AGENT_STYLES.SYSTEM;
+  return (
+    <div className={`flex w-full ${style.align} animate-fadeIn`}>
+      <div className="flex items-center gap-3">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${style.bg} shadow-lg`}>
+          <style.icon size={14} className="text-white" />
+        </div>
+        <div className="bg-[#1B254B] rounded-2xl px-5 py-3 flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-[#A0AEC0] animate-bounce" style={{ animationDelay: '0ms' }}></span>
+          <span className="w-2 h-2 rounded-full bg-[#A0AEC0] animate-bounce" style={{ animationDelay: '150ms' }}></span>
+          <span className="w-2 h-2 rounded-full bg-[#A0AEC0] animate-bounce" style={{ animationDelay: '300ms' }}></span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ChatBubble({ msg, idx }) {
+  const style = AGENT_STYLES[msg.sender] || AGENT_STYLES.SYSTEM;
+  const isSystem = msg.sender === 'SYSTEM';
+  const isCFO = msg.sender === 'CFO';
+
+  return (
+    <div className={`flex w-full ${style.align} animate-slideUp`} style={{ animationDelay: `${idx * 80}ms` }}>
+      <div className={`max-w-[85%] flex ${isCFO ? 'flex-row-reverse' : 'flex-row'} items-start gap-3`}>
+        <div className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center ${style.bg} shadow-lg shrink-0 ${!isSystem ? 'ring-4 ' + style.ring : ''}`}>
+          <style.icon size={16} className="text-white" />
+        </div>
+        <div className={`flex flex-col ${isCFO ? 'items-end' : ''}`}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className={`text-[11px] font-black uppercase tracking-widest ${style.labelColor}`}>{style.name}</span>
+            {msg.role && msg.role !== style.name && <span className="text-[10px] text-[#A0AEC0] font-medium">• {msg.role}</span>}
+          </div>
+          <div className={`px-5 py-3.5 text-sm leading-relaxed rounded-2xl ${style.bubbleBg} ${style.textColor} ${isSystem ? 'rounded-xl italic text-center' : isCFO ? 'rounded-tr-sm' : 'rounded-tl-sm'} shadow-lg`}>
+            {msg.text}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PipelineStep({ label, icon: Icon, isActive, isDone, step }) {
+  return (
+    <div className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-500 ${isActive ? 'bg-[#0075FF]/20 border border-[#0075FF]/50 shadow-[0_0_20px_rgba(0,117,255,0.2)]' : isDone ? 'bg-emerald-500/10 border border-emerald-500/30' : 'bg-[#0B1437] border border-[#1B254B] opacity-40'}`}>
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black transition-all duration-500 ${isActive ? 'bg-[#0075FF] text-white' : isDone ? 'bg-emerald-500 text-white' : 'bg-[#1B254B] text-[#A0AEC0]'}`}>
+        {isDone ? '✓' : step}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className={`text-[11px] font-black uppercase tracking-wider truncate ${isActive ? 'text-[#0075FF]' : isDone ? 'text-emerald-400' : 'text-[#A0AEC0]'}`}>{label}</div>
+      </div>
+      <Icon size={14} className={`${isActive ? 'text-[#0075FF] animate-spin' : isDone ? 'text-emerald-400' : 'text-[#1B254B]'}`} />
+    </div>
+  );
+}
 
 export default function ScreenSimulation({ iteration, feedback, isReady, error, onComplete, agentLogs }) {
   const [progress, setProgress] = useState(0);
   const [messages, setMessages] = useState([]);
   const [activeAgent, setActiveAgent] = useState('SYSTEM');
   const [showDoneBtn, setShowDoneBtn] = useState(false);
+  const [typingAgent, setTypingAgent] = useState(null);
+  const [currentStep, setCurrentStep] = useState(0);
 
-  // 1. Quản lý Progress Bar (Cố tình kẹt ở 85% nếu chưa load xong API)
   useEffect(() => {
     if (progress >= 100) return;
-    
     const timer = setInterval(() => {
       setProgress(p => {
         if (!isReady && p >= 85) return 85; 
         if (isReady && p >= 100) return 100;
-        return p + (isReady ? 5 : 1);
+        return p + (isReady ? 5 : 0.8);
       });
     }, 150);
     return () => clearInterval(timer);
   }, [isReady, progress]);
 
-  // 2. Chat Sequence khi đợi API (isReady = false)
   useEffect(() => {
-    if (isReady) return; // Nếu API xong thì nhường chỗ cho effect bên dưới
-    
-    // Xóa state cũ nếu chạy lại
+    if (isReady) return;
     setMessages([]);
     setProgress(0);
     setShowDoneBtn(false);
-
+    setCurrentStep(0);
     const loadingMsgs = iteration === 1 ? [
-      { sender: 'SYSTEM', role: 'Hệ thống', text: 'Đang thiết lập không gian Neural Synergy Chamber...', delay: 500 },
-      { sender: 'SYSTEM', role: 'Hệ thống', text: 'Đang trích xuất Brand DNA & Đối chiếu dữ liệu tệp khách hàng từ ChromaDB...', delay: 2000 },
-      { sender: 'CMO', role: 'Giám đốc Marketing', text: 'Đang gọi các mô hình AI rà soát nền tảng và thiết kế ý tưởng chủ đạo. Chờ tôi khoảng 5-10 giây...', delay: 4000 },
+      { sender: 'SYSTEM', role: 'Neural Control', text: '🧠 Khởi tạo Neural Synergy Chamber... Thiết lập đa nhân.', delay: 400, step: 1 },
+      { sender: 'SYSTEM', role: 'ChromaDB', text: '📡 Trích xuất Brand DNA & Đối soát dữ liệu RAG...', delay: 1800, step: 1 },
+      { sender: 'CMO', role: 'Marketing Strategy', text: '👋 CMO đã online. Đang phác thảo chiến lược sơ bộ...', delay: 3500, step: 2 },
     ] : [
-      { sender: 'SYSTEM', role: 'Hệ thống', text: `Nhận được yêu cầu điều chỉnh từ người dùng: "${feedback}". Đang chạy qua hệ thống kiểm toán...`, delay: 500 },
+      { sender: 'SYSTEM', role: 'Neural Control', text: `📋 Nhận Feedback: "${feedback}". Đang tái cấu trúc...`, delay: 500, step: 2 },
+      { sender: 'CMO', role: 'Marketing Strategy', text: '🔄 Đang cập nhật roadmap theo yêu cầu của Sếp...', delay: 2000, step: 2 },
     ];
-
-    let timers = loadingMsgs.map(msg => 
-      setTimeout(() => {
-        setMessages(prev => [...prev, msg]);
-        setActiveAgent(msg.sender);
-      }, msg.delay)
-    );
-
+    let timers = [];
+    loadingMsgs.forEach(msg => {
+      timers.push(setTimeout(() => { setTypingAgent(msg.sender); setActiveAgent(msg.sender); setCurrentStep(msg.step); }, msg.delay - 600));
+      timers.push(setTimeout(() => { setTypingAgent(null); setMessages(prev => [...prev, msg]); setActiveAgent(msg.sender); }, msg.delay));
+    });
     return () => timers.forEach(clearTimeout);
   }, [isReady, iteration, feedback]);
 
-  // 3. Chat Sequence thật sau khi API trả về (agentLogs)
   useEffect(() => {
     if (!isReady) return;
-    if (error) {
-       setShowDoneBtn(true);
-       return;
-    }
-
+    if (error) { setShowDoneBtn(true); setCurrentStep(5); return; }
     let timers = [];
-    let delayOffset = 1000;
-
+    let delayOffset = 800;
     if (agentLogs && agentLogs.length > 0) {
-        agentLogs.forEach((log) => {
-            // Từng log của AI nói sẽ xuất hiện cách nhau một khoảng thời gian
-            const msg = {
-                sender: log.agent === 'PERSONA' ? 'SYSTEM' : log.agent,
-                role: log.role || 'Chuyên gia',
-                text: log.message,
-            };
-            const t = setTimeout(() => {
-                setMessages(prev => [...prev, msg]);
-                setActiveAgent(msg.sender);
-            }, delayOffset);
-            timers.push(t);
-            delayOffset += 2500;
-        });
+      agentLogs.forEach((log) => {
+        const sender = log.agent === 'PERSONA' ? 'PERSONA' : log.agent;
+        timers.push(setTimeout(() => { 
+          setTypingAgent(sender); setActiveAgent(sender);
+          if (sender === 'CMO') setCurrentStep(2);
+          else if (sender === 'SYSTEM') setCurrentStep(3);
+          else if (sender === 'CFO') setCurrentStep(4);
+          else if (sender === 'PERSONA') setCurrentStep(4);
+        }, delayOffset));
+        timers.push(setTimeout(() => { setTypingAgent(null); setMessages(prev => [...prev, { sender, role: log.role || 'Expert', text: log.message }]); setActiveAgent(sender); }, delayOffset + 1200));
+        delayOffset += 2800;
+      });
     }
-
-    // Nút "MỞ BẢN KẾ HOẠCH" sẽ hiện sau khi thảo luận xong
-    const finishT = setTimeout(() => {
-        setProgress(100);
-        setActiveAgent('SYSTEM');
-        setMessages(prev => [...prev, { sender: 'SYSTEM', role: 'Hệ thống', text: 'Tất cả lõi đã đồng thuận và kiểm duyệt thành công. Bản kế hoạch đã sẵn sàng phát hành.' }]);
-        setShowDoneBtn(true);
-    }, delayOffset + 1000);
-    timers.push(finishT);
-
+    timers.push(setTimeout(() => { setTypingAgent(null); setProgress(100); setCurrentStep(5); setActiveAgent('SYSTEM'); setMessages(prev => [...prev, { sender: 'SYSTEM', role: 'Hệ thống', text: '✅ Các Agent đã thông qua. Kế hoạch đã sẵn sàng!' }]); setShowDoneBtn(true); }, delayOffset + 1000));
     return () => timers.forEach(clearTimeout);
   }, [isReady, agentLogs, error]);
 
   const endOfMessagesRef = useRef(null);
-  useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  useEffect(() => { endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, typingAgent]);
+
+  const pipelineSteps = [
+    { label: 'KHỞI TẠO NEURAL', icon: Cpu },
+    { label: 'MASTER PLANNER (AI)', icon: Sparkles },
+    { label: 'KIỂM TOÁN TÀI CHÍNH', icon: BarChart3 },
+    { label: 'PERSONA VALIDATION', icon: Target },
+    { label: 'XUẤT BẢN', icon: Zap },
+  ];
 
   return (
-    <div className="h-full bg-transparent flex flex-col md:flex-row items-center justify-center p-6 gap-6 font-sans">
-      
-      {/* Left: Animation Triangle */}
-      <div className="w-full md:w-1/3 flex flex-col items-center justify-center">
-        <div className="text-center mb-8">
-          <h3 className="text-white font-bold text-xl mb-2">Neural Synergy Chamber</h3>
-          <p className="text-[#A0AEC0] text-sm">Các lõi đa luồng đang thương thuyết</p>
-        </div>
+    <div className="h-full bg-transparent flex flex-col lg:flex-row items-stretch justify-center p-4 md:p-6 gap-6 font-sans">
+      <div className="w-full lg:w-[320px] flex flex-col items-center justify-center shrink-0">
+        <h3 className="text-white font-black text-xl mb-1 tracking-tight">Strategy Chamber</h3>
+        <p className="text-[#A0AEC0] text-[10px] font-mono uppercase mb-8 opacity-60">Neural Synergy v1.2</p>
         
         <div className="relative w-64 h-64 mx-auto mb-10">
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
-            <polygon points="50,15 15,85 85,85" fill="none" stroke="#1B254B" strokeWidth="2" strokeDasharray="4 4" className="opacity-50" />
-            {activeAgent === 'CMO' && <line x1="15" y1="85" x2="85" y2="85" stroke="#10b981" strokeWidth="3" className="animate-pulse" />}
-            {activeAgent === 'CFO' && <line x1="85" y1="85" x2="50" y2="15" stroke="#f59e0b" strokeWidth="3" className="animate-pulse" />}
-            {activeAgent === 'SYSTEM' && <line x1="50" y1="15" x2="15" y2="85" stroke="#0075FF" strokeWidth="3" className="animate-pulse" />}
+            <path d="M50,10 L90,50 L50,90 L10,50 Z" fill="none" stroke="#1B254B" strokeWidth="1" strokeDasharray="4 4" className="opacity-30" />
+            {activeAgent === 'CMO' && <line x1="10" y1="50" x2="50" y2="10" stroke="#10b981" strokeWidth="2.5" className="animate-pulse" />}
+            {activeAgent === 'CFO' && <line x1="90" y1="50" x2="50" y2="10" stroke="#f59e0b" strokeWidth="2.5" className="animate-pulse" />}
+            {activeAgent === 'PERSONA' && <line x1="50" y1="90" x2="10" y2="50" stroke="#a855f7" strokeWidth="2.5" className="animate-pulse" />}
+            {activeAgent === 'SYSTEM' && <path d="M50,10 L90,50 L50,90 L10,50 Z" stroke="#0075FF" strokeWidth="1.5" className="animate-pulse" opacity="0.4" />}
           </svg>
-          
-          {/* System Node */}
-          <div className={`absolute top-0 left-1/2 -ml-8 w-16 h-16 rounded-full flex flex-col items-center justify-center border-2 border-[#1B254B] shadow-lg transition-all duration-300 ${activeAgent === 'SYSTEM' ? 'bg-[#0075FF] ring-8 ring-[#0075FF]/30 scale-110' : 'bg-[#111C44]'}`}>
-            <Bot className="text-white mb-1" size={18}/>
-            <span className="text-[10px] font-bold text-white uppercase">SYS</span>
-          </div>
-
-          {/* CMO Node */}
-          <div className={`absolute bottom-0 left-[-16px] w-16 h-16 rounded-full flex flex-col items-center justify-center border-2 border-[#1B254B] shadow-lg transition-all duration-300 ${activeAgent === 'CMO' ? 'bg-emerald-500 ring-8 ring-emerald-500/30 scale-110' : 'bg-[#111C44]'}`}>
-            <Users className="text-white mb-1" size={18}/>
-            <span className="text-[10px] font-bold text-white uppercase">CMO</span>
-          </div>
-
-          {/* CFO Node */}
-          <div className={`absolute bottom-0 right-[-16px] w-16 h-16 rounded-full flex flex-col items-center justify-center border-2 border-[#1B254B] shadow-lg transition-all duration-300 ${activeAgent === 'CFO' ? 'bg-amber-500 ring-8 ring-amber-500/30 scale-110' : 'bg-[#111C44]'}`}>
-            <ShieldAlert className="text-white mb-1" size={18}/>
-            <span className="text-[10px] font-bold text-white uppercase">CFO</span>
-          </div>
+          <div className={`absolute top-0 left-1/2 -ml-8 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border-2 shadow-xl transition-all duration-500 ${activeAgent === 'SYSTEM' ? 'bg-[#0075FF] border-[#0075FF] ring-8 ring-[#0075FF]/20 scale-110 z-20' : 'bg-[#111C44] border-[#1B254B] z-10'}`}><Cpu className="text-white" size={20}/><span className="text-[7px] font-black text-white uppercase mt-1">SYS</span></div>
+          <div className={`absolute top-1/2 left-0 -mt-8 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border-2 shadow-xl transition-all duration-500 ${activeAgent === 'CMO' ? 'bg-emerald-500 border-emerald-500 ring-8 ring-emerald-500/20 scale-110 z-20' : 'bg-[#111C44] border-[#1B254B] z-10'}`}><Sparkles className="text-white" size={20}/><span className="text-[7px] font-black text-white uppercase mt-1">CMO</span></div>
+          <div className={`absolute top-1/2 right-0 -mt-8 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border-2 shadow-xl transition-all duration-500 ${activeAgent === 'CFO' ? 'bg-amber-500 border-amber-500 ring-8 ring-amber-500/20 scale-110 z-20' : 'bg-[#111C44] border-[#1B254B] z-10'}`}><ShieldAlert className="text-white" size={20}/><span className="text-[7px] font-black text-white uppercase mt-1">CFO</span></div>
+          <div className={`absolute bottom-0 left-1/2 -ml-8 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border-2 shadow-xl transition-all duration-500 ${activeAgent === 'PERSONA' ? 'bg-purple-500 border-purple-500 ring-8 ring-purple-500/20 scale-110 z-20' : 'bg-[#111C44] border-[#1B254B] z-10'}`}><Target className="text-white" size={20}/><span className="text-[7px] font-black text-white uppercase mt-1">UX</span></div>
         </div>
 
-        <div className="w-full max-w-sm px-4">
-          <div className="flex justify-between text-xs text-[#A0AEC0] font-mono mb-2 border-b border-[#1B254B] pb-2">
-            <span>Synaptic Progress</span>
-            <span className="text-[#0075FF]">{progress}%</span>
-          </div>
-          <div className="w-full h-2 bg-[#111C44] rounded-full overflow-hidden">
-             <div className="h-full bg-[#0075FF] transition-all duration-300" style={{width: `${progress}%`}}></div>
-          </div>
-          {showDoneBtn && (
-            <button 
-              onClick={onComplete}
-              disabled={!isReady && !error}
-              className={`mt-8 w-full py-4 text-white rounded-xl font-bold text-md shadow-[0_0_20px_rgba(0,117,255,0.3)] flex items-center justify-center transition-colors ${(!isReady && !error) ? 'bg-gray-600 opacity-50 cursor-not-allowed' : error ? 'bg-rose-600 hover:bg-rose-700' : 'bg-[#0075FF] hover:bg-[#0055c4]'}`}
-            >
-              {error ? `XUẤT HIỆN LỖI: ${error}` : (!isReady ? 'ĐANG CHỜ AI HOÀN TẤT...' : `MỞ BẢN KẾ HOẠCH VER ${iteration} `)} 
-              {isReady && !error && <ArrowRight className="ml-2" />}
-            </button>
-          )}
+        <div className="w-full space-y-2 mb-8">{pipelineSteps.map((step, i) => <PipelineStep key={i} label={step.label} icon={step.icon} step={i + 1} isActive={currentStep === i + 1} isDone={currentStep > i + 1} />)}</div>
+
+        <div className="w-full px-2">
+          <div className="flex justify-between text-[10px] text-[#A0AEC0] font-mono mb-2 uppercase tracking-tighter"><span>Neural Loading</span><span className={progress >= 100 ? 'text-emerald-400' : 'text-[#0075FF]'}>{Math.round(progress)}%</span></div>
+          <div className="w-full h-2 bg-[#0B1437] rounded-full overflow-hidden border border-[#1B254B]"><div className={`h-full transition-all duration-500 ${progress >= 100 ? 'bg-emerald-500' : 'bg-[#0075FF]'}`} style={{width: `${progress}%`}}></div></div>
+          {showDoneBtn && <button onClick={onComplete} className="mt-8 w-full py-4 bg-gradient-to-r from-[#0075FF] to-[#0055c4] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl flex items-center justify-center hover:scale-[1.02] transition-all"> {error ? 'Lỗi hệ thống - Thử lại' : `Xem bản kế hoạch v${iteration}`} <ArrowRight className="ml-2" size={16} /></button>}
         </div>
       </div>
 
-      {/* Right: Chat Window */}
-      <div className="w-full md:w-2/3 h-[600px] bg-[#111C44] rounded-3xl flex flex-col overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.1)] relative">
-        <div className="bg-[#0B1437] p-5 border-b border-[#1B254B] flex items-center justify-between z-10">
-          <h2 className="text-white font-bold flex items-center"><MessageSquare className="mr-3 text-[#0075FF]" size={18}/> Live AI Board</h2>
-          <div className="flex items-center space-x-2">
-            <span className="relative flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span></span>
-            <span className="text-xs text-emerald-400 font-mono uppercase tracking-wider">Online</span>
-          </div>
+      <div className="flex-1 min-h-[500px] h-[650px] bg-[#111C44] rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-[#1B254B]">
+        <div className="bg-[#0B1437] px-6 py-4 border-b border-[#1B254B] flex items-center justify-between">
+          <h2 className="text-white font-black text-xs tracking-widest uppercase flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div> Live Board</h2>
+          <span className="text-[10px] text-[#A0AEC0] font-mono">SECURE SYNERGY CONNECTION</span>
         </div>
-
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`flex w-full ${msg.sender === 'CMO' ? 'justify-start' : msg.sender === 'CFO' ? 'justify-end' : 'justify-center'}`}>
-              <div className={`max-w-[80%] flex ${msg.sender === 'CFO' ? 'flex-row-reverse' : ''}`}>
-                {msg.sender !== 'SYSTEM' && (
-                  <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black shadow-lg ${msg.sender==='CFO'?'ml-3 bg-amber-500 text-white':'mr-3 bg-emerald-500 text-white'}`}>
-                    {msg.sender}
-                  </div>
-                )}
-                <div className={`flex flex-col ${msg.sender === 'CFO'?'items-end': msg.sender==='SYSTEM'?'items-center text-center':''}`}>
-                  {msg.sender !== 'SYSTEM' && <span className="text-[10px] text-[#A0AEC0] mb-1 tracking-wide uppercase">{msg.role}</span>}
-                  <div className={`p-4 text-sm leading-relaxed rounded-2xl ${
-                    msg.sender === 'CMO' ? 'bg-[#1B254B] text-white rounded-tl-sm' : 
-                    msg.sender === 'CFO' ? 'bg-[#0B1437] text-white border border-amber-500/20 rounded-tr-sm' : 
-                    'bg-[#0B1437] text-[#A0AEC0] italic rounded-full px-6'}`}>
-                    {msg.text}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          <div ref={endOfMessagesRef} className="h-4" />
+        <div className="flex-1 overflow-y-auto px-6 py-8 space-y-6">
+          {messages.map((msg, idx) => <ChatBubble key={idx} msg={msg} idx={idx} />)}
+          {typingAgent && <TypingIndicator agent={typingAgent} />}
+          <div ref={endOfMessagesRef} className="h-2" />
         </div>
+        <div className="bg-[#0B1437]/50 px-6 py-3 border-t border-[#1B254B] text-center"><span className="text-[9px] text-[#A0AEC0] font-mono uppercase tracking-[0.2em]">{typingAgent ? 'Sychronizing Neural Patterns...' : 'Encrypted Link Active'}</span></div>
       </div>
     </div>
   );

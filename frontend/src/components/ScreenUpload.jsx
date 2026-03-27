@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { UploadCloud, Briefcase, CheckCircle, ArrowRight, FileText, X } from 'lucide-react';
+import { UploadCloud, Briefcase, CheckCircle, ArrowRight, FileText, X, DollarSign } from 'lucide-react';
 
 export default function ScreenUpload({ onGenerate }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [urlInput, setUrlInput] = useState("");
   const [campaignName, setCampaignName] = useState("");
+  const [budget, setBudget] = useState("");
   const [userRequest, setUserRequest] = useState("");
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractedSummary, setExtractedSummary] = useState(null);
@@ -48,12 +49,19 @@ export default function ScreenUpload({ onGenerate }) {
     setSelectedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  const MIN_BUDGET = 1000000; // 1 triệu VND
+
   const handleGenerateClick = () => {
     if (selectedFiles.length === 0 || campaignName.trim() === "") {
       alert("Vui lòng tải lên tài liệu và nhập tên chiến dịch trước khi giao việc cho Agent.");
       return;
     }
-    onGenerate(selectedFiles, urlInput, campaignName, userRequest);
+    const budgetNum = parseInt(budget);
+    if (!budget || isNaN(budgetNum) || budgetNum < MIN_BUDGET) {
+      alert(`⚠️ Ngân sách không hợp lệ!\n\nVui lòng nhập ngân sách tối thiểu ${MIN_BUDGET.toLocaleString()} VNĐ (1 triệu).`);
+      return;
+    }
+    onGenerate(selectedFiles, urlInput, campaignName, userRequest, budgetNum);
   };
 
   return (
@@ -88,6 +96,28 @@ export default function ScreenUpload({ onGenerate }) {
               className="w-full bg-[#0B1437] border border-[#1B254B] text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0075FF] outline-none placeholder-[#A0AEC0]" 
               placeholder="Nhập tên chiến dịch của bạn..."
             />
+          </div>
+
+          <div className="mb-5">
+            <label className="block text-sm font-bold text-[#A0AEC0] mb-2">Ngân Sách Chiến Dịch (VNĐ) <span className="text-rose-400">*</span></label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#0075FF]"><DollarSign size={18}/></div>
+              <input 
+                type="number" 
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                min="1000000"
+                step="1000000"
+                className="w-full bg-[#0B1437] border border-[#1B254B] text-white rounded-lg p-3 pl-10 text-sm focus:ring-2 focus:ring-[#0075FF] outline-none placeholder-[#A0AEC0] font-bold" 
+                placeholder="VD: 15000000 (tối thiểu 1,000,000)"
+              />
+              {budget && parseInt(budget) >= 1000000 && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400 text-xs font-bold bg-emerald-500/10 px-2 py-1 rounded">
+                  ≈ {(parseInt(budget)/1000000).toLocaleString()} Triệu
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-[#A0AEC0] mt-1.5">Tối thiểu 1,000,000 VNĐ (1 triệu). AI sẽ phân bổ ngân sách tối ưu theo mô hình MoSCoW.</p>
           </div>
 
           <div className="mb-5">
@@ -193,7 +223,7 @@ export default function ScreenUpload({ onGenerate }) {
               onChange={(e) => setUserRequest(e.target.value)}
               className="w-full bg-[#0B1437] border border-[#1B254B] text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0075FF] outline-none placeholder-[#A0AEC0]" 
               rows="4" 
-              placeholder="Điền các luồng yêu cầu, nhóm đối tượng, hoặc mô tả chi tiết chiến dịch..."
+              placeholder="Mô tả chi tiết chiến dịch, nhóm đối tượng, yêu cầu đặc biệt... VD: 'Tập trung quảng bá trên Facebook cho giới trẻ 18-25 tuổi, ưu tiên video ngắn'"
             />
           </div>
 

@@ -35,21 +35,27 @@ def parse_mock_md(file_path: str) -> dict:
     for line in lines:
         if line.startswith("CFO:"):
             if current_msg:
-                agent_logs.append({"agent": current_agent, "msg": "\n".join(current_msg).strip()})
+                agent_logs.append({"agent": current_agent, "message": "\n".join(current_msg).strip()})
                 current_msg = []
             current_agent = "CFO"
             current_msg.append(line.replace("CFO:", "", 1).strip())
         elif line.startswith("Persona:"):
             if current_msg:
-                agent_logs.append({"agent": current_agent, "msg": "\n".join(current_msg).strip()})
+                agent_logs.append({"agent": current_agent, "message": "\n".join(current_msg).strip()})
                 current_msg = []
-            current_agent = "Customer Persona"
+            current_agent = "PERSONA"
             current_msg.append(line.replace("Persona:", "", 1).strip())
+        elif line.startswith("CMO:"):
+            if current_msg:
+                agent_logs.append({"agent": current_agent, "message": "\n".join(current_msg).strip()})
+                current_msg = []
+            current_agent = "CMO"
+            current_msg.append(line.replace("CMO:", "", 1).strip())
         elif line.strip():
             current_msg.append(line.strip())
             
     if current_msg:
-        agent_logs.append({"agent": current_agent, "msg": "\n".join(current_msg).strip()})
+        agent_logs.append({"agent": current_agent, "message": "\n".join(current_msg).strip()})
 
     return {
         "final_plan": dict_json,

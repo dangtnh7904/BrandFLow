@@ -382,13 +382,21 @@ async def process_intake(request: RawInputRequest):
                     actual_cost += int(act.get("cost_vnd", 0))
                     
             print("✅ Đủ thông tin, bắt đầu gọi MasterPlanner (MOCK MODE)...")
+            
+            campaign_name = plan.get("executive_summary", {}).get("campaign_name", "Chiến dịch (Mock)")
+            full_mock_logs = [
+                {"agent": "CMO", "role": "Giám đốc Marketing", "message": f"Chào các vị lãnh đạo và khách hàng! Giám đốc Marketing xin phép trình bày tóm tắt kế hoạch '{campaign_name}'.\n\nChiến dịch sẽ đi qua 3 giai đoạn: Khơi Hương (Teasing), Tỏa Trà (Traffic), và Lưu Phai (Loyalty). Trọng tâm lớn nhất nằm ở tháng 6, chúng ta sẽ mạnh tay book 3 Mega-TikToker tới thưởng trà và làm video review. Mức đầu tư cho riêng hạng mục KOL này là 30 triệu đồng. Tổng ngân sách tôi xin duyệt là {actual_cost + 5000000:,} VND. Mọi người có ý kiến gì không?"},
+                {"agent": "SYSTEM", "role": "Hệ thống Kiểm toán", "message": f"Cảnh báo tự động: Hệ thống ghi nhận ngân sách Marketing đề xuất đã cao hơn so với hạn mức hiện tại. Cần các sếp và đại diện khách hàng vào phiên tòa phản biện để điều chỉnh lại cấu trúc vốn."}
+            ]
+            full_mock_logs.extend(mock_result["agent_logs"])
+
             return {
                 "status": "success",
                 "is_approved": True,
                 "iteration_count": 2,
                 "actual_total_cost": actual_cost,
                 "plan": plan,
-                "agent_logs": mock_result["agent_logs"]
+                "agent_logs": full_mock_logs
             }
         # ------------------------------------
 

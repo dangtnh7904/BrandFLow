@@ -6,14 +6,26 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from datetime import date
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request, Response
 from fastapi.responses import HTMLResponse
-from typing import List
+from typing import Dict, List
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import PresetRequest, InterviewRequest, RawInputRequest, RefineRequest
+from schemas import (
+    PresetRequest,
+    InterviewRequest,
+    RawInputRequest,
+    RefineRequest,
+    OrchestrationMockRequest,
+)
 from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
 from intake_agent import analyze_raw_input, check_required_info, extract_document_summary
-from workflow_graph import run_pipeline, run_refinement_pipeline
+from workflow_graph import (
+    build_error_envelope,
+    run_pipeline,
+    run_refinement_pipeline,
+    run_week1_orchestration_contract,
+)
 from document_processor import DocumentIngestor
 from pydantic import BaseModel
 import os
@@ -35,6 +47,141 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+WEEK1_QUOTA_POLICY = {
+    "FREE": {
+        "max_files_per_request": 2,
+        "max_files_per_day": 6,
+        "max_file_size_mb": 10,
+        "max_urls_per_day": 3,
+    },
+    "PLUS": {
+        "max_files_per_request": 5,
+        "max_files_per_day": 30,
+        "max_file_size_mb": 25,
+        "max_urls_per_day": 15,
+    },
+    "PRO": {
+        "max_files_per_request": 15,
+        "max_files_per_day": 120,
+        "max_file_size_mb": 100,
+        "max_urls_per_day": 80,
+    },
+}
+
+# Week 1 dùng in-memory counter để chốt API boundary. Tuần sau thay bằng DB boundary.
+WEEK1_DAILY_USAGE: Dict[str, Dict[str, int]] = {}
+
+
+def _normalize_tier(raw_tier: str) -> str:
+    tier = (raw_tier or "FREE").strip().upper()
+    if tier not in WEEK1_QUOTA_POLICY:
+        return "FREE"
+    return tier
+
+
+def _resolve_trace_id(http_request: Request) -> str:
+    incoming = (http_request.headers.get("X-Trace-Id") or "").strip()
+    if incoming:
+        return incoming
+    return str(uuid.uuid4())
+
+
+def _build_usage_key(user_id: str, tier: str) -> str:
+    return f"{date.today().isoformat()}::{user_id}::{tier}"
+
+
+def _raise_quota_error(
+    trace_id: str,
+    tier: str,
+    status_code: int,
+    code: str,
+    message: str,
+    limit: dict,
+    usage: dict,
+    retryable: bool,
+) -> None:
+    detail = build_error_envelope(
+        trace_id=trace_id,
+        code=code,
+        message=message,
+        status_code=status_code,
+        node_name="api_quota_guard",
+        retryable=retryable,
+        details={
+            "tier": tier,
+            "limit": limit,
+            "usage": usage,
+        },
+    )
+    raise HTTPException(status_code=status_code, detail=detail)
+
+
+def _enforce_week1_quota(request: OrchestrationMockRequest, tier: str, trace_id: str) -> None:
+    policy = WEEK1_QUOTA_POLICY[tier]
+
+    if request.file_size_mb > policy["max_file_size_mb"]:
+        _raise_quota_error(
+            trace_id=trace_id,
+            tier=tier,
+            status_code=413,
+            code="QUOTA_FILE_SIZE_EXCEEDED",
+            message="Dung lượng file vượt giới hạn tier.",
+            limit={"max_file_size_mb": policy["max_file_size_mb"]},
+            usage={"file_size_mb": request.file_size_mb},
+            retryable=False,
+        )
+
+    if request.files_count > policy["max_files_per_request"]:
+        _raise_quota_error(
+            trace_id=trace_id,
+            tier=tier,
+            status_code=413,
+            code="QUOTA_FILES_PER_REQUEST_EXCEEDED",
+            message="Số lượng file trong request vượt giới hạn tier.",
+            limit={"max_files_per_request": policy["max_files_per_request"]},
+            usage={"files_count": request.files_count},
+            retryable=False,
+        )
+
+    usage_key = _build_usage_key(request.user_id, tier)
+    current_usage = WEEK1_DAILY_USAGE.setdefault(
+        usage_key,
+        {
+            "files_today": 0,
+            "urls_today": 0,
+        },
+    )
+
+    projected_files_today = current_usage["files_today"] + request.files_count
+    if projected_files_today > policy["max_files_per_day"]:
+        _raise_quota_error(
+            trace_id=trace_id,
+            tier=tier,
+            status_code=429,
+            code="QUOTA_FILES_PER_DAY_EXCEEDED",
+            message="Số lượng file/ngày đã vượt quota tier.",
+            limit={"max_files_per_day": policy["max_files_per_day"]},
+            usage={"files_today": projected_files_today},
+            retryable=True,
+        )
+
+    projected_urls_today = current_usage["urls_today"] + request.urls_count
+    if projected_urls_today > policy["max_urls_per_day"]:
+        _raise_quota_error(
+            trace_id=trace_id,
+            tier=tier,
+            status_code=429,
+            code="QUOTA_URLS_PER_DAY_EXCEEDED",
+            message="Số lượng URL/ngày đã vượt quota tier.",
+            limit={"max_urls_per_day": policy["max_urls_per_day"]},
+            usage={"urls_today": projected_urls_today},
+            retryable=True,
+        )
+
+    current_usage["files_today"] = projected_files_today
+    current_usage["urls_today"] = projected_urls_today
 
 @app.get("/", response_class=HTMLResponse)
 async def home():
@@ -347,6 +494,80 @@ async def onboarding_extract_summary(files: List[UploadFile] = File(...)):
         return {"status": "success", "data": summary_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/v1/planning/contracts/week1")
+def get_planning_contract_week1():
+    """Công bố contract tuần 1 để frontend/backend/test dùng chung."""
+    return {
+        "status": "success",
+        "contract_version": "week1-v1",
+        "trace_header": "X-Trace-Id",
+        "tier_default": "FREE",
+        "quota_policy": WEEK1_QUOTA_POLICY,
+        "error_convention": {
+            "413": [
+                "QUOTA_FILE_SIZE_EXCEEDED",
+                "QUOTA_FILES_PER_REQUEST_EXCEEDED",
+            ],
+            "429": [
+                "QUOTA_FILES_PER_DAY_EXCEEDED",
+                "QUOTA_URLS_PER_DAY_EXCEEDED",
+            ],
+        },
+        "orchestration_nodes": [
+            "intake_context",
+            "gateway_router",
+            "finalize_output",
+        ],
+    }
+
+
+@app.post("/api/v1/planning/orchestration/mock-run")
+async def planning_orchestration_mock_run(
+    request: OrchestrationMockRequest,
+    http_request: Request,
+    response: Response,
+):
+    """
+    API boundary tuần 1: chạy mock flow end-to-end với trace/quota contract cố định.
+    """
+    trace_id = _resolve_trace_id(http_request)
+    response.headers["X-Trace-Id"] = trace_id
+    tier = _normalize_tier(request.tier)
+
+    _enforce_week1_quota(request=request, tier=tier, trace_id=trace_id)
+
+    orchestration_input = {
+        "goal": request.goal,
+        "industry": request.industry,
+        "budget": request.budget,
+        "target_audience": request.target_audience,
+        "constraints": request.constraints,
+    }
+
+    result = run_week1_orchestration_contract(
+        request_payload=orchestration_input,
+        trace_id=trace_id,
+        tier=tier,
+        mock_mode=request.mock_mode,
+    )
+
+    if result.get("status") == "error":
+        error_list = result.get("errors", [])
+        error_payload = error_list[0] if error_list else build_error_envelope(
+            trace_id=trace_id,
+            code="ORCH_INTERNAL_ERROR",
+            message="Không xác định được lỗi orchestration.",
+            status_code=500,
+            node_name="api_orchestration_boundary",
+            retryable=False,
+            details={},
+        )
+        status_code = error_payload.get("error", {}).get("http_status", 500)
+        raise HTTPException(status_code=status_code, detail=error_payload)
+
+    return result
 
 @app.post("/api/v1/planning/intake")
 async def process_intake(request: RawInputRequest):

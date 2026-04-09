@@ -17,7 +17,9 @@ from schemas import (
     RawInputRequest,
     RefineRequest,
     OrchestrationMockRequest,
+    DesignGenerateRequest,
 )
+from design_agent import generate_brand_identity
 from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
 from intake_agent import analyze_raw_input, check_required_info, extract_document_summary
 from workflow_graph import (
@@ -707,6 +709,38 @@ def get_db_stats():
         return {"status": "success", "count": vectorstore._collection.count()}
     except Exception as e:
         return {"status": "error", "message": str(e), "count": 0}
+
+@app.post("/api/v1/design/generate")
+async def design_generate(request: DesignGenerateRequest):
+    """
+    Sinh bộ tài sản nhận diện thương hiệu (Brand Identity):
+    Logo, Banner, Fanpage concept — dựa trên Brand DNA trong ChromaDB.
+    """
+    try:
+        print(f"\n🎨 [DESIGN API] Nhận yêu cầu sinh Brand Identity: {request.brand_name}")
+
+        result = generate_brand_identity(
+            brand_name=request.brand_name,
+            goal=request.goal,
+            industry=request.industry,
+            target_audience=request.target_audience,
+        )
+
+        return {
+            "status": "success",
+            "logo_url": result["logo_url"],
+            "banner_url": result["banner_url"],
+            "fanpage_concept": result["fanpage_concept"],
+            "design_language": result["design_language"],
+            "prompts": result.get("prompts", {}),
+        }
+    except Exception as e:
+        print(f"🔴 [DESIGN API] Lỗi sinh Brand Identity: {e}")
+        raise HTTPException(status_code=500, detail={
+            "status": "error",
+            "message": "AI gặp sự cố khi sinh tài sản thương hiệu. Vui lòng thử lại.",
+            "debug_info": str(e)
+        })
 
 if __name__ == "__main__":
     import uvicorn

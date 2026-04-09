@@ -26,6 +26,7 @@ from agents_core import (
     run_cfo_commentary,
     run_persona_validator,
 )
+from design_agent import generate_brand_identity
 
 
 ORCHESTRATION_CONTRACT_VERSION = "week1-v1"
@@ -306,10 +307,15 @@ def run_pipeline(
     budget: int,
     target_audience: str = "",
     constraints: str = "",
+    include_design: bool = False,
 ) -> dict:
     """
     Pipeline tuyến tính chính của BrandFlow.
     Trả về: { "final_plan": dict, "agent_logs": list[dict] }
+
+    Args:
+        include_design: Nếu True, tự động sinh Brand Identity (logo, banner, fanpage)
+                        sau khi hoàn tất plan. Mặc định False để giữ tương thích ngược.
     """
     print(f"\n{'═' * 70}")
     print(f"🚀 [PIPELINE START] Deterministic Arbitration v7")
@@ -357,19 +363,46 @@ def run_pipeline(
         {"agent": "PERSONA", "role": "Đại diện Khách hàng", "message": persona_comment},
     ]
 
+    # ── STEP 4 (Tùy chọn): Sinh Brand Identity Assets ──
+    design_assets = None
+    if include_design:
+        print(f"\n{'─' * 70}")
+        print(f"🎨 [STEP 4] Sinh Brand Identity Assets...")
+        print(f"{'─' * 70}")
+        try:
+            campaign_name = final_plan.get("executive_summary", {}).get("campaign_name", goal)
+            design_assets = generate_brand_identity(
+                brand_name=campaign_name,
+                goal=goal,
+                industry=industry,
+                target_audience=target_audience,
+            )
+            # Gỡ bỏ status key trùng lặp — chỉ giữ data
+            design_assets.pop("status", None)
+        except Exception as e:
+            print(f"   ⚠️ [DESIGN] Lỗi sinh Brand Identity ({e}) — bỏ qua, pipeline vẫn thành công.")
+            design_assets = None
+
     print(f"\n{'═' * 70}")
     print(f"✅ [PIPELINE COMPLETE] Kết quả cuối cùng:")
     print(f"   📊 Tổng chi phí cuối: {interceptor_result['final_total']:,} VND")
     print(f"   ✂️ Hạng mục bị cắt : {len(cut_items)}")
+    if design_assets:
+        print(f"   🎨 Brand Identity : Đã sinh thành công")
     for log in agent_logs:
         print(f"   [{log['agent']}] {log['message']}")
     print(f"{'═' * 70}")
 
-    return {
+    result = {
         "final_plan": final_plan,
         "agent_logs": agent_logs,
         "actual_total_cost": interceptor_result["final_total"],
     }
+
+    if design_assets:
+        result["design_assets"] = design_assets
+
+    return result
 
 def run_refinement_pipeline(
     previous_plan: dict,

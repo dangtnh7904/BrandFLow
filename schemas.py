@@ -32,3 +32,10 @@ class OrchestrationMockRequest(BaseModel):
     urls_count: int = Field(0, ge=0, description="Số URL gửi trong request")
 
     mock_mode: bool = Field(True, description="Tuần 1 chạy deterministic mock flow")
+
+
+class DesignGenerateRequest(BaseModel):
+    brand_name: str = Field(..., description="Tên thương hiệu / chiến dịch")
+    goal: str = Field(..., description="Mục tiêu chiến dịch (VD: 'Ra mắt quán trà mới')")
+    industry: str = Field("General", description="Ngành hàng (VD: 'F&B', 'Spa_Beauty', 'B2B_Tech')")
+    target_audience: str = Field("", description="Tệp khách hàng mục tiêu")

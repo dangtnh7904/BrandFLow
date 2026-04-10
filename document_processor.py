@@ -12,8 +12,9 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 
 class DocumentIngestor:
-    def __init__(self, persist_directory: str = "./chroma_db"):
+    def __init__(self, persist_directory: str = "./chroma_db", tenant_id: str = "default"):
         self.persist_directory = persist_directory
+        self.tenant_id = tenant_id
         self.embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
         
     def ingest_file(self, file_path: str, force_ai: bool = False) -> str:
@@ -112,8 +113,9 @@ class DocumentIngestor:
             ]
             
             print(f"💾 [Storage] Đang lưu {len(documents)} bản ghi vào ChromaDB...")
+            collection_name = f"brandflow_memory_{self.tenant_id}"
             vectorstore = Chroma(
-                collection_name="brandflow_memory",
+                collection_name=collection_name,
                 embedding_function=self.embeddings,
                 persist_directory=self.persist_directory
             )

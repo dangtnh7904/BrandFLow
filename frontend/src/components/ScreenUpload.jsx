@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UploadCloud, Briefcase, CheckCircle, ArrowRight, FileText, X, DollarSign, AlertCircle } from 'lucide-react';
+import { UploadCloud, Briefcase, CheckCircle, ArrowRight, FileText, X, DollarSign, AlertCircle, ChevronDown, Activity, ShieldAlert, Users, Target } from 'lucide-react';
 
 export default function ScreenUpload({ onGenerate }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -7,9 +7,22 @@ export default function ScreenUpload({ onGenerate }) {
   const [campaignName, setCampaignName] = useState("");
   const [budget, setBudget] = useState("");
   const [userRequest, setUserRequest] = useState("");
+  const [industry, setIndustry] = useState("General");
+  
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractedSummary, setExtractedSummary] = useState(null);
   const [extractError, setExtractError] = useState(null);
+
+  // Form State
+  const [part1, setPart1] = useState({
+    revenue_reason: '',
+    growth_driver: '',
+    major_events: '',
+    assumptions_risks: '',
+    in_house_team: ''
+  });
+
+  const [part2, setPart2] = useState({});
 
   const handleExtractSummary = async () => {
     setExtractError(null);
@@ -19,7 +32,9 @@ export default function ScreenUpload({ onGenerate }) {
     }
     setIsExtracting(true);
     try {
+      const tenantId = localStorage.getItem('brandflow_tenant_id') || 'default_tenant';
       const formData = new FormData();
+      formData.append("tenant_id", tenantId);
       selectedFiles.forEach(f => formData.append("files", f));
       
       const res = await fetch("http://localhost:8000/api/v1/onboarding/extract-summary", {
@@ -28,8 +43,8 @@ export default function ScreenUpload({ onGenerate }) {
       });
       
       if (!res.ok) {
-        if (res.status === 413) throw new Error("413: Tệp đính kèm quá lớn (vượt quá giới hạn). Hệ thống không thể phân tích.");
-        if (res.status === 429) throw new Error("429: Hệ thống máy chủ đang quá tải. Vui lòng thử lại sau.");
+        if (res.status === 413) throw new Error("413: Tệp đính kèm quá lớn.");
+        if (res.status === 429) throw new Error("429: Hệ thống máy chủ đang quá tải.");
         throw new Error(`Đã có lỗi xảy ra (Mã lỗi: ${res.status})`);
       }
       
@@ -37,7 +52,7 @@ export default function ScreenUpload({ onGenerate }) {
       if (data.status === "success") {
         setExtractedSummary(data.data);
       } else {
-        throw new Error(data.detail || data.message || "Không thể phân tích dữ liệu.");
+        throw new Error(data.detail || "Không thể phân tích dữ liệu.");
       }
     } catch (err) {
       setExtractError(err.message || "Không kết nối được với máy chủ.");
@@ -58,11 +73,11 @@ export default function ScreenUpload({ onGenerate }) {
     setSelectedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  const MIN_BUDGET = 1000000; // 1 triệu VND
+  const MIN_BUDGET = 1000000; 
 
   const handleGenerateClick = () => {
-    if (selectedFiles.length === 0 || campaignName.trim() === "") {
-      alert("Vui lòng tải lên tài liệu và nhập tên chiến dịch trước khi giao việc cho Agent.");
+    if (campaignName.trim() === "") {
+      alert("Vui lòng nhập tên chiến dịch trước khi giao việc cho Agent.");
       return;
     }
     const budgetNum = parseInt(budget);
@@ -70,184 +85,221 @@ export default function ScreenUpload({ onGenerate }) {
       alert(`⚠️ Ngân sách không hợp lệ!\n\nVui lòng nhập ngân sách tối thiểu ${MIN_BUDGET.toLocaleString()} VNĐ (1 triệu).`);
       return;
     }
-    onGenerate(selectedFiles, urlInput, campaignName, userRequest, budgetNum);
+    
+    const compForm = {
+      industry,
+      part1: { ...part1, cash_budget: budgetNum },
+      part2
+    };
+
+    onGenerate(selectedFiles, urlInput, campaignName, userRequest, budgetNum, compForm);
+  };
+
+  const updatePart1 = (field, val) => setPart1(prev => ({...prev, [field]: val}));
+  const updatePart2 = (field, val) => setPart2(prev => ({...prev, [field]: val}));
+
+  const renderPart2Questions = () => {
+    if (industry === "F&B") {
+      return (
+        <div className="space-y-4 animate-fade-in-up mt-4 border-t border-slate-200 dark:border-zinc-800 pt-4">
+          <h3 className="text-emerald-400 font-bold text-sm uppercase flex items-center"><Target size={16} className="mr-2"/> Lĩnh vực F&B</h3>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Mô hình thu lợi nhuận lõi & Sản phẩm đinh</label>
+            <input type="text" onChange={(e) => updatePart2('revenue_model', e.target.value)} value={part2.revenue_model || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" placeholder="VD: Bán tại quán (Dine-in). Món đinh: Cà phê muối." />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Đánh giá Năng lực Cạnh Tranh (CSFs - Thang 10)</label>
+            <textarea onChange={(e) => updatePart2('csfs_score', e.target.value)} value={part2.csfs_score || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" rows="3" placeholder="VD: Hương vị (50%): Mình 8 vs Đối thủ 9, View quán (30%): Mình 9 vs Đối thủ 6, Giá (20%): Mình 7 vs Đối thủ 8" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Vấn đề then chốt (Nỗi đau lớn nhất)</label>
+            <input type="text" onChange={(e) => updatePart2('key_issue', e.target.value)} value={part2.key_issue || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" placeholder="VD: Khách đến 1 lần check-in rồi không quay lại, phụ thuộc app." />
+          </div>
+        </div>
+      );
+    }
+    if (industry === "Tech") {
+      return (
+        <div className="space-y-4 animate-fade-in-up mt-4 border-t border-slate-200 dark:border-zinc-800 pt-4">
+          <h3 className="text-blue-400 font-bold text-sm uppercase flex items-center"><Target size={16} className="mr-2"/> Lĩnh vực Công Nghệ / SaaS</h3>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Phễu chuyển đổi & Vòng đời bán hàng</label>
+            <input type="text" onChange={(e) => updatePart2('sales_funnel', e.target.value)} value={part2.sales_funnel || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" placeholder="VD: Freemium 14 ngày, mất khoảng 3 tháng để chốt sale B2B." />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Đánh giá Năng lực Cạnh Tranh (CSFs - Thang 10)</label>
+            <textarea onChange={(e) => updatePart2('csfs_score', e.target.value)} value={part2.csfs_score || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" rows="3" placeholder="VD: Bảo mật (40%): 9 vs 8, Dễ dùng (40%): 7 vs 9, Giá (20%): 8 vs 7" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Rào cản chốt đơn (Key Issues)</label>
+            <input type="text" onChange={(e) => updatePart2('key_issue', e.target.value)} value={part2.key_issue || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" placeholder="VD: Khách hàng ngại đổi mới hệ thống, phần mềm đối thủ quen thuộc hơn." />
+          </div>
+        </div>
+      );
+    }
+    if (industry === "Cosmetics") {
+      return (
+        <div className="space-y-4 animate-fade-in-up mt-4 border-t border-slate-200 dark:border-zinc-800 pt-4">
+          <h3 className="text-pink-400 font-bold text-sm uppercase flex items-center"><Target size={16} className="mr-2"/> Lĩnh vực Mỹ Phẩm / Beauty</h3>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Nỗi đau giải quyết & Kênh phân phối chính</label>
+            <input type="text" onChange={(e) => updatePart2('pain_point_channel', e.target.value)} value={part2.pain_point_channel || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" placeholder="VD: Trị mụn ẩn cho da nhạy cảm. Phân phối qua Shopee Mall." />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Đánh giá Cạnh Tranh & Trust Signals (Thang 10)</label>
+            <textarea onChange={(e) => updatePart2('csfs_score', e.target.value)} value={part2.csfs_score || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" rows="3" placeholder="VD: Bao bì đẹp (30%): 8 vs 9, KOLs Recommend (40%): 7 vs 8, Chứng nhận da liễu (30%): 9 vs 7" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Vấn đề đau đầu nhất (Key Issues)</label>
+            <input type="text" onChange={(e) => updatePart2('key_issue', e.target.value)} value={part2.key_issue || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" placeholder="VD: Chi phí booking KOLs quá cao ăn mòn lợi nhuận." />
+          </div>
+        </div>
+      );
+    }
+    if (industry === "Edu") {
+      return (
+        <div className="space-y-4 animate-fade-in-up mt-4 border-t border-slate-200 dark:border-zinc-800 pt-4">
+          <h3 className="text-orange-400 font-bold text-sm uppercase flex items-center"><Target size={16} className="mr-2"/> Lĩnh vực Giáo Dục</h3>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Người ra quyết định (DMU) & Hoàn cảnh</label>
+            <input type="text" onChange={(e) => updatePart2('dmu_context', e.target.value)} value={part2.dmu_context || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" placeholder="VD: Phụ huynh quyết định mua khóa hè kỹ năng sống cho con cấp 2." />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Đánh giá Năng lực Tuyển sinh (CSFs - Thang 10)</label>
+            <textarea onChange={(e) => updatePart2('csfs_score', e.target.value)} value={part2.csfs_score || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" rows="3" placeholder="VD: Cam kết đầu ra (40%): 9 vs 8, Giảng viên xịn (30%): 8 vs 9, Giáo trình (30%): 8 vs 8" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Điểm rò rỉ lớn nhất trong Phễu (Key Issues)</label>
+            <input type="text" onChange={(e) => updatePart2('key_issue', e.target.value)} value={part2.key_issue || ''} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" placeholder="VD: Học sinh đăng ký học thử đông nhưng tỷ lệ chốt phí quá thấp." />
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
-    <div className="h-full bg-transparent flex items-center justify-center p-6 font-sans">
-      <div className="max-w-4xl w-full bg-[#111C44] rounded-[20px] shadow-[0_4px_24px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row">
-        <div className="md:w-1/3 bg-[#0B1437] p-8 text-white flex flex-col justify-between">
+    <div className="h-full bg-transparent flex flex-col items-center justify-center p-4 lg:p-6 font-sans">
+      <div className="w-full max-w-6xl bg-white dark:bg-zinc-900 rounded-[20px] shadow-sm overflow-hidden flex flex-col lg:flex-row">
+        
+        {/* Left Info Panel */}
+        <div className="lg:w-1/3 bg-slate-50 dark:bg-zinc-950 p-8 text-slate-800 dark:text-white flex flex-col justify-between border-r border-slate-200 dark:border-zinc-800">
           <div>
             <div className="flex items-center space-x-2 mb-6">
-              <Briefcase className="text-[#0075FF]" />
-              <span className="font-bold text-xl tracking-wide text-white">BrandFlow AI</span>
+              <Briefcase className="text-indigo-600 dark:text-indigo-400" />
+              <span className="font-bold text-xl tracking-wide text-slate-800 dark:text-white">BrandFlow AI</span>
             </div>
-            <h1 className="text-3xl font-bold tracking-tight mb-4 text-white">Khởi Tạo Chiến Dịch B2B</h1>
-            <p className="text-[#A0AEC0] text-sm leading-relaxed mb-6">Xin chào! Cung cấp tài liệu và yêu cầu của bạn, AI Agents của chúng tôi sẽ tự động tranh luận và chốt phương án tối ưu ROI nhất.</p>
+            <h1 className="text-3xl font-bold tracking-tight mb-4 text-slate-800 dark:text-white">Data Ingestion Center</h1>
+            <p className="text-slate-500 dark:text-zinc-400 text-sm leading-relaxed mb-6">Điền vào bộ câu hỏi chiến lược dưới đây. Dữ liệu này sẽ làm Single Source of Truth cho CFO điều phối vốn và CMO xây dựng kế hoạch.</p>
           </div>
-          <div className="bg-[#111C44] rounded-xl p-4 border border-[#1B254B]">
-            <span className="text-xs text-[#0075FF] font-bold uppercase tracking-wider block mb-2">Automated Roles</span>
-            <ul className="text-sm text-[#A0AEC0] space-y-2">
-              <li className="flex items-center"><CheckCircle size={14} className="mr-2 text-emerald-400"/> CMO (Growth Planner)</li>
-              <li className="flex items-center"><CheckCircle size={14} className="mr-2 text-rose-400"/> CFO (Risk Controller)</li>
+          <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 border border-slate-200 dark:border-zinc-800">
+            <span className="text-xs text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider block mb-2">Automated Execution</span>
+            <ul className="text-sm text-slate-500 dark:text-zinc-400 space-y-3">
+              <li className="flex items-start"><CheckCircle size={16} className="mr-2 mt-0.5 text-emerald-400 shrink-0"/> Trích xuất Tài chính & Rủi ro lập Bảng Form 5, Form 12.</li>
+              <li className="flex items-start"><CheckCircle size={16} className="mr-2 mt-0.5 text-blue-400 shrink-0"/> Vẽ tự động Ma trận cạnh tranh DPM.</li>
+              <li className="flex items-start"><CheckCircle size={16} className="mr-2 mt-0.5 text-rose-400 shrink-0"/> CFO giới hạn chiến dịch theo đúng cấu trúc In-house.</li>
             </ul>
           </div>
         </div>
         
-        <div className="md:w-2/3 p-8 flex flex-col justify-center">
+        {/* Right Form Panel */}
+        <div className="lg:w-2/3 p-6 lg:p-8 flex flex-col h-full overflow-y-auto max-h-[90vh]">
           
-          <div className="mb-5">
-            <label className="block text-sm font-bold text-[#A0AEC0] mb-2">Tên Chiến Dịch</label>
-            <input 
-              type="text" 
-              value={campaignName}
-              onChange={(e) => setCampaignName(e.target.value)}
-              className="w-full bg-[#0B1437] border border-[#1B254B] text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0075FF] outline-none placeholder-[#A0AEC0]" 
-              placeholder="Nhập tên chiến dịch của bạn..."
-            />
-          </div>
-
-          <div className="mb-5">
-            <label className="block text-sm font-bold text-[#A0AEC0] mb-2">Ngân Sách Chiến Dịch (VNĐ) <span className="text-rose-400">*</span></label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#0075FF]"><DollarSign size={18}/></div>
-              <input 
-                type="number" 
-                value={budget}
-                onChange={(e) => setBudget(e.target.value)}
-                min="1000000"
-                step="1000000"
-                className="w-full bg-[#0B1437] border border-[#1B254B] text-white rounded-lg p-3 pl-10 text-sm focus:ring-2 focus:ring-[#0075FF] outline-none placeholder-[#A0AEC0] font-bold" 
-                placeholder="VD: 15000000 (tối thiểu 1,000,000)"
-              />
-              {budget && parseInt(budget) >= 1000000 && (
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400 text-xs font-bold bg-emerald-500/10 px-2 py-1 rounded">
-                  ≈ {(parseInt(budget)/1000000).toLocaleString()} Triệu
-                </span>
-              )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+            <div>
+              <label className="block text-sm font-bold text-slate-500 dark:text-zinc-400 mb-2">Tên Chiến Dịch</label>
+              <input type="text" value={campaignName} onChange={(e) => setCampaignName(e.target.value)} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none placeholder-[#A0AEC0]" placeholder="Ví dụ: Chiến dịch bứt phá Quý 3..." />
             </div>
-            <p className="text-[11px] text-[#A0AEC0] mt-1.5">Tối thiểu 1,000,000 VNĐ (1 triệu). AI sẽ phân bổ ngân sách tối ưu theo mô hình MoSCoW.</p>
+            <div>
+              <label className="block text-sm font-bold text-slate-500 dark:text-zinc-400 mb-2">Ngành Nghề</label>
+              <div className="relative">
+                <select value={industry} onChange={(e) => setIndustry(e.target.value)} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none appearance-none cursor-pointer">
+                  <option value="General">General (Khác)</option>
+                  <option value="F&B">F&B (Ẩm thực)</option>
+                  <option value="Tech">Tech (Công nghệ / SaaS)</option>
+                  <option value="Cosmetics">Cosmetics (Mỹ phẩm)</option>
+                  <option value="Edu">Education (Giáo dục)</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-zinc-400 pointer-events-none" size={16} />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-zinc-950 p-5 rounded-xl border border-slate-200 dark:border-zinc-800 mb-5">
+            <h2 className="text-slate-800 dark:text-white font-bold mb-4 flex items-center space-x-2"><Activity size={18} className="text-indigo-600 dark:text-indigo-400"/><span>Phần 1: Nền tảng Tài chính & Quản trị rủi ro</span></h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Giải trình biến động: Nguyên nhân chính khiến doanh thu 3 năm qua tăng/giảm là gì?</label>
+                <input type="text" value={part1.revenue_reason} onChange={(e) => updatePart1('revenue_reason', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2.5 text-sm focus:border-indigo-500 dark:focus:border-indigo-400 outline-none" placeholder="VD: Ảnh hưởng suy thoái chung, nhưng bù lại khách cũ mua nhiều." />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1">Động lực tăng trưởng (Ma trận Ansoff)</label>
+                  <select value={part1.growth_driver} onChange={(e) => updatePart1('growth_driver', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2.5 text-sm focus:border-indigo-500 dark:focus:border-indigo-400 outline-none cursor-pointer">
+                    <option value="">-- Chọn Động Lực --</option>
+                    <option value="Thâm nhập (Bán thêm KH cũ)">Thâm nhập thị trường (Bán thêm khách cũ)</option>
+                    <option value="Phát triển Sản phẩm (Sản phẩm mới)">Phát triển Sản phẩm mới cho khách cũ</option>
+                    <option value="Phát triển Thị trường (Tìm KH mới)">Tìm kiếm tệp Khách hàng mới</option>
+                    <option value="Đa dạng hóa (Nhảy qua ngành mới)">Đa dạng hóa (Ngành mới + Sản phẩm mới)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1 flex items-center"><ShieldAlert size={12} className="mr-1 text-rose-400"/> Giả định & Rủi ro sống còn</label>
+                  <input type="text" value={part1.assumptions_risks} onChange={(e) => updatePart1('assumptions_risks', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2.5 text-sm focus:border-indigo-500 dark:focus:border-indigo-400 outline-none" placeholder="VD: Nền tảng không thay đổi thuật toán / đứt chuỗi cung ứng" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1 flex items-center"><DollarSign size={12} className="mr-1 text-emerald-400"/> Ngân sách Marketing Tối đa (VNĐ)</label>
+                  <input type="number" value={budget} onChange={(e) => setBudget(e.target.value)} min="1000000" className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white font-bold rounded p-2.5 text-sm focus:border-indigo-500 dark:focus:border-indigo-400 outline-none" placeholder="Giới hạn ví tiền của bạn (VD: 50000000)" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-1 flex items-center"><Users size={12} className="mr-1 text-blue-400"/> Đội ngũ In-house hiện có</label>
+                  <input type="text" value={part1.in_house_team} onChange={(e) => updatePart1('in_house_team', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded p-2.5 text-sm focus:border-indigo-500 dark:focus:border-indigo-400 outline-none border-dashed" placeholder="VD: 1 Designer, 2 Content, thuê ngoài Ads" />
+                </div>
+              </div>
+            </div>
+
+            {/* Gọi Section Ngành đặc thù */}
+            {renderPart2Questions()}
+
           </div>
 
           <div className="mb-5">
-            <label className="block text-sm font-bold text-[#A0AEC0] mb-2">Tài Liệu Cốt Lõi (Guideline/Brief)</label>
-            {/* Vùng Drop/Select luôn hiển thị */}
-            <label className="border-2 border-dashed border-[#1B254B] rounded-xl p-6 flex flex-col items-center justify-center text-[#A0AEC0] hover:bg-[#1B254B]/50 hover:border-[#0075FF] transition-colors cursor-pointer relative overflow-hidden bg-[#0B1437] mb-4">
-              <input type="file" multiple className="absolute opacity-0 w-full h-full cursor-pointer top-0 left-0" onChange={handleFileChange} />
-              <UploadCloud size={32} className="text-[#0075FF] mb-2" />
-              <p className="text-sm font-medium text-white">Kéo thả hoặc nhấn để Upload tài liệu</p>
-              <p className="text-xs mt-1 text-[#A0AEC0]">Quét chọn nhiều file PDF, DOCX (Max 10MB)</p>
-            </label>
+            <label className="block text-sm font-bold text-slate-500 dark:text-zinc-400 mb-2">Tài Liệu Đính Kèm Khác</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-slate-200 dark:border-zinc-800 p-4 rounded-xl">
+               <label className="border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-lg p-4 flex flex-col items-center justify-center text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:bg-zinc-800/50 hover:border-[#0075FF] transition-colors cursor-pointer relative overflow-hidden bg-slate-50 dark:bg-zinc-950">
+                <input type="file" multiple className="absolute opacity-0 w-full h-full cursor-pointer top-0 left-0" onChange={handleFileChange} />
+                <UploadCloud size={24} className="text-indigo-600 dark:text-indigo-400 mb-2" />
+                <p className="text-xs font-medium text-slate-800 dark:text-white">Thả file PDF, DOCX (Max 10MB)</p>
+              </label>
+              <div className="flex flex-col justify-center">
+                 <input type="url" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-lg p-3 text-sm focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none" placeholder="Hoặc dán Link Website / Fanpage..." />
+              </div>
+            </div>
 
-            {/* Danh sách file hiển thị */}
             {selectedFiles.length > 0 && (
-              <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
+              <div className="space-y-1 mt-3 max-h-32 overflow-y-auto pr-2">
                 {selectedFiles.map((file, idx) => (
-                  <div key={idx} className="border border-[#1B254B] bg-[#0B1437] rounded-xl p-3 flex items-center justify-between">
-                    <div className="flex items-center space-x-3 overflow-hidden">
-                      <div className="bg-[#111C44] p-2 rounded-lg shrink-0 flex items-center justify-center">
-                        <FileText className="text-[#0075FF] w-4 h-4" />
-                      </div>
-                      <div className="truncate pr-4">
-                        <p className="text-sm font-bold text-white truncate">{file.name}</p>
-                        <p className="text-xs text-[#A0AEC0] font-medium">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                      </div>
-                    </div>
-                    <button onClick={(e) => removeFile(idx, e)} className="text-[#A0AEC0] hover:text-rose-500 shrink-0 p-1.5 hover:bg-[#111C44] rounded-full transition-colors" title="Xóa file">
-                      <X className="w-4 h-4" />
-                    </button>
+                  <div key={idx} className="border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950 rounded flex items-center justify-between p-2">
+                    <span className="text-xs text-slate-800 dark:text-white truncate w-4/5">{file.name}</span>
+                    <button onClick={(e) => removeFile(idx, e)} className="text-slate-500 dark:text-zinc-400 hover:text-rose-500"><X size={14}/></button>
                   </div>
                 ))}
               </div>
             )}
-
-            {selectedFiles.length > 0 && (
-              <button 
-                onClick={handleExtractSummary}
-                disabled={isExtracting}
-                className="w-full mt-4 mb-2 py-3 bg-[#111C44] border border-[#0075FF] hover:bg-[#0075FF]/10 text-[#0075FF] rounded-xl font-bold text-sm flex items-center justify-center transition-all"
-              >
-                {isExtracting ? "Đang phân tích tài liệu bằng AI..." : "Phân tích & Tóm tắt Nhanh Tài liệu (Tùy chọn)"}
-              </button>
-            )}
-
-            {extractError && (
-              <div className="mt-2 mb-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-lg flex items-start text-sm">
-                <AlertCircle className="w-5 h-5 shrink-0 mr-2" />
-                <span>{extractError}</span>
-              </div>
-            )}
-
-            {extractedSummary && (
-              <div className="mt-4 mb-6 bg-[#0B1437] border border-emerald-500/30 rounded-xl p-4 shadow-[0_4px_15px_rgba(16,185,129,0.1)]">
-                <div className="flex items-center mb-4">
-                  <CheckCircle className="text-emerald-400 w-5 h-5 mr-2" />
-                  <h3 className="text-white font-bold text-[15px] tracking-wide">Brand DNA Đã Trích Xuất</h3>
-                </div>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-[#111C44] rounded-lg p-3">
-                      <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Tên Thương hiệu / Doanh nghiệp</span>
-                      <span className="text-sm text-white font-medium">{extractedSummary.company_name}</span>
-                    </div>
-                    <div className="bg-[#111C44] rounded-lg p-3">
-                      <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Ngành nghề (Industry)</span>
-                      <span className="text-sm text-cyan-400 font-medium">{extractedSummary.industry}</span>
-                    </div>
-                  </div>
-                  <div className="bg-[#111C44] rounded-lg p-3">
-                    <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Khách hàng Mục tiêu (Target Audience)</span>
-                    <span className="text-[13px] text-slate-300 leading-relaxed block">{extractedSummary.target_audience}</span>
-                  </div>
-                  <div className="bg-[#111C44] rounded-lg p-3">
-                    <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Điểm bán hàng độc nhất (Core USPs)</span>
-                    <ul className="list-disc pl-4 text-[13px] text-slate-300 space-y-1">
-                      {extractedSummary.core_usps && extractedSummary.core_usps.map((usp, i) => <li key={i}>{usp}</li>)}
-                    </ul>
-                  </div>
-                  <div className="bg-[#111C44] rounded-lg p-3">
-                    <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Sản phẩm/Dịch vụ chính</span>
-                    <ul className="list-disc pl-4 text-[13px] text-slate-300 space-y-1">
-                      {extractedSummary.key_products && extractedSummary.key_products.map((kp, i) => <li key={i}>{kp}</li>)}
-                    </ul>
-                  </div>
-                  <div className="bg-[#111C44] rounded-lg p-3">
-                    <span className="text-[11px] text-[#A0AEC0] uppercase font-bold block mb-1">Giọng văn (Tone of Voice)</span>
-                    <span className="text-[13px] text-purple-400 font-medium block">{extractedSummary.tone_of_voice}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Component nhập Website URL */}
-            <div className="mt-4">
-              <label className="block text-sm font-bold text-[#A0AEC0] mb-2">Đính kèm Link Website (URL)</label>
-              <input 
-                type="url" 
-                value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
-                className="w-full bg-[#0B1437] border border-[#1B254B] text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0075FF] outline-none placeholder-[#A0AEC0]" 
-                placeholder="Dán đường dẫn bài viết hoặc tên miền website tham khảo..."
-              />
-            </div>
           </div>
 
-          <div className="mb-8">
-            <label className="block text-sm font-bold text-[#A0AEC0] mb-2">Mô Tả Chuyên Sâu & Yêu Cầu Của Bạn</label>
-            <textarea 
-              value={userRequest}
-              onChange={(e) => setUserRequest(e.target.value)}
-              className="w-full bg-[#0B1437] border border-[#1B254B] text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0075FF] outline-none placeholder-[#A0AEC0]" 
-              rows="4" 
-              placeholder="Mô tả chi tiết chiến dịch, nhóm đối tượng, yêu cầu đặc biệt... VD: 'Tập trung quảng bá trên Facebook cho giới trẻ 18-25 tuổi, ưu tiên video ngắn'"
-            />
+          <div className="mb-6">
+            <label className="block text-sm font-bold text-slate-500 dark:text-zinc-400 mb-2">Mô tả riêng (Tùy chọn)</label>
+            <textarea value={userRequest} onChange={(e) => setUserRequest(e.target.value)} className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none placeholder-[#A0AEC0]" rows="2" placeholder="Ghi chú thêm về yêu cầu..." />
           </div>
 
           <button 
             onClick={handleGenerateClick}
-            className="w-full py-4 bg-[#0075FF] hover:bg-[#0055c4] text-white rounded-xl font-bold text-lg flex items-center justify-center transition-all shadow-[0_4px_15px_rgba(0,117,255,0.4)]"
+            className="w-full mt-auto py-4 bg-indigo-600 shadow-[0_4px_15px_rgba(79,70,229,0.3)] hover:bg-indigo-700 text-slate-800 dark:text-white rounded-xl font-bold text-lg flex items-center justify-center transition-all shadow-[0_4px_15px_rgba(0,117,255,0.4)] truncate"
           >
-            Giao Việc Cho Agents <ArrowRight className="ml-2" />
+            Kích Hoạt Agent Engine <ArrowRight className="ml-2" />
           </button>
         </div>
       </div>

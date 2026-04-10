@@ -62,7 +62,10 @@ def run_cmo_strategic_blueprint(brand_dna: str, usp: str, goal: str) -> dict:
 - Mục tiêu: {goal}
 
 Lập Kế hoạch Chiến lược dài hạn. Trình bày dạng Markdown với những điểm tinh túy nhất để tối ưu token. Rút gọn 12 Form chuẩn MKT thành 1 đoạn markdown table.
-Bắt buộc có bình luận giải thích 'Tại sao?' cho mỗi chiến thuật.
+ĐẶC BIỆT LƯU Ý: 
+- Bắt buộc vẽ các bảng Form 2, 3, 12 (Tài chính & Ngân sách) từ Dữ liệu Lịch sử & Động lực tăng trưởng (nếu có trong Mục tiêu).
+- Bắt buộc sinh ra Điểm Cạnh Tranh vẽ Ma trận DPM (Form 6) và lập bảng SWOT (Form 5) bằng cách nhân trọng số % với Điểm số (1-10) ứng với các yếu tố cạnh tranh CSFs (nếu có).
+Bắt buộc có bình luận giải thích 'Tại sao?' cho mỗi chiến thuật. Mọi chiến lược 7T đều nhằm giải quyết 'Vấn đề then chốt / Nỗi đau' đã thu thập.
 
 TRẢ VỀ JSON:
 {{
@@ -93,7 +96,10 @@ def run_cfo_agent_feedback(resources: str, tactical_plan: str) -> dict:
     prompt = f"""Bạn là CFO khó tính. 
 Nguồn lực hiện có: {resources}.
 Đề xuất truyền thông: {tactical_plan}.
-QUY TẮC CỐT LÕI: Bạn BỊ CẤM xuất ra số tiền VND/USD cụ thể. Nếu CMO đòi hỏi quá mức so với nguồn lực, phải bác bỏ (is_approved = false).
+QUY TẮC CỐT LÕI: 
+1. Bạn BỊ CẤM xuất ra số tiền VND/USD cụ thể. 
+2. Nếu CMO vẽ vời chiến dịch cần nhiều nhân sự hơn mức giới hạn In-house (có trong nguồn lực), PHẢI bác bỏ (is_approved = false).
+3. Bắt buộc thiết lập Kế hoạch Dự phòng (Form 5 - Phần B) để đối phó với 'Giả định rủi ro sống còn' có trong nguồn lực.
 
 TRẢ VỀ JSON:
 {{

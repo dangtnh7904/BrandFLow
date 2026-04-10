@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Dict, Optional, Literal
+from typing import Dict, Optional, Literal, Any
 
 class PresetRequest(BaseModel):
     industry: str = Field(..., description="Tên ngành nghề, ví dụ: 'F&B', 'Spa_Beauty', 'B2B_Tech'")
@@ -10,11 +10,14 @@ class InterviewRequest(BaseModel):
 class RawInputRequest(BaseModel):
     raw_text: str = Field(..., description="Ngôn ngữ tự nhiên từ người dùng")
     budget: Optional[int] = Field(None, description="Ngân sách cố định do người dùng nhập (VND)")
+    comprehensive_form: Optional[Dict[str, Any]] = Field(None, description="Dữ liệu form trắc nghiệm")
+    tenant_id: str = Field("default", description="Mã định danh phiên làm việc của người dùng")
 
 class RefineRequest(BaseModel):
     previous_plan: dict = Field(..., description="Kế hoạch cũ dạng JSON")
     budget: int = Field(..., description="Ngân sách (để kiểm duyệt lại)")
     feedback: str = Field(..., description="Yêu cầu thay đổi từ CEO")
+    tenant_id: str = Field("default", description="Mã định danh phiên làm việc của người dùng")
 
 class MicroExecuteRequest(BaseModel):
     brand_dna: str = Field(..., description="Master Brand DNA")

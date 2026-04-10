@@ -95,14 +95,14 @@ export default function KanbanPdfExporter({ campaignData, budgetData, iteration 
       <div className="flex flex-col sm:flex-row items-center gap-3">
         <button
           onClick={handleExportJson}
-          className="flex items-center gap-2 bg-[#111C44] border border-[#0075FF]/40 hover:bg-[#0075FF]/20 text-[#0075FF] font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl shadow-lg hover:shadow-[#0075FF]/20 transition-all w-full sm:w-auto justify-center"
+          className="flex items-center gap-2 bg-white dark:bg-zinc-900 border border-[#0075FF]/40 hover:bg-indigo-600 shadow-[0_4px_15px_rgba(79,70,229,0.3)]/20 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl shadow-lg hover:shadow-[#0075FF]/20 transition-all w-full sm:w-auto justify-center"
         >
           <FileJson size={16} /> JSON Fallback
         </button>
 
         <button
           onClick={handleExportPdf}
-          className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-[1.03] w-full sm:w-auto justify-center"
+          className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-slate-800 dark:text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-[1.03] w-full sm:w-auto justify-center"
         >
           <Download size={16} />
           Xuất PDF Kanban

@@ -44,10 +44,10 @@ def get_embeddings() -> GoogleGenerativeAIEmbeddings:
     return GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
 
-def get_vectorstore() -> Chroma:
+def get_vectorstore(tenant_id: str = "default") -> Chroma:
     """Khởi tạo hoặc mở lại ChromaDB tại thư mục ./chroma_db."""
     return Chroma(
-        collection_name="brandflow_memory",
+        collection_name=f"brandflow_memory_{tenant_id}",
         embedding_function=get_embeddings(),
         persist_directory=CHROMA_PERSIST_DIR,
     )
@@ -93,7 +93,7 @@ Hãy trích xuất quy tắc rút kinh nghiệm."""
 ])
 
 
-def extract_and_save_rule(human_feedback: str, rejected_plan: str) -> str:
+def extract_and_save_rule(human_feedback: str, rejected_plan: str, tenant_id: str = "default") -> str:
     """
     Cho Learner Agent đọc kế hoạch bị chê + feedback của người dùng.
     Trích xuất quy tắc tổng quát và lưu vào ChromaDB.
@@ -120,7 +120,7 @@ def extract_and_save_rule(human_feedback: str, rejected_plan: str) -> str:
         keywords = result.get("keywords", [])
 
         # Lưu vào ChromaDB
-        vectorstore = get_vectorstore()
+        vectorstore = get_vectorstore(tenant_id)
         doc = Document(
             page_content=rule_summary,
             metadata={
@@ -204,7 +204,7 @@ Hãy trích xuất Brand DNA ngay lập tức."""
 ])
 
 
-def analyze_and_extract_dna(document_content: str) -> dict:
+def analyze_and_extract_dna(document_content: str, tenant_id: str = "default") -> dict:
     """
     Sử dụng LLM để đọc text thô, trích xuất cấu trúc BrandDNA JSON.
     Sau đó tự động lưu các strict_rules vào ChromaDB.
@@ -229,7 +229,7 @@ def analyze_and_extract_dna(document_content: str) -> dict:
         result = chain.invoke({"document_content": safe_content})
 
         # Lưu các strict_rules vào ChromaDB để AI nhớ mãi mãi
-        vectorstore = get_vectorstore()
+        vectorstore = get_vectorstore(tenant_id)
         strict_rules = result.get("strict_rules", [])
         if strict_rules:
             docs = [
@@ -257,7 +257,7 @@ def analyze_and_extract_dna(document_content: str) -> dict:
 # 4. ONBOARDING MODULE — Khởi tạo dữ liệu (Cold Start)
 # =============================================================================
 
-def inject_industry_presets(industry_name: str) -> dict:
+def inject_industry_presets(industry_name: str, tenant_id: str = "default") -> dict:
     """Nạp bộ quy chuẩn ngành có sẵn vào ChromaDB."""
     presets = {
         "F&B": [
@@ -282,7 +282,7 @@ def inject_industry_presets(industry_name: str) -> dict:
         
     rules = presets[industry_name]
     try:
-        vectorstore = get_vectorstore()
+        vectorstore = get_vectorstore(tenant_id)
         docs = [
             Document(page_content=rule, metadata={"type": "preset", "industry": industry_name})
             for rule in rules
@@ -294,7 +294,7 @@ def inject_industry_presets(industry_name: str) -> dict:
          print(f"   🔴 [Onboarding] Lỗi khi nạp rules: {e}")
          return {"status": "error", "message": str(e)}
 
-def generate_guideline_from_qa(qa_pairs: dict) -> dict:
+def generate_guideline_from_qa(qa_pairs: dict, tenant_id: str = "default") -> dict:
     """Sinh ra 3 quy tắc marketing ngắn gọn từ câu trả lời phỏng vấn."""
     
     qa_text = "\n".join([f"Hỏi: {q}\nĐáp: {a}" for q, a in qa_pairs.items()])
@@ -320,7 +320,7 @@ def generate_guideline_from_qa(qa_pairs: dict) -> dict:
         # Optional constraint for 3 rules
         rules = rules[:3]
              
-        vectorstore = get_vectorstore()
+        vectorstore = get_vectorstore(tenant_id)
         docs = [
             Document(page_content=rule, metadata={"type": "onboarding"})
             for rule in rules
@@ -337,7 +337,7 @@ def generate_guideline_from_qa(qa_pairs: dict) -> dict:
 # 4. RAG RETRIEVAL — Truy xuất quy tắc liên quan
 # =============================================================================
 
-def get_relevant_guidelines(goal: str, top_k: int = 3) -> str:
+def get_relevant_guidelines(goal: str, top_k: int = 3, tenant_id: str = "default") -> str:
     """
     Query ChromaDB bằng mục tiêu chiến dịch, lấy ra top-k quy tắc liên quan nhất.
 
@@ -349,7 +349,7 @@ def get_relevant_guidelines(goal: str, top_k: int = 3) -> str:
         Chuỗi string gộp các quy tắc, hoặc "" nếu DB trống / lỗi.
     """
     try:
-        vectorstore = get_vectorstore()
+        vectorstore = get_vectorstore(tenant_id)
 
         # Kiểm tra xem DB có dữ liệu không
         collection = vectorstore._collection
@@ -372,10 +372,10 @@ def get_relevant_guidelines(goal: str, top_k: int = 3) -> str:
         return ""
 
 
-def add_manual_guideline(text: str, guideline_type: str = "company_rule") -> None:
+def add_manual_guideline(text: str, guideline_type: str = "company_rule", tenant_id: str = "default") -> None:
     """Thêm một quy tắc thủ công vào ChromaDB."""
     try:
-        vectorstore = get_vectorstore()
+        vectorstore = get_vectorstore(tenant_id)
         doc = Document(
             page_content=text,
             metadata={"type": guideline_type}

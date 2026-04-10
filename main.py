@@ -793,7 +793,7 @@ def onboarding_upload_url(request: UrlRequestCustom):
          raise HTTPException(status_code=500, detail=f"Lỗi khi xử lý URL: {str(e)}")
 
 @app.post("/api/v1/onboarding/upload")
-async def onboarding_upload(files: List[UploadFile] = File(...)):
+async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str = Form("default")):
     """
     Nhận file, băm nhỏ và lưu vào ChromaDB (Bộ não thương hiệu).
     """
@@ -803,7 +803,7 @@ async def onboarding_upload(files: List[UploadFile] = File(...)):
     try:
         temp_dir = "./temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
-        ingestor = DocumentIngestor()
+        ingestor = DocumentIngestor(tenant_id=tenant_id)
         
         for file in files:
             unique_filename = f"{uuid.uuid4()}_{file.filename}"
@@ -826,7 +826,7 @@ async def onboarding_upload(files: List[UploadFile] = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/v1/onboarding/extract-summary")
-async def onboarding_extract_summary(files: List[UploadFile] = File(...)):
+async def onboarding_extract_summary(files: List[UploadFile] = File(...), tenant_id: str = Form("default")):
     """
     Nhận file, đọc nội dung và trả về tóm tắt ngắn gọn thông qua Gemini.
     """
@@ -837,7 +837,7 @@ async def onboarding_extract_summary(files: List[UploadFile] = File(...)):
         temp_dir = "./temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
         from document_processor import DocumentIngestor
-        ingestor = DocumentIngestor()
+        ingestor = DocumentIngestor(tenant_id=tenant_id)
         
         combined_text = ""
         for file in files:
@@ -1180,7 +1180,14 @@ async def process_intake(request: RawInputRequest):
     """
     try:
         raw_text = request.raw_text
+        tenant_id = request.tenant_id
         
+        # Inject comprehensive_form data into raw_text if provided
+        comp_form = request.comprehensive_form or {}
+        if comp_form:
+            form_context = f"\n[DỮ LIỆU TỪ BỘ CÂU HỎI TRẮC NGHIỆM CHI TIẾT ĐỂ LẬP CHIẾN LƯỢC QUAN TRỌNG]\n{json.dumps(comp_form, ensure_ascii=False)}\n[HẾT DỮ LIỆU CÂU HỎI]"
+            raw_text += form_context
+
         # --- SECRET MOCK MODE INTERCEPTOR ---
         secret_keywords = ["hương viên trà quán", "mã demo 1"]
         if any(keyword in raw_text.lower() for keyword in secret_keywords):
@@ -1273,6 +1280,7 @@ async def process_refine(request: RefineRequest):
     """
     try:
         print(f"\n[REFINE API] Receive feedback: {request.feedback}")
+        tenant_id = request.tenant_id
         
         result = run_refinement_pipeline(
             previous_plan=request.previous_plan,

@@ -1,14 +1,11 @@
 """
 =============================================================================
-BrandFlow Strategy Engine - agents_core.py (v7 — Deterministic Arbitration)
+BrandFlow Strategy Engine - agents_core.py (Token Optimized & 4 Stages)
 =============================================================================
-Kiến trúc: Pipeline tuyến tính, KHÔNG vòng lặp.
-  Agent 1 (MasterPlanner) → Python Interceptor → Agent 2 (CFO) & Agent 3 (Persona) song song.
-
-APIs:
-  - MasterPlanner: Google Gemini 1.5 Flash (JSON mode)
-  - CFO Commentary: Groq llama3-8b-8192
-  - Persona Validator: Groq mixtral-8x7b-32768
+Cốt lõi Hệ thống:
+ - 1. Chống Ảo giác Tài chính: CFO cấm xuất ra con số tuyệt đối.
+ - 2. Single Source of Truth: Bám chặt Master Brand Profile.
+ - 3. Tranh luận Bắt buộc: CMO, Persona, CFO phải Approve.
 =============================================================================
 """
 
@@ -223,11 +220,10 @@ def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
             client,
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.4,
-            max_tokens=4096,
+            temperature=temp,
             response_format={"type": "json_object"},
         )
-        raw_text = response.choices[0].message.content.strip()
+        return json.loads(response.choices[0].message.content)
     except Exception as e:
         if _is_timeout_error(e):
             raise TimeoutError(
@@ -310,74 +306,67 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
 
 
 # =============================================================================
-# 3. PYTHON INTERCEPTOR (Kế toán trưởng vô cảm — KHÔNG dùng AI)
+# GIAI ĐOẠN 2: STRATEGIC DEBATE
 # =============================================================================
 
-def python_interceptor(plan: dict, budget: int) -> dict:
-    """
-    Nhận JSON từ MasterPlanner. Tính tổng cost bằng Python.
-    Nếu vượt ngân sách, xóa/giảm các hạng mục COULD_HAVE cho đến khi hợp lệ.
-    Trả về: final_plan, overflow_amount, cut_items.
-    """
-    print(f"\n{'─' * 70}")
-    print(f"🧮 [PYTHON INTERCEPTOR] Đang kiểm toán bằng code Python...")
-    print(f"{'─' * 70}")
+def run_cmo_strategic_blueprint(brand_dna: str, usp: str, goal: str) -> dict:
+    print(f"🎯 [STAGE 2] CMO đang phác thảo Strategic Blueprint...")
+    prompt = f"""Bạn là CMO. Dựa vào Master Profile (Single Source of Truth):
+- DNA: {brand_dna}
+- USP: {usp}
+- Mục tiêu: {goal}
 
-    def calc_total(p):
-        total = 0
-        for phase in p.get("activity_and_financial_breakdown", []):
-            for act in phase.get("activities", []):
-                total += int(act.get("cost_vnd", 0))
-        return total
+Lập Kế hoạch Chiến lược dài hạn. Trình bày dạng Markdown với những điểm tinh túy nhất để tối ưu token. Rút gọn 12 Form chuẩn MKT thành 1 đoạn markdown table.
+ĐẶC BIỆT LƯU Ý: 
+- Bắt buộc vẽ các bảng Form 2, 3, 12 (Tài chính & Ngân sách) từ Dữ liệu Lịch sử & Động lực tăng trưởng (nếu có trong Mục tiêu).
+- Bắt buộc sinh ra Điểm Cạnh Tranh vẽ Ma trận DPM (Form 6) và lập bảng SWOT (Form 5) bằng cách nhân trọng số % với Điểm số (1-10) ứng với các yếu tố cạnh tranh CSFs (nếu có).
+Bắt buộc có bình luận giải thích 'Tại sao?' cho mỗi chiến thuật. Mọi chiến lược 7T đều nhằm giải quyết 'Vấn đề then chốt / Nỗi đau' đã thu thập.
 
-    raw_total = calc_total(plan)
-    overflow = max(0, raw_total - budget)
-    cut_items = []
+TRẢ VỀ JSON:
+{{
+    "strategic_plan_md": "Bảng MD chiến lược...",
+    "core_message": "Thông điệp lõi chiến dịch",
+    "media_mix": ["FB", "Tiktok", "KOLs..."]
+}}
+"""
+    return _call_groq(prompt, temp=0.6)
 
-    print(f"   Ngân sách được cấp : {budget:,} VND")
-    print(f"   Tổng chi phí gốc  : {raw_total:,} VND")
-    if overflow > 0:
-        print(f"   ⚠️ Vượt ngân sách : {overflow:,} VND → Bắt đầu cắt COULD_HAVE...")
+def run_customer_agent_feedback(persona_prompt: str, core_message: str, media_mix: list) -> dict:
+    print(f"🎭 [STAGE 2/3] Customer Persona đang chấm điểm và phản biện...")
+    prompt = f"""{persona_prompt}
+Bạn đang xem xét đề xuất từ CMO: Thông điệp "{core_message}" chạy trên kênh {media_mix}.
+Bạn có thích mua hàng với thông điệp này không? Nó có sai Insight không?
+Nếu KHÔNG hợp, trả về is_approved = false. Nếu HỢP, trả về true. Trả lời cực ngắn.
 
-    # Cắt bỏ hoặc ép giá COULD_HAVE từ dưới lên
-    if overflow > 0:
-        for phase in plan.get("activity_and_financial_breakdown", []):
-            remaining_acts = []
-            for act in phase.get("activities", []):
-                if act.get("moscow_tag") == "COULD_HAVE" and overflow > 0:
-                    item_cost = int(act.get("cost_vnd", 0))
-                    if item_cost <= overflow:
-                        overflow -= item_cost
-                        cut_items.append(f"{act.get('activity_name')} ({item_cost:,}đ)")
-                        print(f"   ✂️ Cắt bỏ: {act.get('activity_name')} — {item_cost:,} VND")
-                    else:
-                        new_cost = item_cost - overflow
-                        act["cost_vnd"] = new_cost
-                        print(f"   📉 Ép giá: {act.get('activity_name')} — Giảm {overflow:,} VND (Còn {new_cost:,} VND)")
-                        cut_items.append(f"{act.get('activity_name')} (Ép giá: -{overflow:,}đ)")
-                        overflow = 0
-                        remaining_acts.append(act)
-                else:
-                    remaining_acts.append(act)
-            phase["activities"] = remaining_acts
+TRẢ VỀ JSON:
+{{
+    "is_approved": true,
+    "feedback": "Phản hồi tại sao thích/chê..."
+}}
+"""
+    return _call_groq(prompt, temp=0.7)
 
-    final_total = calc_total(plan)
-    final_overflow = max(0, raw_total - budget)
+def run_cfo_agent_feedback(resources: str, tactical_plan: str) -> dict:
+    print(f"💼 [STAGE 2] CFO đang đánh giá khả năng phòng thủ của nguồn lực...")
+    prompt = f"""Bạn là CFO khó tính. 
+Nguồn lực hiện có: {resources}.
+Đề xuất truyền thông: {tactical_plan}.
+QUY TẮC CỐT LÕI: 
+1. Bạn BỊ CẤM xuất ra số tiền VND/USD cụ thể. 
+2. Nếu CMO vẽ vời chiến dịch cần nhiều nhân sự hơn mức giới hạn In-house (có trong nguồn lực), PHẢI bác bỏ (is_approved = false).
+3. Bắt buộc thiết lập Kế hoạch Dự phòng (Form 5 - Phần B) để đối phó với 'Giả định rủi ro sống còn' có trong nguồn lực.
 
-    print(f"   ✅ Tổng sau cắt    : {final_total:,} VND")
-    print(f"   📋 Hạng mục bị cắt: {len(cut_items)} mục")
-
-    return {
-        "final_plan": plan,
-        "overflow_amount": final_overflow,
-        "cut_items": cut_items,
-        "raw_total": raw_total,
-        "final_total": final_total,
-    }
+TRẢ VỀ JSON:
+{{
+    "is_approved": false,
+    "feedback": "Lý do bác bỏ/hoặc duyệt dựa trên nguồn lực..."
+}}
+"""
+    return _call_groq(prompt, temp=0.2)
 
 
 # =============================================================================
-# 4. AGENT 2: CFO COMMENTARY (Groq — llama-3.1-8b-instant)
+# GIAI ĐOẠN 3: TACTICAL CAMPAIGN & EXACT BUDGETING
 # =============================================================================
 
 CFO_PROMPT = """Bạn là CFO (Giám đốc Tài chính) khó tính, lạnh lùng.
@@ -423,7 +412,7 @@ def run_cfo_commentary(overflow_amount: int, cut_items: list, budget: int) -> st
 
 
 # =============================================================================
-# 5. AGENT 3: PERSONA VALIDATOR (Groq — llama-3.1-8b-instant)
+# GIAI ĐOẠN 4: MICRO-EXECUTION
 # =============================================================================
 
 PERSONA_PROMPT = """Bạn là một khách hàng thực tế thuộc tệp: "{target_audience}".

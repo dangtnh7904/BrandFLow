@@ -16,6 +16,7 @@ from schemas import (
     InterviewRequest,
     RawInputRequest,
     RefineRequest,
+    MicroExecuteRequest,
     OrchestrationMockRequest,
     PlanWizardRequest,
     PlanIntent,
@@ -792,7 +793,7 @@ def onboarding_upload_url(request: UrlRequestCustom):
          raise HTTPException(status_code=500, detail=f"Lỗi khi xử lý URL: {str(e)}")
 
 @app.post("/api/v1/onboarding/upload")
-async def onboarding_upload(files: List[UploadFile] = File(...)):
+async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str = Form("default")):
     """
     Nhận file, băm nhỏ và lưu vào ChromaDB (Bộ não thương hiệu).
     """
@@ -802,7 +803,7 @@ async def onboarding_upload(files: List[UploadFile] = File(...)):
     try:
         temp_dir = "./temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
-        ingestor = DocumentIngestor()
+        ingestor = DocumentIngestor(tenant_id=tenant_id)
         
         for file in files:
             unique_filename = f"{uuid.uuid4()}_{file.filename}"
@@ -825,7 +826,7 @@ async def onboarding_upload(files: List[UploadFile] = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/v1/onboarding/extract-summary")
-async def onboarding_extract_summary(files: List[UploadFile] = File(...)):
+async def onboarding_extract_summary(files: List[UploadFile] = File(...), tenant_id: str = Form("default")):
     """
     Nhận file, đọc nội dung và trả về tóm tắt ngắn gọn thông qua Gemini.
     """
@@ -836,7 +837,7 @@ async def onboarding_extract_summary(files: List[UploadFile] = File(...)):
         temp_dir = "./temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
         from document_processor import DocumentIngestor
-        ingestor = DocumentIngestor()
+        ingestor = DocumentIngestor(tenant_id=tenant_id)
         
         combined_text = ""
         for file in files:
@@ -1179,7 +1180,14 @@ async def process_intake(request: RawInputRequest):
     """
     try:
         raw_text = request.raw_text
+        tenant_id = request.tenant_id
         
+        # Inject comprehensive_form data into raw_text if provided
+        comp_form = request.comprehensive_form or {}
+        if comp_form:
+            form_context = f"\n[DỮ LIỆU TỪ BỘ CÂU HỎI TRẮC NGHIỆM CHI TIẾT ĐỂ LẬP CHIẾN LƯỢC QUAN TRỌNG]\n{json.dumps(comp_form, ensure_ascii=False)}\n[HẾT DỮ LIỆU CÂU HỎI]"
+            raw_text += form_context
+
         # --- SECRET MOCK MODE INTERCEPTOR ---
         secret_keywords = ["hương viên trà quán", "mã demo 1"]
         if any(keyword in raw_text.lower() for keyword in secret_keywords):
@@ -1244,8 +1252,8 @@ async def process_intake(request: RawInputRequest):
             goal=parsed_data.get("goal", request.raw_text),
             industry=parsed_data.get("industry", "General"),
             budget=parsed_data.get("budget", 0),
-            target_audience=parsed_data.get("target_audience", ""),
-            constraints=parsed_data.get("special_constraints", ""),
+            csfs=parsed_data.get("csfs", []),
+            resources=parsed_data.get("resources", ""),
         )
         
         return {
@@ -1279,6 +1287,7 @@ async def process_refine(request: RefineRequest):
     """
     try:
         print(f"\n[REFINE API] Receive feedback: {request.feedback}")
+        tenant_id = request.tenant_id
         
         result = run_refinement_pipeline(
             previous_plan=request.previous_plan,
@@ -1307,6 +1316,30 @@ async def process_refine(request: RefineRequest):
             "message": "AI gặp sự cố khi đang phân tích lại kế hoạch. Vui lòng thử lại.",
             "debug_info": str(e)
         })
+
+@app.post("/api/v1/planning/micro-execute")
+async def process_micro_execute(request: MicroExecuteRequest):
+    """
+    Giai đoạn 4: Sản xuất Content Đơn lẻ (Micro-execution).
+    """
+    try:
+        from agents_core import run_cmo_micro_execution, run_customer_agent_feedback
+        
+        cmo_content = run_cmo_micro_execution(request.brand_dna, request.usp, request.command)
+        
+        persona_feedback = run_customer_agent_feedback(
+            request.persona_prompt,
+            "Cần viết theo Tone of Voice phù hợp",
+            [cmo_content.get("content", "")]
+        )
+        
+        return {
+            "status": "success",
+            "content": cmo_content.get("content", ""),
+            "persona_feedback": persona_feedback
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail={"status": "error", "message": "Lỗi AI sinh nội dung.", "debug_info": str(e)})
 
 @app.get("/api/v1/onboarding/stats")
 def get_db_stats():

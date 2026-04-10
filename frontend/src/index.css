@@ -21,3 +21,73 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Custom Typography without npm module */
+.prose {
+  color: inherit;
+  max-width: 100%;
+}
+.prose p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+.prose h1 { font-size: 1.5rem; }
+.prose h2 { font-size: 1.25rem; }
+.prose h3 { font-size: 1.125rem; }
+
+/* Elegant Table Design */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  font-size: 0.875rem; /* text-sm */
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+.prose thead {
+  background-color: #f1f5f9; /* slate-100 */
+}
+html.dark .prose thead {
+  background-color: #18181b; /* zinc-900 */
+}
+.prose th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #334155; /* slate-700 */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
+html.dark .prose th {
+  color: #a1a1aa; /* zinc-400 */
+}
+.prose td {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e2e8f0; /* slate-200 */
+  color: #475569; /* slate-600 */
+}
+html.dark .prose td {
+  border-top: 1px solid #27272a; /* zinc-800 */
+  color: #d4d4d8; /* zinc-300 */
+}
+.prose tbody tr:nth-child(even) {
+  background-color: #f8fafc; /* slate-50 */
+}
+html.dark .prose tbody tr:nth-child(even) {
+  background-color: #0f0f12; /* slightly different black */
+}
+.prose tbody tr:hover {
+  background-color: #f1f5f9;
+}
+html.dark .prose tbody tr:hover {
+  background-color: #27272a;
+}
+.prose strong { font-weight: 600; }

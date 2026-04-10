@@ -17,7 +17,7 @@ import json
 import hashlib
 import os
 import uuid
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from datetime import datetime, timezone
 from typing import Any, Optional
 
@@ -37,6 +37,7 @@ NODE_FINALIZE_OUTPUT = "finalize_output"
 NODE_PLAN_WIZARD = "plan_wizard"
 NODE_PLAN_COMPILER = "plan_compiler"
 NODE_CLARIFICATION_GUARD = "clarification_guard"
+PARALLEL_AGENT_TIMEOUT_SECONDS = int(os.getenv("BRANDFLOW_PARALLEL_AGENT_TIMEOUT_SECONDS", "75"))
 
 
 class OrchestrationStageError(Exception):
@@ -1057,9 +1058,15 @@ def run_pipeline(
         persona_future = executor.submit(
             run_persona_validator, final_plan, target_audience
         )
-
-        cfo_comment = cfo_future.result()
-        persona_comment = persona_future.result()
+        try:
+            cfo_comment = cfo_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
+            persona_comment = persona_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
+        except FuturesTimeoutError as exc:
+            cfo_future.cancel()
+            persona_future.cancel()
+            raise TimeoutError(
+                f"CFO/PERSONA timeout sau {PARALLEL_AGENT_TIMEOUT_SECONDS} giay."
+            ) from exc
 
     # ── KẾT QUẢ CUỐI CÙNG ──
     agent_logs = [
@@ -1119,9 +1126,15 @@ def run_refinement_pipeline(
         persona_future = executor.submit(
             run_persona_validator, final_plan, target_audience
         )
-
-        cfo_comment = cfo_future.result()
-        persona_comment = persona_future.result()
+        try:
+            cfo_comment = cfo_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
+            persona_comment = persona_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
+        except FuturesTimeoutError as exc:
+            cfo_future.cancel()
+            persona_future.cancel()
+            raise TimeoutError(
+                f"CFO/PERSONA timeout sau {PARALLEL_AGENT_TIMEOUT_SECONDS} giay."
+            ) from exc
 
     # ── KẾT QUẢ CUỐI CÙNG ──
     agent_logs = [

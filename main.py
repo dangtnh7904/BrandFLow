@@ -1256,6 +1256,13 @@ async def process_intake(request: RawInputRequest):
             "plan": result["final_plan"],
             "agent_logs": result["agent_logs"]
         }
+    except TimeoutError as e:
+        print(f"🔴 [INTAKE] Timeout pipeline: {e}")
+        raise HTTPException(status_code=504, detail={
+            "status": "error",
+            "message": "Yeu cau AI qua thoi gian cho phep. Vui long thu lai.",
+            "debug_info": str(e)
+        })
     except Exception as e:
         print(f"🔴 [INTAKE] Lỗi hệ thống nghiêm trọng: {e}")
         # Trả về payload JSON chuẩn để Frontend xử lý được (tắt loading, hiện thông báo lỗi)
@@ -1286,6 +1293,13 @@ async def process_refine(request: RefineRequest):
             "plan": result["final_plan"],
             "agent_logs": result["agent_logs"]
         }
+    except TimeoutError as e:
+        print(f"🔴 [REFINE API] Timeout pipeline: {e}")
+        raise HTTPException(status_code=504, detail={
+            "status": "error",
+            "message": "Yeu cau AI qua thoi gian cho phep. Vui long thu lai.",
+            "debug_info": str(e)
+        })
     except Exception as e:
         print(f"🔴 [REFINE API] Lỗi xử lý feedback: {e}")
         raise HTTPException(status_code=500, detail={

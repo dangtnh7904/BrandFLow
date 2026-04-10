@@ -2,6 +2,40 @@ import json
 import os
 from typing import Optional
 
+
+def _resolve_groq_timeout_seconds() -> float:
+    raw_value = os.getenv("BRANDFLOW_GROQ_TIMEOUT_SECONDS", "60")
+    try:
+        return max(1.0, float(raw_value))
+    except ValueError:
+        return 60.0
+
+
+GROQ_TIMEOUT_SECONDS = _resolve_groq_timeout_seconds()
+
+
+def _is_timeout_error(exc: Exception) -> bool:
+    name = exc.__class__.__name__.lower()
+    message = str(exc).lower()
+    timeout_keywords = ("timeout", "timed out", "read timeout", "connect timeout")
+    return "timeout" in name or any(keyword in message for keyword in timeout_keywords)
+
+
+def _create_groq_client():
+    from groq import Groq
+
+    try:
+        return Groq(timeout=GROQ_TIMEOUT_SECONDS)
+    except TypeError:
+        return Groq()
+
+
+def _chat_completion_with_timeout(client, **kwargs):
+    try:
+        return client.chat.completions.create(timeout=GROQ_TIMEOUT_SECONDS, **kwargs)
+    except TypeError:
+        return client.chat.completions.create(**kwargs)
+
 def analyze_raw_input(user_raw_text: str) -> dict:
     """
     Dùng Groq llama-3.3-70b để trích xuất 5 trường dữ liệu từ text:
@@ -23,9 +57,9 @@ Hãy phân tích đoạn văn bản người dùng cung cấp và trả về M�
 """
     
     try:
-        from groq import Groq
-        client = Groq()
-        response = client.chat.completions.create(
+        client = _create_groq_client()
+        response = _chat_completion_with_timeout(
+            client,
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1,
@@ -34,6 +68,10 @@ Hãy phân tích đoạn văn bản người dùng cung cấp và trả về M�
         parsed_data = json.loads(response.choices[0].message.content)
         return parsed_data
     except Exception as e:
+        if _is_timeout_error(e):
+            raise TimeoutError(
+                f"Intake timeout sau {int(GROQ_TIMEOUT_SECONDS)} giay."
+            ) from e
         print(f"🔴 [INTAKE] Lỗi khi xử lý qua Groq: {e}")
         return {
             "goal": user_raw_text,
@@ -84,9 +122,9 @@ def extract_document_summary(raw_text: str) -> dict:
 """
     
     try:
-        from groq import Groq
-        client = Groq()
-        response = client.chat.completions.create(
+        client = _create_groq_client()
+        response = _chat_completion_with_timeout(
+            client,
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1,
@@ -94,6 +132,10 @@ def extract_document_summary(raw_text: str) -> dict:
         )
         return json.loads(response.choices[0].message.content)
     except Exception as e:
+        if _is_timeout_error(e):
+            raise TimeoutError(
+                f"Document extraction timeout sau {int(GROQ_TIMEOUT_SECONDS)} giay."
+            ) from e
         print(f"🔴 [DOCUMENT] Lỗi trích xuất qua Groq: {e}")
         return {
             "company_name": "Không trích xuất được",

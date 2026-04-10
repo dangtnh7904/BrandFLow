@@ -98,19 +98,24 @@ export default function ScreenSimulation({ iteration, feedback, isReady, error, 
   const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
+    if (error) {
+      setProgress(100);
+      return;
+    }
     if (progress >= 100) return;
     const timer = setInterval(() => {
       setProgress(p => {
+        if (error) return 100;
         if (!isReady && p >= 85) return 85; 
         if (isReady && p >= 100) return 100;
         return p + (isReady ? 5 : 0.8);
       });
     }, 150);
     return () => clearInterval(timer);
-  }, [isReady, progress]);
+  }, [isReady, progress, error]);
 
   useEffect(() => {
-    if (isReady) return;
+    if (isReady || error) return;
     setMessages([]);
     setProgress(0);
     setShowDoneBtn(false);
@@ -129,11 +134,22 @@ export default function ScreenSimulation({ iteration, feedback, isReady, error, 
       timers.push(setTimeout(() => { setTypingAgent(null); setMessages(prev => [...prev, msg]); setActiveAgent(msg.sender); }, msg.delay));
     });
     return () => timers.forEach(clearTimeout);
-  }, [isReady, iteration, feedback]);
+  }, [isReady, iteration, feedback, error]);
 
   useEffect(() => {
+    if (error) {
+      setTypingAgent(null);
+      setProgress(100);
+      setShowDoneBtn(true);
+      setCurrentStep(5);
+      setActiveAgent('SYSTEM');
+      setMessages(prev => {
+        if (prev.some(msg => msg.role === 'Lỗi hệ thống')) return prev;
+        return [...prev, { sender: 'SYSTEM', role: 'Lỗi hệ thống', text: `❌ ${error}` }];
+      });
+      return;
+    }
     if (!isReady) return;
-    if (error) { setShowDoneBtn(true); setCurrentStep(5); return; }
     let timers = [];
     let delayOffset = 800;
     if (agentLogs && agentLogs.length > 0) {

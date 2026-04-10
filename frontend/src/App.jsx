@@ -101,6 +101,55 @@ const getBudgetData = (data) => {
   return budget;
 };
 
+const DEFAULT_REQUEST_TIMEOUT_MS = 30000;
+const AI_REQUEST_TIMEOUT_MS = 90000;
+const UPLOAD_REQUEST_TIMEOUT_MS = 60000;
+
+const buildTimeoutError = (url, timeoutMs) => {
+  let endpoint = url;
+  try {
+    endpoint = new URL(url).pathname;
+  } catch (_) {
+  }
+  return new Error(`Yeu cau ${endpoint} da qua ${Math.round(timeoutMs / 1000)} giay. Vui long thu lai.`);
+};
+
+const fetchWithTimeout = async (url, options = {}, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (error) {
+    if (error && error.name === 'AbortError') {
+      throw buildTimeoutError(url, timeoutMs);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
+const parseJsonOrThrow = async (response, fallbackMessage) => {
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_) {
+    payload = null;
+  }
+
+  if (!response.ok) {
+    const detail = payload && payload.detail;
+    const detailMessage = typeof detail === 'string'
+      ? detail
+      : (detail && detail.message) || (payload && payload.message);
+    throw new Error(detailMessage || fallbackMessage || `HTTP ${response.status}`);
+  }
+
+  return payload || {};
+};
+
 export default function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [iteration, setIteration] = useState(1);
@@ -125,24 +174,38 @@ export default function App() {
       if (files && files.length > 0) {
         const formData = new FormData();
         files.forEach(f => formData.append("files", f));
-        await fetch("http://localhost:8000/api/v1/onboarding/upload", { method: "POST", body: formData });
+        const uploadResponse = await fetchWithTimeout(
+          "http://localhost:8000/api/v1/onboarding/upload",
+          { method: "POST", body: formData },
+          UPLOAD_REQUEST_TIMEOUT_MS
+        );
+        await parseJsonOrThrow(uploadResponse, "Upload file that bai.");
       }
 
       if (url) {
-        await fetch("http://localhost:8000/api/v1/onboarding/upload-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ urls: [url] })
-        });
+        const uploadUrlResponse = await fetchWithTimeout(
+          "http://localhost:8000/api/v1/onboarding/upload-url",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ urls: [url] })
+          },
+          UPLOAD_REQUEST_TIMEOUT_MS
+        );
+        await parseJsonOrThrow(uploadUrlResponse, "Upload URL that bai.");
       }
 
       const rawText = `Tên chiến dịch: ${name || 'N/A'}. Ngân sách: ${budgetNum} VND. Yêu cầu: ${requestText || 'Không mô tả'}`;
-      const res = await fetch("http://localhost:8000/api/v1/planning/intake", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ raw_text: rawText, budget: budgetNum })
-      });
-      const result = await res.json();
+      const res = await fetchWithTimeout(
+        "http://localhost:8000/api/v1/planning/intake",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ raw_text: rawText, budget: budgetNum })
+        },
+        AI_REQUEST_TIMEOUT_MS
+      );
+      const result = await parseJsonOrThrow(res, "Loi tao ke hoach tu Agent.");
       
       if (result.status === "success" && result.plan) {
          let idCounter = 1;
@@ -163,7 +226,7 @@ export default function App() {
          throw new Error(result.detail || result.message || "Lỗi tạo kế hoạch từ Agent.");
       }
     } catch(err) {
-      setGenerateError(err.message || "Đã xảy ra lỗi kết nối Backend");
+      setGenerateError(err instanceof Error ? err.message : "Da xay ra loi ket noi Backend");
     } finally {
       setIsGenerating(false);
     }
@@ -200,12 +263,16 @@ export default function App() {
          budget: currentPlan.executive_summary?.total_budget_vnd || 20000000,
          feedback: userFeedback
       };
-      const res = await fetch("http://localhost:8000/api/v1/planning/refine", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const result = await res.json();
+      const res = await fetchWithTimeout(
+        "http://localhost:8000/api/v1/planning/refine",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        },
+        AI_REQUEST_TIMEOUT_MS
+      );
+      const result = await parseJsonOrThrow(res, "Loi cap nhat ke hoach tu Agent.");
       
       if (result.status === "success" && result.plan) {
          let completePlan = result.plan;
@@ -221,7 +288,7 @@ export default function App() {
          throw new Error(result.detail || result.message || "Lỗi cập nhật kế hoạch từ Agent.");
       }
     } catch(err) {
-      setGenerateError(err.message || "Đã xảy ra lỗi kết nối Backend khi thực hiện Refine");
+      setGenerateError(err instanceof Error ? err.message : "Da xay ra loi ket noi Backend khi thuc hien Refine");
     } finally {
       setIsGenerating(false);
     }
@@ -264,7 +331,7 @@ export default function App() {
               isReady={!!campaignData}
               error={generateError}
               agentLogs={agentLogs}
-              onComplete={() => setCurrentView('result')} 
+              onComplete={() => setCurrentView(generateError ? 'upload' : 'result')} 
             />
           )}
 

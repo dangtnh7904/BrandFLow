@@ -17,6 +17,40 @@ import os
 from typing import List, Literal
 from pydantic import BaseModel, Field
 
+
+def _resolve_groq_timeout_seconds() -> float:
+  raw_value = os.getenv("BRANDFLOW_GROQ_TIMEOUT_SECONDS", "60")
+  try:
+    return max(1.0, float(raw_value))
+  except ValueError:
+    return 60.0
+
+
+GROQ_TIMEOUT_SECONDS = _resolve_groq_timeout_seconds()
+
+
+def _is_timeout_error(exc: Exception) -> bool:
+  name = exc.__class__.__name__.lower()
+  message = str(exc).lower()
+  timeout_keywords = ("timeout", "timed out", "read timeout", "connect timeout")
+  return "timeout" in name or any(keyword in message for keyword in timeout_keywords)
+
+
+def _create_groq_client():
+  from groq import Groq
+
+  try:
+    return Groq(timeout=GROQ_TIMEOUT_SECONDS)
+  except TypeError:
+    return Groq()
+
+
+def _chat_completion_with_timeout(client, **kwargs):
+  try:
+    return client.chat.completions.create(timeout=GROQ_TIMEOUT_SECONDS, **kwargs)
+  except TypeError:
+    return client.chat.completions.create(**kwargs)
+
 # =============================================================================
 # 1. PYDANTIC SCHEMAS (giữ nguyên cấu trúc output cho Frontend)
 # =============================================================================
@@ -184,9 +218,9 @@ def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
     )
 
     try:
-        from groq import Groq
-        client = Groq()
-        response = client.chat.completions.create(
+        client = _create_groq_client()
+        response = _chat_completion_with_timeout(
+            client,
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.4,
@@ -195,6 +229,10 @@ def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
         )
         raw_text = response.choices[0].message.content.strip()
     except Exception as e:
+        if _is_timeout_error(e):
+            raise TimeoutError(
+                f"Refiner timeout sau {int(GROQ_TIMEOUT_SECONDS)} giay."
+            ) from e
         print(f"🔴 [REFINER] Groq API Error: {e}, trả về plan cũ.")
         return previous_plan
 
@@ -231,15 +269,22 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
         constraints=constraints or "Không có",
     )
 
-    from groq import Groq
-    client = Groq()
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.4,
-        max_tokens=4096,
-        response_format={"type": "json_object"},
-    )
+    client = _create_groq_client()
+    try:
+        response = _chat_completion_with_timeout(
+            client,
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4,
+            max_tokens=4096,
+            response_format={"type": "json_object"},
+        )
+    except Exception as e:
+        if _is_timeout_error(e):
+            raise TimeoutError(
+                f"Master planner timeout sau {int(GROQ_TIMEOUT_SECONDS)} giay."
+            ) from e
+        raise
     raw_text = response.choices[0].message.content.strip()
 
     if raw_text.startswith("```json"):
@@ -353,8 +398,7 @@ def run_cfo_commentary(overflow_amount: int, cut_items: list, budget: int) -> st
     print(f"   API: Groq | Model: llama-3.1-8b-instant")
 
     try:
-        from groq import Groq
-        client = Groq()
+        client = _create_groq_client()
 
         prompt = CFO_PROMPT.format(
             overflow_amount=f"{overflow_amount:,}",
@@ -362,7 +406,8 @@ def run_cfo_commentary(overflow_amount: int, cut_items: list, budget: int) -> st
             budget=f"{budget:,}",
         )
 
-        response = client.chat.completions.create(
+        response = _chat_completion_with_timeout(
+            client,
             model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
@@ -406,15 +451,15 @@ def run_persona_validator(plan: dict, target_audience: str) -> str:
     summary = "\n".join(activities) if activities else "Không có hoạt động nào."
 
     try:
-        from groq import Groq
-        client = Groq()
+        client = _create_groq_client()
 
         prompt = PERSONA_PROMPT.format(
             target_audience=target_audience or "Người tiêu dùng phổ thông",
             activities_summary=summary,
         )
 
-        response = client.chat.completions.create(
+        response = _chat_completion_with_timeout(
+            client,
             model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,

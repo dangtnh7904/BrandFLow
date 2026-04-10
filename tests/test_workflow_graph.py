@@ -1,188 +1,172 @@
+import copy
+import json
+from pathlib import Path
+
 import pytest
-from unittest.mock import patch, MagicMock
-from workflow_graph import strategy_app
 
-# Kế hoạch rẻ (15 triệu)
-mock_cheap_plan = {
-    "campaign_name": "Test Convergence",
-    "executive_summary": "Cheap Plan",
-    "target_audience": "N/A",
-    "total_estimated_cost": 15000000,
-    "phases": [
-        {
-            "phase_name": "Phase 1",
-            "duration": "1 week",
-            "objective": "Test",
-            "phase_subtotal_cost": 15000000,
-            "activities": [
-                {
-                    "name": "Act 1",
-                    "description": "Desc 1",
-                    "cost": 15000000,
-                    "priority": "MUST_HAVE",
-                    "expected_kpi": "Testing"
-                }
-            ]
-        }
-    ]
-}
+from workflow_graph import run_plan_wizard_contract, run_week1_orchestration_contract
 
-# Kế hoạch đắt (25 triệu)
-mock_expensive_plan = {
-    "campaign_name": "Test Deadlock",
-    "executive_summary": "Expensive Plan",
-    "target_audience": "N/A",
-    "total_estimated_cost": 25000000,
-    "phases": [
-        {
-            "phase_name": "Phase 1",
-            "duration": "1 week",
-            "objective": "Test",
-            "phase_subtotal_cost": 25000000,
-            "activities": [
-                {
-                    "name": "Act 1",
-                    "description": "Desc 1",
-                    "cost": 25000000,
-                    "priority": "MUST_HAVE",
-                    "expected_kpi": "Testing"
-                }
-            ]
-        }
-    ]
-}
 
-mock_cfo_decision = {
-    "target_cuts": ["Act 1"],
-    "feedback_to_planner": "Chi phí cao quá, đề nghị cắt giảm."
-}
+DATASET_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "docs"
+    / "plans"
+    / "2026-04-09-quality-gate-dataset.json"
+)
 
-@patch('workflow_graph.get_relevant_guidelines', return_value="")
-@patch('workflow_graph.safe_invoke_chain')
-def test_workflow_graph_fast_convergence(mock_invoke, mock_rag):
-    """
-    Kịch bản 1 (Hội tụ nhanh): Mock Creative trả về kế hoạch 15tr, budget 20tr.
-    Assert rằng graph chỉ chạy đúng 1 vòng và is_approved == True.
-    """
-    # Vì actual total cost <= budget, workflow_graph sẽ TỰ ĐỘNG bỏ qua việc gọi CFO chain
-    # Do đó safe_invoke_chain chỉ được gọi 1 lần bởi planner_chain
-    mock_invoke.return_value = mock_cheap_plan
-    
-    initial_state = {
-        "goal": "Test Convergence Goal",
-        "budget": 20000000,
-        "feedback": "Chưa có",
-        "company_guidelines": "",
-        "previous_plan": None,
-        "current_plan": None,
-        "cfo_decision": None,
-        "actual_total_cost": 0,
-        "over_budget": 0,
-        "iteration_count": 0,
-        "is_approved": False,
-        "needs_human_intervention": False,
-        "customer_round": 0,
-        "satisfaction_threshold": 70,
-        "max_customer_rounds": 3,
-        "customer_feedback": "",
-        "rule_score": 0,
-        "client_self_score": 0,
-        "final_score": 0,
+
+def _load_dataset_cases() -> list[dict]:
+    payload = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
+    return list(payload.get("cases", []))
+
+
+CASES = _load_dataset_cases()
+CASE_IDS = [case["case_id"] for case in CASES]
+
+
+def _build_wizard_payload(case: dict) -> dict:
+    return {
+        "user_id": f"stage-e-{case['case_id']}",
+        "tier": case["tier"],
+        "goal": case["goal"],
+        "industry": case["industry"],
+        "budget": case["budget"],
+        "target_audience": case["target_audience"],
+        "constraints": case["constraints"],
+        "route_preference": case["route_preference"],
+        "risk_level": "medium",
+        "output_format": "json",
+        "human_review_required": False,
     }
 
-    final_state = strategy_app.invoke(initial_state)
 
-    assert final_state["is_approved"] is True
-    assert final_state["iteration_count"] == 1
-    assert final_state["needs_human_intervention"] is False
-    assert final_state["actual_total_cost"] == 15000000
-    assert mock_invoke.call_count == 2
+def _compile_plan_intent(case: dict) -> dict:
+    wizard_result = run_plan_wizard_contract(
+        request_payload=_build_wizard_payload(case),
+        trace_id=f"trace-{case['case_id']}",
+        tier=case["tier"],
+    )
+    assert wizard_result["status"] == "success"
 
-
-@patch('workflow_graph.get_relevant_guidelines', return_value="")
-@patch('workflow_graph.safe_invoke_chain')
-def test_workflow_graph_infinite_loop_protection(mock_invoke, mock_rag):
-    """
-    Kịch bản 2 (Infinite Loop Protection): Mock CFO liên tục trả về over budget (CFO quyết định không approve).
-    Assert rằng graph tự động DỪNG LẠI khi iteration_count == 3 và state có cờ needs_human_intervention == True.
-    """
-    # Hàm side effect để trả về plan đắt hoặc CFO feedback tùy context chain
-    def side_effect_invoke(chain, inputs, validator=None):
-        if "budget" in inputs and "actual_total_cost" in inputs and "master_plan" in inputs:
-            # ????y l?? CFO
-            return mock_cfo_decision
-        if "rule_score" in inputs and "master_plan" in inputs:
-            # ????y l?? Customer Reviewer
-            return {
-                "client_self_score": 50,
-                "feedback": "Can tinh gon ke hoach.",
-                "reasoning_summary": "Chua dat ky vong."
-            }
-        # ????y l?? Planner
-        return mock_expensive_plan
+    compiled = wizard_result["result"]
+    plan_intent = dict(compiled.get("plan_intent", {}))
+    assert compiled.get("plan_hash")
+    assert plan_intent.get("route_decision") == case["expected_route_decision"]
+    return plan_intent
 
 
-    mock_invoke.side_effect = side_effect_invoke
-    
-    initial_state = {
-        "goal": "Test Loop Goal",
-        "budget": 20000000,
-        "feedback": "Chưa có",
-        "company_guidelines": "",
-        "previous_plan": None,
-        "current_plan": None,
-        "cfo_decision": None,
-        "actual_total_cost": 0,
-        "over_budget": 0,
-        "iteration_count": 0,
-        "is_approved": False,
-        "needs_human_intervention": False,
-        "customer_round": 0,
-        "satisfaction_threshold": 70,
-        "max_customer_rounds": 3,
-        "customer_feedback": "",
-        "rule_score": 0,
-        "client_self_score": 0,
-        "final_score": 0,
+def _build_orchestration_payload(plan_intent: dict) -> dict:
+    return {
+        "goal": plan_intent.get("goal", ""),
+        "industry": plan_intent.get("industry", "General"),
+        "budget": int(plan_intent.get("budget", 0) or 0),
+        "target_audience": plan_intent.get("target_audience", ""),
+        "constraints": plan_intent.get("constraints", ""),
+        "route_decision": plan_intent.get("route_decision", "balanced"),
+        "route_reason_code": plan_intent.get("route_reason_code", "USER_ROUTE_PREFERENCE"),
+        "clarification_count": int(plan_intent.get("clarification_count", 0) or 0),
+        "question_signatures": list(plan_intent.get("question_signatures", []) or []),
+        "sub_agent_user_question_allowed": bool(plan_intent.get("sub_agent_user_question_allowed", False)),
     }
 
-    final_state = strategy_app.invoke(initial_state)
 
-    assert final_state["is_approved"] is False
-    assert final_state["iteration_count"] == 1
-    assert final_state["needs_human_intervention"] is True
-    assert final_state["customer_round"] == 3
-    assert final_state["actual_total_cost"] == 25000000
-@patch('workflow_graph.safe_invoke_chain')
-def test_customer_review_threshold_stops_loop(mock_invoke):
-    mock_invoke.return_value = {
-        "campaign_name": "Plan",
-        "executive_summary": "Summary",
-        "target_audience": "Gen Z",
-        "total_estimated_cost": 10000000,
-        "phases": [
-            {"phase_name": "P1", "duration": "1w", "objective": "O", "phase_subtotal_cost": 10000000,
-             "activities": [{"name": "A", "description": "D", "cost": 10000000, "priority": "MUST_HAVE", "expected_kpi": "K"}]}
-        ]
-    }
+def _execute_orchestration(plan_intent: dict, tier: str, trace_suffix: str = "run") -> tuple[dict, dict]:
+    first_payload = _build_orchestration_payload(plan_intent)
+    first_result = run_week1_orchestration_contract(
+        request_payload=first_payload,
+        trace_id=f"trace-{trace_suffix}-first",
+        tier=tier,
+        mock_mode=True,
+    )
 
-    initial_state = {
-        "goal": "Test",
-        "budget": 20000000,
-        "feedback": "",
-        "company_guidelines": "",
-        "previous_plan": None,
-        "current_plan": None,
-        "cfo_decision": None,
-        "actual_total_cost": 0,
-        "over_budget": 0,
-        "iteration_count": 0,
-        "is_approved": False,
-        "needs_human_intervention": False,
-        "customer_round": 0,
-        "satisfaction_threshold": 60,
-        "max_customer_rounds": 2
-    }
+    if first_result["status"] != "clarification_needed":
+        return first_result, first_result
 
-    final_state = strategy_app.invoke(initial_state)
-    assert final_state["is_approved"] is True
+    clarification_payload = dict(first_payload)
+    clarification_payload["clarification_count"] = int(
+        first_result["result"].get("clarification_count", 0) or 0
+    )
+    clarification_payload["question_signatures"] = list(
+        first_result["result"].get("question_signatures", []) or []
+    )
+
+    second_result = run_week1_orchestration_contract(
+        request_payload=clarification_payload,
+        trace_id=f"trace-{trace_suffix}-second",
+        tier=tier,
+        mock_mode=True,
+    )
+    return first_result, second_result
+
+
+@pytest.mark.parametrize("case", CASES, ids=CASE_IDS)
+def test_plan_compiler_route_policy_matrix(case):
+    plan_intent = _compile_plan_intent(case)
+    route_reason_code = plan_intent.get("route_reason_code")
+
+    if case["tier"] == "FREE":
+        assert route_reason_code == "TIER_FREE_FORCE_FAST_TRACK"
+    elif case["tier"] == "PLUS" and case["route_preference"] == "deep-analysis":
+        assert route_reason_code == "TIER_PLUS_DOWNGRADE_DEEP_ANALYSIS"
+    else:
+        assert route_reason_code == "USER_ROUTE_PREFERENCE"
+
+
+@pytest.mark.parametrize("case", CASES, ids=CASE_IDS)
+def test_graph_and_tier_router_regression(case):
+    plan_intent = _compile_plan_intent(case)
+    first_result, final_result = _execute_orchestration(
+        copy.deepcopy(plan_intent),
+        tier=case["tier"],
+        trace_suffix=f"{case['case_id']}-a",
+    )
+
+    if case["expects_clarification"]:
+        assert first_result["status"] == "clarification_needed"
+        questions = first_result["result"].get("clarification_questions", [])
+        signatures = [item.get("question_signature") for item in questions]
+        assert len(signatures) == len(set(signatures))
+    else:
+        assert first_result["status"] == "success"
+
+    assert final_result["status"] == "success"
+    result_payload = final_result["result"]
+    assert result_payload["route_decision"] == case["expected_route_decision"]
+
+    expected_provider = "local" if case["tier"] == "FREE" else "cloud"
+    assert result_payload["model_router"]["primary"]["provider"] == expected_provider
+    assert result_payload["model_router"]["fallback"]["policy"] == "deterministic_by_route"
+
+    validation = result_payload["validation"]
+    assert validation["is_valid"] is True
+    assert validation["validator"] == "output_reliability_v1"
+
+    artifacts = result_payload["artifacts"]
+    assert isinstance(artifacts["json"], dict)
+    assert isinstance(artifacts["txt"], str)
+    assert len(artifacts["txt"]) >= 40
+
+    usage = result_payload["usage_telemetry"]
+    assert int(usage["total_tokens_est"]) > 0
+    assert float(usage["estimated_cost_usd"]) >= 0.0
+
+
+@pytest.mark.parametrize("case", CASES, ids=CASE_IDS)
+def test_route_decision_is_deterministic_for_same_plan_intent(case):
+    plan_intent = _compile_plan_intent(case)
+
+    _, final_result_a = _execute_orchestration(
+        copy.deepcopy(plan_intent),
+        tier=case["tier"],
+        trace_suffix=f"{case['case_id']}-det-a",
+    )
+    _, final_result_b = _execute_orchestration(
+        copy.deepcopy(plan_intent),
+        tier=case["tier"],
+        trace_suffix=f"{case['case_id']}-det-b",
+    )
+
+    assert final_result_a["status"] == "success"
+    assert final_result_b["status"] == "success"
+    assert final_result_a["result"]["route_decision"] == final_result_b["result"]["route_decision"]
+    assert final_result_a["result"]["route_reason_code"] == final_result_b["result"]["route_reason_code"]

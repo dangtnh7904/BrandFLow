@@ -7,9 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from datetime import date
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request, Response
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request, Response, Depends
 from fastapi.responses import HTMLResponse
-from typing import Dict, List
+from typing import Any, Dict, List
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import (
     PresetRequest,
@@ -17,15 +17,20 @@ from schemas import (
     RawInputRequest,
     RefineRequest,
     OrchestrationMockRequest,
+    PlanWizardRequest,
+    PlanIntent,
+    ExecutionRequest,
 )
 from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
 from intake_agent import analyze_raw_input, check_required_info, extract_document_summary
 from workflow_graph import (
     build_error_envelope,
+    run_plan_wizard_contract,
     run_pipeline,
     run_refinement_pipeline,
     run_week1_orchestration_contract,
 )
+from access_audit import VisitorAuditStore
 from document_processor import DocumentIngestor
 from pydantic import BaseModel
 import os
@@ -72,6 +77,56 @@ WEEK1_QUOTA_POLICY = {
 
 # Week 1 dùng in-memory counter để chốt API boundary. Tuần sau thay bằng DB boundary.
 WEEK1_DAILY_USAGE: Dict[str, Dict[str, int]] = {}
+WEEK1_PLAN_REGISTRY: Dict[str, Dict[str, Any]] = {}
+WEEK1_MODEL_USAGE: Dict[str, Dict[str, Any]] = {}
+VISITOR_AUDIT_STORE = VisitorAuditStore()
+AUDIT_ADMIN_TOKEN = os.environ.get("BRANDFLOW_AUDIT_ADMIN_TOKEN", "").strip()
+
+
+@app.on_event("startup")
+async def app_startup() -> None:
+    """Initialize local audit DB for visitor proof."""
+    VISITOR_AUDIT_STORE.init_db()
+
+
+@app.middleware("http")
+async def visitor_audit_middleware(request: Request, call_next):
+    """Persist access history for evidence of who entered the app."""
+    trace_id = (request.headers.get("X-Trace-Id") or "").strip() or None
+    tier_hint = (request.headers.get("X-Tier") or "").strip() or None
+    client_host = request.client.host if request.client else None
+
+    try:
+        response = await call_next(request)
+    except Exception:
+        try:
+            VISITOR_AUDIT_STORE.record_visit(
+                headers=dict(request.headers),
+                client_host=client_host,
+                method=request.method,
+                path=request.url.path,
+                status_code=500,
+                trace_id=trace_id,
+                tier_hint=tier_hint,
+            )
+        except Exception as audit_error:
+            print(f"[AUDIT] Failed to record error visit: {audit_error}")
+        raise
+
+    try:
+        VISITOR_AUDIT_STORE.record_visit(
+            headers=dict(request.headers),
+            client_host=client_host,
+            method=request.method,
+            path=request.url.path,
+            status_code=response.status_code,
+            trace_id=trace_id,
+            tier_hint=tier_hint,
+        )
+    except Exception as audit_error:
+        print(f"[AUDIT] Failed to record visit: {audit_error}")
+
+    return response
 
 
 def _normalize_tier(raw_tier: str) -> str:
@@ -88,8 +143,154 @@ def _resolve_trace_id(http_request: Request) -> str:
     return str(uuid.uuid4())
 
 
+def _require_audit_admin_token(request: Request) -> None:
+    expected = (AUDIT_ADMIN_TOKEN or "").strip()
+    trace_id = _resolve_trace_id(request)
+
+    if not expected:
+        detail = build_error_envelope(
+            trace_id=trace_id,
+            code="AUDIT_TOKEN_NOT_CONFIGURED",
+            message="Audit admin token chưa được cấu hình trên server.",
+            status_code=503,
+            node_name="api_audit_auth",
+            retryable=False,
+            details={"required_header": "X-Audit-Admin-Token"},
+        )
+        raise HTTPException(status_code=503, detail=detail)
+
+    provided = (request.headers.get("X-Audit-Admin-Token") or "").strip()
+    if provided != expected:
+        detail = build_error_envelope(
+            trace_id=trace_id,
+            code="AUDIT_FORBIDDEN",
+            message="Bạn không có quyền truy cập audit API.",
+            status_code=403,
+            node_name="api_audit_auth",
+            retryable=False,
+            details={"required_header": "X-Audit-Admin-Token"},
+        )
+        raise HTTPException(status_code=403, detail=detail)
+
+
 def _build_usage_key(user_id: str, tier: str) -> str:
     return f"{date.today().isoformat()}::{user_id}::{tier}"
+
+
+def _default_model_usage_bucket() -> dict:
+    return {
+        "runs_today": 0,
+        "total_tokens_est": 0,
+        "total_estimated_cost_usd": 0.0,
+        "route_counts": {},
+        "provider_breakdown": {
+            "local": {
+                "runs": 0,
+                "tokens": 0,
+                "estimated_cost_usd": 0.0,
+            },
+            "cloud": {
+                "runs": 0,
+                "tokens": 0,
+                "estimated_cost_usd": 0.0,
+            },
+            "unknown": {
+                "runs": 0,
+                "tokens": 0,
+                "estimated_cost_usd": 0.0,
+            },
+        },
+        "last_trace_id": None,
+        "last_route_decision": "unknown",
+        "last_route_reason_code": "UNKNOWN_REASON",
+        "last_primary_model": {
+            "provider": "unknown",
+            "model": "unknown",
+        },
+    }
+
+
+def _record_model_usage(
+    *,
+    user_id: str,
+    tier: str,
+    trace_id: str,
+    result_payload: dict,
+) -> dict:
+    usage_key = _build_usage_key(user_id, tier)
+    usage_bucket = WEEK1_MODEL_USAGE.setdefault(usage_key, _default_model_usage_bucket())
+
+    usage_telemetry = dict(result_payload.get("usage_telemetry", {}) or {})
+    model_router = dict(result_payload.get("model_router", {}) or {})
+    primary_model = dict(model_router.get("primary", {}) or {})
+
+    total_tokens = int(usage_telemetry.get("total_tokens_est", 0) or 0)
+    estimated_cost_usd = float(usage_telemetry.get("estimated_cost_usd", 0.0) or 0.0)
+    route_decision = str(result_payload.get("route_decision", "unknown") or "unknown")
+    route_reason_code = str(result_payload.get("route_reason_code", "UNKNOWN_REASON") or "UNKNOWN_REASON")
+
+    provider = str(primary_model.get("provider", "unknown") or "unknown").lower()
+    if provider not in usage_bucket["provider_breakdown"]:
+        provider = "unknown"
+
+    usage_bucket["runs_today"] += 1
+    usage_bucket["total_tokens_est"] += total_tokens
+    usage_bucket["total_estimated_cost_usd"] = round(
+        float(usage_bucket["total_estimated_cost_usd"]) + estimated_cost_usd,
+        8,
+    )
+
+    usage_bucket["route_counts"][route_decision] = int(usage_bucket["route_counts"].get(route_decision, 0)) + 1
+
+    provider_bucket = usage_bucket["provider_breakdown"][provider]
+    provider_bucket["runs"] += 1
+    provider_bucket["tokens"] += total_tokens
+    provider_bucket["estimated_cost_usd"] = round(float(provider_bucket["estimated_cost_usd"]) + estimated_cost_usd, 8)
+
+    usage_bucket["last_trace_id"] = trace_id
+    usage_bucket["last_route_decision"] = route_decision
+    usage_bucket["last_route_reason_code"] = route_reason_code
+    usage_bucket["last_primary_model"] = {
+        "provider": primary_model.get("provider", "unknown"),
+        "model": primary_model.get("model", "unknown"),
+    }
+
+    return {
+        "usage_date": date.today().isoformat(),
+        "user_id": user_id,
+        "tier": tier,
+        "runs_today": usage_bucket["runs_today"],
+        "total_tokens_est": usage_bucket["total_tokens_est"],
+        "total_estimated_cost_usd": usage_bucket["total_estimated_cost_usd"],
+        "route_counts": dict(usage_bucket["route_counts"]),
+        "provider_breakdown": usage_bucket["provider_breakdown"],
+        "last_trace_id": usage_bucket["last_trace_id"],
+        "last_route_decision": usage_bucket["last_route_decision"],
+        "last_route_reason_code": usage_bucket["last_route_reason_code"],
+        "last_primary_model": usage_bucket["last_primary_model"],
+    }
+
+
+def _get_model_usage_summary(user_id: str, tier: str) -> dict:
+    usage_key = _build_usage_key(user_id, tier)
+    usage_bucket = WEEK1_MODEL_USAGE.get(usage_key)
+    if usage_bucket is None:
+        usage_bucket = _default_model_usage_bucket()
+
+    return {
+        "usage_date": date.today().isoformat(),
+        "user_id": user_id,
+        "tier": tier,
+        "runs_today": usage_bucket["runs_today"],
+        "total_tokens_est": usage_bucket["total_tokens_est"],
+        "total_estimated_cost_usd": usage_bucket["total_estimated_cost_usd"],
+        "route_counts": dict(usage_bucket["route_counts"]),
+        "provider_breakdown": usage_bucket["provider_breakdown"],
+        "last_trace_id": usage_bucket["last_trace_id"],
+        "last_route_decision": usage_bucket["last_route_decision"],
+        "last_route_reason_code": usage_bucket["last_route_reason_code"],
+        "last_primary_model": usage_bucket["last_primary_model"],
+    }
 
 
 def _raise_quota_error(
@@ -182,6 +383,133 @@ def _enforce_week1_quota(request: OrchestrationMockRequest, tier: str, trace_id:
 
     current_usage["files_today"] = projected_files_today
     current_usage["urls_today"] = projected_urls_today
+
+
+def _resolve_registered_plan_or_raise(plan_hash: str, trace_id: str) -> dict:
+    resolved_hash = (plan_hash or "").strip()
+    if not resolved_hash:
+        detail = build_error_envelope(
+            trace_id=trace_id,
+            code="PLAN_REQUIRED",
+            message="Thiếu plan_hash. Chính sách no-plan-no-run đang bật.",
+            status_code=400,
+            node_name="api_plan_guard",
+            retryable=False,
+            details={"required_field": "plan_hash"},
+        )
+        raise HTTPException(status_code=400, detail=detail)
+
+    plan_entry = WEEK1_PLAN_REGISTRY.get(resolved_hash)
+    if not plan_entry:
+        detail = build_error_envelope(
+            trace_id=trace_id,
+            code="PLAN_HASH_NOT_FOUND",
+            message="Không tìm thấy plan_hash hợp lệ. Vui lòng submit wizard trước.",
+            status_code=400,
+            node_name="api_plan_guard",
+            retryable=False,
+            details={"plan_hash": resolved_hash},
+        )
+        raise HTTPException(status_code=400, detail=detail)
+
+    return plan_entry
+
+
+def _enforce_plan_ownership(plan_intent: dict, user_id: str, tier: str, trace_id: str) -> None:
+    intent_user = (plan_intent.get("user_id") or "anonymous").strip() or "anonymous"
+    request_user = (user_id or "anonymous").strip() or "anonymous"
+    if intent_user != request_user:
+        detail = build_error_envelope(
+            trace_id=trace_id,
+            code="PLAN_FORBIDDEN",
+            message="plan_hash không thuộc user hiện tại.",
+            status_code=403,
+            node_name="api_plan_guard",
+            retryable=False,
+            details={
+                "plan_user_id": intent_user,
+                "request_user_id": request_user,
+            },
+        )
+        raise HTTPException(status_code=403, detail=detail)
+
+    intent_tier = _normalize_tier(str(plan_intent.get("tier", "FREE")))
+    if intent_tier != tier:
+        detail = build_error_envelope(
+            trace_id=trace_id,
+            code="PLAN_TIER_MISMATCH",
+            message="Tier hiện tại không khớp tier đã compile trong plan_intent.",
+            status_code=403,
+            node_name="api_plan_guard",
+            retryable=False,
+            details={
+                "plan_tier": intent_tier,
+                "request_tier": tier,
+            },
+        )
+        raise HTTPException(status_code=403, detail=detail)
+
+
+def _store_plan_intent(plan_hash: str, plan_intent: dict, trace_id: str) -> dict:
+    safe_hash = (plan_hash or "").strip()
+    sanitized_intent = dict(plan_intent or {})
+    sanitized_intent.pop("plan_hash", None)
+
+    validated_plan_intent = PlanIntent(plan_hash=safe_hash, **sanitized_intent).model_dump()
+    WEEK1_PLAN_REGISTRY[safe_hash] = {
+        "plan_intent": validated_plan_intent,
+        "trace_id": trace_id,
+    }
+    return validated_plan_intent
+
+
+def _apply_clarification_answers(plan_intent: dict, clarification_answers: Dict[str, str]) -> dict:
+    if not clarification_answers:
+        return plan_intent
+
+    updated_intent = dict(plan_intent)
+    for key in ("target_audience", "constraints"):
+        value = clarification_answers.get(key)
+        if value is None:
+            continue
+        normalized = str(value).strip()
+        if normalized:
+            updated_intent[key] = normalized
+
+    return updated_intent
+
+
+def _assert_no_sub_agent_user_questions(agent_logs: list[dict], trace_id: str) -> None:
+    violations = []
+    for log in agent_logs or []:
+        if not bool(log.get("ask_user", False)):
+            continue
+
+        agent_name = str(log.get("agent", "")).strip().upper()
+        if agent_name in {"SYSTEM", "MAIN", "ORCHESTRATOR"}:
+            continue
+
+        violations.append(
+            {
+                "agent": log.get("agent", "UNKNOWN"),
+                "message": log.get("message", ""),
+            }
+        )
+
+    if violations:
+        detail = build_error_envelope(
+            trace_id=trace_id,
+            code="SUB_AGENT_ASK_USER_BLOCKED",
+            message="Sub-agent không được phép hỏi user trong multi-step run.",
+            status_code=400,
+            node_name="api_execute_policy_guard",
+            retryable=False,
+            details={
+                "violations": violations,
+                "policy": "sub_agent_user_question_allowed=false",
+            },
+        )
+        raise HTTPException(status_code=400, detail=detail)
 
 @app.get("/", response_class=HTMLResponse)
 async def home():
@@ -329,6 +657,42 @@ async def home():
     </html>
     """
     return html_content
+
+
+@app.get("/api/v1/audit/visitors/summary")
+def get_audit_visitors_summary(_: None = Depends(_require_audit_admin_token)):
+    """Thống kê tổng quan người đã vào app."""
+    try:
+        return {
+            "status": "success",
+            "data": VISITOR_AUDIT_STORE.get_summary(),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi lấy thống kê audit: {str(e)}")
+
+
+@app.get("/api/v1/audit/visitors")
+def list_audit_visitors(limit: int = 100, _: None = Depends(_require_audit_admin_token)):
+    """Danh sách visitor đã truy cập (ưu tiên lượt gần nhất)."""
+    try:
+        return {
+            "status": "success",
+            "data": VISITOR_AUDIT_STORE.list_visitors(limit=limit),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi lấy danh sách visitor: {str(e)}")
+
+
+@app.get("/api/v1/audit/visits")
+def list_audit_visits(limit: int = 200, visitor_key: str | None = None, _: None = Depends(_require_audit_admin_token)):
+    """Lịch sử truy cập theo event để làm minh chứng."""
+    try:
+        return {
+            "status": "success",
+            "data": VISITOR_AUDIT_STORE.list_visit_events(limit=limit, visitor_key=visitor_key),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi lấy lịch sử truy cập: {str(e)}")
 
 @app.post("/api/v1/onboarding/interview")
 async def onboarding_interview(request: InterviewRequest):
@@ -514,36 +878,208 @@ def get_planning_contract_week1():
                 "QUOTA_FILES_PER_DAY_EXCEEDED",
                 "QUOTA_URLS_PER_DAY_EXCEEDED",
             ],
+            "500": [
+                "ORCH_RUNTIME_ERROR",
+                "OUTPUT_ARTIFACT_JSON_INVALID",
+                "OUTPUT_ARTIFACT_JSON_MISSING_FIELDS",
+                "OUTPUT_PLAN_INVALID",
+                "OUTPUT_ARTIFACT_TXT_INVALID",
+                "OUTPUT_ARTIFACT_JSON_SERIALIZATION_FAILED",
+            ],
+            "502": [
+                "PROVIDER_ROUTER_INVALID",
+                "PROVIDER_MODEL_MISSING",
+            ],
         },
         "orchestration_nodes": [
+            "plan_wizard",
+            "plan_compiler",
             "intake_context",
+            "clarification_guard",
             "gateway_router",
             "finalize_output",
         ],
+        "stage_a_endpoints": {
+            "wizard_submit": "POST /api/v1/planning/wizard/submit",
+            "wizard_validate": "POST /api/v1/planning/wizard/validate",
+            "execute": "POST /api/v1/planning/execute",
+        },
+        "stage_c_endpoints": {
+            "usage_telemetry": "GET /api/v1/planning/telemetry/usage?user_id=...&tier=...",
+        },
+        "stage_d_contract": {
+            "output_artifacts": {
+                "required": ["json", "txt"],
+                "json_string_included": True,
+                "validator": "output_reliability_v1",
+            },
+            "error_scope": ["graph", "runtime", "provider"],
+        },
+        "legacy_endpoints": {
+            "POST /api/v1/planning/orchestration/mock-run": {
+                "status": "disabled",
+                "http_status": 410,
+                "replaced_by": "POST /api/v1/planning/execute",
+            }
+        },
+        "plan_policy": {
+            "no_plan_no_run": True,
+            "required_execute_field": "plan_hash",
+            "clarification_guard": {
+                "max_rounds": 1,
+                "dedupe_key": "question_signature",
+                "sub_agent_user_question_allowed": False,
+            },
+            "tier_model_router": {
+                "FREE": "local-first",
+                "PLUS": "cloud-standard",
+                "PRO": "cloud-premium",
+                "fallback": "deterministic_by_route",
+            },
+        },
     }
 
 
-@app.post("/api/v1/planning/orchestration/mock-run")
-async def planning_orchestration_mock_run(
-    request: OrchestrationMockRequest,
+@app.get("/api/v1/planning/telemetry/usage")
+def get_planning_telemetry_usage(user_id: str = "anonymous", tier: str = "FREE"):
+    """Truy xuất usage telemetry + cost tracking theo user/tier trong ngày hiện tại."""
+    normalized_tier = _normalize_tier(tier)
+    safe_user_id = (user_id or "anonymous").strip() or "anonymous"
+    summary = _get_model_usage_summary(user_id=safe_user_id, tier=normalized_tier)
+
+    return {
+        "status": "success",
+        "data": summary,
+    }
+
+
+@app.post("/api/v1/planning/wizard/submit")
+async def planning_wizard_submit(
+    request: PlanWizardRequest,
     http_request: Request,
     response: Response,
 ):
-    """
-    API boundary tuần 1: chạy mock flow end-to-end với trace/quota contract cố định.
-    """
+    """Giai đoạn A: nhận wizard answers và compile thành plan_intent + plan_hash."""
     trace_id = _resolve_trace_id(http_request)
     response.headers["X-Trace-Id"] = trace_id
     tier = _normalize_tier(request.tier)
 
-    _enforce_week1_quota(request=request, tier=tier, trace_id=trace_id)
+    wizard_payload = request.model_dump()
+    wizard_payload["tier"] = tier
+    result = run_plan_wizard_contract(
+        request_payload=wizard_payload,
+        trace_id=trace_id,
+        tier=tier,
+    )
+
+    if result.get("status") == "error":
+        error_list = result.get("errors", [])
+        error_payload = error_list[0] if error_list else build_error_envelope(
+            trace_id=trace_id,
+            code="PLAN_COMPILER_INTERNAL_ERROR",
+            message="Không xác định được lỗi plan compiler.",
+            status_code=500,
+            node_name="api_plan_wizard",
+            retryable=False,
+            details={},
+        )
+        status_code = error_payload.get("error", {}).get("http_status", 500)
+        raise HTTPException(status_code=status_code, detail=error_payload)
+
+    compiled = result.get("result", {})
+    plan_hash = compiled.get("plan_hash", "")
+    plan_intent = compiled.get("plan_intent", {})
+
+    validated_plan_intent = plan_intent
+    if plan_hash:
+        validated_plan_intent = _store_plan_intent(plan_hash, plan_intent, trace_id)
+
+    return {
+        "status": "success",
+        "trace_id": trace_id,
+        "contract_version": result.get("contract_version"),
+        "plan_hash": plan_hash,
+        "plan_intent": validated_plan_intent,
+        "node_outputs": result.get("node_outputs", []),
+        "message": "Plan intent đã được compile. Dùng plan_hash cho bước execute.",
+    }
+
+
+@app.post("/api/v1/planning/wizard/validate")
+async def planning_wizard_validate(
+    request: ExecutionRequest,
+    http_request: Request,
+    response: Response,
+):
+    """Kiểm tra plan_hash có hợp lệ cho user/tier hiện tại không."""
+    trace_id = _resolve_trace_id(http_request)
+    response.headers["X-Trace-Id"] = trace_id
+    tier = _normalize_tier(request.tier)
+
+    plan_entry = _resolve_registered_plan_or_raise(request.plan_hash, trace_id=trace_id)
+    plan_intent = plan_entry.get("plan_intent", {})
+
+    intent_user = (plan_intent.get("user_id") or "anonymous").strip() or "anonymous"
+    request_user = (request.user_id or "anonymous").strip() or "anonymous"
+    intent_tier = _normalize_tier(str(plan_intent.get("tier", "FREE")))
+
+    is_valid = intent_user == request_user and intent_tier == tier
+    return {
+        "status": "success",
+        "trace_id": trace_id,
+        "plan_hash": request.plan_hash,
+        "is_valid": is_valid,
+        "checks": {
+            "user_match": intent_user == request_user,
+            "tier_match": intent_tier == tier,
+            "no_plan_no_run": True,
+        },
+        "plan_intent": plan_intent,
+    }
+
+
+@app.post("/api/v1/planning/execute")
+async def planning_execute(
+    request: ExecutionRequest,
+    http_request: Request,
+    response: Response,
+):
+    """Giai đoạn B: execute với no-plan-no-run + clarification guard + anti-loop policy."""
+    trace_id = _resolve_trace_id(http_request)
+    response.headers["X-Trace-Id"] = trace_id
+    tier = _normalize_tier(request.tier)
+
+    plan_entry = _resolve_registered_plan_or_raise(request.plan_hash, trace_id=trace_id)
+    plan_intent = dict(plan_entry.get("plan_intent", {}))
+    plan_intent = _apply_clarification_answers(plan_intent, request.clarification_answers)
+    _enforce_plan_ownership(plan_intent, user_id=request.user_id, tier=tier, trace_id=trace_id)
+
+    quota_request = OrchestrationMockRequest(
+        goal=plan_intent.get("goal", ""),
+        industry=plan_intent.get("industry", "General"),
+        budget=int(plan_intent.get("budget", 0) or 0),
+        target_audience=plan_intent.get("target_audience", ""),
+        constraints=plan_intent.get("constraints", ""),
+        tier=tier,
+        user_id=request.user_id,
+        files_count=request.files_count,
+        file_size_mb=request.file_size_mb,
+        urls_count=request.urls_count,
+        mock_mode=request.mock_mode,
+    )
+    _enforce_week1_quota(request=quota_request, tier=tier, trace_id=trace_id)
 
     orchestration_input = {
-        "goal": request.goal,
-        "industry": request.industry,
-        "budget": request.budget,
-        "target_audience": request.target_audience,
-        "constraints": request.constraints,
+        "goal": plan_intent.get("goal", ""),
+        "industry": plan_intent.get("industry", "General"),
+        "budget": int(plan_intent.get("budget", 0) or 0),
+        "target_audience": plan_intent.get("target_audience", ""),
+        "constraints": plan_intent.get("constraints", ""),
+        "route_decision": plan_intent.get("route_decision", "balanced"),
+        "route_reason_code": plan_intent.get("route_reason_code", "USER_ROUTE_PREFERENCE"),
+        "clarification_count": int(plan_intent.get("clarification_count", 0) or 0),
+        "question_signatures": list(plan_intent.get("question_signatures", []) or []),
+        "sub_agent_user_question_allowed": bool(plan_intent.get("sub_agent_user_question_allowed", False)),
     }
 
     result = run_week1_orchestration_contract(
@@ -560,14 +1096,80 @@ async def planning_orchestration_mock_run(
             code="ORCH_INTERNAL_ERROR",
             message="Không xác định được lỗi orchestration.",
             status_code=500,
-            node_name="api_orchestration_boundary",
+            node_name="api_planning_execute",
             retryable=False,
             details={},
         )
         status_code = error_payload.get("error", {}).get("http_status", 500)
         raise HTTPException(status_code=status_code, detail=error_payload)
 
-    return result
+    if result.get("status") == "clarification_needed":
+        clarification_result = result.get("result", {})
+        plan_intent["clarification_count"] = int(clarification_result.get("clarification_count", 0) or 0)
+        plan_intent["question_signatures"] = list(clarification_result.get("question_signatures", []) or [])
+
+        validated_plan_intent = _store_plan_intent(request.plan_hash, plan_intent, trace_id)
+        return {
+            **result,
+            "plan_hash": request.plan_hash,
+            "plan_intent": validated_plan_intent,
+        }
+
+    result_payload = result.get("result", {})
+    _assert_no_sub_agent_user_questions(result_payload.get("agent_logs", []), trace_id=trace_id)
+
+    usage_telemetry_summary = _record_model_usage(
+        user_id=(request.user_id or "anonymous").strip() or "anonymous",
+        tier=tier,
+        trace_id=trace_id,
+        result_payload=result_payload,
+    )
+
+    clarification_state = result_payload.get("clarification", {})
+    plan_intent["clarification_count"] = int(clarification_state.get("count", plan_intent.get("clarification_count", 0)) or 0)
+    plan_intent["question_signatures"] = list(clarification_state.get("question_signatures", plan_intent.get("question_signatures", [])) or [])
+    plan_intent["route_reason_code"] = result_payload.get("route_reason_code", plan_intent.get("route_reason_code", "USER_ROUTE_PREFERENCE"))
+
+    validated_plan_intent = _store_plan_intent(request.plan_hash, plan_intent, trace_id)
+
+    return {
+        **result,
+        "plan_hash": request.plan_hash,
+        "plan_intent": validated_plan_intent,
+        "usage_telemetry_summary": usage_telemetry_summary,
+    }
+
+
+@app.post("/api/v1/planning/orchestration/mock-run")
+async def planning_orchestration_mock_run(
+    request: OrchestrationMockRequest,
+    http_request: Request,
+    response: Response,
+):
+    """
+    Endpoint legacy đã bị khóa để cưỡng chế no-plan-no-run toàn hệ thống.
+    """
+    trace_id = _resolve_trace_id(http_request)
+    response.headers["X-Trace-Id"] = trace_id
+    detail = build_error_envelope(
+        trace_id=trace_id,
+        code="LEGACY_ENDPOINT_DISABLED",
+        message="Endpoint mock-run cũ đã bị khóa. Dùng submit -> validate -> execute.",
+        status_code=410,
+        node_name="api_orchestration_boundary",
+        retryable=False,
+        details={
+            "disabled_endpoint": "POST /api/v1/planning/orchestration/mock-run",
+            "required_flow": [
+                "POST /api/v1/planning/wizard/submit",
+                "POST /api/v1/planning/wizard/validate",
+                "POST /api/v1/planning/execute",
+            ],
+            "policy": "no-plan-no-run",
+            "ignored_request_fields": sorted(list(request.model_dump().keys())),
+        },
+    )
+    raise HTTPException(status_code=410, detail=detail)
 
 @app.post("/api/v1/planning/intake")
 async def process_intake(request: RawInputRequest):

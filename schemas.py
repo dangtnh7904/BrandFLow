@@ -16,6 +16,12 @@ class RefineRequest(BaseModel):
     budget: int = Field(..., description="Ngân sách (để kiểm duyệt lại)")
     feedback: str = Field(..., description="Yêu cầu thay đổi từ CEO")
 
+class MicroExecuteRequest(BaseModel):
+    brand_dna: str = Field(..., description="Master Brand DNA")
+    usp: str = Field(..., description="Master Brand USP")
+    persona_prompt: str = Field(..., description="Target Persona Prompt")
+    command: str = Field(..., description="Lệnh viết content (VD: Viết bài FB)")
+
 
 class OrchestrationMockRequest(BaseModel):
     goal: str = Field(..., description="Mục tiêu chiến dịch")
@@ -122,3 +128,35 @@ class ExecutionRequest(BaseModel):
     )
 
     mock_mode: bool = Field(True, description="Dùng mock flow deterministic để test nhanh")
+
+class ModuleInputData(BaseModel):
+    industry: str = Field(..., description="Ngành hàng (F&B, Tech, Cosmetics, Edu, General)")
+    goal: str = Field(..., description="Mục tiêu cốt lõi")
+    budget: int = Field(0, description="Ngân sách thực tế (VNĐ)")
+    csfs: list[str] = Field(default_factory=list, description="Yếu tố thành công then chốt (CSFs)")
+    resources: str = Field("", description="Nguồn lực sẵn có")
+
+class MasterBrandProfile(BaseModel):
+    brand_dna: str
+    usp: str
+    target_persona_prompt: str
+
+class StrategicBlueprint(BaseModel):
+    strategic_plan_md: str
+    core_message: str
+    media_mix: list[str]
+
+class TacticalCampaign(BaseModel):
+    operational_plan_md: str
+    touchpoints_timeline: str
+
+class AgentFeedback(BaseModel):
+    is_approved: bool
+    feedback: str
+
+class CFOTacticalFeedback(BaseModel):
+    is_approved: bool
+    feedback: str
+    contingency_percent: float
+    budget_allocations: list[dict]
+

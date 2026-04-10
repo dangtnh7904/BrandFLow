@@ -16,3 +16,5 @@ google-generativeai
 groq
 langchain-google-genai
 langchain-groq
+pandas
+openpyxl

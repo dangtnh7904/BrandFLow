@@ -16,6 +16,7 @@ from schemas import (
     InterviewRequest,
     RawInputRequest,
     RefineRequest,
+    MicroExecuteRequest,
     OrchestrationMockRequest,
     PlanWizardRequest,
     PlanIntent,
@@ -1244,8 +1245,8 @@ async def process_intake(request: RawInputRequest):
             goal=parsed_data.get("goal", request.raw_text),
             industry=parsed_data.get("industry", "General"),
             budget=parsed_data.get("budget", 0),
-            target_audience=parsed_data.get("target_audience", ""),
-            constraints=parsed_data.get("special_constraints", ""),
+            csfs=parsed_data.get("csfs", []),
+            resources=parsed_data.get("resources", ""),
         )
         
         return {
@@ -1293,6 +1294,30 @@ async def process_refine(request: RefineRequest):
             "message": "AI gặp sự cố khi đang phân tích lại kế hoạch. Vui lòng thử lại.",
             "debug_info": str(e)
         })
+
+@app.post("/api/v1/planning/micro-execute")
+async def process_micro_execute(request: MicroExecuteRequest):
+    """
+    Giai đoạn 4: Sản xuất Content Đơn lẻ (Micro-execution).
+    """
+    try:
+        from agents_core import run_cmo_micro_execution, run_customer_agent_feedback
+        
+        cmo_content = run_cmo_micro_execution(request.brand_dna, request.usp, request.command)
+        
+        persona_feedback = run_customer_agent_feedback(
+            request.persona_prompt,
+            "Cần viết theo Tone of Voice phù hợp",
+            [cmo_content.get("content", "")]
+        )
+        
+        return {
+            "status": "success",
+            "content": cmo_content.get("content", ""),
+            "persona_feedback": persona_feedback
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail={"status": "error", "message": "Lỗi AI sinh nội dung.", "debug_info": str(e)})
 
 @app.get("/api/v1/onboarding/stats")
 def get_db_stats():

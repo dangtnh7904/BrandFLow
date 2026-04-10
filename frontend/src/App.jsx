@@ -111,6 +111,13 @@ export default function App() {
   const [generateError, setGenerateError] = useState('');
   const [agentLogs, setAgentLogs] = useState(null);
 
+  const handleFallbackToMock = () => {
+    setGenerateError('');
+    setIsGenerating(false);
+    setCampaignData(initialCampaignData);
+    setCurrentView('result');
+  };
+
   const handleGenerate = async (files, url, name, requestText, budgetNum) => {
     setCurrentView('simulation');
     setIteration(1);
@@ -125,15 +132,24 @@ export default function App() {
       if (files && files.length > 0) {
         const formData = new FormData();
         files.forEach(f => formData.append("files", f));
-        await fetch("http://localhost:8000/api/v1/onboarding/upload", { method: "POST", body: formData });
+        const upRes = await fetch("http://localhost:8000/api/v1/onboarding/upload", { method: "POST", body: formData });
+        if (!upRes.ok) {
+          if (upRes.status === 413) throw new Error("413: Tệp đính kèm quá lớn (vượt quá giới hạn).");
+          if (upRes.status === 429) throw new Error("429: Hệ thống máy chủ đang quá tải. Vui lòng thử lại sau.");
+          throw new Error(`Upload fail. Mã lỗi: ${upRes.status}`);
+        }
       }
 
       if (url) {
-        await fetch("http://localhost:8000/api/v1/onboarding/upload-url", {
+        const urlRes = await fetch("http://localhost:8000/api/v1/onboarding/upload-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ urls: [url] })
         });
+        if (!urlRes.ok) {
+          if (urlRes.status === 413) throw new Error("413: Link nội dung quá lớn để đọc.");
+          if (urlRes.status === 429) throw new Error("429: Máy chủ đang bận xử lý dữ liệu. Xin thử lại.");
+        }
       }
 
       const rawText = `Tên chiến dịch: ${name || 'N/A'}. Ngân sách: ${budgetNum} VND. Yêu cầu: ${requestText || 'Không mô tả'}`;
@@ -142,6 +158,12 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ raw_text: rawText, budget: budgetNum })
       });
+      
+      if (!res.ok) {
+        if (res.status === 413) throw new Error("413: Yêu cầu của bạn quá dài hoặc mang lượng dữ liệu vượt quá khả năng xử lý của Agents.");
+        if (res.status === 429) throw new Error("429: Nhóm Agents đang giải quyết quá nhiều công việc. Vui lòng sử dụng dữ liệu mẫu hoặc thử lại sau.");
+      }
+      
       const result = await res.json();
       
       if (result.status === "success" && result.plan) {
@@ -264,7 +286,9 @@ export default function App() {
               isReady={!!campaignData}
               error={generateError}
               agentLogs={agentLogs}
-              onComplete={() => setCurrentView('result')} 
+              onComplete={() => setCurrentView('result')}
+              onFallback={handleFallbackToMock}
+              onRetry={() => setCurrentView('upload')}
             />
           )}
 

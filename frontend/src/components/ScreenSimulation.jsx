@@ -89,7 +89,7 @@ function PipelineStep({ label, icon: Icon, isActive, isDone, step }) {
   );
 }
 
-export default function ScreenSimulation({ iteration, feedback, isReady, error, onComplete, agentLogs }) {
+export default function ScreenSimulation({ iteration, feedback, isReady, error, onComplete, agentLogs, onFallback, onRetry }) {
   const [progress, setProgress] = useState(0);
   const [messages, setMessages] = useState([]);
   const [activeAgent, setActiveAgent] = useState('SYSTEM');
@@ -98,6 +98,7 @@ export default function ScreenSimulation({ iteration, feedback, isReady, error, 
   const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
+    if (error) return; // Dừng progress nếu có lỗi
     if (progress >= 100) return;
     const timer = setInterval(() => {
       setProgress(p => {
@@ -133,7 +134,7 @@ export default function ScreenSimulation({ iteration, feedback, isReady, error, 
 
   useEffect(() => {
     if (!isReady) return;
-    if (error) { setShowDoneBtn(true); setCurrentStep(5); return; }
+    if (error) { setShowDoneBtn(false); return; }
     let timers = [];
     let delayOffset = 800;
     if (agentLogs && agentLogs.length > 0) {
@@ -188,9 +189,32 @@ export default function ScreenSimulation({ iteration, feedback, isReady, error, 
         <div className="w-full space-y-2 mb-8">{pipelineSteps.map((step, i) => <PipelineStep key={i} label={step.label} icon={step.icon} step={i + 1} isActive={currentStep === i + 1} isDone={currentStep > i + 1} />)}</div>
 
         <div className="w-full px-2">
-          <div className="flex justify-between text-[10px] text-[#A0AEC0] font-mono mb-2 uppercase tracking-tighter"><span>Neural Loading</span><span className={progress >= 100 ? 'text-emerald-400' : 'text-[#0075FF]'}>{Math.round(progress)}%</span></div>
-          <div className="w-full h-2 bg-[#0B1437] rounded-full overflow-hidden border border-[#1B254B]"><div className={`h-full transition-all duration-500 ${progress >= 100 ? 'bg-emerald-500' : 'bg-[#0075FF]'}`} style={{width: `${progress}%`}}></div></div>
-          {showDoneBtn && <button onClick={onComplete} className="mt-8 w-full py-4 bg-gradient-to-r from-[#0075FF] to-[#0055c4] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl flex items-center justify-center hover:scale-[1.02] transition-all"> {error ? 'Lỗi hệ thống - Thử lại' : `Xem bản kế hoạch v${iteration}`} <ArrowRight className="ml-2" size={16} /></button>}
+          <div className="flex justify-between text-[10px] text-[#A0AEC0] font-mono mb-2 uppercase tracking-tighter">
+            <span>{error ? 'System Error' : 'Neural Loading'}</span>
+            <span className={error ? 'text-rose-400' : progress >= 100 ? 'text-emerald-400' : 'text-[#0075FF]'}>{error ? 'FAILED' : `${Math.round(progress)}%`}</span>
+          </div>
+          <div className="w-full h-2 bg-[#0B1437] rounded-full overflow-hidden border border-[#1B254B]">
+            <div className={`h-full transition-all duration-500 ${error ? 'bg-rose-500' : progress >= 100 ? 'bg-emerald-500' : 'bg-[#0075FF]'}`} style={{width: `${error ? 100 : progress}%`}}></div>
+          </div>
+          
+          {error && (
+            <div className="mt-6 flex flex-col space-y-4 animate-fadeIn">
+              <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-4 flex items-start gap-3">
+                <ShieldAlert className="text-rose-400 shrink-0 mt-0.5" size={18} />
+                <p className="text-sm font-semibold text-rose-300 leading-relaxed">{error}</p>
+              </div>
+              
+              <button onClick={onFallback} className="w-full py-3 border border-[#0075FF]/40 text-[#0075FF] hover:bg-[#0075FF]/10 rounded-xl font-bold text-xs uppercase tracking-widest transition-all">
+                Dùng Dữ Liệu Mẫu (Mock) <ArrowRight className="inline ml-1" size={14} />
+              </button>
+              
+              <button onClick={onRetry} className="w-full py-3.5 bg-gradient-to-r from-[#1B254B] to-[#25326b] hover:from-[#25326b] hover:to-[#36499c] text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center hover:scale-[1.02] transition-all"> 
+                Quay Trở Lại
+              </button>
+            </div>
+          )}
+
+          {!error && showDoneBtn && <button onClick={onComplete} className="mt-8 w-full py-4 bg-gradient-to-r from-[#0075FF] to-[#0055c4] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl flex items-center justify-center hover:scale-[1.02] transition-all"> Xem bản kế hoạch v{iteration} <ArrowRight className="ml-2" size={16} /></button>}
         </div>
       </div>
 

@@ -83,3 +83,5 @@ Desktop.ini
 .worktrees/
 
 document/
+.DS_Store
+ArcReel-main/

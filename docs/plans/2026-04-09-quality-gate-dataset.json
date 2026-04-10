@@ -1,0 +1,150 @@
+{
+  "dataset_version": "stage-e-quality-gate-v1",
+  "scope": "graph+tier+output policy",
+  "cases": [
+    {
+      "case_id": "free_fast_food_01",
+      "tier": "FREE",
+      "route_preference": "fast-track",
+      "goal": "Launch milk tea combo for summer season",
+      "industry": "F&B",
+      "budget": 12000000,
+      "target_audience": "Gen Z urban students",
+      "constraints": "No KOL usage",
+      "expected_route_decision": "fast-track",
+      "expects_clarification": false
+    },
+    {
+      "case_id": "free_balanced_food_02",
+      "tier": "FREE",
+      "route_preference": "balanced",
+      "goal": "Increase repeat orders from existing customers",
+      "industry": "F&B",
+      "budget": 9000000,
+      "target_audience": "Existing loyalty members",
+      "constraints": "Focus on social channels",
+      "expected_route_decision": "fast-track",
+      "expects_clarification": false
+    },
+    {
+      "case_id": "free_deep_food_03",
+      "tier": "FREE",
+      "route_preference": "deep-analysis",
+      "goal": "Improve brand recall in district clusters",
+      "industry": "F&B",
+      "budget": 14000000,
+      "target_audience": "Office workers age 24-35",
+      "constraints": "Keep campaign under 30 days",
+      "expected_route_decision": "fast-track",
+      "expects_clarification": false
+    },
+    {
+      "case_id": "plus_fast_b2b_04",
+      "tier": "PLUS",
+      "route_preference": "fast-track",
+      "goal": "Generate demo requests for logistics software",
+      "industry": "B2B",
+      "budget": 40000000,
+      "target_audience": "SME operations managers",
+      "constraints": "Digital channels first",
+      "expected_route_decision": "fast-track",
+      "expects_clarification": false
+    },
+    {
+      "case_id": "plus_balanced_b2b_05",
+      "tier": "PLUS",
+      "route_preference": "balanced",
+      "goal": "Expand qualified leads in two metro cities",
+      "industry": "B2B",
+      "budget": 38000000,
+      "target_audience": "Team leads and founders",
+      "constraints": "Must include webinar support",
+      "expected_route_decision": "balanced",
+      "expects_clarification": false
+    },
+    {
+      "case_id": "plus_deep_b2b_06",
+      "tier": "PLUS",
+      "route_preference": "deep-analysis",
+      "goal": "Improve pipeline quality for enterprise segment",
+      "industry": "B2B",
+      "budget": 45000000,
+      "target_audience": "Enterprise procurement managers",
+      "constraints": "No out-of-home media",
+      "expected_route_decision": "balanced",
+      "expects_clarification": false
+    },
+    {
+      "case_id": "pro_fast_general_07",
+      "tier": "PRO",
+      "route_preference": "fast-track",
+      "goal": "Accelerate product launch awareness",
+      "industry": "General",
+      "budget": 55000000,
+      "target_audience": "Young professionals",
+      "constraints": "Campaign must be measurable by week",
+      "expected_route_decision": "fast-track",
+      "expects_clarification": false
+    },
+    {
+      "case_id": "pro_balanced_general_08",
+      "tier": "PRO",
+      "route_preference": "balanced",
+      "goal": "Strengthen multi-channel acquisition funnel",
+      "industry": "General",
+      "budget": 60000000,
+      "target_audience": "Mid-income households",
+      "constraints": "Maintain brand safety guardrails",
+      "expected_route_decision": "balanced",
+      "expects_clarification": false
+    },
+    {
+      "case_id": "pro_deep_general_09",
+      "tier": "PRO",
+      "route_preference": "deep-analysis",
+      "goal": "Design full-quarter strategy for category expansion",
+      "industry": "General",
+      "budget": 75000000,
+      "target_audience": "Category switchers",
+      "constraints": "Need risk control checkpoints",
+      "expected_route_decision": "deep-analysis",
+      "expects_clarification": false
+    },
+    {
+      "case_id": "free_missing_target_10",
+      "tier": "FREE",
+      "route_preference": "balanced",
+      "goal": "Recover inactive customer base",
+      "industry": "F&B",
+      "budget": 8000000,
+      "target_audience": "",
+      "constraints": "Limited to owned channels",
+      "expected_route_decision": "fast-track",
+      "expects_clarification": true
+    },
+    {
+      "case_id": "plus_missing_constraints_11",
+      "tier": "PLUS",
+      "route_preference": "balanced",
+      "goal": "Improve lead quality in paid social",
+      "industry": "B2B",
+      "budget": 30000000,
+      "target_audience": "Marketing managers",
+      "constraints": "",
+      "expected_route_decision": "balanced",
+      "expects_clarification": true
+    },
+    {
+      "case_id": "pro_missing_both_12",
+      "tier": "PRO",
+      "route_preference": "deep-analysis",
+      "goal": "Stress test clarification guard under pro tier",
+      "industry": "General",
+      "budget": 50000000,
+      "target_audience": "",
+      "constraints": "",
+      "expected_route_decision": "deep-analysis",
+      "expects_clarification": true
+    }
+  ]
+}

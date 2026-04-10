@@ -1,7 +1,7 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { Download } from 'lucide-react';
+import { Download, AlertCircle, FileJson } from 'lucide-react';
 
 const MOSCOW_COLORS = {
   MUST_HAVE:   { bg: '#065f46', border: '#10B981', text: '#6ee7b7', label: 'BẮT BUỘC' },
@@ -11,6 +11,7 @@ const MOSCOW_COLORS = {
 
 export default function KanbanPdfExporter({ campaignData, budgetData, iteration }) {
   const kanbanRef = useRef(null);
+  const [exportError, setExportError] = useState(null);
 
   const execSum = campaignData?.executive_summary || {};
   const breakdown = campaignData?.activity_and_financial_breakdown || [];
@@ -32,6 +33,7 @@ export default function KanbanPdfExporter({ campaignData, budgetData, iteration 
     const el = kanbanRef.current;
     if (!el) return;
 
+    setExportError(null);
     el.style.display = 'block';
 
     await new Promise(r => setTimeout(r, 300));
@@ -64,22 +66,55 @@ export default function KanbanPdfExporter({ campaignData, budgetData, iteration 
       pdf.save(`${safeName}_Kanban_v${iteration}.pdf`);
     } catch (err) {
       console.error('PDF export error:', err);
-      alert('Không thể xuất PDF. Vui lòng thử lại.');
+      setExportError('Trình duyệt không hỗ trợ tạo PDF hoặc bị thiếu tài nguyên. Vui lòng bấm JSON Fallback để tải toàn bộ kế hoạch.');
     } finally {
       el.style.display = 'none';
     }
-  }, [campaignData, iteration]);
+  }, [campaignData, iteration, execSum]);
+
+  const handleExportJson = useCallback(() => {
+    try {
+      const safeName = (execSum.campaign_name || 'BrandFlow').replace(/[^a-zA-Z0-9\u00C0-\u024F\u1E00-\u1EFF ]/g, '').trim().replace(/\s+/g, '_');
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(campaignData, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", `${safeName}_Kanban_v${iteration}.json`);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      setExportError(null);
+    } catch (err) {
+      console.error('JSON export error', err);
+      setExportError('Đã có lỗi khi xuất JSON.');
+    }
+  }, [campaignData, iteration, execSum]);
 
   return (
-    <>
-      {/* Export Button */}
-      <button
-        onClick={handleExportPdf}
-        className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-[1.03]"
-      >
-        <Download size={16} />
-        Xuất PDF Kanban
-      </button>
+    <div className="flex flex-col items-end gap-3 z-10">
+      {/* Export Buttons */}
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        <button
+          onClick={handleExportJson}
+          className="flex items-center gap-2 bg-[#111C44] border border-[#0075FF]/40 hover:bg-[#0075FF]/20 text-[#0075FF] font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl shadow-lg hover:shadow-[#0075FF]/20 transition-all w-full sm:w-auto justify-center"
+        >
+          <FileJson size={16} /> JSON Fallback
+        </button>
+
+        <button
+          onClick={handleExportPdf}
+          className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-[1.03] w-full sm:w-auto justify-center"
+        >
+          <Download size={16} />
+          Xuất PDF Kanban
+        </button>
+      </div>
+
+      {exportError && (
+        <div className="text-rose-400 border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 rounded-lg text-xs flex items-start gap-2 shadow-sm animate-fadeIn max-w-[350px]">
+          <AlertCircle size={15} className="shrink-0 mt-0.5" />
+          <span className="leading-relaxed font-medium text-[11px]">{exportError}</span>
+        </div>
+      )}
 
       {/* Hidden Kanban Layout for PDF Rendering */}
       <div
@@ -258,6 +293,6 @@ export default function KanbanPdfExporter({ campaignData, budgetData, iteration 
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

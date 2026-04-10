@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UploadCloud, Briefcase, CheckCircle, ArrowRight, FileText, X, DollarSign } from 'lucide-react';
+import { UploadCloud, Briefcase, CheckCircle, ArrowRight, FileText, X, DollarSign, AlertCircle } from 'lucide-react';
 
 export default function ScreenUpload({ onGenerate }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -9,10 +9,12 @@ export default function ScreenUpload({ onGenerate }) {
   const [userRequest, setUserRequest] = useState("");
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractedSummary, setExtractedSummary] = useState(null);
+  const [extractError, setExtractError] = useState(null);
 
   const handleExtractSummary = async () => {
+    setExtractError(null);
     if (selectedFiles.length === 0) {
-      alert("Vui lòng tải lên ít nhất một tài liệu trước khi phân tích.");
+      setExtractError("Vui lòng tải lên ít nhất một tài liệu trước khi phân tích.");
       return;
     }
     setIsExtracting(true);
@@ -24,14 +26,21 @@ export default function ScreenUpload({ onGenerate }) {
         method: "POST",
         body: formData
       });
+      
+      if (!res.ok) {
+        if (res.status === 413) throw new Error("413: Tệp đính kèm quá lớn (vượt quá giới hạn). Hệ thống không thể phân tích.");
+        if (res.status === 429) throw new Error("429: Hệ thống máy chủ đang quá tải. Vui lòng thử lại sau.");
+        throw new Error(`Đã có lỗi xảy ra (Mã lỗi: ${res.status})`);
+      }
+      
       const data = await res.json();
       if (data.status === "success") {
         setExtractedSummary(data.data);
       } else {
-        alert("Có lỗi xảy ra: " + (data.detail || data.message));
+        throw new Error(data.detail || data.message || "Không thể phân tích dữ liệu.");
       }
     } catch (err) {
-      alert("Không kết nối được với máy chủ: " + err.message);
+      setExtractError(err.message || "Không kết nối được với máy chủ.");
     } finally {
       setIsExtracting(false);
     }
@@ -160,6 +169,13 @@ export default function ScreenUpload({ onGenerate }) {
               >
                 {isExtracting ? "Đang phân tích tài liệu bằng AI..." : "Phân tích & Tóm tắt Nhanh Tài liệu (Tùy chọn)"}
               </button>
+            )}
+
+            {extractError && (
+              <div className="mt-2 mb-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-lg flex items-start text-sm">
+                <AlertCircle className="w-5 h-5 shrink-0 mr-2" />
+                <span>{extractError}</span>
+              </div>
             )}
 
             {extractedSummary && (

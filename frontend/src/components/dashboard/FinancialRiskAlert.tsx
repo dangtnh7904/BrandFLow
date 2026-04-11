@@ -17,12 +17,12 @@ export default function FinancialRiskAlert() {
         </div>
 
         <div className="mt-4">
-          <h3 className="text-white text-lg font-medium mb-1">{t('dashboard_home.risk_title')}</h3>
-          <p className="text-linear-text-muted text-xs leading-relaxed mb-4">
+          <h3 className="text-slate-900 text-lg font-bold mb-1">{t('dashboard_home.risk_title')}</h3>
+          <p className="text-slate-600 text-xs leading-relaxed mb-4">
             {t('dashboard_home.risk_desc')}
           </p>
           
-          <button className="flex items-center text-xs font-semibold text-red-400 hover:text-red-300 transition-colors">
+          <button className="flex items-center text-xs font-semibold text-red-600 hover:text-red-500 transition-colors">
             {t('dashboard_home.risk_btn')} <ArrowUpRight className="w-3 h-3 ml-1" />
           </button>
         </div>

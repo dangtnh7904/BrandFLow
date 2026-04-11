@@ -175,7 +175,78 @@ export const translations = {
      risk_title: { en: "Financial Hallucination Risk", vi: "Rủi ro Sai lệch Tài chính" },
      risk_desc: { en: 'Agent "Tactical Budgeter" attempted to allocate $5,000 to an unverified channel. The Math Engine has blocked this transaction.', vi: 'Trợ lý "Lập ngân sách" vừa cố gắng phân bổ $5,000 vào một kênh chưa qua kiểm duyệt. Động cơ Toán học (Math Engine) đã chặn giao dịch này.' },
      risk_btn: { en: "Review Blocked Budget", vi: "Kiểm tra Ngân sách chặn" }
-  }
+  },
+   // === WORKSPACE FLOW ===
+   flow: {
+      engine: { en: "Campaign Engine", vi: "Trạm điều hành Chiến dịch" },
+      stage: { en: "Stage", vi: "Giai đoạn" },
+   },
+   // === B2B PAGES ===
+   b2b_tools: {
+      save_draft: { en: "Save Draft", vi: "Lưu Bản nháp" },
+      export_pdf: { en: "Export PDF", vi: "Xuất PDF" },
+   },
+   a1: {
+      title: { en: "Mission & Definition", vi: "Sứ mệnh & Định nghĩa" },
+      desc: { en: "Define the core mission statement, role, and overarching directions for the business.", vi: "Xác định tuyên ngôn sứ mệnh cốt lõi, vai trò và các định hướng bao trùm cho doanh nghiệp." },
+      alert_title: { en: "Strategic Note:", vi: "Lưu ý Chiến lược:" },
+      alert_desc: { en: "This document serves as the primary anchor. All subsequent campaigns and tactics must adhere to the Core Competencies defined here.", vi: "Tài liệu này đóng vai trò là mỏ neo chính. Tất cả các chiến dịch và chiến thuật tiếp theo phải bám sát vào Năng lực Lõi và Định hướng được xác định ở đây." },
+   },
+   a3: {
+      title: { en: "Revenue Projection & Financial Metrics", vi: "Dự phóng Doanh thu & Chỉ số Tài chính" },
+      desc: { en: "Calculate and visualize P&L expectations along with long-term gross margin growth.", vi: "Tính toán và trực quan hóa kỳ vọng P&L cùng với tăng trưởng biên lợi nhuận gộp trong dài hạn." },
+      alert_title: { en: "Financial Goals:", vi: "Mục tiêu Tài chính:" },
+      alert_desc: { en: "The charts below simulate the output of the core math engine. Projections are based on the baseline parameters from Year t0.", vi: "Các biểu đồ dưới đây mô phỏng đầu ra của toán cốt lõi. Số liệu dự phóng được tính toán dựa trên các tham số cơ sở của Năm t0." },
+   },
+   a5: {
+      title: { en: "SWOT & Competitive Analysis", vi: "Phân tích SWOT & Năng lực cạnh tranh" },
+      desc: { en: "Evaluate core competencies against top competitors to guide strategic weight allocation.", vi: "Đánh giá năng lực cốt lõi so với đối thủ cạnh tranh hàng đầu để định hướng phân bổ trọng số chiến lược." },
+      alert_title: { en: "Instructions:", vi: "Hướng dẫn:" },
+      alert_desc: { en: "Only input Key Success Factors (KSFs) that directly impact purchasing decisions. Total weight must always lock at 100%. Scores are strictly limited from 1 to 10.", vi: "Chỉ nhập các Yếu tố Thành công Cốt lõi (KSF) tác động trực tiếp đến quyết định mua hàng. Tổng trọng số phải luôn khóa ở mức 100%. Điểm số được giới hạn khắt khe từ 1 đến 10." },
+   },
+   a6: {
+      title: { en: "Positioning & Focus Matrix", vi: "Ma trận Định vị & Trọng tâm" },
+      desc: { en: "Evaluation of product/service categories based on Market Attractiveness and Competitive Strength.", vi: "Đánh giá các danh mục sản phẩm/dịch vụ dựa trên tiêu chí Sức hấp dẫn Thị trường và Năng lực Cạnh tranh." },
+      strategy: { en: "Investment Strategy:", vi: "Chiến lược Đầu tư:" },
+      strategy_desc: { en: "Products in the top-right require capital influx (Invest/Grow). Products in the bottom-left fall under conditional divestment (Harvest/Divest).", vi: "Sản phẩm ở góc trên cùng bên phải yêu cầu dòng vốn đầu tư (Invest/Grow). Sản phẩm ở khu vực dưới cùng bên trái nằm trong diện xem xét thoái vốn dự phòng (Harvest/Divest)." },
+      revenue_title: { en: "A3. Revenue & Profit Projection", vi: "A3. Dự phóng Doanh thu & Lợi nhuận" },
+      matrix_title: { en: "A6. Focus Matrix", vi: "A6. Ma trận Trọng tâm" },
+   },
+   b3: {
+      title: { en: "Action Plan", vi: "Kế hoạch Hành động" },
+      desc: { en: "Set clear tactical objectives, assign owners, and manage the overarching budget.", vi: "Thiết lập mục tiêu chiến thuật rõ ràng, chỉ định người phụ trách và quản lý ngân sách bao trùm." },
+      alert_title: { en: "Execution Rules:", vi: "Quy tắc Thực thi:" },
+      alert_desc: { en: "Each tactic must have a clear owner and a budget cap. This list is directly linked to the B7 Gantt schedule.", vi: "Mỗi chiến thuật phải có người chịu trách nhiệm rõ ràng và giới hạn ngân sách (budget cap). Danh sách này được liên kết trực tiếp với tiến độ B7 Gantt." },
+   },
+   b5: {
+      title: { en: "Risk Contingency Plan", vi: "Kế hoạch Dự phòng rủi ro" },
+      desc: { en: "Map out risk events, define trigger thresholds, and establish response actions.", vi: "Lập sơ đồ các sự kiện rủi ro, xác định ngưỡng kích hoạt và thiết lập hành động ứng phó." },
+      alert_title: { en: "Risk Protocol:", vi: "Giao thức Rủi ro:" },
+      alert_desc: { en: "Once a Trigger Point is breached during operations, its corresponding Contingency Action must be activated immediately without requiring approval.", vi: "Một khi Điểm Kích Hoạt (Trigger Point) bị vi phạm trong quá trình vận hành, Hành động Dự phòng tương ứng phải được kích hoạt ngay lập tức mà không cần chờ phê duyệt." },
+   },
+   b7: {
+      title: { en: "Strategic Schedule (12-Month Gantt)", vi: "Bảng tiến độ chiến lược (12-Month Gantt)" },
+      desc: { en: "Micro-execution schedule diagram illustrating all operational touchpoints throughout the fiscal year.", vi: "Biểu đồ tiến độ thực thi vi mô minh họa tất cả các điểm chạm vận hành trong suốt năm tài chính." },
+      alert_title: { en: "Operational Check:", vi: "Kiểm tra Vận hành:" },
+      alert_desc: { en: "Ensure all tactical touchpoints mapped below correspond directly to the approved budget in the Action Plan (B3).", vi: "Đảm bảo tất cả các điểm chạm chiến thuật được ánh xạ bên dưới có tương ứng trực tiếp với ngân sách đã được phê duyệt trong Bảng Kế hoạch Hành động (B3)." },
+   },
+   c1: {
+      title: { en: "Group / HQ Direction", vi: "Định hướng Tập đoàn / HQ" },
+      desc: { en: "Unify the mission and strategic directions across all satellite brands.", vi: "Hợp nhất sứ mệnh và các định hướng chiến lược trên toàn bộ các thương hiệu vệ tinh." },
+      alert_title: { en: "HQ Level:", vi: "Cấp độ HQ:" },
+      alert_desc: { en: "This function represents the strategy of the Parent Group. Satellite brand missions (A1) must inherit and synchronize with this core value.", vi: "Chức năng này đại diện cho chiến lược của công ty mẹ (Parent Group). Các sứ mệnh của thương hiệu con (A1) phải kế thừa và đồng bộ hóa với giá trị gốc này." },
+   },
+   c2: {
+      title: { en: "HQ Synthesis Matrix", vi: "Ma trận Tổng hợp HQ" },
+      desc: { en: "High-level dashboard summarizing portfolio and revenue metrics across the entire corporate ecosystem.", vi: "Dashboard cấp cao tổng hợp các chỉ số danh mục đầu tư và doanh thu trên toàn bộ hệ sinh thái của tập đoàn." },
+      alert_title: { en: "HQ Visualizer:", vi: "HQ Visualizer:" },
+      alert_desc: { en: "Scatter plots and Dashboards at this level summarize the most comprehensive aggregate metrics from the operational tiers below.", vi: "Các biểu đồ phân tán và Dashboard ở cấp độ này tóm tắt các chỉ số tổng hợp toàn diện nhất từ tầng vận hành bên dưới." },
+   },
+   // === SCREEN 1 PLACEHOLDERS ===
+   screen1_ph: {
+      social: { en: "Facebook, LinkedIn URLs...", vi: "Đường dẫn Facebook, LinkedIn..." },
+      web: { en: "Primary domain or Campaign LP...", vi: "Domain chính hoặc chiến dịch LP..." },
+   }
 } as const;
 
 // Typescript Magic for autocomplete

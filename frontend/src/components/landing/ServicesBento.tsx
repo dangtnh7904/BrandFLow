@@ -39,7 +39,7 @@ export default function ServicesBento() {
   return (
     <section id="services" className="py-24 max-w-7xl mx-auto px-6">
       <div className="mb-16">
-        <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">
+        <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
           Hệ sinh thái <span className="gradient-ai-text">AI Agents</span>
         </h2>
         <p className="text-linear-text-muted text-lg max-w-2xl">
@@ -59,15 +59,15 @@ export default function ServicesBento() {
             style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}
           >
             <div>
-              <div className="w-12 h-12 rounded-xl bg-white/5 border ultra-thin-border flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-transparent border ultra-thin-border flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <service.icon className={`w-6 h-6 ${service.accent}`} />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">{service.title}</h3>
+              <h3 className="text-2xl font-bold text-foreground mb-3">{service.title}</h3>
               <p className="text-linear-text-muted leading-relaxed">{service.description}</p>
             </div>
             
             <div className="mt-8">
-              <span className="text-xs font-semibold text-white/50 group-hover:text-white transition-colors cursor-pointer flex items-center">
+              <span className="text-xs font-semibold text-zinc-400 group-hover:text-emerald-600 transition-colors cursor-pointer flex items-center">
                 Kết nối Agent &gt;
               </span>
             </div>

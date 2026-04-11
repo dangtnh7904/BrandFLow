@@ -51,59 +51,100 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
     return () => clearInterval(interval);
   }, []);
 
-  const getAgentColor = (agent: string) => {
-    if (agent === 'CMO') return 'text-purple-700 bg-purple-50 border-purple-200';
-    if (agent === 'Customer') return 'text-blue-700 bg-blue-50 border-blue-200';
-    if (agent === 'CFO') return 'text-orange-700 bg-orange-50 border-orange-200';
+  const getAgentTheme = (agent: string, type: string) => {
+    if (type === 'warning') return { bg: 'bg-white', border: 'border-red-500', text: 'text-red-700', iconBg: 'bg-red-100', glow: 'shadow-[0_0_15px_rgba(239,68,68,0.5)]' };
+    if (agent === 'CMO') return { bg: 'bg-white', border: 'border-purple-300', text: 'text-purple-800', iconBg: 'bg-purple-100', glow: 'shadow-[0_0_15px_rgba(168,85,247,0.3)]' };
+    if (agent === 'Customer') return { bg: 'bg-white', border: 'border-blue-300', text: 'text-blue-800', iconBg: 'bg-blue-100', glow: 'shadow-[0_0_15px_rgba(59,130,246,0.3)]' };
+    if (agent === 'CFO') return { bg: 'bg-white', border: 'border-orange-300', text: 'text-orange-800', iconBg: 'bg-orange-100', glow: 'shadow-[0_0_15px_rgba(249,115,22,0.3)]' };
+    return { bg: 'bg-white', border: 'border-slate-200', text: 'text-slate-800', iconBg: 'bg-slate-100', glow: '' };
   };
 
   const getStatusBadge = (type: string) => {
     switch (type) {
       case 'rejected':
-        return <span className="flex items-center text-[10px] uppercase font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded ml-3 border border-red-200"><XCircle className="w-3 h-3 mr-1" /> Rejected - Misaligned Insight</span>;
+        return <span className="flex items-center text-[10px] uppercase font-bold text-red-600 bg-red-50 px-2 py-1 rounded-md ml-3 border border-red-200"><XCircle className="w-3 h-3 mr-1" /> {language === 'vi' ? 'Bác bỏ' : 'Rejected'}</span>;
       case 'warning':
-        return <span className="flex items-center text-[10px] uppercase font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded ml-3 border border-yellow-200"><AlertTriangle className="w-3 h-3 mr-1" /> Warning - High Cost</span>;
+        return (
+          <motion.span 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="flex items-center text-[10px] uppercase font-bold text-white bg-red-500 px-3 py-1 rounded-md ml-3 shadow-md"
+          >
+            <AlertTriangle className="w-3 h-3 mr-1" /> {language === 'vi' ? 'Cảnh báo rủi ro' : 'Risk Warning'}
+          </motion.span>
+        );
       case 'approved':
-        return <span className="flex items-center text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded ml-3 border border-emerald-200"><CheckCircle2 className="w-3 h-3 mr-1" /> Approved</span>;
+        return <span className="flex items-center text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md ml-3 border border-emerald-200"><CheckCircle2 className="w-3 h-3 mr-1" /> {language === 'vi' ? 'Chấp thuận' : 'Approved'}</span>;
       default: return null;
     }
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto p-8 max-w-4xl mx-auto w-full relative">
-      <button onClick={onBack} className="absolute left-8 top-8 text-slate-500 hover:text-slate-800 transition-colors flex items-center text-sm">
-         <ArrowLeft className="w-4 h-4 mr-1" /> Go Back
+    <div className="flex flex-col h-full overflow-y-auto p-8 max-w-4xl mx-auto w-full relative bg-slate-50">
+      <button onClick={onBack} className="absolute left-8 top-8 text-slate-500 hover:text-slate-800 transition-colors flex items-center text-sm font-semibold bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </button>
 
       <div className="mb-10 text-center mt-8">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">{language === 'vi' ? 'Giai đoạn 2: Bàn phản biện Chiến lược' : 'Stage 2: Strategic Debate Board'}</h2>
-        <p className="text-slate-500">{language === 'vi' ? 'Các AI Agent đang đưa ra phản biện chiến lược trực tuyến dựa trên Profile.' : 'AI Agents are conducting real-time strategic counter-arguments based on the Master Profile.'}</p>
+        <h2 className="text-3xl font-bold text-slate-900 mb-3">{language === 'vi' ? 'Strategic Debate Board' : 'Strategic Debate Board'}</h2>
+        <p className="text-slate-500 max-w-2xl mx-auto">{language === 'vi' ? 'Các AI Agent đang đưa ra phản biện chiến lược trực tuyến dựa trên Master Profile. Thẻ tự động quét vi phạm tài chính.' : 'AI Agents are evaluating strategy based on the Master Profile. Dynamic constraints detect risk violations continuously.'}</p>
       </div>
 
       {!isLocked ? (
-        <div className="space-y-4 mb-24">
+        <div className="space-y-6 mb-24 relative">
+          {/* Vertical connection line */}
+          <div className="absolute left-[39px] top-4 bottom-10 w-0.5 bg-slate-200 z-0"></div>
+
           {messages.map((msg, idx) => {
             if (!msg) return null;
+            const isLatest = idx === messages.length - 1;
+            const theme = getAgentTheme(msg.agent, msg.type);
+            const isWarning = msg.type === 'warning';
+
             return (
               <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                animate={isWarning 
+                  ? { opacity: 1, y: 0, scale: 1, boxShadow: ['0 0 0px rgba(239,68,68,0)', '0 0 20px rgba(239,68,68,0.6)', '0 0 5px rgba(239,68,68,0.2)'] }
+                  : { opacity: 1, y: 0, scale: 1, boxShadow: isLatest ? ['0 0 0px rgba(0,0,0,0)', theme.glow.replace('shadow-', '').replace('[','').replace(']','') || '0 0 0px rgba(0,0,0,0)', '0 0 0px rgba(0,0,0,0)'] : '0 0 0px rgba(0,0,0,0)' }
+                }
+                transition={isWarning 
+                  ? { duration: 0.8, repeat: Infinity, repeatType: 'reverse' }
+                  : { duration: 1.5, repeat: isLatest ? Infinity : 0 }
+                }
                 key={idx} 
-                className={`p-4 rounded-2xl border border-slate-200 bg-white shadow-sm`}
+                className={`relative z-10 flex ml-4 pr-4`}
               >
-                <div className="flex items-center mb-2">
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold border ${getAgentColor(msg.agent)}`}>
-                    {msg.agent} Agent
-                  </div>
-                  {getStatusBadge(msg.type)}
+                {/* Agent Icon Node */}
+                <div className={`w-12 h-12 shrink-0 rounded-xl ${theme.iconBg} border-2 ${theme.border} flex items-center justify-center mr-6 shadow-sm`}>
+                   <Bot className={`w-6 h-6 ${theme.text}`} />
                 </div>
-                <p className="text-slate-800 text-sm leading-relaxed">{msg.text}</p>
+
+                {/* Agent Persona Card */}
+                <div className={`flex-1 p-5 rounded-2xl border-2 ${theme.border} ${theme.bg} shadow-sm relative`}>
+                  {/* Speech arrow pointer */}
+                  <div className={`absolute top-4 -left-[9px] w-4 h-4 ${theme.bg} border-l-2 border-b-2 ${theme.border} transform rotate-45`}></div>
+                  
+                  <div className="flex items-center mb-3">
+                    <span className={`text-sm font-black tracking-wide uppercase ${theme.text}`}>
+                      {msg.agent} Agent
+                    </span>
+                    {getStatusBadge(msg.type)}
+                  </div>
+                  <p className="text-slate-700 text-[15px] leading-relaxed font-medium">{msg.text}</p>
+                </div>
               </motion.div>
             );
           })}
           {messages.length < (language === 'vi' ? MOCK_DEBATE_VI.length : MOCK_DEBATE_EN.length) && (
-            <div className="text-linear-text-muted text-sm flex items-center ml-2 animate-pulse">
-              <Bot className="w-4 h-4 mr-2" /> {language === 'vi' ? 'Các trợ lý đang nhập...' : 'Agents are typing...'}
+            <div className="relative z-10 flex ml-4 pr-4">
+               <div className="w-12 h-12 shrink-0 rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center mr-6 animate-pulse">
+                   <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+               </div>
+               <div className="text-slate-400 text-sm flex items-center font-medium animate-pulse pb-10">
+                 {language === 'vi' ? 'Đang phân tích...' : 'Analyzing parameters...'}
+               </div>
             </div>
           )}
         </div>
@@ -111,17 +152,17 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bento-card border-emerald-200 text-center py-16 bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden"
+          className="bento-card border-emerald-200 text-center py-20 bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden shadow-lg mt-10"
         >
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
-          <FileText className="w-16 h-16 mx-auto text-emerald-600 mb-4" />
-          <h3 className="text-2xl font-bold text-slate-800 mb-2">{language === 'vi' ? 'Strategic Blueprint đã được Khóa' : 'Strategic Blueprint Locked'}</h3>
-          <p className="text-slate-500 max-w-md mx-auto mb-8">
-            {language === 'vi' ? 'Tất cả các Agents đã đồng thuận 100%. Chiến lược 3 tháng tập trung vào LinkedIn Whitepapers và SEO tự nhiên đã được thiết lập.' : 'All Agents have reached 100% consensus. The 3-month strategy prioritizing LinkedIn Whitepapers and Organic SEO is firmly established.'}
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+          <FileText className="w-20 h-20 mx-auto text-emerald-600 mb-6 drop-shadow-sm" />
+          <h3 className="text-3xl font-black text-slate-800 mb-4">{language === 'vi' ? 'Strategic Blueprint đã được Khóa' : 'Strategic Blueprint Locked'}</h3>
+          <p className="text-slate-600 max-w-xl mx-auto mb-10 text-lg leading-relaxed font-medium">
+            {language === 'vi' ? 'Tất cả các Agents đã đồng thuận tuyệt đối (100%). Chiến lược 3 tháng tập trung vào LinkedIn Whitepapers và SEO tự nhiên đã được thiết lập chặt chẽ và lưu vào Blockchain Logs.' : 'All Agents have reached absolute consensus (100%). The 3-month strategy prioritizing LinkedIn Whitepapers and Organic SEO is firmly established and appended to Blockchain Logs.'}
           </p>
           <button 
              onClick={onNext}
-             className="px-8 py-3 rounded-xl gradient-ai-bg font-semibold shadow-md"
+             className="px-10 py-4 rounded-xl gradient-ai-bg font-bold shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 text-lg"
           >
              {language === 'vi' ? 'Chuyển sang Lập Ngân sách (Tactics)' : 'Proceed to Tactical Budgeting'}
           </button>

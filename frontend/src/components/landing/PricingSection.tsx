@@ -56,7 +56,7 @@ export default function PricingSection() {
   return (
     <section id="pricing" className="py-24 max-w-7xl mx-auto px-6 relative">
       <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">
+        <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
           Giải pháp cho mọi quy mô
         </h2>
         <p className="text-linear-text-muted text-lg max-w-2xl mx-auto">
@@ -83,13 +83,13 @@ export default function PricingSection() {
             )}
 
             <div className="mb-8">
-              <h3 className="text-xl font-bold text-white mb-2">{tier.name}</h3>
+              <h3 className="text-xl font-bold text-foreground mb-2">{tier.name}</h3>
               <p className="text-sm text-linear-text-muted h-10">{tier.description}</p>
             </div>
             
             <div className="mb-8">
               <div className="flex items-end">
-                <span className="text-4xl font-black text-white">{tier.price}</span>
+                <span className="text-4xl font-black text-foreground">{tier.price}</span>
                 {tier.period && <span className="text-linear-text-muted ml-1 mb-1">{tier.period}</span>}
               </div>
             </div>
@@ -98,7 +98,7 @@ export default function PricingSection() {
               {tier.features.map((feat, i) => (
                 <li key={i} className="flex items-start">
                   <CheckCircle2 className={`w-5 h-5 mr-3 shrink-0 ${tier.popular ? 'text-cyan-400' : 'text-linear-text-muted'}`} />
-                  <span className="text-sm text-white/80">{feat}</span>
+                  <span className="text-sm text-zinc-600">{feat}</span>
                 </li>
               ))}
             </ul>
@@ -108,7 +108,7 @@ export default function PricingSection() {
                 className={`w-full py-3 rounded-xl font-semibold transition-all ${
                   tier.popular 
                     ? 'gradient-ai-bg' 
-                    : 'bg-white/5 border ultra-thin-border text-white hover:bg-white/10'
+                    : 'bg-transparent border ultra-thin-border text-foreground hover:bg-zinc-100'
                 }`}
               >
                 {tier.cta}

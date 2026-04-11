@@ -17,7 +17,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/5 border ultra-thin-border mb-8"
+          className="inline-flex items-center px-3 py-1.5 rounded-full bg-transparent border ultra-thin-border mb-8"
         >
           <Bot className="w-4 h-4 text-cyan-400 mr-2" />
           <span className="text-xs font-semibold text-linear-text-muted uppercase tracking-wider">Tiên phong Mạng Lưới AI Agency</span>
@@ -27,7 +27,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight mb-6"
+          className="text-5xl md:text-7xl font-bold tracking-tight text-foreground leading-tight mb-6"
         >
           Định nghĩa lại Digital Marketing <br className="hidden md:block" />
           với <span className="gradient-ai-text">Dữ Liệu và AI.</span>
@@ -53,8 +53,8 @@ export default function HeroSection() {
               Dùng thử miễn phí <ArrowRight className="w-5 h-5 ml-2" />
             </button>
           </Link>
-          <button className="flex items-center px-8 py-4 rounded-full bg-white/5 border ultra-thin-border hover:bg-white/10 transition-colors text-white text-base font-semibold w-full sm:w-auto justify-center">
-            <Zap className="w-5 h-5 mr-2 text-cyan-400" /> Xem Demo
+          <button className="flex items-center px-8 py-4 rounded-full bg-transparent border ultra-thin-border hover:bg-zinc-100 transition-colors text-foreground text-base font-semibold w-full sm:w-auto justify-center">
+            <Zap className="w-5 h-5 mr-2 text-cyan-500" /> Xem Demo
           </button>
         </motion.div>
       </div>

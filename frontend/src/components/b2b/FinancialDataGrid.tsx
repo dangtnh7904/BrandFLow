@@ -33,37 +33,37 @@ export default function FinancialDataGrid() {
   const marginData = calculateGrossMargin(MOCK_DATA);
 
   return (
-    <div className="bento-card border-none bg-white/5 shadow-sm overflow-hidden">
-       <div className="p-4 border-b border-white/10 bg-black/20">
-          <h3 className="font-semibold text-white">Dự phóng Tài chính (Kế hoạch 3 năm)</h3>
+    <div className="bento-card border border-slate-200 bg-white shadow-sm overflow-hidden">
+       <div className="p-4 border-b border-slate-200 bg-slate-50">
+          <h3 className="font-bold text-slate-900">Dự phóng Tài chính (Kế hoạch 3 năm)</h3>
        </div>
        <div className="overflow-x-auto w-full">
-         <table className="w-full text-sm text-left">
-            <thead className="bg-white/5 border-b border-white/10">
+         <table className="w-full text-sm text-left border-collapse">
+            <thead className="bg-slate-50 border-b border-slate-200">
                <tr>
-                  <th className="py-3 px-4 font-semibold text-slate-300">Chỉ số Tài chính</th>
-                  <th className="py-3 px-4 font-semibold text-slate-300 text-right w-32 border-l border-white/10">Năm (t-1)</th>
-                  <th className="py-3 px-4 font-semibold text-purple-300 text-right w-32 border-l border-white/10 bg-purple-500/10">Năm Hiện tại (t0)</th>
-                  <th className="py-3 px-4 font-semibold text-emerald-300 text-right w-32 border-l border-white/10 bg-emerald-500/10">Dự phóng (t+3)</th>
+                  <th className="py-3 px-4 font-bold text-slate-600">Chỉ số Tài chính</th>
+                  <th className="py-3 px-4 font-bold text-slate-600 text-right w-32 border-l border-slate-200">Năm (t-1)</th>
+                  <th className="py-3 px-4 font-bold text-purple-700 text-right w-32 border-l border-slate-200 bg-purple-50">Năm Hiện tại (t0)</th>
+                  <th className="py-3 px-4 font-bold text-emerald-700 text-right w-32 border-l border-slate-200 bg-emerald-50">Dự phóng (t+3)</th>
                </tr>
             </thead>
             <tbody>
                {MOCK_DATA.map((row, idx) => (
-                  <tr key={idx} className="border-b border-white/10 hover:bg-white/5 transition-colors">
-                     <td className="py-3 px-4 font-medium text-slate-200">{row.metric}</td>
-                     <td className="py-3 px-4 text-right text-slate-400 border-l border-white/10">{formatCurrency(row.tMinus1, row.metric)}</td>
-                     <td className="py-3 px-4 text-right text-purple-300 border-l border-white/10 font-semibold bg-purple-500/5">{formatCurrency(row.t0, row.metric)}</td>
-                     <td className="py-3 px-4 text-right text-emerald-400 border-l border-white/10 font-bold bg-emerald-500/5">{formatCurrency(row.tPlus3, row.metric)}</td>
+                  <tr key={idx} className="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                     <td className="py-3 px-4 font-semibold text-slate-800">{row.metric}</td>
+                     <td className="py-3 px-4 text-right text-slate-600 border-l border-slate-200">{formatCurrency(row.tMinus1, row.metric)}</td>
+                     <td className="py-3 px-4 text-right text-purple-700 border-l border-slate-200 font-bold bg-purple-50">{formatCurrency(row.t0, row.metric)}</td>
+                     <td className="py-3 px-4 text-right text-emerald-700 border-l border-slate-200 font-bold bg-emerald-50">{formatCurrency(row.tPlus3, row.metric)}</td>
                   </tr>
                ))}
                
                {/* Summary Footer Row */}
                {marginData && (
-                  <tr className="bg-black/40 text-white font-bold">
+                  <tr className="bg-slate-100 text-slate-900 font-bold">
                      <td className="py-4 px-4">{marginData.metric}</td>
-                     <td className="py-4 px-4 text-right border-l border-white/10">{marginData.tMinus1.toFixed(1)}%</td>
-                     <td className="py-4 px-4 text-right border-l border-white/10">{marginData.t0.toFixed(1)}%</td>
-                     <td className="py-4 px-4 text-right border-l border-white/10 text-emerald-400">{marginData.tPlus3.toFixed(1)}%</td>
+                     <td className="py-4 px-4 text-right border-l border-slate-200 text-slate-700">{marginData.tMinus1.toFixed(1)}%</td>
+                     <td className="py-4 px-4 text-right border-l border-slate-200 text-purple-700">{marginData.t0.toFixed(1)}%</td>
+                     <td className="py-4 px-4 text-right border-l border-slate-200 text-emerald-700">{marginData.tPlus3.toFixed(1)}%</td>
                   </tr>
                )}
             </tbody>

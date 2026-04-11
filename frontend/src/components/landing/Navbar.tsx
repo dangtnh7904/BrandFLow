@@ -13,19 +13,19 @@ export default function Navbar() {
           <div className="w-10 h-10 rounded-xl gradient-ai-bg flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-white group-hover:text-cyan-400 transition-colors">
+          <span className="text-xl font-bold tracking-tight text-foreground group-hover:text-emerald-600 transition-colors">
             BrandFlow
           </span>
         </Link>
         
         <div className="hidden md:flex items-center space-x-8">
-          <Link href="#services" className="text-sm font-medium text-linear-text-muted hover:text-white transition-colors">Dịch vụ AI</Link>
-          <Link href="#pricing" className="text-sm font-medium text-linear-text-muted hover:text-white transition-colors">Bảng giá (Tiers)</Link>
-          <Link href="#about" className="text-sm font-medium text-linear-text-muted hover:text-white transition-colors">Về Chúng Tôi</Link>
+          <Link href="#services" className="text-sm font-medium text-linear-text-muted hover:text-foreground transition-colors">Dịch vụ AI</Link>
+          <Link href="#pricing" className="text-sm font-medium text-linear-text-muted hover:text-foreground transition-colors">Bảng giá (Tiers)</Link>
+          <Link href="#about" className="text-sm font-medium text-linear-text-muted hover:text-foreground transition-colors">Về Chúng Tôi</Link>
         </div>
 
         <div className="flex items-center space-x-4">
-          <Link href="/dashboard" className="text-sm font-medium text-white hover:text-cyan-400 transition-colors hidden sm:block">
+          <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-emerald-600 transition-colors hidden sm:block">
             Đăng nhập
           </Link>
           <Link href="/dashboard">

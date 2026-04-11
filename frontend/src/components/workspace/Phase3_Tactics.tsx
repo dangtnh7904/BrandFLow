@@ -22,15 +22,46 @@ const TASKS_VI = [
 
 import { useLanguage } from '@/contexts/LanguageContext';
 
+const SlotMachineTicker = ({ exactValue, isCalculating, baseBudget }: { exactValue: string, isCalculating: boolean, baseBudget: number }) => {
+  const [displayValue, setDisplayValue] = useState('---');
+
+  React.useEffect(() => {
+    if (isCalculating) {
+      let animationFrameId: number;
+      const tick = () => {
+        // Generate a random number around the base budget scale to simulate crunching
+        const randomNum = Math.floor(Math.random() * baseBudget);
+        setDisplayValue(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(randomNum));
+        // Throttle slightly to make it readable as a matrix/slot roll
+        setTimeout(() => {
+          animationFrameId = requestAnimationFrame(tick);
+        }, 30);
+      };
+      animationFrameId = requestAnimationFrame(tick);
+      return () => cancelAnimationFrame(animationFrameId);
+    } else if (exactValue) {
+      setDisplayValue(exactValue);
+    }
+  }, [isCalculating, exactValue, baseBudget]);
+
+  return (
+    <span className={`font-mono transition-all duration-200 inline-block ${isCalculating ? 'text-indigo-400 opacity-80 scale-105' : 'text-emerald-600'}`}>
+      {displayValue}
+    </span>
+  );
+};
+
 export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNext: () => void, onBack: () => void, globalBudget: string }) {
   const { language } = useLanguage();
   const TASKS = language === 'vi' ? TASKS_VI : TASKS_EN;
   const [exactCosts, setExactCosts] = useState<Record<string, string>>({});
   const [isCalculating, setIsCalculating] = useState(false);
   const [isCalculated, setIsCalculated] = useState(false);
+  const [flash, setFlash] = useState(false);
 
   const handleCalculate = () => {
     setIsCalculating(true);
+    setIsCalculated(false);
     setTimeout(() => {
       const budgetNum = parseInt(globalBudget) || 100000000;
       const newCosts: Record<string, string> = {};
@@ -43,6 +74,10 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
       setExactCosts(newCosts);
       setIsCalculating(false);
       setIsCalculated(true);
+      
+      // Trigger snap flash over the table area
+      setFlash(true);
+      setTimeout(() => setFlash(false), 500);
     }, 1500);
   };
 
@@ -57,15 +92,27 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
     }
   };
 
+  const budgetNum = parseInt(globalBudget) || 100000000;
+
   return (
     <div className="flex flex-col h-full overflow-y-auto p-8 max-w-6xl mx-auto w-full relative">
-      <button onClick={onBack} className="absolute left-8 top-8 text-slate-500 hover:text-slate-800 transition-colors flex items-center text-sm">
-         <ArrowLeft className="w-4 h-4 mr-1" /> Go Back
+      {/* Screen Flash Overlay */}
+      {flash && (
+        <motion.div 
+           initial={{ opacity: 0.8 }}
+           animate={{ opacity: 0 }}
+           transition={{ duration: 0.5, ease: "easeOut" }}
+           className="absolute inset-0 bg-emerald-100 z-50 pointer-events-none mix-blend-overlay"
+        />
+      )}
+
+      <button onClick={onBack} className="absolute left-8 top-8 text-slate-500 hover:text-slate-800 transition-colors flex items-center text-sm bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm z-10">
+         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </button>
 
       <div className="mb-8 text-center mt-8">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">{language === 'vi' ? 'Giai đoạn 3: Ngân sách & Chiến thuật' : 'Stage 3: Tactical Campaign & Exact Budgeting'}</h2>
-        <p className="text-slate-500">{language === 'vi' ? 'Lập lịch trình Gantt và tính toán giải ngân chi tiết bằng Math Engine.' : 'Generate Gantt scheduling and detailed budget distribution utilizing the Math Engine.'}</p>
+        <h2 className="text-3xl font-bold text-slate-900 mb-3">{language === 'vi' ? 'Giai đoạn 3: Ngân sách & Chiến thuật' : 'Stage 3: Tactical Campaign & Exact Budgeting'}</h2>
+        <p className="text-slate-500">{language === 'vi' ? 'Lập trình Gantt và tính toán giải ngân chi tiết bằng Math Engine.' : 'Generate Gantt scheduling and detailed budget distribution utilizing the Math Engine.'}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -110,10 +157,19 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
         </div>
 
         {/* Budgeting Grid Math Hook */}
-        <div className="bento-card flex flex-col bg-white shadow-sm border border-slate-200">
+        <div className="bento-card flex flex-col bg-white shadow-sm border border-slate-200 relative overflow-hidden">
+          {/* Subtle math engine crunching glow effect */}
+          {isCalculating && (
+             <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                className="absolute inset-0 border-2 border-indigo-400 shadow-[inset_0_0_20px_rgba(99,102,241,0.2)] rounded-3xl pointer-events-none" 
+             />
+          )}
+
           <div className="mb-6 flex justify-between items-center">
              <h3 className="text-lg font-bold text-slate-800">{language === 'vi' ? 'Phân bổ Ngân sách' : 'Budget Allocation'}</h3>
-             <span className="text-xs bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-slate-600 font-semibold">{language === 'vi' ? 'Tổng:' : 'Total:'} {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(parseInt(globalBudget) || 100000000)}</span>
+             <span className="text-xs bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-slate-600 font-semibold">{language === 'vi' ? 'Tổng:' : 'Total:'} {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(budgetNum)}</span>
           </div>
 
           <div className="flex-1 overflow-x-auto">
@@ -130,8 +186,12 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
                   <tr key={task.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                     <td className="py-3 px-2 text-slate-700 truncate max-w-[150px] font-medium">{task.name}</td>
                     <td className="py-3 px-2 text-center font-bold text-blue-600">{task.pct}%</td>
-                    <td className="py-3 px-2 text-right font-mono text-emerald-600 font-bold">
-                      {exactCosts[task.id] ? exactCosts[task.id] : '---'}
+                    <td className="py-3 px-2 text-right font-bold h-10 align-middle">
+                      <SlotMachineTicker 
+                         exactValue={exactCosts[task.id]} 
+                         isCalculating={isCalculating} 
+                         baseBudget={budgetNum} 
+                      />
                     </td>
                   </tr>
                 ))}
@@ -139,29 +199,32 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
             </table>
           </div>
 
-          <div className="mt-6 flex flex-col space-y-3">
+          <div className="mt-6 flex flex-col space-y-3 z-10">
               <button 
                 onClick={handleCalculate}
                 className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center transition-all ${isCalculated ? 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100' : 'gradient-ai-bg shadow-sm hover:shadow-md'}`}
              >
                 {isCalculating ? (
-                   <span className="animate-pulse">{language === 'vi' ? 'Đang chạy mô phỏng Math Engine...' : 'Running Math Hook...'}</span>
+                   <span className="animate-pulse flex items-center"><Calculator className="w-4 h-4 mr-2" /> {language === 'vi' ? 'Đang chạy mô phỏng Math Engine...' : 'Running Math Engine...'}</span>
                 ) : isCalculated ? (
                    <><CheckCircle2 className="w-4 h-4 mr-2 text-emerald-600" /> {language === 'vi' ? 'Tính toán lại' : 'Recalculate'}</>
                 ) : (
-                   <><Calculator className="w-4 h-4 mr-2" /> {language === 'vi' ? 'Tính Ngân sách Thực tế' : 'Calculate Exact Budget'}</>
+                   <><Calculator className="w-4 h-4 mr-2" /> {language === 'vi' ? 'Duyệt & Crunch Data Thực' : 'Execute Number Crunching'}</>
                 )}
              </button>
 
              {isCalculated && (
-                <motion.button 
+                <motion.div 
                    initial={{ opacity: 0, y: 10 }}
                    animate={{ opacity: 1, y: 0 }}
-                   onClick={onNext}
-                   className="w-full py-3 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center hover:bg-slate-800 transition-colors shadow-md"
                 >
-                   {language === 'vi' ? 'Duyệt Ngân Sách & Vào Workspace' : 'Approve Budget & Enter Workspace'} <ArrowRight className="w-4 h-4 ml-2" />
-                </motion.button>
+                   <button 
+                      onClick={onNext}
+                      className="w-full py-3 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center hover:bg-slate-800 transition-colors shadow-md"
+                   >
+                      {language === 'vi' ? 'Duyệt Ngân Sách & Vào Workspace' : 'Approve Budget & Enter Workspace'} <ArrowRight className="w-4 h-4 ml-2" />
+                   </button>
+                </motion.div>
              )}
           </div>
         </div>

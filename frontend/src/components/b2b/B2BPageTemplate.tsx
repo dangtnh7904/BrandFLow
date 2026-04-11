@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Download, Save } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PageTemplateProps {
   title: string;
@@ -10,6 +11,7 @@ interface PageTemplateProps {
 }
 
 export default function B2BPageTemplate({ title, description, children }: PageTemplateProps) {
+  const { t } = useLanguage();
   return (
     <div className="flex flex-col h-full w-full">
       <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-slate-200 px-8 py-5 flex items-center justify-between shadow-sm">
@@ -20,11 +22,11 @@ export default function B2BPageTemplate({ title, description, children }: PageTe
         <div className="flex items-center space-x-3">
           <button className="flex items-center px-4 py-2 border border-slate-300 rounded-md bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
             <Save className="w-4 h-4 mr-2" />
-            Save Draft
+            {t('b2b_tools.save_draft' as any)}
           </button>
           <button className="flex items-center px-4 py-2 border border-transparent rounded-md bg-emerald-600 text-sm font-bold text-white hover:bg-emerald-700 transition-colors shadow-sm">
             <Download className="w-4 h-4 mr-2" />
-            Export PDF
+            {t('b2b_tools.export_pdf' as any)}
           </button>
         </div>
       </div>

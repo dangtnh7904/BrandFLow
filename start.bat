@@ -17,17 +17,17 @@ echo.
 echo [1/2] Starting Backend Server (FastAPI)...
 start "BrandFlow Backend" cmd /k "cd /d "%~dp0" && if exist venv\Scripts\activate.bat (call venv\Scripts\activate.bat) && python main.py"
 
-echo [2/2] Starting Frontend Server (Vite)...
+echo [2/2] Starting Frontend Server (Next.js)...
 start "BrandFlow Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
 
 echo.
 echo Both services are booting up in separate background windows!
 echo - Backend will be available at: http://localhost:8000
-echo - Frontend depends on Vite settings, usually at: http://localhost:5173
+echo - Frontend is built with Next.js, usually at: http://localhost:3000
 echo.
 echo Waiting for frontend to start before opening browser...
 timeout /t 4 /nobreak > nul
-start http://localhost:5173
+start http://localhost:3000
 
 echo.
 pause

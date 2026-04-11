@@ -1,0 +1,186 @@
+export const translations = {
+  // === COMMON ===
+  common: {
+     loading: { en: "Loading...", vi: "Đang tải..." },
+     save: { en: "Save", vi: "Lưu" },
+     cancel: { en: "Cancel", vi: "Hủy" },
+     next: { en: "Next Step", vi: "Bước tiếp theo" },
+     prev: { en: "Previous Step", vi: "Trở về trước" },
+  },
+
+  // === SIDEBAR (Main) ===
+  sidebar: {
+     workspace: { en: "AI Workspace", vi: "Không gian làm việc" },
+     agents: { en: "Network Agents", vi: "Mạng lưới Trợ lý AI" },
+     assets: { en: "Brand Assets", vi: "Tài sản Thương hiệu" },
+     history: { en: "Run History", vi: "Lịch sử Phân tích" },
+     settings: { en: "Settings", vi: "Cài đặt Hệ thống" },
+     activePlan: { en: "Enterprise Plan Active", vi: "Gói Doanh nghiệp Khả dụng" },
+     usage: { en: "Usage", vi: "Sử dụng" },
+  },
+
+  // === B2B SIDEBAR ===
+  b2b: {
+     title: { en: "B2B Planning", vi: "Hoạch định B2B" },
+     phase1: { en: "Data Ingestion", vi: "Nạp Dữ liệu" },
+     phase2: { en: "Agent Debate", vi: "AI Thảo luận" },
+     phase3: { en: "Budgeting", vi: "Định giá Ngân sách" },
+     phase4: { en: "Blueprint", vi: "Bản đồ Chiến lược" },
+     module_sources: { en: "Data Sources", vi: "Nguồn Dữ liệu" },
+     module_metrics: { en: "Metrics Map", vi: "Bản đồ Chỉ số" },
+     module_market: { en: "Market Reality", vi: "Thực tại Thị trường" },
+     module_financials: { en: "Financial Baseline", vi: "Cơ sở Tài chính" },
+     status_complete: { en: "Complete", vi: "Hoàn tất" },
+     status_active: { en: "Active", vi: "Đang xử lý" },
+     status_locked: { en: "Locked", vi: "Đã khóa" },
+  },
+
+  // === SYSTEM PAGES ===
+  agents: {
+     title: { en: "Network Agents", vi: "Mạng lưới Trợ lý AI" },
+     desc: { en: "Manage and configure your specialized AI workforce.", vi: "Quản lý và tinh chỉnh nguồn lực đội ngũ AI chuyên biệt." },
+     status_idle: { en: "Idle", vi: "Bình thường" },
+     status_processing: { en: "Processing", vi: "Đang Cào Dữ liệu" },
+     load: { en: "Cognitive Load", vi: "Tải trọng Logic" },
+  },
+  assets: {
+     title: { en: "Brand Assets", vi: "Thư viện Tài sản" },
+     desc: { en: "Central repository for your company's marketing collateral and brand guidelines.", vi: "Nơi lưu trữ trung tâm cho toàn bộ dữ kiện và bộ quy chuẩn thương hiệu." },
+     upload_title: { en: "Upload Asset", vi: "Tải lên Dữ liệu" },
+     upload_desc: { en: "Drag & drop brand assets here to expand AI knowledge base.", vi: "Kéo và thả tài liệu vào đây để mở rộng cơ sở tri thức cho hệ thống AI." },
+     library: { en: "Asset Library", vi: "Kho Lưu trữ" },
+  },
+  settings: {
+     title: { en: "System Settings", vi: "Cài đặt Cốt lõi" },
+     desc: { en: "Configure your BrandFlow workspace and global preferences.", vi: "Thiết lập không gian làm việc BrandFlow và các tuỳ chọn toàn cục." },
+     profile: { en: "Global Profile", vi: "Hồ sơ Toàn cục" },
+     security: { en: "Security & API", vi: "Bảo mật & API" },
+     billing: { en: "Billing", vi: "Thanh toán & Gói cước" },
+     org_name: { en: "Organization Name", vi: "Tên Doanh nghiệp" },
+     org_name_ph: { en: "Acme Corp", vi: "Tập đoàn Acme" },
+     industry: { en: "Primary Industry", vi: "Ngành nghề Cốt lõi" },
+     industry_ph: { en: "e.g., Enterprise Software", vi: "ví dụ: Phần mềm Doanh nghiệp" },
+     admin_email: { en: "Admin Email", vi: "Email Quản trị" },
+     admin_email_ph: { en: "admin@acme.com", vi: "admin@acme.com" },
+     save_profile: { en: "Save Profile Preferences", vi: "Lưu tùy chọn Hồ sơ" },
+  },
+
+  // === WIZARD (Phase 1) ===
+  screen1: {
+     title: { en: "Initialize Brand Intelligence", vi: "Khởi tạo Trí tuệ Thương hiệu" },
+     desc: { en: "Select one or multiple data ingestion methods to build your Master Brand Profile. We recommend combining document parsing with web link scraping.", vi: "Chọn một hoặc nhiều phương pháp nạp dữ liệu để xây dựng Hồ sơ Thương hiệu Gốc. Khuyến nghị kết hợp phân tích tài liệu và quét liên kết web." },
+     upload: { en: "Internal File Upload", vi: "Tải Tệp Nội bộ" },
+     upload_desc: { en: "Drag and drop your company profile or financial PDFs.", vi: "Kéo thả hồ sơ doanh nghiệp hoặc báo cáo tài chính PDF." },
+     web: { en: "Web Links", vi: "Liên kết Trực tuyến" },
+     web_desc: { en: "Provide URLs to your website or competitor social pages.", vi: "Cung cấp URL website hoặc kênh mạng xã hội đối thủ." },
+     form: { en: "Fallback Questionnaire", vi: "Biểu mẫu Khảo sát" },
+     form_desc: { en: "Manually input all strategic data via our wizard flow.", vi: "Nhập thủ công dữ liệu chiến lược qua trình hướng dẫn." },
+     btn: { en: "Proceed to Analysis", vi: "Tiến hành Phân tích" },
+     upload_zone: { en: "Drag and drop business documents here", vi: "Kéo và thả tài liệu doanh nghiệp vào đây" },
+     upload_zone_desc: { en: "Supports PDF, DOCX, CSV up to 100MB per file.", vi: "Hỗ trợ PDF, DOCX, CSV. Dung lượng tối đa 100MB/tệp." },
+     social: { en: "Social Media Channels", vi: "Kênh Mạng xã hội" },
+     social_btn: { en: "Add Social Link", vi: "Thêm Mạng xã hội" },
+     website: { en: "Website and Landing Pages", vi: "Website & Landing Page" },
+     website_btn: { en: "Add Web Link", vi: "Thêm Liên kết Web" },
+  },
+  wizard: {
+     back_hall: { en: "Back to Selection", vi: "Quay lại Sảnh" },
+     next_step: { en: "Next Step", vi: "Bước tiếp theo" },
+     prev_step: { en: "Previous Step", vi: "Trở về trước" },
+     complete: { en: "Complete Ingestion", vi: "Hoàn tất Khảo sát" },
+     
+     // Step 1: Industry
+     step1_title: { en: "Select Industry", vi: "Lĩnh vực Hoạt động" },
+     step1_desc: { en: "Choose the primary industry your business operates in to calibrate the AI reasoning models.", vi: "Chọn lĩnh vực hoạt động cốt lõi của doanh nghiệp để hiệu chỉnh mô hình nhận thức AI." },
+     ind_fb: { en: "Food & Beverage", vi: "F&B / Ẩm thực" },
+     ind_tech: { en: "Technology & SaaS", vi: "Công nghệ & SaaS" },
+     ind_edu: { en: "Education & EdTech", vi: "Giáo dục & EdTech" },
+     ind_cosmetics: { en: "Cosmetics & Beauty", vi: "Mỹ phẩm & Làm đẹp" },
+     ind_other: { en: "Other Industries", vi: "Lĩnh vực Khác" },
+
+     // Step 2: Founder Persona
+     step2_title: { en: "Founder Persona", vi: "Chân dung Founder" },
+     step2_desc: { en: "Help us understand your leadership style and the personal vision driving your business.", vi: "Giúp hệ thống hiểu rõ phong cách quản trị và tầm nhìn cá nhân định hình doanh nghiệp của bạn." },
+     step2_matrix: { en: "Management Archetype", vi: "Phong cách Quản trị" },
+     step2_select: { en: "Select up to 2", vi: "Chọn tối đa 2" },
+     step2_vision: { en: "Founder's Vision / Extra Info", vi: "Tầm nhìn / Lời nhắn nhủ thêm" },
+     step2_vision_ph: { en: "Share your personal story, motivations, or any specific instructions here...", vi: "Chia sẻ câu chuyện khởi nghiệp, động lực cá nhân, hoặc bất kỳ lời nhắn nào bạn muốn..." },
+
+     // Step 3: Business Profile
+     step3_title: { en: "Business Profile", vi: "Hồ sơ Doanh nghiệp" },
+     step3_desc: { en: "Detail your market challenges, revenue goals, and strategic resource distribution.", vi: "Cung cấp chi tiết về thách thức thị trường, mục tiêu doanh thu và phân bổ nguồn lực chiến lược." },
+     step3_q1: { en: "Primary Market Threat", vi: "Mối đe dọa Thị trường" },
+     step3_q2: { en: "Customer Pain Points", vi: "Điểm đau của Khách hàng" },
+     step3_q2_desc: { en: "Select the major frustrations your target audience experiences.", vi: "Chọn những bức xúc lớn nhất mà tập khách hàng gặp phải với đối thủ trên thị trường." },
+     step3_q3: { en: "Target Monthly Revenue", vi: "Mục tiêu Doanh thu Tháng" },
+     step3_note: { en: "Additional Business Context", vi: "Thông tin Bổ sung " },
+     step3_note_ph: { en: "Mention your unique selling points, specific competitors, or current campaigns...", vi: "Kể tên đối thủ cạnh tranh trực tiếp, USP của sản phẩm hoặc khó khăn hiện tại..." },
+     step3_mode1: { en: "Survival Mode", vi: "Cầm cự Tồn tại" },
+     step3_mode2: { en: "Steady Growth", vi: "Tăng trưởng Ổn định" },
+     step3_mode3: { en: "Aggressive Expansion", vi: "Mở rộng Thần tốc" },
+
+     // Step 4: Objectives
+     step4_title: { en: "Determine Objectives", vi: "Xác định Mục tiêu" },
+     step4_desc: { en: "Distribute your focus points across Brand Awareness, Sales, and Retention. You have 100 points total.", vi: "Phân bổ trọng số giữa Nhận diện Thương hiệu, Doanh số và Giữ chân Khách hàng. Bạn có tổng cộng 100 điểm." },
+     step4_valid: { en: "Points", vi: "Điểm" },
+     step4_brand: { en: "Brand Awareness", vi: "Nhận diện Thương hiệu" },
+     step4_sales: { en: "Sales / Conversion", vi: "Doanh số / Chuyển đổi" },
+     step4_crm: { en: "Customer Retention", vi: "Giữ chân Khách hàng" },
+     step4_note: { en: "These 100 focus points will shape how the AI allocates your marketing budget and dictates the ultimate focus of your campaigns.", vi: "100 điểm trọng tâm này sẽ quyết định cách AI phân bổ ngân sách marketing và định hướng chiến lược cho các chiến dịch." },
+
+     step_c1: { en: "Industry", vi: "Lĩnh vực" },
+     step_c2: { en: "Founder", vi: "Founder" },
+     step_c3: { en: "Business", vi: "Doanh nghiệp" },
+  },
+  dashboard: {
+     loading1: { en: "CMO Agent is analyzing your market positioning...", vi: "Trợ lý CMO đang phân tích vị thế thị trường..." },
+     loading2: { en: "Synthesizing competitive threats...", vi: "Tổng hợp biểu đồ đe dọa từ đối thủ..." },
+     loading3: { en: "Calculating brand health vectors...", vi: "Tính toán vector Sức khỏe Thương hiệu..." },
+     loading4: { en: "Finalizing Master Brand Profile...", vi: "Hoàn thiện Hồ sơ Thương hiệu Gốc..." },
+     loading_title: { en: "Processing Data Source", vi: "Đang xử lý Nguồn dữ liệu" },
+     title: { en: "Brand Health Dashboard", vi: "Tổng quan Sức khỏe Thương hiệu" },
+     desc: { en: "Master Brand Profile successfully synthesized.", vi: "Hồ sơ Thương hiệu Gốc đã được tổng hợp thành công." },
+     score: { en: "Score", vi: "Điểm" },
+     summary: { en: "Executive Summary", vi: "Báo cáo Tóm lược" },
+     summary_text: { en: "Your brand shows strong potential in the premium segment but faces high vulnerability from online discounters. Market positioning aligns well with modern consumer psychographics.", vi: "Thương hiệu của bạn thể hiện tiềm năng mạnh mẽ ở phân khúc cao cấp nhưng có rủi ro cao trước các đối thủ cạnh tranh về giá. Định vị thị trường bám sát với dữ liệu tâm lý học khách hàng hiện đại." },
+     dna: { en: "Brand DNA", vi: "Nhận diện Cốt lõi" },
+     radar: { en: "Threat & Opportunity Radar", vi: "Biểu đồ Nguy cơ & Cơ hội" },
+     radar_1: { en: "Immediate Threats", vi: "Mối đe dọa Cấp bách" },
+     radar_2: { en: "Untapped Opportunities", vi: "Cơ hội Chưa khai thác" },
+     focus: { en: "The 90-Day Focus", vi: "Trọng tâm 90 Ngày" },
+     focus_1: { en: "Steady Growth Revenue", vi: "Tăng trưởng Ổn định" },
+     focus_2: { en: "Target Scaling", vi: "Mở rộng Tệp Khách" },
+     btn: { en: "Initialize AI Marketing Team & Enter Workspace", vi: "Khởi động Nhóm Marketing AI & Đi tới Không gian làm việc" }
+  },
+  dashboard_home: {
+     title: { en: "Platform Overview", vi: "Tổng quan Nền tảng" },
+     desc: { en: "Welcome to the BrandFlow command center.", vi: "Chào mừng đến với trung tâm chỉ huy BrandFlow." },
+     connecting: { en: "Analytics Engine Connecting...", vi: "Đang kết nối Module Phân tích..." },
+     
+     // Active Plans Card
+     active_plans: { en: "Active Marketing Plans", vi: "Chiến dịch Đang chạy" },
+     active_desc: { en: "Campaigns currently running and optimizing.", vi: "Các chiến dịch đang được triển khai & tối ưu." },
+     plan_status1: { en: "Active", vi: "Đang chạy" },
+     plan_status2: { en: "Scaling", vi: "Đang mở rộng" },
+
+     // Brand Assets Card
+     assets_title: { en: "Brand Identity", vi: "Tài sản Hình ảnh" },
+     assets_desc: { en: "Core visual assets synchronized.", vi: "Đã đồng bộ trung tâm dữ liệu thị giác." },
+     asset_c: { en: "Colors", vi: "Màu sắc" },
+     asset_t: { en: "Typos", vi: "Phông chữ" },
+     asset_l: { en: "Logos", vi: "Logo" },
+
+     // Financial Risk Alert
+     risk_warn: { en: "Warning", vi: "Cảnh báo" },
+     risk_title: { en: "Financial Hallucination Risk", vi: "Rủi ro Sai lệch Tài chính" },
+     risk_desc: { en: 'Agent "Tactical Budgeter" attempted to allocate $5,000 to an unverified channel. The Math Engine has blocked this transaction.', vi: 'Trợ lý "Lập ngân sách" vừa cố gắng phân bổ $5,000 vào một kênh chưa qua kiểm duyệt. Động cơ Toán học (Math Engine) đã chặn giao dịch này.' },
+     risk_btn: { en: "Review Blocked Budget", vi: "Kiểm tra Ngân sách chặn" }
+  }
+} as const;
+
+// Typescript Magic for autocomplete
+type Paths<T> = T extends object
+  ? { [K in keyof T]: `${Exclude<K, symbol>}${"" | `.${Paths<T[K]>}`}` }[keyof T]
+  : never;
+
+export type TranslationKey = Paths<typeof translations>;

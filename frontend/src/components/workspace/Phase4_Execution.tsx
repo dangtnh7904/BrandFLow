@@ -103,7 +103,7 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
           <button onClick={onBack} className="p-1.5 rounded bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors">
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <span className="px-2 py-1 bg-emerald-50 rounded-md text-[10px] text-emerald-600 font-bold uppercase tracking-wider flex items-center border border-emerald-100">
+          <span className="px-2 py-1 bg-blue-50 rounded-md text-[10px] text-blue-600 font-bold uppercase tracking-wider flex items-center border border-blue-100">
             <ShieldCheck className="w-3 h-3 mr-1" /> {language === 'vi' ? 'Sẵn sàng Thực thi' : 'Ready for Execution'}
           </span>
         </div>
@@ -131,8 +131,8 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
 
           {isGenerating && (
              <div className="flex items-start gap-4 animate-pulse">
-               <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center shrink-0 border border-emerald-100">
-                  <RefreshCw className="w-4 h-4 text-emerald-600 animate-spin" />
+               <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100">
+                  <RefreshCw className="w-4 h-4 text-blue-600 animate-spin" />
                </div>
                <div className="text-sm text-slate-500 leading-relaxed pt-1">
                  {language === 'vi' ? 'Đang khởi tạo Node-Based Canvas...' : 'Generating operational nodes...'}
@@ -148,7 +148,7 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              className="w-full bg-white border border-slate-300 rounded-xl py-3 pl-4 pr-12 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm"
+              className="w-full bg-white border border-slate-300 rounded-xl py-3 pl-4 pr-12 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm"
               placeholder={language === 'vi' ? "Ví dụ: Lên kế hoạch post LinkedIn tuần tới..." : "Ex: Map out the LinkedIn post strategy..."}
             />
             <button 
@@ -213,6 +213,7 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
                       <button className="px-4 py-2 rounded-lg text-xs font-semibold text-white gradient-ai-bg">{language === 'vi' ? 'Gửi duyệt tới Integration' : 'Publish to Integration'}</button>
                     </div>
 
+<<<<<<< Updated upstream
                     <AnimatePresence>
                       {feedbackMode && (
                         <motion.div 
@@ -254,6 +255,12 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
                       )}
                     </AnimatePresence>
                   </div>
+=======
+            <div className="absolute top-6 right-6 flex items-center space-x-3 pointer-events-none">
+                <div className="bg-blue-50 border border-blue-200 px-4 py-3 rounded-xl flex items-center text-blue-700 text-xs font-bold uppercase tracking-wider shadow-md pointer-events-auto">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse"></span>
+                  {language === 'vi' ? 'Node Graph Đồng bộ Thực thời' : 'Live State Sync'}
+>>>>>>> Stashed changes
                 </div>
               ) : (
                 <div className="w-full h-full relative">

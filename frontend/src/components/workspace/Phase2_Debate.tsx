@@ -27,7 +27,7 @@ const MOCK_DEBATE_VI = [
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, onBack: () => void }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [messages, setMessages] = useState<any[]>([]);
   const [isLocked, setIsLocked] = useState(false);
 
@@ -62,7 +62,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
   const getStatusBadge = (type: string) => {
     switch (type) {
       case 'rejected':
-        return <span className="flex items-center text-[10px] uppercase font-bold text-red-600 bg-red-50 px-2 py-1 rounded-md ml-3 border border-red-200"><XCircle className="w-3 h-3 mr-1" /> {language === 'vi' ? 'Bác bỏ' : 'Rejected'}</span>;
+        return <span className="flex items-center text-[10px] uppercase font-bold text-red-600 bg-red-50 px-2 py-1 rounded-md ml-3 border border-red-200"><XCircle className="w-3 h-3 mr-1" /> {t('workspace_phase2.rejected' as any) as string}</span>;
       case 'warning':
         return (
           <motion.span 
@@ -71,24 +71,25 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className="flex items-center text-[10px] uppercase font-bold text-white bg-red-500 px-3 py-1 rounded-md ml-3 shadow-md"
           >
-            <AlertTriangle className="w-3 h-3 mr-1" /> {language === 'vi' ? 'Cảnh báo rủi ro' : 'Risk Warning'}
+            <AlertTriangle className="w-3 h-3 mr-1" /> {t('workspace_phase2.warning' as any) as string}
           </motion.span>
         );
       case 'approved':
-        return <span className="flex items-center text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md ml-3 border border-emerald-200"><CheckCircle2 className="w-3 h-3 mr-1" /> {language === 'vi' ? 'Chấp thuận' : 'Approved'}</span>;
+        return <span className="flex items-center text-[10px] uppercase font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md ml-3 border border-blue-200"><CheckCircle2 className="w-3 h-3 mr-1" /> {t('workspace_phase2.approved' as any) as string}</span>;
       default: return null;
     }
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto p-8 max-w-4xl mx-auto w-full relative bg-slate-50">
+    <div className="w-full h-full overflow-y-auto relative bg-slate-50">
+      <div className="flex flex-col p-8 max-w-4xl mx-auto w-full min-h-full">
       <button onClick={onBack} className="absolute left-8 top-8 text-slate-500 hover:text-slate-800 transition-colors flex items-center text-sm font-semibold bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
          <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </button>
 
       <div className="mb-10 text-center mt-8">
-        <h2 className="text-3xl font-bold text-slate-900 mb-3">{language === 'vi' ? 'Strategic Debate Board' : 'Strategic Debate Board'}</h2>
-        <p className="text-slate-500 max-w-2xl mx-auto">{language === 'vi' ? 'Các AI Agent đang đưa ra phản biện chiến lược trực tuyến dựa trên Master Profile. Thẻ tự động quét vi phạm tài chính.' : 'AI Agents are evaluating strategy based on the Master Profile. Dynamic constraints detect risk violations continuously.'}</p>
+        <h2 className="text-3xl font-bold text-slate-900 mb-3">{t('workspace_phase2.title' as any) as string}</h2>
+        <p className="text-slate-600 font-medium max-w-2xl mx-auto">{t('workspace_phase2.desc' as any) as string}</p>
       </div>
 
       {!isLocked ? (
@@ -142,8 +143,8 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
                <div className="w-12 h-12 shrink-0 rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center mr-6 animate-pulse">
                    <div className="w-2 h-2 rounded-full bg-slate-400"></div>
                </div>
-               <div className="text-slate-400 text-sm flex items-center font-medium animate-pulse pb-10">
-                 {language === 'vi' ? 'Đang phân tích...' : 'Analyzing parameters...'}
+               <div className="text-slate-500 text-sm flex items-center font-bold animate-pulse pb-10">
+                 {t('workspace_phase2.analyzing' as any) as string}
                </div>
             </div>
           )}
@@ -152,22 +153,23 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bento-card border-emerald-200 text-center py-20 bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden shadow-lg mt-10"
+          className="bento-card border-blue-200 text-center py-20 bg-gradient-to-br from-blue-50 to-cyan-50 relative overflow-hidden shadow-lg mt-10"
         >
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
-          <FileText className="w-20 h-20 mx-auto text-emerald-600 mb-6 drop-shadow-sm" />
-          <h3 className="text-3xl font-black text-slate-800 mb-4">{language === 'vi' ? 'Strategic Blueprint đã được Khóa' : 'Strategic Blueprint Locked'}</h3>
-          <p className="text-slate-600 max-w-xl mx-auto mb-10 text-lg leading-relaxed font-medium">
-            {language === 'vi' ? 'Tất cả các Agents đã đồng thuận tuyệt đối (100%). Chiến lược 3 tháng tập trung vào LinkedIn Whitepapers và SEO tự nhiên đã được thiết lập chặt chẽ và lưu vào Blockchain Logs.' : 'All Agents have reached absolute consensus (100%). The 3-month strategy prioritizing LinkedIn Whitepapers and Organic SEO is firmly established and appended to Blockchain Logs.'}
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+          <FileText className="w-20 h-20 mx-auto text-blue-600 mb-6 drop-shadow-sm" />
+          <h3 className="text-3xl font-black text-slate-800 mb-4">{t('workspace_phase2.locked_title' as any) as string}</h3>
+          <p className="text-slate-700 max-w-xl mx-auto mb-10 text-lg leading-relaxed font-bold">
+            {t('workspace_phase2.locked_desc' as any) as string}
           </p>
           <button 
              onClick={onNext}
              className="px-10 py-4 rounded-xl gradient-ai-bg font-bold shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 text-lg"
           >
-             {language === 'vi' ? 'Chuyển sang Lập Ngân sách (Tactics)' : 'Proceed to Tactical Budgeting'}
+             {t('workspace_phase2.proceed' as any) as string}
           </button>
         </motion.div>
       )}
+      </div>
     </div>
   );
 }

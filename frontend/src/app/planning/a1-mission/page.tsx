@@ -16,7 +16,7 @@ export default function PageA1Mission() {
     >
       <div className="space-y-6">
         <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-md">
-          <p className="text-sm text-blue-800">
+          <p className="text-sm text-blue-900 font-medium">
             <strong>{t('a1.alert_title' as TranslationKey) as string || "Lưu ý Chiến lược:"}</strong> {t('a1.alert_desc' as TranslationKey) as string || "Tài liệu này đóng vai trò là mỏ neo chính. Tất cả các chiến dịch và chiến thuật tiếp theo phải bám sát vào Năng lực Lõi và Định hướng được xác định ở đây."}
           </p>
         </div>

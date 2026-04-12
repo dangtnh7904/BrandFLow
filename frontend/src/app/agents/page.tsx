@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const AGENTS = [
   { id: 'cmo', name: 'Trợ lý CMO', role: 'Giám đốc Marketing', brain: 95, status: 'Hoạt động', color: 'from-purple-500 to-cyan-500', iconColor: 'text-purple-600', skill: 'Bảng Chiến lược' },
-  { id: 'cfo', name: 'Trợ lý CFO', role: 'Giám đốc Tài chính', brain: 88, status: 'Hoạt động', color: 'from-emerald-500 to-teal-500', iconColor: 'text-emerald-600', skill: 'Công cụ Tính toán' },
+  { id: 'cfo', name: 'Trợ lý CFO', role: 'Giám đốc Tài chính', brain: 88, status: 'Hoạt động', color: 'from-blue-500 to-cyan-500', iconColor: 'text-blue-600', skill: 'Công cụ Tính toán' },
   { id: 'cro', name: 'Trợ lý CRO', role: 'Chuyên gia Chuyển đổi', brain: 76, status: 'Nghỉ ngơi', color: 'from-orange-500 to-amber-500', iconColor: 'text-amber-600', skill: 'A/B Testing' },
   { id: 'cdo', name: 'Trợ lý CDO', role: 'Giám đốc Dữ liệu', brain: 92, status: 'Đang xử lý', color: 'from-blue-500 to-indigo-500', iconColor: 'text-blue-600', skill: 'Lõi RAG Analytics' },
 ];
@@ -15,7 +15,8 @@ const AGENTS = [
 export default function AgentsPage() {
   const { t } = useLanguage();
   return (
-    <div className="flex flex-col h-full overflow-y-auto p-8 max-w-6xl mx-auto w-full">
+    <div className="w-full h-full overflow-y-auto">
+      <div className="flex flex-col p-8 max-w-6xl mx-auto w-full min-h-full">
       <div className="mb-8 flex justify-between items-end">
         <div>
            <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center">
@@ -70,7 +71,7 @@ export default function AgentsPage() {
                   
                   <div className="flex justify-between items-center text-xs">
                      <span className="bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-slate-600 font-bold">Kỹ năng: {agent.skill}</span>
-                     <span className={`px-2 py-1 rounded-md font-bold flex items-center border ${agent.status === 'Hoạt động' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : agent.status === 'Đang xử lý' ? 'text-amber-700 bg-amber-50 border-amber-200 animate-pulse' : 'text-slate-600 bg-slate-100 border-slate-200'}`}>
+                     <span className={`px-2 py-1 rounded-md font-bold flex items-center border ${agent.status === 'Hoạt động' ? 'text-blue-700 bg-blue-50 border-blue-200' : agent.status === 'Đang xử lý' ? 'text-amber-700 bg-amber-50 border-amber-200 animate-pulse' : 'text-slate-600 bg-slate-100 border-slate-200'}`}>
                         {agent.status === 'Hoạt động' ? <Activity className="w-3 h-3 mr-1" /> : agent.status === 'Đang xử lý' ? <Zap className="w-3 h-3 mr-1" /> : null}
                         {agent.status}
                      </span>
@@ -90,6 +91,7 @@ export default function AgentsPage() {
             <p className="text-sm font-bold text-slate-800">Mở khóa Trợ lý mới</p>
             <p className="text-xs font-semibold text-slate-500 mt-1 px-4">Mở rộng nguồn nhân lực với các mô hình LLM chuyên biệt.</p>
          </motion.div>
+      </div>
       </div>
     </div>
   );

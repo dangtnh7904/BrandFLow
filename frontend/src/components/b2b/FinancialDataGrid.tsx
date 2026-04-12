@@ -44,7 +44,7 @@ export default function FinancialDataGrid() {
                   <th className="py-3 px-4 font-bold text-slate-600">Chỉ số Tài chính</th>
                   <th className="py-3 px-4 font-bold text-slate-600 text-right w-32 border-l border-slate-200">Năm (t-1)</th>
                   <th className="py-3 px-4 font-bold text-purple-700 text-right w-32 border-l border-slate-200 bg-purple-50">Năm Hiện tại (t0)</th>
-                  <th className="py-3 px-4 font-bold text-emerald-700 text-right w-32 border-l border-slate-200 bg-emerald-50">Dự phóng (t+3)</th>
+                  <th className="py-3 px-4 font-bold text-blue-700 text-right w-32 border-l border-slate-200 bg-blue-50">Dự phóng (t+3)</th>
                </tr>
             </thead>
             <tbody>
@@ -53,7 +53,7 @@ export default function FinancialDataGrid() {
                      <td className="py-3 px-4 font-semibold text-slate-800">{row.metric}</td>
                      <td className="py-3 px-4 text-right text-slate-600 border-l border-slate-200">{formatCurrency(row.tMinus1, row.metric)}</td>
                      <td className="py-3 px-4 text-right text-purple-700 border-l border-slate-200 font-bold bg-purple-50">{formatCurrency(row.t0, row.metric)}</td>
-                     <td className="py-3 px-4 text-right text-emerald-700 border-l border-slate-200 font-bold bg-emerald-50">{formatCurrency(row.tPlus3, row.metric)}</td>
+                     <td className="py-3 px-4 text-right text-blue-700 border-l border-slate-200 font-bold bg-blue-50">{formatCurrency(row.tPlus3, row.metric)}</td>
                   </tr>
                ))}
                
@@ -63,7 +63,7 @@ export default function FinancialDataGrid() {
                      <td className="py-4 px-4">{marginData.metric}</td>
                      <td className="py-4 px-4 text-right border-l border-slate-200 text-slate-700">{marginData.tMinus1.toFixed(1)}%</td>
                      <td className="py-4 px-4 text-right border-l border-slate-200 text-purple-700">{marginData.t0.toFixed(1)}%</td>
-                     <td className="py-4 px-4 text-right border-l border-slate-200 text-emerald-700">{marginData.tPlus3.toFixed(1)}%</td>
+                     <td className="py-4 px-4 text-right border-l border-slate-200 text-blue-700">{marginData.tPlus3.toFixed(1)}%</td>
                   </tr>
                )}
             </tbody>

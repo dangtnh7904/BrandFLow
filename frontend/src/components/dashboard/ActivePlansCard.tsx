@@ -36,7 +36,7 @@ export default function ActivePlansCard() {
             </div>
             <div className="text-right">
               <div className="text-sm font-bold text-slate-900">{plan.budget}</div>
-              <div className="text-xs font-semibold text-emerald-600 flex items-center justify-end">
+              <div className="text-xs font-semibold text-blue-600 flex items-center justify-end">
                 <TrendingUp className="w-3 h-3 mr-1" />
                 {plan.roi}
               </div>

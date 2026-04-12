@@ -31,7 +31,7 @@ export default function ContingencyTable() {
                 <th className="py-3 px-4 font-semibold text-center text-slate-300 w-28 border-r border-white/10">Xác suất</th>
                 <th className="py-3 px-4 font-semibold text-center text-slate-300 w-28 border-r border-white/10">Ảnh hưởng</th>
                 <th className="py-3 px-4 font-semibold text-red-300 border-r border-white/10 bg-red-500/10">Điểm G (Trigger Point)</th>
-                <th className="py-3 px-4 font-semibold border-r border-white/10 bg-emerald-500/10 text-emerald-300">Hành động Ứng phó</th>
+                <th className="py-3 px-4 font-semibold border-r border-white/10 bg-blue-500/10 text-blue-300">Hành động Ứng phó</th>
              </tr>
           </thead>
           <tbody>
@@ -49,7 +49,7 @@ export default function ContingencyTable() {
                    </span>
                  </td>
                  <td className="py-3 px-4 border-r border-white/10 text-red-400 bg-red-500/5 text-sm">{row.trigger}</td>
-                 <td className="py-3 px-4 border-r border-white/10 text-emerald-400 bg-emerald-500/5 font-medium"><ShieldCheck className="inline-block w-4 h-4 mr-1 mb-0.5" /> {row.action}</td>
+                 <td className="py-3 px-4 border-r border-white/10 text-blue-400 bg-blue-500/5 font-medium"><ShieldCheck className="inline-block w-4 h-4 mr-1 mb-0.5" /> {row.action}</td>
                </tr>
              ))}
           </tbody>

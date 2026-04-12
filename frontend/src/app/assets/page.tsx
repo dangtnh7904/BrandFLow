@@ -18,18 +18,19 @@ export default function AssetsPage() {
   const [isDragging, setIsDragging] = useState(false);
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto p-8 max-w-6xl mx-auto w-full">
+    <div className="w-full h-full overflow-y-auto">
+      <div className="flex flex-col p-8 max-w-6xl mx-auto w-full min-h-full">
       <div className="mb-8 flex justify-between items-end">
         <div>
            <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center">
-             <FolderGit2 className="w-6 h-6 mr-3 text-emerald-500" />
+             <FolderGit2 className="w-6 h-6 mr-3 text-blue-500" />
              {t('assets.title')}
            </h2>
            <p className="text-slate-500">{t('assets.desc')}</p>
         </div>
         <div className="relative w-64 hidden md:block">
            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-           <input type="text" placeholder="Tìm kiếm tệp..." className="w-full bg-white border border-slate-200 shadow-sm rounded-xl py-2 pl-9 pr-4 text-sm text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-shadow" />
+           <input type="text" placeholder="Tìm kiếm tệp..." className="w-full bg-white border border-slate-200 shadow-sm rounded-xl py-2 pl-9 pr-4 text-sm text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-shadow" />
         </div>
       </div>
 
@@ -38,17 +39,17 @@ export default function AssetsPage() {
         <div className="lg:col-span-1">
           <motion.div 
             whileHover={{ scale: 1.01 }}
-            className={`bento-card border-dashed flex flex-col items-center justify-center p-8 text-center transition-colors h-64 ${isDragging ? 'bg-emerald-50 border-emerald-400' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-slate-400'}`}
+            className={`bento-card border-dashed flex flex-col items-center justify-center p-8 text-center transition-colors h-64 ${isDragging ? 'bg-blue-50 border-blue-400' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-slate-400'}`}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={(e) => { e.preventDefault(); setIsDragging(false); }}
           >
-            <div className="w-16 h-16 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center mb-4 text-emerald-500">
+            <div className="w-16 h-16 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center mb-4 text-blue-500">
                <UploadCloud className="w-8 h-8" />
             </div>
             <h3 className="text-slate-900 font-bold mb-2">{t('assets.upload_title')}</h3>
             <p className="text-xs text-slate-500 mb-4">{t('assets.upload_desc')}</p>
-            <button className="px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 shadow-sm rounded-lg text-sm font-semibold hover:bg-emerald-100 transition-colors">
+            <button className="px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 shadow-sm rounded-lg text-sm font-semibold hover:bg-blue-100 transition-colors">
                Duyệt máy tính
             </button>
           </motion.div>
@@ -57,9 +58,9 @@ export default function AssetsPage() {
              <h4 className="text-sm font-bold text-slate-800 mb-2 relative z-10">Lõi Context Vector RAG</h4>
              <p className="text-xs text-slate-500 mb-4 relative z-10">Dung lượng nhúng đang được hệ thống AI sử dụng.</p>
              <div className="h-2 w-full bg-slate-100 border border-slate-200 rounded-full overflow-hidden relative z-10">
-                <div className="h-full bg-emerald-500 w-1/3"></div>
+                <div className="h-full bg-blue-500 w-1/3"></div>
              </div>
-             <p className="text-[10px] text-right mt-2 text-emerald-600 font-bold font-mono relative z-10">34% / 100MB Quota</p>
+             <p className="text-[10px] text-right mt-2 text-blue-600 font-bold font-mono relative z-10">34% / 100MB Quota</p>
           </div>
         </div>
 
@@ -73,13 +74,13 @@ export default function AssetsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   whileHover={{ scale: 1.02 }}
-                  className="bento-card p-4 flex flex-col group cursor-pointer bg-white border border-slate-200 hover:border-emerald-400 transition-all shadow-sm hover:shadow-md"
+                  className="bento-card p-4 flex flex-col group cursor-pointer bg-white border border-slate-200 hover:border-blue-400 transition-all shadow-sm hover:shadow-md"
                 >
                   <div className="flex items-start justify-between mb-4">
                      <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
                         {file.type === 'pdf' && <FileText className="w-5 h-5 text-red-500" />}
                         {file.type === 'image' && <ImageIcon className="w-5 h-5 text-cyan-500" />}
-                        {file.type === 'excel' && <Briefcase className="w-5 h-5 text-emerald-500" />}
+                        {file.type === 'excel' && <Briefcase className="w-5 h-5 text-blue-500" />}
                         {file.type === 'deck' && <FileText className="w-5 h-5 text-orange-500" />}
                      </div>
                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
@@ -98,6 +99,7 @@ export default function AssetsPage() {
               ))}
            </div>
         </div>
+      </div>
       </div>
     </div>
   );

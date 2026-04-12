@@ -6,7 +6,7 @@
   --color-zinc-900: #18181b;
   --color-zinc-800: #27272a;
 
-  /* Enterprise Light Emerald Theme Custom Colors */
+  /* Enterprise Light Blue Theme Custom Colors */
   --color-linear-bg: #f8fafc;        /* slate-50 */
   --color-linear-surface: #ffffff;   /* white */
   --color-linear-border: #e2e8f0;    /* slate-200 */
@@ -39,10 +39,10 @@ body {
   }
 
   .gradient-ai-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500;
   }
 
   .gradient-ai-bg {
-    @apply bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white font-medium shadow-sm transition-all duration-300;
+    @apply bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-medium shadow-sm transition-all duration-300;
   }
 }

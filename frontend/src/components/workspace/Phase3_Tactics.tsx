@@ -45,14 +45,14 @@ const SlotMachineTicker = ({ exactValue, isCalculating, baseBudget }: { exactVal
   }, [isCalculating, exactValue, baseBudget]);
 
   return (
-    <span className={`font-mono transition-all duration-200 inline-block ${isCalculating ? 'text-indigo-400 opacity-80 scale-105' : 'text-emerald-600'}`}>
+    <span className={`font-mono transition-all duration-200 inline-block ${isCalculating ? 'text-indigo-400 opacity-80 scale-105' : 'text-blue-600'}`}>
       {displayValue}
     </span>
   );
 };
 
 export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNext: () => void, onBack: () => void, globalBudget: string }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const TASKS = language === 'vi' ? TASKS_VI : TASKS_EN;
   const [exactCosts, setExactCosts] = useState<Record<string, string>>({});
   const [isCalculating, setIsCalculating] = useState(false);
@@ -86,7 +86,7 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
       case 'setup': return 'bg-zinc-500';
       case 'content': return 'bg-purple-500';
       case 'ads': return 'bg-cyan-500';
-      case 'seo': return 'bg-emerald-500';
+      case 'seo': return 'bg-blue-500';
       case 'contingency': return 'bg-orange-500';
       default: return 'bg-white/20';
     }
@@ -95,14 +95,15 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
   const budgetNum = parseInt(globalBudget) || 100000000;
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto p-8 max-w-6xl mx-auto w-full relative">
+    <div className="w-full h-full overflow-y-auto relative">
+      <div className="flex flex-col p-8 max-w-6xl mx-auto w-full min-h-full">
       {/* Screen Flash Overlay */}
       {flash && (
         <motion.div 
            initial={{ opacity: 0.8 }}
            animate={{ opacity: 0 }}
            transition={{ duration: 0.5, ease: "easeOut" }}
-           className="absolute inset-0 bg-emerald-100 z-50 pointer-events-none mix-blend-overlay"
+           className="absolute inset-0 bg-blue-100 z-50 pointer-events-none mix-blend-overlay"
         />
       )}
 
@@ -111,21 +112,21 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
       </button>
 
       <div className="mb-8 text-center mt-8">
-        <h2 className="text-3xl font-bold text-slate-900 mb-3">{language === 'vi' ? 'Giai đoạn 3: Ngân sách & Chiến thuật' : 'Stage 3: Tactical Campaign & Exact Budgeting'}</h2>
-        <p className="text-slate-500">{language === 'vi' ? 'Lập trình Gantt và tính toán giải ngân chi tiết bằng Math Engine.' : 'Generate Gantt scheduling and detailed budget distribution utilizing the Math Engine.'}</p>
+        <h2 className="text-3xl font-bold text-slate-900 mb-3">{t('workspace_phase3.title' as any) as string}</h2>
+        <p className="text-slate-700 font-medium">{t('workspace_phase3.desc' as any) as string}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Gantt Chart UI */}
         <div className="bento-card bg-white shadow-sm border border-slate-200">
-          <h3 className="text-lg font-bold text-slate-800 mb-6">{language === 'vi' ? 'Điểm chạm Chiến thuật (1-3 Tháng)' : 'Tactical Touchpoints (1-3 Months)'}</h3>
+          <h3 className="text-lg font-bold text-slate-800 mb-6">{t('workspace_phase3.touchpoints' as any) as string}</h3>
           
           <div className="w-full">
-            <div className="grid grid-cols-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">
-              <div className="col-span-1">{language === 'vi' ? 'Nhiệm vụ' : 'Task'}</div>
-              <div className="text-center">{language === 'vi' ? 'Tháng 1' : 'Month 1'}</div>
-              <div className="text-center">{language === 'vi' ? 'Tháng 2' : 'Month 2'}</div>
-              <div className="text-center">{language === 'vi' ? 'Tháng 3' : 'Month 3'}</div>
+            <div className="grid grid-cols-4 text-xs font-bold text-slate-700 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">
+              <div className="col-span-1">{t('workspace_phase3.task' as any) as string}</div>
+              <div className="text-center">{t('workspace_phase3.m1' as any) as string}</div>
+              <div className="text-center">{t('workspace_phase3.m2' as any) as string}</div>
+              <div className="text-center">{t('workspace_phase3.m3' as any) as string}</div>
             </div>
 
             <div className="space-y-4">
@@ -168,17 +169,17 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
           )}
 
           <div className="mb-6 flex justify-between items-center">
-             <h3 className="text-lg font-bold text-slate-800">{language === 'vi' ? 'Phân bổ Ngân sách' : 'Budget Allocation'}</h3>
-             <span className="text-xs bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-slate-600 font-semibold">{language === 'vi' ? 'Tổng:' : 'Total:'} {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(budgetNum)}</span>
+             <h3 className="text-lg font-bold text-slate-800">{t('workspace_phase3.alloc' as any) as string}</h3>
+             <span className="text-xs bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-slate-800 font-bold">{t('workspace_phase3.total' as any) as string} {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(budgetNum)}</span>
           </div>
 
           <div className="flex-1 overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="text-xs text-slate-500 uppercase border-b border-slate-200">
+              <thead className="text-xs text-slate-700 font-bold uppercase border-b border-slate-200">
                 <tr>
-                  <th className="py-3 px-2 font-medium">Task</th>
+                  <th className="py-3 px-2 font-medium">{t('workspace_phase3.task' as any) as string}</th>
                   <th className="py-3 px-2 font-medium text-center">CFO %</th>
-                  <th className="py-3 px-2 font-medium text-right text-emerald-600">Exact Cost (Math Engine)</th>
+                  <th className="py-3 px-2 font-medium text-right text-blue-600">Exact Cost (Math Engine)</th>
                 </tr>
               </thead>
               <tbody>
@@ -205,11 +206,11 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
                 className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center transition-all ${isCalculated ? 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100' : 'gradient-ai-bg shadow-sm hover:shadow-md'}`}
              >
                 {isCalculating ? (
-                   <span className="animate-pulse flex items-center"><Calculator className="w-4 h-4 mr-2" /> {language === 'vi' ? 'Đang chạy mô phỏng Math Engine...' : 'Running Math Engine...'}</span>
+                   <span className="animate-pulse flex items-center"><Calculator className="w-4 h-4 mr-2" /> {t('workspace_phase3.running' as any) as string}</span>
                 ) : isCalculated ? (
-                   <><CheckCircle2 className="w-4 h-4 mr-2 text-emerald-600" /> {language === 'vi' ? 'Tính toán lại' : 'Recalculate'}</>
+                   <><CheckCircle2 className="w-4 h-4 mr-2 text-blue-600" /> {t('workspace_phase3.recalculate' as any) as string}</>
                 ) : (
-                   <><Calculator className="w-4 h-4 mr-2" /> {language === 'vi' ? 'Duyệt & Crunch Data Thực' : 'Execute Number Crunching'}</>
+                   <><Calculator className="w-4 h-4 mr-2" /> {t('workspace_phase3.run_engine' as any) as string}</>
                 )}
              </button>
 
@@ -220,14 +221,15 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
                 >
                    <button 
                       onClick={onNext}
-                      className="w-full py-3 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center hover:bg-slate-800 transition-colors shadow-md"
+                      className="w-full py-3 rounded-xl gradient-ai-bg text-white font-bold flex items-center justify-center shadow-md hover:shadow-lg hover:scale-[1.02] transition-all"
                    >
-                      {language === 'vi' ? 'Duyệt Ngân Sách & Vào Workspace' : 'Approve Budget & Enter Workspace'} <ArrowRight className="w-4 h-4 ml-2" />
+                      {t('workspace_phase3.approve_btn' as any) as string} <ArrowRight className="w-4 h-4 ml-2" />
                    </button>
                 </motion.div>
              )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

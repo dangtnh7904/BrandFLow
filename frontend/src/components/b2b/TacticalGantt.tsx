@@ -6,7 +6,7 @@ import { Calendar } from 'lucide-react';
 const TASKS = [
   { id: 1, name: "Giai đoạn Nghiên cứu Thị trường", startMonth: 1, endMonth: 2, owner: "Strategy Team", budget: "$15,000", color: "bg-purple-500" },
   { id: 2, name: "Phát triển Sản phẩm (Beta)", startMonth: 2, endMonth: 5, owner: "Product Team", budget: "$80,000", color: "bg-blue-500" },
-  { id: 3, name: "Chiến dịch Marketing Tiền ra mắt", startMonth: 4, endMonth: 6, owner: "Marketing", budget: "$45,000", color: "bg-emerald-500" },
+  { id: 3, name: "Chiến dịch Marketing Tiền ra mắt", startMonth: 4, endMonth: 6, owner: "Marketing", budget: "$45,000", color: "bg-blue-500" },
   { id: 4, name: "Ra mắt Chính thức & Go-to-market", startMonth: 6, endMonth: 8, owner: "Sales & MKT", budget: "$120,000", color: "bg-orange-500" },
   { id: 5, name: "Đánh giá Hậu ra mắt", startMonth: 9, endMonth: 12, owner: "Data Team", budget: "$10,000", color: "bg-slate-500" }
 ];

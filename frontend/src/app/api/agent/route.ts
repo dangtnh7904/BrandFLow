@@ -8,7 +8,7 @@ const API_URL = process.env.GROQ_API_KEY
   ? "https://api.groq.com/openai/v1/chat/completions" 
   : "https://api.openai.com/v1/chat/completions";
   
-const MODEL_NAME = process.env.GROQ_API_KEY ? "llama3-8b-8192" : "gpt-4o-mini";
+const MODEL_NAME = process.env.GROQ_API_KEY ? "llama-3.1-8b-instant" : "gpt-4o-mini";
 
 export async function POST(req: Request) {
   if (!API_KEY) {

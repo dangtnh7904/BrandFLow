@@ -307,5 +307,42 @@ def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
     except:
         return previous_plan
 
+# =============================================================================
+# STUB FUNCTIONS (imported by workflow_graph.py — Stage 2/3/4 Pipeline)
+# =============================================================================
+
+def run_cmo_profiling(industry: str, goal: str, csfs: list = None, resources: str = "") -> dict:
+    """Stage 1 — CMO Profiling: Tạo Brand DNA, USP, và Persona prompt."""
+    print(f"🔍 [STAGE 1] CMO Profiling cho ngành {industry}...")
+    csfs = csfs or []
+    return {
+        "brand_dna": f"Brand DNA cho ngành {industry} — mục tiêu: {goal}",
+        "usp": f"USP dựa trên CSFs: {', '.join(csfs[:3]) if csfs else 'Chưa xác định'}",
+        "target_persona_prompt": (
+            f"Bạn là một khách hàng tiềm năng trong ngành {industry}. "
+            f"Bạn quan tâm đến: {goal}. Hãy phản biện như một người tiêu dùng thực tế."
+        ),
+    }
+
+
+def run_cmo_tactical_campaign(blueprint: dict, budget: int, constraints: str = "") -> dict:
+    """Stage 3 — CMO Tactical Campaign: Chuyển blueprint thành kế hoạch chiến thuật."""
+    print(f"📋 [STAGE 3] CMO Tactical Campaign (budget={budget:,} VND)...")
+    return {
+        "tactical_plan": f"Kế hoạch chiến thuật dựa trên blueprint với ngân sách {budget:,} VND",
+        "activities": [],
+        "estimated_cost": budget,
+    }
+
+
+def run_cfo_tactical_feedback(tactical_plan: str, resources: str, budget: int) -> dict:
+    """Stage 3 — CFO Tactical Feedback: CFO đánh giá kế hoạch chiến thuật."""
+    print(f"💼 [STAGE 3] CFO Tactical Feedback...")
+    return {
+        "is_approved": True,
+        "feedback": "Kế hoạch chiến thuật phù hợp với nguồn lực hiện có.",
+    }
+
+
 if __name__ == "__main__":
     print("agents_core.py v8 — Multi-Agent Phase 1->5 Workflow Báo Cáo")

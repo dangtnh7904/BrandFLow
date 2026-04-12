@@ -17,27 +17,37 @@ const SECTIONS = [
     title: "Phần A - Chiến lược",
     icon: Briefcase,
     items: [
-      { id: "a1", label: "A1. Sứ mệnh & Định nghĩa", href: "/planning/a1-mission" },
-      { id: "a3", label: "A3. Dự phóng Doanh thu", href: "/planning/a3-revenue" },
-      { id: "a5", label: "A5. Phân tích SWOT", href: "/planning/a5-swot" },
-      { id: "a6", label: "A6. Ma trận Danh mục", href: "/planning/a6-portfolio" },
+      { id: "a1", label: "A.1 Tuyên bố Sứ mệnh", href: "/planning/a1-mission" },
+      { id: "a2", label: "A.2 Hiệu suất SBU", href: "/planning/a2-performance" },
+      { id: "a3", label: "A.3 Tóm tắt Dự báo", href: "/planning/a3-revenue" },
+      { id: "a4", label: "A.4 Tổng quan Thị trường", href: "/planning/a4-market" },
+      { id: "a5", label: "A.5 Phân tích SWOT", href: "/planning/a5-swot" },
+      { id: "a6", label: "A.6 Ma trận Danh mục", href: "/planning/a6-portfolio" },
+      { id: "a7", label: "A.7 Các Giả định", href: "/planning/a7-assumptions" },
+      { id: "a8", label: "A.8 Mục tiêu & Chiến lược", href: "/planning/a8-strategies" },
+      { id: "a9", label: "A.9 Ngân sách 3-5 Năm", href: "/planning/a9-budget" },
     ]
   },
   {
     title: "Phần B - Vận hành",
     icon: LayoutDashboard,
     items: [
-      { id: "b3", label: "B3. Ma trận Hành động", href: "/planning/b3-action" },
-      { id: "b5", label: "B5. Phương án Dự phòng", href: "/planning/b5-contingency" },
-      { id: "b7", label: "B7. Tiến độ Gantt", href: "/planning/b7-gantt" },
+      { id: "b1", label: "B.1 Mục tiêu Vận hành", href: "/planning/b1-objectives" },
+      { id: "b2", label: "B.2 Kế hoạch Hành động", href: "/planning/b2-action" },
+      { id: "b3", label: "B.3 Ngân sách Marketing", href: "/planning/b3-budget" },
+      { id: "b4", label: "B.4 Kế hoạch Dự phòng", href: "/planning/b4-contingency" },
+      { id: "b5", label: "B.5 Báo cáo Lãi Lỗ", href: "/planning/b5-pnl" },
+      { id: "b6", label: "B.6 Tiến độ Gantt", href: "/planning/b6-gantt" },
     ]
   },
   {
     title: "Phần C - Tổng hành dinh",
     icon: BarChart2,
     items: [
-      { id: "c1", label: "C1. Định hướng Tập đoàn", href: "/planning/c1-direction" },
-      { id: "c2", label: "C2. Ma trận Tập đoàn", href: "/planning/c2-matrix" },
+      { id: "c1", label: "C.1 Tuyên bố Định hướng", href: "/planning/c1-direction" },
+      { id: "c2", label: "C.2 Lịch sử Danh mục", href: "/planning/c2-history" },
+      { id: "c3", label: "C.3 Phân tích Vấn đề", href: "/planning/c3-issues" },
+      { id: "c4", label: "C.4 Dashboard Chiến lược", href: "/planning/c4-dashboard" },
     ]
   }
 ];

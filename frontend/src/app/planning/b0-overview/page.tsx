@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
@@ -7,9 +8,11 @@ import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { PlayCircle, Clock, ShieldCheck } from 'lucide-react';
 
 export default function PageB0Overview() {
+  const { localData, saveStatus } = useAutoSaveForm('b0-overview', { });
   return (
     <>
       <B2BPageTemplate
+      saveStatus={saveStatus}
         title="Tổng quan Phần B: Vận Hành (Operations)"
         description="Chào mừng bạn đến với chiến trường thực sự. Nơi mà các tuyên bố hoa mỹ ở Phần A biến thành KPIs cụ thể."
       >

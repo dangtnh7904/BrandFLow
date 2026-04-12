@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -17,6 +18,7 @@ const KSF_DATA = [
 ];
 
 export default function PageA5Swot() {
+  const { localData, saveStatus } = useAutoSaveForm('a5-swot', { items: KSF_DATA });
   const { t } = useLanguage();
   const COLUMNS = [
     { key: 'ksf', header: 'Yếu tố thành công (CSFs)', className: 'bg-white font-medium text-slate-700' },
@@ -29,6 +31,7 @@ export default function PageA5Swot() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title={t('a5.title' as TranslationKey) as string || "Phân tích SWOT & Năng lực cạnh tranh"}
       description={t('a5.desc' as TranslationKey) as string || "Đánh giá năng lực cốt lõi so với đối thủ cạnh tranh hàng đầu để định hướng phân bổ trọng số chiến lược."}
     >
@@ -41,7 +44,7 @@ export default function PageA5Swot() {
            <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest">Phân khúc: Mẹ bỉm sữa & Trẻ em</h3>
            <PastelTable 
              columns={COLUMNS} 
-             data={KSF_DATA}
+             data={localData.items}
              footerContent={
                <tr>
                  <td className="px-4 py-3 text-right">Tổng cộng:</td>

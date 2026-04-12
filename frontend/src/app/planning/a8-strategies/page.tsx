@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -24,6 +25,7 @@ const FOUR_P_DATA = [
 ];
 
 export default function PageA8Strategies() {
+  const { localData, saveStatus } = useAutoSaveForm('a8-strategies', { items: MATRIX_DATA });
   const MATRIX_COLS = [
     { key: 'level', header: 'Cấp độ Mục tiêu', className: 'bg-white font-medium text-slate-700' },
     { key: 'past', header: 'Năm ngoái (t-1)', align: 'center' as const, className: 'bg-slate-50 text-slate-500' },
@@ -41,6 +43,7 @@ export default function PageA8Strategies() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Mục tiêu và Chiến lược Marketing (Form 8-11)"
       description="Thiết lập bảng so sánh chi tiết các chỉ số mục tiêu và Chiến lược 4Ps."
     >
@@ -51,7 +54,7 @@ export default function PageA8Strategies() {
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
            <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest">Ma trận Mục tiêu (Khối lượng, Phân khúc, Sản phẩm)</h3>
-           <PastelTable columns={MATRIX_COLS} data={MATRIX_DATA} />
+           <PastelTable columns={MATRIX_COLS} data={localData.items} />
         </div>
 
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">

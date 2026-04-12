@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import VisualDashboards from '@/components/b2b/VisualDashboards';
@@ -7,10 +8,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 
 export default function PageC2Matrix() {
+  const { localData, saveStatus } = useAutoSaveForm('c2-matrix', { });
   const { t } = useLanguage();
 
   return (
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title={t('c2.title' as TranslationKey) as string || "Ma trận Tổng hợp HQ"}
       description={t('c2.desc' as TranslationKey) as string || "Dashboard cấp cao tổng hợp các chỉ số danh mục đầu tư và doanh thu trên toàn bộ hệ sinh thái của tập đoàn."}
     >

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -16,6 +17,7 @@ const DIR_DATA = [
 ];
 
 export default function PageC1Direction() {
+  const { localData, saveStatus } = useAutoSaveForm('c1-direction', { items: DIR_DATA });
   const { t } = useLanguage();
   const COLUMNS = [
     { key: 'item', header: 'Yếu tố Cấp Tập đoàn (HQ)', className: 'bg-white font-medium text-slate-700 w-1/3' },
@@ -25,6 +27,7 @@ export default function PageC1Direction() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title={t('c1.title' as TranslationKey) as string || "Định hướng Tập đoàn / HQ"}
       description={t('c1.desc' as TranslationKey) as string || "Hợp nhất sứ mệnh và các định hướng chiến lược trên toàn bộ các thương hiệu vệ tinh."}
     >
@@ -34,7 +37,7 @@ export default function PageC1Direction() {
         </InstructionAlert>
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={DIR_DATA} />
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/c0-overview" prevLabel="Về C.0 Tổng quan" nextLink="/planning/c2-history" nextLabel="Tiếp tục: C.2 Lịch sử Danh mục" />
       </div>

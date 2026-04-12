@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
@@ -7,9 +8,11 @@ import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { Target, TrendingUp, ShieldAlert, PieChart, Users } from 'lucide-react';
 
 export default function PageA0Overview() {
+  const { localData, saveStatus } = useAutoSaveForm('a0-overview', { });
   return (
     <>
       <B2BPageTemplate
+      saveStatus={saveStatus}
         title="Tổng quan Phần A: Chiến Lược (Strategy)"
         description="Chào mừng bạn đến với giai đoạn nền tảng nhất của lộ trình. Phần này giúp định hình bức tranh lớn trước khi hành động."
       >

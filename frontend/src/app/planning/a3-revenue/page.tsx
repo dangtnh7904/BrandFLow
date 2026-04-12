@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -15,6 +16,7 @@ const FIN_DATA = [
 ];
 
 export default function PageA3Revenue() {
+  const { localData, saveStatus } = useAutoSaveForm('a3-revenue', { items: FIN_DATA });
   const { t } = useLanguage();
   const FIN_COLUMNS = [
     { key: 'metric', header: 'Hạng mục dự báo', className: 'bg-white font-medium text-slate-700' },
@@ -28,6 +30,7 @@ export default function PageA3Revenue() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title={t('a3.title' as TranslationKey) as string || "Dự phóng Doanh thu & Chỉ số Tài chính"}
       description={t('a3.desc' as TranslationKey) as string || "Tính toán và trực quan hóa kỳ vọng P&L dài hạn."}
     >
@@ -38,7 +41,7 @@ export default function PageA3Revenue() {
 
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
            <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest">Dự báo (Projections)</h3>
-           <PastelTable columns={FIN_COLUMNS} data={FIN_DATA} />
+           <PastelTable columns={FIN_COLUMNS} data={localData.items} />
         </div>
 
         {/* Charts Mock */}

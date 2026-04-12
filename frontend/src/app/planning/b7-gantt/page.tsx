@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import TacticalGantt from '@/components/b2b/TacticalGantt';
@@ -7,10 +8,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 
 export default function PageB7Gantt() {
+  const { localData, saveStatus } = useAutoSaveForm('b7-gantt', { });
   const { t } = useLanguage();
 
   return (
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title={t('b7.title' as TranslationKey) as string || "Bảng tiến độ chiến lược (12-Month Gantt)"}
       description={t('b7.desc' as TranslationKey) as string || "Biểu đồ tiến độ thực thi vi mô minh họa tất cả các điểm chạm vận hành trong suốt năm tài chính."}
     >

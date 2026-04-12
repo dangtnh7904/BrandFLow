@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import ContingencyTable from '@/components/b2b/ContingencyTable';
@@ -7,10 +8,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 
 export default function PageB5Contingency() {
+  const { localData, saveStatus } = useAutoSaveForm('b5-contingency', { });
   const { t } = useLanguage();
 
   return (
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title={t('b5.title' as TranslationKey) as string || "Kế hoạch Dự phòng rủi ro"}
       description={t('b5.desc' as TranslationKey) as string || "Lập sơ đồ các sự kiện rủi ro, xác định ngưỡng kích hoạt và thiết lập hành động ứng phó."}
     >

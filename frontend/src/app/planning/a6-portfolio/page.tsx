@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -15,6 +16,7 @@ const DPM_DATA = [
 ];
 
 export default function PageA6Portfolio() {
+  const { localData, saveStatus } = useAutoSaveForm('a6-portfolio', { items: DPM_DATA });
   const { t } = useLanguage();
   const COLUMNS = [
     { key: 'segment', header: 'Phân khúc', className: 'bg-white font-medium text-slate-700' },
@@ -26,6 +28,7 @@ export default function PageA6Portfolio() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title={t('a6.title' as TranslationKey) as string || "Ma trận Danh mục đầu tư (DPM)"}
       description={t('a6.desc' as TranslationKey) as string || "Tóm tắt danh mục dựa trên kết quả SWOT."}
     >
@@ -35,7 +38,7 @@ export default function PageA6Portfolio() {
         </InstructionAlert>
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={DPM_DATA} />
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         
         {/* Placeholder for visual 2x2 or 3x3 matrix */}

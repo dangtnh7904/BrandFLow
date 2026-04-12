@@ -2,15 +2,16 @@
 
 import React, { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
-
-const KSF_DATA = [
-  { id: 1, factor: "Chất lượng sản phẩm (Chống lỗi)", weight: 40, myScore: 8, compScore: 7 },
-  { id: 2, factor: "Dịch vụ hỗ trợ 24/7", weight: 30, myScore: 9, compScore: 9 },
-  { id: 3, factor: "Giá cả cạnh tranh", weight: 30, myScore: 6, compScore: 8 },
-];
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ScoringMatrix() {
-  const [data, setData] = useState(KSF_DATA);
+  const { language } = useLanguage();
+  
+  const [data, setData] = useState([
+    { id: 1, factor: language === 'vi' ? "Chất lượng sản phẩm (Chống lỗi)" : "Product Quality (Bug-free)", weight: 40, myScore: 8, compScore: 7 },
+    { id: 2, factor: language === 'vi' ? "Dịch vụ hỗ trợ 24/7" : "24/7 Support Service", weight: 30, myScore: 9, compScore: 9 },
+    { id: 3, factor: language === 'vi' ? "Giá cả cạnh tranh" : "Competitive Pricing", weight: 30, myScore: 6, compScore: 8 },
+  ]);
 
   const handleWeightChange = (id: number, val: string) => {
     setData(data.map(d => d.id === id ? { ...d, weight: Number(val) || 0 } : d));
@@ -27,12 +28,12 @@ export default function ScoringMatrix() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-bold text-slate-900 text-lg">A5. SWOT Scoring Matrix</h3>
-          <p className="text-sm font-medium text-slate-500">Đánh giá Năng lực Cạnh tranh (Weighted Key Success Factors)</p>
+          <p className="text-sm font-medium text-slate-500">{language === 'vi' ? 'Đánh giá Năng lực Cạnh tranh (Weighted Key Success Factors)' : 'Competitive Capability Assessment (Weighted KSFs)'}</p>
         </div>
         {!isValid && (
           <div className="flex items-center text-red-700 bg-red-50 px-3 py-1.5 rounded-md text-sm font-bold border border-red-200">
             <AlertCircle className="w-4 h-4 mr-2" />
-            Lỗi tỷ trọng: Tổng Weight phải bằng 100 (Hiện tại: {totalWeight})
+            {language === 'vi' ? `Lỗi tỷ trọng: Tổng Weight phải bằng 100 (Hiện tại: ${totalWeight})` : `Weight Error: Total must equal 100 (Current: ${totalWeight})`}
           </div>
         )}
       </div>
@@ -42,9 +43,9 @@ export default function ScoringMatrix() {
           <thead className="bg-slate-50 border-b border-slate-200">
              <tr>
                 <th className="py-3 px-4 font-bold text-slate-700 border-r border-slate-200">Key Success Factor</th>
-                <th className="py-3 px-4 font-bold text-center text-slate-700 w-24 border-r border-slate-200">Weight (%)</th>
-                <th className="py-3 px-4 font-bold text-center w-32 border-r border-slate-200 bg-purple-50 text-purple-700">Our Score (1-10)</th>
-                <th className="py-3 px-4 font-bold text-center w-32 bg-orange-50 text-orange-700">Competitor (1-10)</th>
+                <th className="py-3 px-4 font-bold text-center text-slate-700 w-24 border-r border-slate-200">{language === 'vi' ? 'Trọng số' : 'Weight'} (%)</th>
+                <th className="py-3 px-4 font-bold text-center w-32 border-r border-slate-200 bg-purple-50 text-purple-700">{language === 'vi' ? 'Điểm của ta' : 'Our Score'} (1-10)</th>
+                <th className="py-3 px-4 font-bold text-center w-32 bg-orange-50 text-orange-700">{language === 'vi' ? 'Đối thủ' : 'Competitor'} (1-10)</th>
              </tr>
           </thead>
           <tbody>
@@ -59,7 +60,7 @@ export default function ScoringMatrix() {
                </tr>
              ))}
              <tr className="bg-slate-100/50 text-slate-900 font-bold text-base">
-                 <td className="py-3 px-4 text-right">Weighted Total:</td>
+                 <td className="py-3 px-4 text-right">{language === 'vi' ? 'Tổng Điểm Có Trọng Số:' : 'Weighted Total:'}</td>
                  <td className={`py-3 px-4 text-center border-l border-slate-200 ${!isValid ? 'text-red-600' : 'text-blue-600'}`}>{totalWeight}%</td>
                  <td className="py-3 px-4 text-center border-l border-slate-200 text-purple-700">{myCalculatedScore.toFixed(2)}</td>
                  <td className="py-3 px-4 text-center border-l border-slate-200 text-orange-700">{compCalculatedScore.toFixed(2)}</td>

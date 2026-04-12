@@ -1,21 +1,24 @@
 "use client";
 
 import React from 'react';
-
-const MOCK_DATA = [
-  { metric: "Sản lượng (Units)", tMinus1: 1200, t0: 1500, tPlus3: 3500 },
-  { metric: "Doanh thu ($)", tMinus1: 120000, t0: 165000, tPlus3: 420000 },
-  { metric: "Chi phí vốn - COGS ($)", tMinus1: 80000, t0: 105000, tPlus3: 240000 },
-];
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function FinancialDataGrid() {
+  const { language } = useLanguage();
+
+  const MOCK_DATA = [
+    { metric: language === 'vi' ? "Sản lượng (Units)" : "Volume (Units)", tMinus1: 1200, t0: 1500, tPlus3: 3500 },
+    { metric: language === 'vi' ? "Doanh thu ($)" : "Revenue ($)", tMinus1: 120000, t0: 165000, tPlus3: 420000 },
+    { metric: language === 'vi' ? "Chi phí vốn - COGS ($)" : "Cost of Goods Sold - COGS ($)", tMinus1: 80000, t0: 105000, tPlus3: 240000 },
+  ];
+
   const formatCurrency = (val: number, metric: string) => {
      if (metric.includes('$')) return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
      return val.toLocaleString('en-US');
   };
 
   const calculateGrossMargin = (data: any[]) => {
-      const revIndex = data.findIndex(d => d.metric.includes('Revenue'));
+      const revIndex = data.findIndex(d => d.metric.includes('Revenue') || d.metric.includes('Doanh thu'));
       const cogsIndex = data.findIndex(d => d.metric.includes('COGS'));
       if (revIndex === -1 || cogsIndex === -1) return null;
 
@@ -23,7 +26,7 @@ export default function FinancialDataGrid() {
       const cogs = data[cogsIndex];
 
       return {
-          metric: "Biên lợi nhuận gộp (%)",
+          metric: language === 'vi' ? "Biên lợi nhuận gộp (%)" : "Gross Margin (%)",
           tMinus1: ((rev.tMinus1 - cogs.tMinus1) / rev.tMinus1) * 100,
           t0: ((rev.t0 - cogs.t0) / rev.t0) * 100,
           tPlus3: ((rev.tPlus3 - cogs.tPlus3) / rev.tPlus3) * 100,
@@ -35,16 +38,16 @@ export default function FinancialDataGrid() {
   return (
     <div className="bento-card border border-slate-200 bg-white shadow-sm overflow-hidden">
        <div className="p-4 border-b border-slate-200 bg-slate-50">
-          <h3 className="font-bold text-slate-900">Dự phóng Tài chính (Kế hoạch 3 năm)</h3>
+          <h3 className="font-bold text-slate-900">{language === 'vi' ? 'Dự phóng Tài chính (Kế hoạch 3 năm)' : 'Financial Projections (3-Year Plan)'}</h3>
        </div>
        <div className="overflow-x-auto w-full">
          <table className="w-full text-sm text-left border-collapse">
             <thead className="bg-slate-50 border-b border-slate-200">
                <tr>
-                  <th className="py-3 px-4 font-bold text-slate-600">Chỉ số Tài chính</th>
-                  <th className="py-3 px-4 font-bold text-slate-600 text-right w-32 border-l border-slate-200">Năm (t-1)</th>
-                  <th className="py-3 px-4 font-bold text-purple-700 text-right w-32 border-l border-slate-200 bg-purple-50">Năm Hiện tại (t0)</th>
-                  <th className="py-3 px-4 font-bold text-blue-700 text-right w-32 border-l border-slate-200 bg-blue-50">Dự phóng (t+3)</th>
+                  <th className="py-3 px-4 font-bold text-slate-600">{language === 'vi' ? 'Chỉ số Tài chính' : 'Financial Metric'}</th>
+                  <th className="py-3 px-4 font-bold text-slate-600 text-right w-32 border-l border-slate-200">{language === 'vi' ? 'Năm (t-1)' : 'Year (t-1)'}</th>
+                  <th className="py-3 px-4 font-bold text-purple-700 text-right w-32 border-l border-slate-200 bg-purple-50">{language === 'vi' ? 'Năm Hiện tại (t0)' : 'Current Year (t0)'}</th>
+                  <th className="py-3 px-4 font-bold text-blue-700 text-right w-32 border-l border-slate-200 bg-blue-50">{language === 'vi' ? 'Dự phóng (t+3)' : 'Projection (t+3)'}</th>
                </tr>
             </thead>
             <tbody>

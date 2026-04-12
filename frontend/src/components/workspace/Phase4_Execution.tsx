@@ -169,14 +169,6 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
              animate={{ opacity: 1 }}
              className="w-full h-full"
           >
-            <ReactFlow 
-              nodes={nodes} 
-              edges={edges} 
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              fitView
-              attributionPosition="bottom-right"
-            >
               {generatedOutput ? (
                 <div className="h-full flex flex-col bg-slate-50 relative">
                   <div className="absolute top-4 left-4 right-4 z-10 flex gap-4">
@@ -213,7 +205,6 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
                       <button className="px-4 py-2 rounded-lg text-xs font-semibold text-white gradient-ai-bg">{language === 'vi' ? 'Gửi duyệt tới Integration' : 'Publish to Integration'}</button>
                     </div>
 
-<<<<<<< Updated upstream
                     <AnimatePresence>
                       {feedbackMode && (
                         <motion.div 
@@ -255,12 +246,13 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
                       )}
                     </AnimatePresence>
                   </div>
-=======
-            <div className="absolute top-6 right-6 flex items-center space-x-3 pointer-events-none">
-                <div className="bg-blue-50 border border-blue-200 px-4 py-3 rounded-xl flex items-center text-blue-700 text-xs font-bold uppercase tracking-wider shadow-md pointer-events-auto">
-                  <span className="w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse"></span>
-                  {language === 'vi' ? 'Node Graph Đồng bộ Thực thời' : 'Live State Sync'}
->>>>>>> Stashed changes
+
+                  <div className="absolute top-6 right-6 flex items-center space-x-3 pointer-events-none">
+                      <div className="bg-blue-50 border border-blue-200 px-4 py-3 rounded-xl flex items-center text-blue-700 text-xs font-bold uppercase tracking-wider shadow-md pointer-events-auto">
+                        <span className="w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse"></span>
+                        {language === 'vi' ? 'Node Graph Đồng bộ Thực thời' : 'Live State Sync'}
+                      </div>
+                  </div>
                 </div>
               ) : (
                 <div className="w-full h-full relative">
@@ -298,7 +290,7 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </motion.div>
         ) : (
           <div className="h-full flex items-center justify-center flex-col opacity-50 relative z-10">
              <Bot className="w-16 h-16 text-slate-300 mb-4" />

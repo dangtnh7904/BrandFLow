@@ -47,9 +47,9 @@ export default function PreviewCanvas() {
           </div>
 
           <div className="p-6">
-            <h3 className="text-white text-lg font-bold mb-2">Q3 Launch: "Eco-First" Collection</h3>
+            <h3 className="text-white text-lg font-bold mb-2">Q3 Launch: &quot;Eco-First&quot; Collection</h3>
             <p className="text-sm text-linear-text-muted mb-4 leading-relaxed">
-              We're redefining what it means to build responsibly. Our new Q3 collection utilizes 100% upcycled materials, moving us closer to a zero-carbon footprint. Join the revolution. 🌱✨ #EcoFirst #SustainableTech
+              We&apos;re redefining what it means to build responsibly. Our new Q3 collection utilizes 100% upcycled materials, moving us closer to a zero-carbon footprint. Join the revolution. 🌱✨ #EcoFirst #SustainableTech
             </p>
             <div className="flex flex-wrap gap-2">
                 <span className="px-2 py-1 bg-white/5 rounded-md text-[10px] text-cyan-400 font-medium">Platform: Instagram</span>

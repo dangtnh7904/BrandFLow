@@ -34,8 +34,8 @@ export default function WizardStep4() {
       const keys: (keyof PointData)[] = ['awareness', 'sales', 'retention'];
       const otherKeys = keys.filter(k => k !== key);
       
-      let o1 = prev[otherKeys[0]];
-      let o2 = prev[otherKeys[1]];
+      const o1 = prev[otherKeys[0]];
+      const o2 = prev[otherKeys[1]];
 
       if (diff > 0) {
         // We are increasing this slider, so we must decrease others
@@ -65,8 +65,8 @@ export default function WizardStep4() {
       } else {
         // We are decreasing this slider, distribute the given points back
         const absDiff = Math.abs(diff);
-        let split1 = Math.round(absDiff / 2);
-        let split2 = absDiff - split1;
+        const split1 = Math.round(absDiff / 2);
+        const split2 = absDiff - split1;
 
         return {
             ...prev,

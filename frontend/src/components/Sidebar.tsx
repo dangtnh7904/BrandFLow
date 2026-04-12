@@ -29,25 +29,38 @@ const B2B_SECTIONS = [
   {
     title: { en: "Phase A - Strategy", vi: "Phần A - Chiến lược" },
     items: [
-      { id: "a1", label: { en: "Mission", vi: "Sứ mệnh" }, href: "/planning/a1-mission" },
-      { id: "a3", label: { en: "Revenue", vi: "Doanh thu" }, href: "/planning/a3-revenue" },
-      { id: "a5", label: { en: "SWOT Matrix", vi: "Phân tích SWOT" }, href: "/planning/a5-swot" },
-      { id: "a6", label: { en: "Portfolio Matrix", vi: "Ma trận Định vị" }, href: "/planning/a6-portfolio" },
+      { id: "a0", label: { en: "Overview Phase A", vi: "🚩 Tổng quan Phần A" }, href: "/planning/a0-overview" },
+      { id: "a1", label: { en: "A.1 Mission", vi: "A.1 Tuyên bố Sứ mệnh" }, href: "/planning/a1-mission" },
+      { id: "a2", label: { en: "A.2 Performance", vi: "A.2 Hiệu suất SBU" }, href: "/planning/a2-performance" },
+      { id: "a3", label: { en: "A.3 Projections", vi: "A.3 Tóm tắt Dự báo" }, href: "/planning/a3-revenue" },
+      { id: "a4", label: { en: "A.4 Market Overview", vi: "A.4 Tổng quan Thị trường" }, href: "/planning/a4-market" },
+      { id: "a5", label: { en: "A.5 SWOT Matrix", vi: "A.5 Phân tích SWOT" }, href: "/planning/a5-swot" },
+      { id: "a6", label: { en: "A.6 Portfolio Matrix", vi: "A.6 Ma trận Danh mục" }, href: "/planning/a6-portfolio" },
+      { id: "a7", label: { en: "A.7 Assumptions", vi: "A.7 Các Giả định" }, href: "/planning/a7-assumptions" },
+      { id: "a8", label: { en: "A.8 Strategies", vi: "A.8 Mục tiêu & Chiến lược" }, href: "/planning/a8-strategies" },
+      { id: "a9", label: { en: "A.9 Budget 3-5 Yrs", vi: "A.9 Ngân sách 3-5 Năm" }, href: "/planning/a9-budget" },
     ]
   },
   {
     title: { en: "Phase B - Operations", vi: "Phần B - Vận hành" },
     items: [
-      { id: "b3", label: { en: "Action Plans", vi: "Kế hoạch Hành động" }, href: "/planning/b3-action" },
-      { id: "b5", label: { en: "Contingency", vi: "Kế hoạch Dự phòng" }, href: "/planning/b5-contingency" },
-      { id: "b7", label: { en: "Tactical Gantt", vi: "Tiến độ Gantt" }, href: "/planning/b7-gantt" },
+      { id: "b0", label: { en: "Overview Phase B", vi: "🚩 Tổng quan Phần B" }, href: "/planning/b0-overview" },
+      { id: "b1", label: { en: "B.1 Objectives", vi: "B.1 Mục tiêu Vận hành" }, href: "/planning/b1-objectives" },
+      { id: "b2", label: { en: "B.2 Action Plans", vi: "B.2 Kế hoạch Hành động" }, href: "/planning/b2-action" },
+      { id: "b3", label: { en: "B.3 Marketing Budget", vi: "B.3 Ngân sách Marketing" }, href: "/planning/b3-budget" },
+      { id: "b4", label: { en: "B.4 Contingency Plan", vi: "B.4 Kế hoạch Dự phòng" }, href: "/planning/b4-contingency" },
+      { id: "b5", label: { en: "B.5 P&L Report", vi: "B.5 Báo cáo Lãi Lỗ" }, href: "/planning/b5-pnl" },
+      { id: "b6", label: { en: "B.6 Tactical Gantt", vi: "B.6 Tiến độ Gantt" }, href: "/planning/b6-gantt" },
     ]
   },
   {
-    title: { en: "Phase C - Summary", vi: "Phần C - Tổng hợp" },
+    title: { en: "Phase C - Summary", vi: "Phần C - Tổng hợp h/q" },
     items: [
-      { id: "c1", label: { en: "Strategic Direction", vi: "Định hướng Chiến lược" }, href: "/planning/c1-direction" },
-      { id: "c2", label: { en: "Executive Matrix", vi: "Ma trận Tổng hợp" }, href: "/planning/c2-matrix" },
+      { id: "c0", label: { en: "Overview Phase C", vi: "🚩 Tổng quan Phần C" }, href: "/planning/c0-overview" },
+      { id: "c1", label: { en: "C.1 Strategic Direction", vi: "C.1 Tuyên bố Định hướng" }, href: "/planning/c1-direction" },
+      { id: "c2", label: { en: "C.2 Portfolio History", vi: "C.2 Lịch sử Danh mục" }, href: "/planning/c2-history" },
+      { id: "c3", label: { en: "C.3 Issues Analysis", vi: "C.3 Phân tích Vấn đề" }, href: "/planning/c3-issues" },
+      { id: "c4", label: { en: "C.4 Exec Matrix", vi: "C.4 Dashboard Chiến lược" }, href: "/planning/c4-dashboard" },
     ]
   }
 ];

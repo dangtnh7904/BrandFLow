@@ -21,7 +21,7 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeou
 from datetime import datetime, timezone
 from typing import Any, Optional
 
-from agents_core import (
+from app.agents.planner.agents_core import (
     run_cmo_profiling,
     run_cmo_strategic_blueprint,
     run_customer_agent_feedback,
@@ -29,7 +29,7 @@ from agents_core import (
     run_cmo_tactical_campaign,
     run_cfo_tactical_feedback,
 )
-from math_engine import MathEngine
+from app.services.math_engine import MathEngine
 
 
 ORCHESTRATION_CONTRACT_VERSION = "week1-v1"

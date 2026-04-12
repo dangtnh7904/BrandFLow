@@ -12,7 +12,7 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from workflow_graph import run_plan_wizard_contract, run_week1_orchestration_contract
+from app.workflows.workflow_graph import run_plan_wizard_contract, run_week1_orchestration_contract
 DATASET_PATH = ROOT_DIR / "docs" / "plans" / "2026-04-09-quality-gate-dataset.json"
 REPORT_JSON_PATH = ROOT_DIR / "docs" / "plans" / "2026-04-09-go-no-go-report.json"
 REPORT_MD_PATH = ROOT_DIR / "docs" / "plans" / "2026-04-09-go-no-go-report.md"

@@ -1,6 +1,32 @@
 import json
 import os
-from typing import Optional
+from typing import Optional, List
+from pydantic import BaseModel, Field
+
+# =============================================================================
+# PYDANTIC SCHEMAS CHO GIAI ĐOẠN INTAKE (AGENT 0)
+# =============================================================================
+class ExecutiveBrandAudit(BaseModel):
+    company_status: str = Field(description="Đánh giá tổng quan về vị thế hiện tại của doanh nghiệp lấy từ tài liệu.")
+    market_opportunities: List[str] = Field(description="2-3 cơ hội lớn nhất trên thị trường.")
+    critical_weaknesses: List[str] = Field(description="1-2 Điểm mù hoặc rủi ro (dùng từ ngữ tinh tế, mang tính 'khu vực cần cải thiện' thay vì chê bai).")
+    trust_score: int = Field(description="Điểm sức mạnh thương hiệu (0-100) theo cảm quan từ dữ liệu.")
+
+class VisualBrandDNA(BaseModel):
+    primary_colors: List[str] = Field(description="2-3 mã màu HEX phù hợp nhất với tính cách ngành (VD: #FF0000).")
+    typography_style: str = Field(description="Gợi ý kiểu chữ (VD: Minimalist Serif, Bold Sans).")
+    visual_archetype: str = Field(description="Định hướng hình ảnh (VD: Tối giản, Năng động, Bí ẩn).")
+    moodboard_keywords: List[str] = Field(description="3-5 từ khóa thẩm mỹ (VD: Luxury, Fast, Trust).")
+
+class IntakeAnalysisResult(BaseModel):
+    executive_brand_audit: ExecutiveBrandAudit
+    visual_brand_dna: VisualBrandDNA
+    company_name: str = Field(description="Tên công ty / thương hiệu.")
+    industry: str = Field(description="Phân loại ngành nghề chung.")
+    target_audience: str = Field(description="Tệp khách hàng mục tiêu.")
+    core_usps: List[str] = Field(description="2-3 đặc điểm bán hàng độc nhất (USP).")
+    tone_of_voice: str = Field(description="Giọng văn thương hiệu.")
+
 
 
 def _resolve_groq_timeout_seconds() -> float:
@@ -118,43 +144,57 @@ def check_required_info(parsed_data: dict) -> dict:
 
 def extract_document_summary(raw_text: str) -> dict:
     """
-    Dùng Groq llama-3.3-70b để tóm tắt các thông tin cốt lõi từ tài liệu doanh nghiệp.
+    Dùng Agent 0 (Llama-3.3-70b) để Audit tài liệu doanh nghiệp.
     """
-    print(f"📄 [DOCUMENT] Đang phân tích tài liệu qua Groq...")
+    from langchain_groq import ChatGroq
     
-    prompt = f"""Bạn là AI phân tích tài liệu chuyên nghiệp. Hãy đọc tài liệu sau và trích xuất thông tin JSON:
-1. "company_name" (string)
-2. "industry" (string)
-3. "target_audience" (string)
-4. "core_usps" (list of strings)
-5. "tone_of_voice" (string)
-6. "key_products" (list of strings)
+    print(f"\n{'═' * 70}")
+    print(f"👑 [AGENT 0 — EXECUTIVE AUDITOR] Đang thẩm định dữ liệu doanh nghiệp...")
+    print(f"{'═' * 70}")
+    
+    prompt = f"""Bạn là Cố vấn Thương hiệu Cấp cao (Executive Auditor).
+Nhiệm vụ của bạn là đọc tài liệu nội bộ sau để Đánh giá Mức độ Trưởng thành của Doanh nghiệp.
 
-Đoạn tài liệu trích xuất:
+QUY TẮC QUAN TRỌNG:
+1. Ở phần 'critical_weaknesses', NGHIÊM CẤM dùng từ ngữ hạ thấp (như chém gió, yếu kém, thất bại). PHẢI dùng ngôn ngữ ngoại giao, tinh tế (VD: "Chưa tối ưu hóa độ phủ", "Còn dư địa để mở rộng").
+2. Dựa vào mô tả, hãy tự suy luận ra một bộ Visual Brand DNA (mã màu HEX, kiểu chữ) để làm định hướng thiết kế UI/UX sau này.
+
+Tài liệu:
 "{raw_text[:20000]}"
 """
     
     try:
-        client = _create_groq_client()
-        response = _chat_completion_with_timeout(
-            client,
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            response_format={"type": "json_object"},
-        )
-        return json.loads(response.choices[0].message.content)
+        api_key = os.getenv("GROQ_API_KEY")
+        # Sử dụng model mạnh để tư duy Audit
+        llm_orchestrator = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2, api_key=api_key, max_retries=2)
+        # Khóa Output bằng Pydantic Struct để không bao giờ lỗi JSON
+        structured_llm = llm_orchestrator.with_structured_output(IntakeAnalysisResult)
+        
+        result_obj = structured_llm.invoke(prompt)
+        print(f"   ✅ Agent 0 đã trích xuất DNA cho: {result_obj.company_name}")
+        
+        # Format trả về tương thích với Client
+        return result_obj.model_dump()
+        
     except Exception as e:
-        if _is_timeout_error(e):
-            raise TimeoutError(
-                f"Document extraction timeout sau {int(GROQ_TIMEOUT_SECONDS)} giay."
-            ) from e
-        print(f"🔴 [DOCUMENT] Lỗi trích xuất qua Groq: {e}")
+        print(f"🔴 [DOCUMENT AUDIT] Lỗi trích xuất qua Agent 0: {e}")
+        # Fallback an toàn nếu model sập
         return {
+            "executive_brand_audit": {
+                "company_status": "Dữ liệu đang được cập nhật...",
+                "market_opportunities": ["Đang phân tích"],
+                "critical_weaknesses": ["Cần tối ưu hóa quy trình"],
+                "trust_score": 50
+            },
+            "visual_brand_dna": {
+                "primary_colors": ["#10B981", "#0F172A"],
+                "typography_style": "Modern Sans",
+                "visual_archetype": "Chuyên nghiệp",
+                "moodboard_keywords": ["Trust", "Clean"]
+            },
             "company_name": "Không trích xuất được",
-            "industry": "Không rõ",
+            "industry": "General",
             "target_audience": "Không rõ",
             "core_usps": [],
-            "tone_of_voice": "Không rõ",
-            "key_products": []
+            "tone_of_voice": "Chưa xác định"
         }

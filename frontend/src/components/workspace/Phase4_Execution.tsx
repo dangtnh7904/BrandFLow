@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Bot, Send, Sparkles, ShieldCheck, RefreshCw, ArrowLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Bot, Send, Sparkles, ShieldCheck, RefreshCw, ArrowLeft, CheckCircle, CheckSquare, BrainCircuit } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ReactFlow, Background, Controls, MarkerType, useNodesState, useEdgesState } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { getRelevantRules, saveRule } from '@/mocks/mockKnowledgeBase';
+import { runExecutorAgent, runLearnerAgent } from '@/mocks/agentServices';
 
 const initialNodes = [
   { id: '1', position: { x: 250, y: 50 }, data: { label: 'Objective: B2B C-Level MQLs' }, type: 'input', style: { border: '2px solid #10b981', borderRadius: '12px', background: '#ecfdf5', color: '#047857', fontWeight: 'bold', padding: '12px 24px', width: 250, boxShadow: '0 4px 6px -1px rgba(16,185,129,0.1)' } },
@@ -25,17 +27,71 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCanvas, setShowCanvas] = useState(false);
+  
+  const [generatedOutput, setGeneratedOutput] = useState('');
+  const [feedbackMode, setFeedbackMode] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [clarifyingQuestion, setClarifyingQuestion] = useState<string | null>(null);
+  const [feedbackContext, setFeedbackContext] = useState<string>('');
+  const [isLearning, setIsLearning] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const handleSend = () => {
-    if (!prompt.trim()) return;
+  const handleSend = async () => {
+    if (!prompt.trim() || isGenerating) return;
     setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
+    setShowCanvas(false);
+    
+    try {
+      // 1. Fetch relevant rules (simulating Global knowledge retrieval)
+      const relevantRules = await getRelevantRules(prompt);
+      
+      // 2. Run mock executor
+      const output = await runExecutorAgent(prompt, relevantRules);
+      setGeneratedOutput(output);
       setShowCanvas(true);
-    }, 1500);
+    } catch(e) {
+      console.error(e);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSendFeedback = async () => {
+    if (!feedback.trim() || !generatedOutput) return;
+    
+    setIsLearning(true);
+    
+    try {
+      const fullFeedback = feedbackContext ? `${feedbackContext} DETAILS: ${feedback}` : feedback;
+      const distilledResult = await runLearnerAgent(generatedOutput, fullFeedback) as any;
+      
+      if (distilledResult.needs_clarification) {
+          setClarifyingQuestion(distilledResult.clarifying_question);
+          setFeedbackContext(fullFeedback);
+          setFeedback('');
+          return;
+      }
+      
+      await saveRule({
+        trigger_keywords: distilledResult.trigger_keywords,
+        distilled_rule: distilledResult.distilled_rule
+      });
+      
+      setFeedback('');
+      setClarifyingQuestion(null);
+      setFeedbackContext('');
+      setFeedbackMode(false);
+      
+      setShowSuccessToast(true);
+      setTimeout(() => setShowSuccessToast(false), 3000);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLearning(false);
+    }
   };
 
   return (
@@ -121,17 +177,121 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
               fitView
               attributionPosition="bottom-right"
             >
-              <Background color="#cbd5e1" gap={20} size={1} />
-              <Controls />
-            </ReactFlow>
+              {generatedOutput ? (
+                <div className="h-full flex flex-col bg-slate-50 relative">
+                  <div className="absolute top-4 left-4 right-4 z-10 flex gap-4">
+                    <div className="w-1/2 h-[300px] border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden text-sm">
+                      <ReactFlow 
+                        nodes={nodes} 
+                        edges={edges} 
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        fitView
+                        attributionPosition="bottom-right"
+                      >
+                        <Background color="#cbd5e1" gap={20} size={1} />
+                        <Controls />
+                      </ReactFlow>
+                    </div>
+                    <div className="w-1/2 flex flex-col bg-white border border-slate-200 rounded-xl shadow-sm text-sm p-4 overflow-auto">
+                        <div className="font-bold text-slate-900 mb-1">{language === 'vi' ? 'Bản nháp bài viết' : 'Draft'}</div>
+                        <div className="text-xs text-slate-500 font-medium mb-4">{language === 'vi' ? 'Mục tiêu: B2B C-Level' : 'Targeting: B2B C-Level'}</div>
+                        <div className="text-sm text-slate-700 leading-relaxed space-y-4 whitespace-pre-wrap font-mono flex-1">
+                          {generatedOutput}
+                        </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 mt-[320px] overflow-auto px-4 pb-4">
+                    <div className="px-6 py-4 bg-white rounded-xl border border-slate-200 flex justify-end space-x-3 shadow-sm mb-4">
+                      <button 
+                        onClick={() => setFeedbackMode(!feedbackMode)}
+                        className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50 transition-colors shadow-sm"
+                      >
+                        {language === 'vi' ? 'Sửa / Cải thiện' : 'Edit / Improve'}
+                      </button>
+                      <button className="px-4 py-2 rounded-lg text-xs font-semibold text-white gradient-ai-bg">{language === 'vi' ? 'Gửi duyệt tới Integration' : 'Publish to Integration'}</button>
+                    </div>
 
-            <div className="absolute top-6 right-6 flex items-center space-x-3 pointer-events-none">
-                <div className="bg-emerald-50 border border-emerald-200 px-4 py-3 rounded-xl flex items-center text-emerald-700 text-xs font-bold uppercase tracking-wider shadow-md pointer-events-auto">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
-                  {language === 'vi' ? 'Node Graph Đồng bộ Thực thời' : 'Live State Sync'}
+                    <AnimatePresence>
+                      {feedbackMode && (
+                        <motion.div 
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="border border-blue-200 rounded-xl bg-blue-50/50 p-6 shadow-sm mb-4"
+                        >
+                          <div className="flex items-center gap-2 text-sm font-bold text-blue-900 mb-3">
+                            <BrainCircuit className="w-4 h-4 text-blue-600" />  
+                            {language === 'vi' ? 'Dạy AI viết tốt hơn (Global DB)' : 'Teach AI to write better (Global DB)'}
+                          </div>
+                          
+                          {clarifyingQuestion && (
+                            <div className="bg-amber-50 border-l-4 border-amber-500 p-3 mb-4 rounded text-xs text-amber-800 font-medium">
+                              <span className="font-bold mr-2 text-amber-900">Agent:</span> 
+                              {clarifyingQuestion}
+                            </div>
+                          )}
+                          
+                          <textarea 
+                            className="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none bg-white shadow-sm"
+                            rows={3}
+                            placeholder={clarifyingQuestion ? "Giải thích kỹ hơn..." : "Ví dụ: Giọng điệu còn hơi cứng, bỏ chữ 'đột phá' đi."}
+                            value={feedback}
+                            onChange={(e) => setFeedback(e.target.value)}
+                            disabled={isLearning}
+                          />
+                          <div className="flex justify-end mt-3">
+                            <button 
+                              onClick={handleSendFeedback}
+                              disabled={!feedback.trim() || isLearning}
+                              className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-2 shadow-sm"
+                            >
+                              {isLearning ? (language === 'vi' ? "Đang đúc kết..." : "Distilling...") : (language === 'vi' ? "Gửi hướng dẫn" : "Send Feedback")}
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
-            </div>
-          </motion.div>
+              ) : (
+                <div className="w-full h-full relative">
+                  <ReactFlow 
+                    nodes={nodes} 
+                    edges={edges} 
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    fitView
+                    attributionPosition="bottom-right"
+                  >
+                    <Background color="#cbd5e1" gap={20} size={1} />
+                    <Controls />
+                  </ReactFlow>
+                  <div className="absolute top-6 right-6 flex items-center space-x-3 pointer-events-none">
+                      <div className="bg-emerald-50 border border-emerald-200 px-4 py-3 rounded-xl flex items-center text-emerald-700 text-xs font-bold uppercase tracking-wider shadow-md pointer-events-auto">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+                        {language === 'vi' ? 'Node Graph Đồng bộ Thực thời' : 'Live State Sync'}
+                      </div>
+                  </div>
+                </div>
+              )}
+            
+            {/* Success Toast */}
+            <AnimatePresence>
+              {showSuccessToast && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="fixed bottom-6 right-6 bg-emerald-100 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-lg text-sm font-medium flex items-center shadow-md z-50"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2 text-emerald-600" />
+                  Luật mới đã được áp dụng vào Vector DB Chung!
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         ) : (
           <div className="h-full flex items-center justify-center flex-col opacity-50 relative z-10">
              <Bot className="w-16 h-16 text-slate-300 mb-4" />

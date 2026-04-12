@@ -18,3 +18,4 @@ langchain-google-genai
 langchain-groq
 pandas
 openpyxl
+duckduckgo-search

@@ -32,6 +32,8 @@ from app.workflows.workflow_graph import (
     run_week1_orchestration_contract,
 )
 from app.core.access_audit import VisitorAuditStore
+from app.core.database import init_db as init_form_db
+from app.api.form_routes import router as form_router
 from app.services.document_processor import DocumentIngestor
 from pydantic import BaseModel
 import os
@@ -90,8 +92,15 @@ AUDIT_ADMIN_TOKEN = os.environ.get("BRANDFLOW_AUDIT_ADMIN_TOKEN", "").strip()
 
 @app.on_event("startup")
 async def app_startup() -> None:
-    """Initialize local audit DB for visitor proof."""
+    """Initialize databases on startup."""
     VISITOR_AUDIT_STORE.init_db()
+    # Tạo bảng Users/Projects/FormData nếu chưa có
+    init_form_db()
+    print("✅ [DB] Form database initialized.")
+
+
+# ── Đăng ký Form Data CRUD Router ─────────────────────────────────
+app.include_router(form_router)
 
 
 @app.middleware("http")

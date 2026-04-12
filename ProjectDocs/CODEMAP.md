@@ -41,3 +41,34 @@ This map tracks the organization of the Next.js B2B Marketing Planning interface
 ## Backend Integration
 - `api/agent/route.ts`: Maps to external LLM providers (Groq `llama-3.1-8b-instant` / OpenAI). Serves as the AI brain for the `MascotChatbot`.
 - `app/agents/planner/agents_core.py`: Python backend logic for advanced generative flows (LangChain/Groq).
+
+## Database Layer (NEW)
+### Core (`app/core/`)
+- `database.py`: SQLAlchemy engine + session factory. SQLite (dev) → PostgreSQL (prod) via `DATABASE_URL` env var. WAL mode, connection pooling, FastAPI dependency.
+
+### Models (`app/models/`)
+- `models.py`: ORM models — `User` → `Project` → `FormData` hierarchy. UUID-based IDs, JSON column for flexible form data, version field for optimistic concurrency, multi-tenant ready.
+
+### Schemas (`app/schemas/`)
+- `form_schemas.py`: Pydantic request/response schemas for Form CRUD API (UserCreate/Out, ProjectCreate/Update/Out, FormDataSave/Out, BulkSave, AllFormsOut).
+
+### Services (`app/services/`)
+- `form_crud.py`: CRUD service layer — tenant-isolated queries (user_id filter), optimistic locking, bulk save. Functions: `get_or_create_user`, `create/get/list/update/delete_project`, `save/get/get_all/bulk_save/delete_form`.
+
+### API Routes (`app/api/`)
+- `form_routes.py`: FastAPI router `prefix=/api/v1/forms`. Endpoints:
+  - `POST /users` — Create/upsert user
+  - `GET /users/me` — Current user info
+  - `POST /projects` — Create project
+  - `GET /projects` — List user projects
+  - `GET /projects/{id}` — Project detail + filled forms progress
+  - `PUT /projects/{id}` — Update project
+  - `DELETE /projects/{id}` — Delete project + all form data
+  - `PUT /projects/{id}/forms/{form_key}` — Save/update form (upsert)
+  - `GET /projects/{id}/forms/{form_key}` — Load form data
+  - `GET /projects/{id}/forms` — Load all forms
+  - `POST /projects/{id}/forms/bulk` — Batch save multiple forms
+  - `DELETE /projects/{id}/forms/{form_key}` — Delete form data
+
+### Database File
+- `brandflow.db`: SQLite dev database (auto-created, gitignored). Switch to PostgreSQL by setting `DATABASE_URL` in `.env`.

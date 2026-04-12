@@ -163,3 +163,49 @@ class CFOTacticalFeedback(BaseModel):
     contingency_percent: float
     budget_allocations: list[dict]
 
+# ============================================================================
+# NEW B2B WORKFLOW SCHEMAS (10 STEPS)
+# ============================================================================
+
+class MissionStatement(BaseModel):
+    role_of_business: str = Field(..., description="Vai trò của doanh nghiệp")
+    business_definition_benefits: str = Field(..., description="Định nghĩa kinh doanh dựa trên lợi ích cốt lõi")
+    brand_purpose: str = Field(..., description="Mục đích tối thượng của thương hiệu")
+    core_competency: str = Field(..., description="Năng lực cốt lõi khác biệt")
+    red_lines: list[str] = Field(..., description="Những vùng cấm / lằn ranh đỏ tuyệt đối không bao giờ làm")
+
+class CorporateObjective(BaseModel):
+    financial_goals: list[str] = Field(..., description="Mục tiêu tài chính (Doanh số, Lợi nhuận, ROI)")
+    non_financial_goals: list[str] = Field(..., description="Mục tiêu phi tài chính (Phát triển bền vững, R&D, Xã hội)")
+
+class GoalSettingPhase1(BaseModel):
+    mission: MissionStatement
+    objectives: CorporateObjective
+
+class NeedsBasedAudience(BaseModel):
+    segment_name: str
+    core_pain_points: list[str] = Field(..., description="Nỗi đau cốt lõi")
+    decision_drivers: list[str] = Field(..., description="Động lực ra quyết định chính")
+    quantified_value_proposition: str = Field(..., description="Tuyên bố giá trị: Benefit - Sacrifice")
+
+class CSFFactor(BaseModel):
+    factor_name: str = Field(..., description="Tên Yếu tố thành công then chốt")
+    weight_percentage: float = Field(..., description="Trọng số (%) mức độ quan trọng")
+    score_1_to_10: int = Field(..., description="Điểm thực lực của doanh nghiệp (1-10)")
+
+class DownsideRiskAssessment(BaseModel):
+    risk_scenario: str = Field(..., description="Kịch bản rủi ro nếu giả định thất bại")
+    trigger_point: str = Field(..., description="Điểm kích hoạt (Tín hiệu số liệu báo động)")
+    contingency_action: str = Field(..., description="Kế hoạch B để bù đắp")
+
+class MasterPlanPhase4Output(BaseModel):
+    goal_setting: GoalSettingPhase1
+    target_segments: list[NeedsBasedAudience]
+    csf_analysis: list[CSFFactor]
+    gap_analysis_result: str = Field(default="")
+    ansoff_strategy: str = Field(default="")
+    phased_execution: list[dict] = Field(description="List of PhasedExecution dictionaries")
+    activity_and_financial_breakdown: list[dict] = Field(description="List of ActivityAndFinancialBreakdown dictionaries")
+    risk_assessment: list[DownsideRiskAssessment]
+
+

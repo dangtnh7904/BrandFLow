@@ -22,11 +22,14 @@ from datetime import datetime, timezone
 from typing import Any, Optional
 
 from app.agents.planner.agents_core import (
-    run_master_planner,
-    run_refine_planner,
-    run_cfo_commentary,
-    run_persona_validator,
+    run_cmo_phase1_goal_setting,
+    run_cmo_phase2_situation_audit,
+    run_cmo_phase3_strategy_formulation,
+    run_cmo_phase4_tactical_allocator,
     python_interceptor,
+    run_cfo_defense_review,
+    run_persona_validator,
+    run_refine_planner
 )
 from app.services.math_engine import MathEngine
 
@@ -1032,46 +1035,86 @@ def run_pipeline(
 
     agent_logs = []
     
-    # ── GIAI ĐOẠN 1: MASTER PLAN ──
-    raw_plan = run_master_planner(
+    # ── GIAI ĐOẠN 1: GOAL SETTING ──
+    phase1_data = run_cmo_phase1_goal_setting(
         goal=goal,
         industry=industry,
-        budget=budget,
-        target_audience=target_audience,
-        constraints=constraints
+        budget=budget
+    )
+    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Hoàn thành Giai đoạn 1: Sứ mệnh & Mục tiêu doanh nghiệp."})
+
+    # ── GIAI ĐOẠN 2: SITUATION AUDIT ──
+    phase2_data = run_cmo_phase2_situation_audit(
+        phase1_data=phase1_data,
+        target_audience=target_audience
     )
     
-    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Tạo kế hoạch tổng thể."})
+    # ── PYTHON MATH ENGINE ──
+    math_engine = MathEngine()
+    swot_math_result = math_engine.calculate_swot_csfs(phase2_data.get("csf_analysis", []))
+    
+    # Giả định doanh thu mục tiêu là 2x budget, baseline là 0.5x budget cho Demo
+    target_rev = budget * 2
+    baseline_rev = int(budget * 0.5)
+    gap_result = math_engine.calculate_market_gap(target_revenue=target_rev, baseline_revenue=baseline_rev)
+    
+    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": f"Hoàn thành Giai đoạn 2. Điểm cạnh tranh: {swot_math_result['total_relative_strength']}/10."})
 
-    # ── GIAI ĐOẠN 2: PYTHON INTERCEPTOR ──
+    # ── GIAI ĐOẠN 3: STRATEGY FORMULATION ──
+    phase3_data = run_cmo_phase3_strategy_formulation(
+        gap_analysis=gap_result,
+        segments_data=phase2_data
+    )
+    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Hoàn thành Giai đoạn 3: Chiến lược Ansoff."})
+
+    # ── GIAI ĐOẠN 4: TACTICAL ALLOCATOR ──
+    raw_plan = run_cmo_phase4_tactical_allocator(
+        strategy_data=phase3_data,
+        budget=budget
+    )
+    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Hoàn thành Giai đoạn 4: Lập Bảng tiến độ & Ngân sách."})
+
+    # ── GIAI ĐOẠN 4.5: PYTHON INTERCEPTOR ──
     interceptor_result = python_interceptor(raw_plan, budget)
-    final_plan = interceptor_result["final_plan"]
+    final_plan_tactics = interceptor_result["final_activities"]
     overflow_amount = interceptor_result["overflow_amount"]
     cut_items = interceptor_result["cut_items"]
     actual_cost = interceptor_result["final_total"]
     
-    agent_logs.append({"agent": "SYSTEM", "role": "Hệ thống Kiểm toán", "message": f"Đã rà soát và ép giá/cắt {len(cut_items)} hạng mục. Tổng ngân sách sau điều chỉnh: {actual_cost:,} VND."})
+    agent_logs.append({"agent": "SYSTEM", "role": "Hệ thống Kiểm toán", "message": f"Đã ép giá {len(cut_items)} hạng mục. Tổng ngân sách sau điều chỉnh: {actual_cost:,} VND."})
 
-    # ── GIAI ĐOẠN 3: MANDATORY DEBATE (Parallel) ──
+    # ── GIAI ĐOẠN 5: CROSS-FUNCTIONAL REVIEW ──
     with ThreadPoolExecutor(max_workers=2) as executor:
         cfo_future = executor.submit(
-            run_cfo_commentary, overflow_amount, cut_items, budget
+            run_cfo_defense_review, interceptor_result, budget
         )
         persona_future = executor.submit(
-            run_persona_validator, final_plan, target_audience
+            run_persona_validator, json.dumps(final_plan_tactics, ensure_ascii=False), target_audience
         )
         try:
-            cfo_comment = cfo_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
+            cfo_res = cfo_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
+            cfo_comment = cfo_res.get("cfo_comment", "")
+            risk_assessment = cfo_res.get("risk_assessment", [])
             persona_comment = persona_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
         except FuturesTimeoutError as exc:
             cfo_future.cancel()
             persona_future.cancel()
-            raise TimeoutError(
-                f"CFO/PERSONA timeout sau {PARALLEL_AGENT_TIMEOUT_SECONDS} giay."
-            ) from exc
+            raise TimeoutError(f"CFO/PERSONA timeout sau {PARALLEL_AGENT_TIMEOUT_SECONDS} giay.") from exc
 
     agent_logs.append({"agent": "CFO", "role": "Giám đốc Tài chính", "message": cfo_comment})
     agent_logs.append({"agent": "PERSONA", "role": "Đại diện Khách hàng", "message": persona_comment})
+
+    # Hợp nhất data thành MasterPlanPhase4Output format
+    final_plan = {
+        "goal_setting": phase1_data,
+        "target_segments": phase2_data.get("target_segments", []),
+        "csf_analysis": phase2_data.get("csf_analysis", []),
+        "gap_analysis_result": json.dumps(gap_result, ensure_ascii=False),
+        "ansoff_strategy": phase3_data.get("ansoff_strategy", ""),
+        "phased_execution": final_plan_tactics.get("phased_execution", []),
+        "activity_and_financial_breakdown": final_plan_tactics.get("activity_and_financial_breakdown", []),
+        "risk_assessment": risk_assessment
+    }
 
     print(f"\n{'═' * 70}")
     print(f"✅ [PIPELINE COMPLETE] Kết quả cuối cùng:")
@@ -1109,22 +1152,27 @@ def run_refinement_pipeline(
 
     # ── STEP 2: Python Interceptor (Kế toán Python) ──
     interceptor_result = python_interceptor(raw_plan, budget)
-    final_plan = interceptor_result["final_plan"]
+    final_plan_tactics = interceptor_result["final_activities"]
     overflow_amount = interceptor_result["overflow_amount"]
     cut_items = interceptor_result["cut_items"]
+    actual_cost = interceptor_result["final_total"]
 
     # ── STEP 3: Agent 2 & Agent 3 chạy song song ──
-    target_audience = final_plan.get("target_audience_and_brand_voice", {}).get("target_audience", "")
+    # target_audience có thể nằm ở phase 1 hoặc 2. Ở đây extract nếu có.
+    target_audience = "Khách hàng B2B"
+    if "target_segments" in raw_plan and len(raw_plan["target_segments"]) > 0:
+        target_audience = raw_plan["target_segments"][0].get("segment_name", "Khách hàng")
     
     with ThreadPoolExecutor(max_workers=2) as executor:
         cfo_future = executor.submit(
-            run_cfo_commentary, overflow_amount, cut_items, budget
+            run_cfo_defense_review, interceptor_result, budget
         )
         persona_future = executor.submit(
-            run_persona_validator, final_plan, target_audience
+            run_persona_validator, json.dumps(final_plan_tactics, ensure_ascii=False), target_audience
         )
         try:
-            cfo_comment = cfo_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
+            cfo_res = cfo_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
+            cfo_comment = cfo_res.get("cfo_comment", "")
             persona_comment = persona_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
         except FuturesTimeoutError as exc:
             cfo_future.cancel()
@@ -1146,10 +1194,13 @@ def run_refinement_pipeline(
     print(f"   📊 Tổng chi phí: {interceptor_result['final_total']:,} VND")
     print(f"{'═' * 70}")
 
+    # Cập nhật mảng tactics trong raw_plan sau khi ep giá
+    raw_plan["activity_and_financial_breakdown"] = final_plan_tactics.get("activity_and_financial_breakdown", [])
+
     return {
-        "final_plan": previous_plan,
-        "agent_logs": [],
-        "actual_total_cost": budget,
+        "final_plan": raw_plan,
+        "agent_logs": agent_logs,
+        "actual_total_cost": interceptor_result['final_total'],
     }
 
 if __name__ == "__main__":

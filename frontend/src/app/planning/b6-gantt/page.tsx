@@ -38,8 +38,8 @@ export default function PageB6Gantt() {
           Biểu đồ Gantt theo tháng/tuần đánh dấu thời gian bắt đầu và kết thúc của các chiến dịch lớn.
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 min-h-[300px] flex items-center justify-center">
-           <span className="text-slate-400">--- Interactive Gantt Chart Area ---</span>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 overflow-x-auto">
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/b5-pnl" prevLabel="Về B.5" nextLink="/planning/c0-overview" nextLabel="Hoàn thành Phần B! 👉 Sang Phần C" />
       </div>

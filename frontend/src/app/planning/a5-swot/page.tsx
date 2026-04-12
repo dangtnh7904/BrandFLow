@@ -16,7 +16,7 @@ export default function PageA5Swot() {
     >
       <div className="space-y-6">
         <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-md">
-          <p className="text-sm text-blue-800">
+          <p className="text-sm text-blue-900 font-medium">
             <strong>{t('a5.alert_title' as TranslationKey) as string || "Hướng dẫn:"}</strong> {t('a5.alert_desc' as TranslationKey) as string || "Chỉ nhập các Yếu tố Thành công Cốt lõi (KSF) tác động trực tiếp đến quyết định mua hàng. Tổng trọng số phải luôn khóa ở mức 100%. Điểm số được giới hạn khắt khe từ 1 đến 10."}
           </p>
         </div>

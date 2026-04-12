@@ -13,7 +13,7 @@ function cn(...inputs: ClassValue[]) {
 const INDUSTRIES = [
   { id: 'fb', key: 'ind_fb', icon: Coffee, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200' },
   { id: 'tech', key: 'ind_tech', icon: Laptop, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
-  { id: 'edu', key: 'ind_edu', icon: BookOpen, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+  { id: 'edu', key: 'ind_edu', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
   { id: 'cosmetics', key: 'ind_cosmetics', icon: Sparkles, color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-200' },
   { id: 'other', key: 'ind_other', icon: LayoutGrid, color: 'text-slate-600', bg: 'bg-slate-50', border: 'border-slate-200' },
 ];

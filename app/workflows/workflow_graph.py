@@ -1021,31 +1021,39 @@ def run_pipeline(
     budget: int,
     csfs: list = None,
     resources: str = "",
+    target_audience: str = "Tệp khách hàng chung",
+    constraints: str = "Không có",
 ) -> dict:
     """
-    Pipeline 4 Giai đoạn (Single Source of Truth & Mandatory Debate).
+    Pipeline tuyến tính: MasterPlanner → Python Interceptor → CFO/Persona Agents.
     """
     print(f"\n{'═' * 70}")
-    print(f"🚀 [PIPELINE START] 4-Stage Executive Flow")
+    print(f"🚀 [PIPELINE START] Deterministic Architecture")
     print(f"{'═' * 70}")
 
-    csfs = csfs or []
     agent_logs = []
     
-    # ── GIAI ĐOẠN 1: PROFILING ──
-    profile = run_cmo_profiling(industry, goal, csfs, resources)
-    brand_dna = profile.get("brand_dna", "")
-    usp = profile.get("usp", "")
-    persona_prompt = profile.get("target_persona_prompt", "")
+    # ── GIAI ĐOẠN 1: MASTER PLAN ──
+    raw_plan = run_master_planner(
+        goal=goal,
+        industry=industry,
+        budget=budget,
+        target_audience=target_audience,
+        constraints=constraints
+    )
     
-    agent_logs.append({"agent": "CMO", "role": "Giai đoạn 1", "message": f"Tạo Profile. DNA: {brand_dna[:50]}..."})
+    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Tạo kế hoạch tổng thể."})
 
-    # ── GIAI ĐOẠN 2: STRATEGIC DEBATE ──
-    blueprint = run_cmo_strategic_blueprint(brand_dna, usp, goal)
-    core_message = blueprint.get("core_message", "")
-    media_mix = blueprint.get("media_mix", [])
+    # ── GIAI ĐOẠN 2: PYTHON INTERCEPTOR ──
+    interceptor_result = python_interceptor(raw_plan, budget)
+    final_plan = interceptor_result["final_plan"]
+    overflow_amount = interceptor_result["overflow_amount"]
+    cut_items = interceptor_result["cut_items"]
+    actual_cost = interceptor_result["final_total"]
     
-    # Mandatory Debate (Parallel)
+    agent_logs.append({"agent": "SYSTEM", "role": "Hệ thống Kiểm toán", "message": f"Đã rà soát và ép giá/cắt {len(cut_items)} hạng mục. Tổng ngân sách sau điều chỉnh: {actual_cost:,} VND."})
+
+    # ── GIAI ĐOẠN 3: MANDATORY DEBATE (Parallel) ──
     with ThreadPoolExecutor(max_workers=2) as executor:
         cfo_future = executor.submit(
             run_cfo_commentary, overflow_amount, cut_items, budget
@@ -1063,18 +1071,13 @@ def run_pipeline(
                 f"CFO/PERSONA timeout sau {PARALLEL_AGENT_TIMEOUT_SECONDS} giay."
             ) from exc
 
-    # ── KẾT QUẢ CUỐI CÙNG ──
-    agent_logs = [
-        {"agent": "CMO", "role": "Giám đốc Marketing", "message": f"Tôi đã lập xong kế hoạch '{final_plan.get('executive_summary', {}).get('campaign_name', 'N/A')}'. Tổng chi phí ban đầu là {interceptor_result['raw_total']:,} VND."},
-        {"agent": "SYSTEM", "role": "Hệ thống Kiểm toán", "message": f"Đã rà soát và cắt giảm {len(cut_items)} hạng mục có thể bỏ. Tổng ngân sách sau điều chỉnh: {interceptor_result['final_total']:,} VND."},
-        {"agent": "CFO", "role": "Giám đốc Tài chính", "message": cfo_comment},
-        {"agent": "PERSONA", "role": "Đại diện Khách hàng", "message": persona_comment},
-    ]
+    agent_logs.append({"agent": "CFO", "role": "Giám đốc Tài chính", "message": cfo_comment})
+    agent_logs.append({"agent": "PERSONA", "role": "Đại diện Khách hàng", "message": persona_comment})
 
     print(f"\n{'═' * 70}")
     print(f"✅ [PIPELINE COMPLETE] Kết quả cuối cùng:")
-    print(f"   📊 Tổng chi phí cuối: {interceptor_result['final_total']:,} VND")
-    print(f"   ✂️ Hạng mục bị cắt : {len(cut_items)}")
+    print(f"   📊 Tổng chi phí: {actual_cost:,} VND")
+    print(f"   ✂️ Hạng mục thao tác: {len(cut_items)}")
     for log in agent_logs:
         print(f"   [{log['agent']}] {log['message']}")
     print(f"{'═' * 70}")

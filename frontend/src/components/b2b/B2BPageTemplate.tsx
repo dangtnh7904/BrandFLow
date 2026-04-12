@@ -24,7 +24,7 @@ export default function B2BPageTemplate({ title, description, children }: PageTe
             <Save className="w-4 h-4 mr-2" />
             {t('b2b_tools.save_draft' as any)}
           </button>
-          <button className="flex items-center px-4 py-2 border border-transparent rounded-md bg-emerald-600 text-sm font-bold text-white hover:bg-emerald-700 transition-colors shadow-sm">
+          <button className="flex items-center px-4 py-2 border border-transparent rounded-md gradient-ai-bg text-sm font-bold text-white shadow-sm">
             <Download className="w-4 h-4 mr-2" />
             {t('b2b_tools.export_pdf' as any)}
           </button>

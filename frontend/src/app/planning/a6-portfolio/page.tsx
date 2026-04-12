@@ -13,8 +13,8 @@ export default function PageA6Portfolio() {
       description={t('a6.desc' as any)}
     >
       <div className="space-y-6">
-        <div className="bg-orange-500/10 border-l-4 border-orange-500 p-4 rounded-r-md">
-          <p className="text-sm text-orange-800">
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-md">
+          <p className="text-sm text-blue-900 font-medium">
             <strong>{t('a6.strategy' as any)}</strong> {t('a6.strategy_desc' as any)}
           </p>
         </div>

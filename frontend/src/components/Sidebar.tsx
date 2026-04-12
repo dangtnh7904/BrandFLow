@@ -15,7 +15,8 @@ import {
   Sparkles,
   Network,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  PenSquare
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -53,6 +54,7 @@ const B2B_SECTIONS = [
 
 const MENU_ITEMS = [
   { id: 'dashboard', langKey: 'sidebar.dashboard', icon: LayoutDashboard, href: '/dashboard', group: 'main' },
+  { id: 'daily-content', langKey: 'sidebar.daily_content', icon: PenSquare, href: '/daily-content', group: 'main' },
   { id: 'workspace', langKey: 'sidebar.workspace', icon: MessageSquare, href: '/workspace', group: 'main' },
   { id: 'b2b', langKey: 'b2b.title', icon: Briefcase, href: '/planning', group: 'main' },
   { id: 'assets', langKey: 'sidebar.assets', icon: FolderGit2, href: '/assets', group: 'system' },
@@ -101,12 +103,12 @@ export default function Sidebar() {
                           : "text-linear-text-muted hover:text-slate-800 hover:bg-slate-50"
                       )}
                     >
-                      <item.icon className={cn("w-5 h-5 shrink-0", active ? "text-emerald-600" : "text-linear-text-muted", !isCollapsed && "w-4 h-4 mr-3")} />
+                      <item.icon className={cn("w-5 h-5 shrink-0", active ? "text-blue-600" : "text-linear-text-muted", !isCollapsed && "w-4 h-4 mr-3")} />
                       {!isCollapsed && <span className="whitespace-nowrap">{t(item.langKey as TranslationKey)}</span>}
                       {active && !isCollapsed && (
                         <motion.div 
                           layoutId="active-indicator"
-                          className="absolute left-0 w-1 h-5 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-r-full"
+                          className="absolute left-0 w-1 h-5 bg-gradient-to-b from-blue-500 to-cyan-500 rounded-r-full"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ duration: 0.2 }}
@@ -128,7 +130,7 @@ export default function Sidebar() {
                                   <div className={cn(
                                      "text-xs py-1.5 px-3 rounded-md transition-colors truncate mb-1",
                                      pathname === sub.href 
-                                        ? "bg-emerald-50 text-emerald-700 font-semibold" 
+                                        ? "bg-blue-50 text-blue-700 font-semibold" 
                                         : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
                                   )}>
                                      {sub.label[language] as string}

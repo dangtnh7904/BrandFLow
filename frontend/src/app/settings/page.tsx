@@ -17,7 +17,8 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto p-8 max-w-4xl mx-auto w-full">
+    <div className="w-full h-full overflow-y-auto">
+      <div className="flex flex-col p-8 max-w-4xl mx-auto w-full min-h-full">
       <div className="mb-8 border-b border-slate-200 pb-6">
         <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center">
           <Settings className="w-6 h-6 mr-3 text-slate-500" />
@@ -83,7 +84,7 @@ export default function SettingsPage() {
                      <h4 className="text-lg font-bold text-slate-900 mb-1">Gói Tối ưu (Pro)</h4>
                      <p className="text-sm text-cyan-600 font-bold">$99.00 / tháng</p>
                   </div>
-                  <span className="px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-700">Hoạt động</span>
+                  <span className="px-3 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-bold text-blue-700">Hoạt động</span>
                </div>
 
                <div>
@@ -105,11 +106,12 @@ export default function SettingsPage() {
          <div className="pt-4 flex justify-end">
             <button 
                onClick={handleSave}
-               className={`px-8 py-3 rounded-xl font-bold transition-all shadow-md flex items-center border ${isSaved ? 'bg-emerald-500 border-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-slate-900 border-slate-900 text-white hover:bg-slate-800 hover:scale-[1.02]'}`}
+               className={`px-8 py-3 rounded-xl font-bold transition-all shadow-md flex items-center border ${isSaved ? 'bg-blue-500 border-blue-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-slate-900 border-slate-900 text-white hover:bg-slate-800 hover:scale-[1.02]'}`}
             >
                {isSaved ? <><CheckCircle2 className="w-4 h-4 mr-2" /> {t('common.save')}</> : t('settings.save_profile')}
             </button>
          </div>
+      </div>
       </div>
     </div>
   );

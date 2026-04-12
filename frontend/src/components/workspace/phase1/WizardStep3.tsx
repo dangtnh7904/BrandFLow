@@ -116,9 +116,9 @@ export default function WizardStep3() {
       <div className="pt-8 border-t border-slate-200">
         <div className="flex justify-between items-end mb-6">
            <label className="text-lg font-bold text-slate-800 flex items-center">
-              <BarChart3 className="w-5 h-5 mr-2 text-emerald-600" /> {t('wizard.step3_q3')}
+              <BarChart3 className="w-5 h-5 mr-2 text-blue-600" /> {t('wizard.step3_q3')}
            </label>
-           <span className="text-2xl font-bold text-emerald-600 font-mono tracking-tight">{formatCurrency(revenue)}</span>
+           <span className="text-2xl font-bold text-blue-600 font-mono tracking-tight">{formatCurrency(revenue)}</span>
         </div>
         
         <div className="relative pt-4 pb-8 mb-6">
@@ -129,7 +129,7 @@ export default function WizardStep3() {
              step="1000"
              value={revenue} 
              onChange={(e) => setRevenue(Number(e.target.value))}
-             className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+             className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
            />
            <div className="flex justify-between items-center text-xs text-slate-500 mt-4">
               <span>$1k</span>

@@ -15,7 +15,7 @@ const ARCHETYPES = [
   { id: 'caregiver', title: { en: 'The Caregiver', vi: 'Người Chăm sóc' }, desc: { en: 'Nurturing, protecting, and putting customers first.', vi: 'Nuôi dưỡng, bảo vệ và đặt khách hàng lên hàng đầu.' }, icon: Heart, color: 'text-pink-500' },
   { id: 'hero', title: { en: 'The Hero', vi: 'Người Hùng' }, desc: { en: 'Overcoming challenges with courage and mastery.', vi: 'Vượt qua thử thách bằng lòng dũng cảm và bản lĩnh.' }, icon: Shield, color: 'text-blue-600' },
   { id: 'magician', title: { en: 'The Magician', vi: 'Phù thủy' }, desc: { en: 'Transforming situations with visionary power.', vi: 'Thay đổi cục diện bằng sức mạnh tầm nhìn.' }, icon: Zap, color: 'text-purple-500' },
-  { id: 'sage', title: { en: 'The Sage', vi: 'Cố vấn triết gia' }, desc: { en: 'Seeking truth through wisdom and analytics.', vi: 'Tìm kiếm chân lý qua trí tuệ và phân tích.' }, icon: Search, color: 'text-emerald-600' },
+  { id: 'sage', title: { en: 'The Sage', vi: 'Cố vấn triết gia' }, desc: { en: 'Seeking truth through wisdom and analytics.', vi: 'Tìm kiếm chân lý qua trí tuệ và phân tích.' }, icon: Search, color: 'text-blue-600' },
   { id: 'explorer', title: { en: 'The Explorer', vi: 'Nhà Thám hiểm' }, desc: { en: 'Discovering new frontiers and freedom.', vi: 'Khám phá những chân trời và tự do mới.' }, icon: Globe, color: 'text-orange-500' },
 ];
 
@@ -53,14 +53,14 @@ export default function WizardStep2() {
                  className={cn(
                    "relative p-4 rounded-xl cursor-pointer transition-all duration-200 border",
                    isSelected 
-                     ? "bg-emerald-50 border-emerald-400 shadow-sm scale-[1.02]" 
+                     ? "bg-blue-50 border-blue-400 shadow-sm scale-[1.02]" 
                      : "bg-white border-slate-200 hover:bg-slate-50"
                  )}
                >
                  <arch.icon className={cn("w-6 h-6 mb-3", arch.color)} />
                  <h3 className="text-slate-900 font-bold mb-1">{arch.title[language] as string}</h3>
                  <p className="text-xs text-slate-500">{arch.desc[language] as string}</p>
-                 {isSelected && <CheckCircle2 className="absolute top-4 right-4 w-5 h-5 text-emerald-600" />}
+                 {isSelected && <CheckCircle2 className="absolute top-4 right-4 w-5 h-5 text-blue-600" />}
                </div>
              )
            })}
@@ -69,14 +69,14 @@ export default function WizardStep2() {
 
       <div className="pt-6 border-t border-slate-200">
         <label className="text-lg font-bold text-slate-800 flex items-center mb-4">
-           <MessageSquareText className="w-5 h-5 mr-2 text-emerald-600" /> {t('wizard.step2_vision')}
+           <MessageSquareText className="w-5 h-5 mr-2 text-blue-600" /> {t('wizard.step2_vision')}
         </label>
         <textarea
           rows={5}
           value={visionText}
           onChange={(e) => setVisionText(e.target.value)}
           placeholder={t('wizard.step2_vision_ph')}
-          className="w-full px-4 py-3 bg-white text-slate-900 border border-slate-300 rounded-xl shadow-sm focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-400"
+          className="w-full px-4 py-3 bg-white text-slate-900 border border-slate-300 rounded-xl shadow-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-400"
         />
       </div>
     </div>

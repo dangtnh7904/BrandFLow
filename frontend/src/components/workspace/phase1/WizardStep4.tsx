@@ -94,7 +94,7 @@ export default function WizardStep4() {
          <div className="w-48 h-48 rounded-full border-8 border-slate-100 relative flex items-center justify-center shadow-lg overflow-hidden shrink-0 bg-white">
              <div className="text-center z-10 bg-white/90 p-4 rounded-full backdrop-blur-sm border border-slate-200 shadow-sm">
                 <span className="block text-3xl font-black text-slate-800">{totalPoints}</span>
-                <span className="text-[10px] uppercase tracking-widest text-emerald-600 font-bold">{t('wizard.step4_valid')}</span>
+                <span className="text-[10px] uppercase tracking-widest text-blue-600 font-bold">{t('wizard.step4_valid')}</span>
              </div>
              
              {/* Simple CSS conic gradient to represent the pie */}
@@ -145,9 +145,9 @@ export default function WizardStep4() {
             <div>
                <div className="flex justify-between items-end mb-2">
                   <label className="text-sm font-bold text-slate-800 flex items-center">
-                    <div className="w-3 h-3 rounded-sm bg-emerald-500 mr-2"></div> {t('wizard.step4_crm')}
+                    <div className="w-3 h-3 rounded-sm bg-blue-500 mr-2"></div> {t('wizard.step4_crm')}
                   </label>
-                  <span className="text-lg font-mono font-bold text-emerald-600">{points.retention}</span>
+                  <span className="text-lg font-mono font-bold text-blue-600">{points.retention}</span>
                </div>
                <input 
                  type="range" 
@@ -155,7 +155,7 @@ export default function WizardStep4() {
                  max="100" 
                  value={points.retention} 
                  onChange={(e) => handleSliderChange('retention', Number(e.target.value))}
-                 className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                 className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                />
             </div>
          </div>

@@ -203,10 +203,9 @@ def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
             client,
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
-            temperature=temp,
+            temperature=0.4,
             response_format={"type": "json_object"},
         )
-        return json.loads(response.choices[0].message.content)
     except Exception as e:
         if _is_timeout_error(e):
             raise TimeoutError(
@@ -214,6 +213,8 @@ def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
             ) from e
         print(f"🔴 [REFINER] Groq API Error: {e}, trả về plan cũ.")
         return previous_plan
+
+    raw_text = response.choices[0].message.content.strip()
 
     if raw_text.startswith("```json"):
         raw_text = raw_text[7:]
@@ -294,6 +295,31 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
         print(f"🔴 [FATAL] Master Planner lỗi: {e}")
         raise e
 
+
+def _call_groq(prompt: str, temp: float = 0.5) -> dict:
+    client = _create_groq_client()
+    try:
+        response = _chat_completion_with_timeout(
+            client,
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temp,
+            response_format={"type": "json_object"},
+        )
+        raw_text = response.choices[0].message.content.strip()
+        if raw_text.startswith("```json"):
+            raw_text = raw_text[7:]
+        elif raw_text.startswith("```"):
+            raw_text = raw_text[3:]
+        if raw_text.endswith("```"):
+            raw_text = raw_text[:-3]
+        raw_text = raw_text.strip()
+        return json.loads(raw_text)
+    except Exception as e:
+        if _is_timeout_error(e):
+            raise TimeoutError(f"Groq timeout ({GROQ_TIMEOUT_SECONDS}s).") from e
+        print(f"🔴 [_call_groq] Lỗi API hoặc JSON: {e}")
+        return {}
 
 # =============================================================================
 # GIAI ĐOẠN 2: STRATEGIC DEBATE
@@ -399,6 +425,60 @@ def run_cfo_commentary(overflow_amount: int, cut_items: list, budget: int) -> st
         fallback = "Đã cắt các khoản thừa. Ngân sách tạm ổn." if cut_items else "Ngân sách hợp lý, đã duyệt."
         print(f"   ⚠️ Groq CFO lỗi ({e}), dùng fallback: \"{fallback}\"")
         return fallback
+
+
+# =============================================================================
+# PYTHON INTERCEPTOR: KIỂM TOÁN TÀI CHÍNH & ÉP GIÁ
+# =============================================================================
+
+def python_interceptor(raw_plan: dict, allowed_budget: int) -> dict:
+    import copy
+    plan = copy.deepcopy(raw_plan)
+    raw_total = 0
+    all_activities = []
+    
+    # Gom tất cả activity để tính tổng
+    for phase in plan.get("activity_and_financial_breakdown", []):
+        for act in phase.get("activities", []):
+            raw_total += act.get("cost_vnd", 0)
+            all_activities.append(act)
+            
+    overflow_amount = max(0, raw_total - allowed_budget)
+    cut_items = []
+    
+    if overflow_amount > 0:
+        # Lọc các item COULD_HAVE
+        could_have_items = [act for act in all_activities if act.get("moscow_tag") == "COULD_HAVE"]
+        # Sắp xếp từ đắt xuống rẻ
+        could_have_items.sort(key=lambda x: x.get("cost_vnd", 0), reverse=True)
+        
+        remaining_overflow = overflow_amount
+        for act in could_have_items:
+            if remaining_overflow <= 0:
+                break
+            cost = act.get("cost_vnd", 0)
+            if cost == 0:
+                continue
+            
+            # Ép giá: giảm đúng bằng phần đang thiếu hoặc tối đa là cost
+            reduction = min(cost, remaining_overflow)
+            act["cost_vnd"] = cost - reduction
+            remaining_overflow -= reduction
+            
+            if act["cost_vnd"] == 0:
+                cut_items.append(f"Cắt hẳn: {act.get('activity_name', '')} (-{reduction:,} VND)")
+            else:
+                cut_items.append(f"Ép giá: {act.get('activity_name', '')} (-{reduction:,} VND)")
+                
+    final_total = sum(act.get("cost_vnd", 0) for act in all_activities)
+    
+    return {
+        "final_plan": plan,
+        "raw_total": raw_total,
+        "final_total": final_total,
+        "overflow_amount": overflow_amount,
+        "cut_items": cut_items
+    }
 
 
 # =============================================================================

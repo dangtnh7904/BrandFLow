@@ -60,7 +60,7 @@ export default function ScoringMatrix() {
              ))}
              <tr className="bg-slate-100/50 text-slate-900 font-bold text-base">
                  <td className="py-3 px-4 text-right">Weighted Total:</td>
-                 <td className={`py-3 px-4 text-center border-l border-slate-200 ${!isValid ? 'text-red-600' : 'text-emerald-600'}`}>{totalWeight}%</td>
+                 <td className={`py-3 px-4 text-center border-l border-slate-200 ${!isValid ? 'text-red-600' : 'text-blue-600'}`}>{totalWeight}%</td>
                  <td className="py-3 px-4 text-center border-l border-slate-200 text-purple-700">{myCalculatedScore.toFixed(2)}</td>
                  <td className="py-3 px-4 text-center border-l border-slate-200 text-orange-700">{compCalculatedScore.toFixed(2)}</td>
              </tr>

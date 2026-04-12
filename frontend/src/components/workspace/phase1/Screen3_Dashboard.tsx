@@ -45,10 +45,10 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
             <motion.div 
                animate={{ rotate: 360 }}
                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-               className="absolute inset-0 border-4 border-transparent border-t-emerald-500 border-r-teal-400 rounded-full"
+               className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-cyan-400 rounded-full"
             ></motion.div>
             <div className="absolute inset-0 flex items-center justify-center">
-               <Zap className="w-8 h-8 text-emerald-600 animate-pulse" />
+               <Zap className="w-8 h-8 text-blue-600 animate-pulse" />
             </div>
          </div>
          <h2 className="text-xl font-bold text-slate-800 mb-2">{t('dashboard.loading_title')}</h2>
@@ -57,7 +57,7 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="text-sm font-medium text-teal-600"
+            className="text-sm font-medium text-cyan-600"
          >
             {loadingTexts[loadingTextIndex]}
          </motion.p>
@@ -66,7 +66,8 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
   }
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto w-full max-w-5xl mx-auto py-8">
+    <div className="w-full h-full overflow-y-auto">
+      <div className="flex flex-col w-full max-w-5xl mx-auto p-8 min-h-full">
       <motion.div 
          initial={{ opacity: 0, y: 20 }}
          animate={{ opacity: 1, y: 0 }}
@@ -100,8 +101,8 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
                   />
                </svg>
                <div className="text-center absolute">
-                  <span className="block text-4xl font-black text-slate-800">75</span>
-                  <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-widest">{language === 'vi' ? 'Uy tín (AI Chấm)' : 'Trust Score'}</span>
+                  <span className="block text-4xl font-black text-slate-800">85</span>
+                  <span className="text-[10px] uppercase font-bold text-blue-600 tracking-widest">{t('dashboard.score')}</span>
                </div>
            </div>
            <div>
@@ -164,10 +165,10 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
            </div>
            
            <div>
-              <h4 className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Cơ hội Tăng trưởng (Opportunities)' : 'Growth Opportunities'}</h4>
+              <h4 className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-2">{t('dashboard.radar_2')}</h4>
               <ul className="space-y-2">
-                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Tiếp cận tập khách hàng Z thông qua Video ngắn (TikTok)' : 'Capture Gen-Z segment via short-form video'}</li>
-                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Đóng gói sản phẩm thành Set quà tặng B2B mùa Lễ' : 'Bundle products for Corporate Holiday gifting'}</li>
+                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Giải quyết nỗi đau giá cao của khách hàng' : 'Solve high-price customer pain point'}</li>
+                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Mở rộng danh sách cơ sở dữ liệu CRM' : 'Expand CRM database targeting'}</li>
               </ul>
            </div>
         </motion.div>
@@ -184,9 +185,9 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
            <div className="flex items-end mb-4">
               <div>
                  <p className="text-sm font-bold text-slate-800 mb-1">{t('dashboard.focus_1')}</p>
-                 <p className="text-2xl font-black text-emerald-600">{t('dashboard.focus_2')}</p>
+                 <p className="text-2xl font-black text-blue-600">{t('dashboard.focus_2')}</p>
               </div>
-              <Activity className="w-6 h-6 text-emerald-600 opacity-50 ml-auto" />
+              <Activity className="w-6 h-6 text-blue-600 opacity-50 ml-auto" />
            </div>
 
            {/* Pure SVG Sparkline */}
@@ -230,6 +231,7 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
             {t('dashboard.btn')} <ChevronRight className="w-5 h-5 ml-2" />
          </button>
       </motion.div>
+    </div>
     </div>
   );
 }

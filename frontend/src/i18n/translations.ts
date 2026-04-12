@@ -10,6 +10,8 @@ export const translations = {
 
   // === SIDEBAR (Main) ===
   sidebar: {
+     dashboard: { en: "Dashboard", vi: "Bảng Điều Khiển" },
+     daily_content: { en: "Daily Content", vi: "Tạo Content" },
      workspace: { en: "AI Workspace", vi: "Không gian làm việc" },
      agents: { en: "Network Agents", vi: "Mạng lưới Trợ lý AI" },
      assets: { en: "Brand Assets", vi: "Tài sản Thương hiệu" },
@@ -241,6 +243,34 @@ export const translations = {
       desc: { en: "High-level dashboard summarizing portfolio and revenue metrics across the entire corporate ecosystem.", vi: "Dashboard cấp cao tổng hợp các chỉ số danh mục đầu tư và doanh thu trên toàn bộ hệ sinh thái của tập đoàn." },
       alert_title: { en: "HQ Visualizer:", vi: "HQ Visualizer:" },
       alert_desc: { en: "Scatter plots and Dashboards at this level summarize the most comprehensive aggregate metrics from the operational tiers below.", vi: "Các biểu đồ phân tán và Dashboard ở cấp độ này tóm tắt các chỉ số tổng hợp toàn diện nhất từ tầng vận hành bên dưới." },
+   },
+   // === WORKSPACE PHASE 2 ===
+   workspace_phase2: {
+      title: { en: "Strategic Debate Board", vi: "Ban Thảo luận Chiến lược" },
+      desc: { en: "AI Agents are evaluating strategy based on the Master Profile. Dynamic constraints detect risk violations continuously.", vi: "Các AI Agent đang đưa ra phản biện chiến lược trực tuyến dựa trên Master Profile. Thẻ tự động quét vi phạm tài chính." },
+      rejected: { en: "Rejected", vi: "Bác bỏ" },
+      warning: { en: "Risk Warning", vi: "Cảnh báo rủi ro" },
+      approved: { en: "Approved", vi: "Chấp thuận" },
+      analyzing: { en: "Analyzing parameters...", vi: "Đang phân tích..." },
+      locked_title: { en: "Strategic Blueprint Locked", vi: "Strategic Blueprint đã được Khóa" },
+      locked_desc: { en: "All Agents have reached absolute consensus (100%). The 3-month strategy prioritizing LinkedIn Whitepapers and Organic SEO is firmly established and appended to Blockchain Logs.", vi: "Tất cả các Agents đã đồng thuận tuyệt đối (100%). Chiến lược 3 tháng tập trung vào LinkedIn Whitepapers và SEO tự nhiên đã được thiết lập chặt chẽ và lưu vào Blockchain Logs." },
+      proceed: { en: "Proceed to Tactical Budgeting", vi: "Chuyển sang Lập Ngân sách (Tactics)" }
+   },
+   // === WORKSPACE PHASE 3 ===
+   workspace_phase3: {
+      title: { en: "Stage 3: Tactical Campaign & Exact Budgeting", vi: "Giai đoạn 3: Ngân sách & Chiến thuật" },
+      desc: { en: "Generate Gantt scheduling and detailed budget distribution utilizing the Math Engine.", vi: "Lập trình Gantt và tính toán giải ngân chi tiết bằng Math Engine." },
+      touchpoints: { en: "Tactical Touchpoints (1-3 Months)", vi: "Điểm chạm Chiến thuật (1-3 Tháng)" },
+      task: { en: "Task", vi: "Nhiệm vụ" },
+      m1: { en: "Month 1", vi: "Tháng 1" },
+      m2: { en: "Month 2", vi: "Tháng 2" },
+      m3: { en: "Month 3", vi: "Tháng 3" },
+      alloc: { en: "Budget Allocation", vi: "Phân bổ Ngân sách" },
+      total: { en: "Total:", vi: "Tổng:" },
+      run_engine: { en: "Execute Number Crunching", vi: "Duyệt & Crunch Data Thực" },
+      running: { en: "Running Math Engine...", vi: "Đang chạy mô phỏng Math Engine..." },
+      recalculate: { en: "Recalculate", vi: "Tính toán lại" },
+      approve_btn: { en: "Approve Budget & Enter Workspace", vi: "Duyệt Ngân Sách & Vào Workspace" }
    },
    // === SCREEN 1 PLACEHOLDERS ===
    screen1_ph: {

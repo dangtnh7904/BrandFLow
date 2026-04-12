@@ -24,7 +24,7 @@ const SERVICES = [
     title: "AI Branding Designer",
     description: "Sáng tạo nhận diện thương hiệu nhất quán dựa trên dữ liệu thật.",
     colSpan: "col-span-1",
-    accent: "text-emerald-400"
+    accent: "text-blue-400"
   },
   {
     icon: BarChart,
@@ -67,7 +67,7 @@ export default function ServicesBento() {
             </div>
             
             <div className="mt-8">
-              <span className="text-xs font-semibold text-zinc-400 group-hover:text-emerald-600 transition-colors cursor-pointer flex items-center">
+              <span className="text-xs font-semibold text-zinc-400 group-hover:text-blue-600 transition-colors cursor-pointer flex items-center">
                 Kết nối Agent &gt;
               </span>
             </div>

@@ -209,3 +209,32 @@ class MasterPlanPhase4Output(BaseModel):
     risk_assessment: list[DownsideRiskAssessment]
 
 
+# ============================================================================
+# DESIGN MODULE SCHEMAS
+# ============================================================================
+
+class VisualLanguage(BaseModel):
+    primary_colors: list[str] = Field(..., description="Danh sách mã màu HEX chủ đạo")
+    visual_style: str = Field(..., description="Phong cách hình học (VD: minimalist, bold, curvy, flat vector...)")
+    mood: str = Field(..., description="Cảm giác thị giác tổng thể (VD: Sang trọng, công nghệ, vui nhộn...)")
+
+class DesignGenerateRequest(BaseModel):
+    industry: str = Field(..., description="Ngành hàng của doanh nghiệp")
+    core_usps: list[str] = Field(..., description="Các USP cốt lõi")
+    target_audience_insights: list[str] = Field(..., description="Insight khách hàng mục tiêu")
+    tone_of_voice: str = Field(..., description="Giọng điệu thương hiệu")
+    strict_rules: list[str] = Field(default_factory=list, description="Các điều kiêng kị / quy tắc bắt buộc")
+
+class DesignOutput(BaseModel):
+    visual_language: VisualLanguage
+    logo_prompt: str = Field(..., description="Prompt siêu chi tiết tiếng Anh để sinh Logo")
+    banner_prompt: str = Field(..., description="Prompt siêu chi tiết tiếng Anh để sinh Banner / Fanpage Cover")
+    fanpage_avatar_prompt: str = Field(..., description="Prompt siêu chi tiết tiếng Anh để sinh Fanpage Avatar")
+
+# Các trường URL sẽ được backend gắn thêm sau khi DALL-E trả về.
+# Nên ta có thể tạo schema mở rộng hoặc để frontend tự parse dict.
+
+class DesignReviseRequest(BaseModel):
+    original_request: DesignGenerateRequest
+    original_output: DesignOutput
+    user_feedback: str = Field(..., description="Yêu cầu sửa đổi từ người dùng")

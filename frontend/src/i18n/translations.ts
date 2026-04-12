@@ -11,6 +11,7 @@ export const translations = {
   // === SIDEBAR (Main) ===
   sidebar: {
      dashboard: { en: "Dashboard", vi: "Bảng Điều Khiển" },
+     design_studio: { en: "Design Studio", vi: "Studio Thiết Kế" },
      daily_content: { en: "Daily Content", vi: "Tạo Content" },
      workspace: { en: "AI Workspace", vi: "Không gian làm việc" },
      agents: { en: "Network Agents", vi: "Mạng lưới Trợ lý AI" },

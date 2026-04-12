@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -13,6 +14,7 @@ const CONT_DATA = [
 ];
 
 export default function PageB4Contingency() {
+  const { localData, saveStatus } = useAutoSaveForm('b4-contingency', { items: CONT_DATA });
   const COLUMNS = [
     { key: 'risk', header: 'Giả định rủi ro', className: 'bg-white font-medium text-slate-700' },
     { key: 'level', header: 'Mức độ', align: 'center' as const, className: 'bg-amber-50 text-amber-700 font-semibold border-x border-white' },
@@ -23,6 +25,7 @@ export default function PageB4Contingency() {
 
   return (
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Kế hoạch Dự phòng (Contingency Plan)"
       description="Đánh giá rủi ro (Downside risk assessment) để trả lời câu hỏi 'Điều gì xảy ra nếu...?'"
     >
@@ -32,7 +35,7 @@ export default function PageB4Contingency() {
         </InstructionAlert>
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={CONT_DATA} />
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/b3-budget" prevLabel="Về B.3" nextLink="/planning/b5-pnl" nextLabel="Tiếp tục: B.5 Lãi lỗ" />
       </div>

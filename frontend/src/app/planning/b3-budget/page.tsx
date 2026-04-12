@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -14,6 +15,7 @@ const BUDGET_DATA = [
 ];
 
 export default function PageB3Budget() {
+  const { localData, saveStatus } = useAutoSaveForm('b3-budget', { items: BUDGET_DATA });
   const COLUMNS = [
     { key: 'item', header: 'Hạng mục chi phí', className: 'bg-white font-medium text-slate-700' },
     { key: 'past', header: 'Năm ngoái', align: 'right' as const, className: 'bg-slate-50 text-slate-500' },
@@ -24,6 +26,7 @@ export default function PageB3Budget() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Tổng hợp Ngân sách Marketing"
       description="Liệt kê ngân sách chi tiết phân bổ theo các mảng hoạt động."
     >
@@ -33,7 +36,7 @@ export default function PageB3Budget() {
         </InstructionAlert>
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={BUDGET_DATA} />
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/b2-action" prevLabel="Về B.2" nextLink="/planning/b4-contingency" nextLabel="Tiếp tục: B.4 Dự phòng" />
       </div>

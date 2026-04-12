@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -15,6 +16,7 @@ const GANTT_DATA = [
 ];
 
 export default function PageB6Gantt() {
+  const { localData, saveStatus } = useAutoSaveForm('b6-gantt', { items: GANTT_DATA });
   const COLUMNS = [
     { key: 'name', header: 'Chiến dịch / Hành động', className: 'bg-white font-medium text-slate-800', width: '250px' },
     { key: 't8', header: 'Tháng 8', align: 'center' as const, render: (r: any) => r.t8 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-white bg-slate-50' },
@@ -27,6 +29,7 @@ export default function PageB6Gantt() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Bảng lập kế hoạch hoạt động (Gantt Chart)"
       description="Lịch biểu trực quan các chiến dịch tiếp thị."
     >

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
@@ -7,9 +8,11 @@ import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { Building2, Network, BarChart3 } from 'lucide-react';
 
 export default function PageC0Overview() {
+  const { localData, saveStatus } = useAutoSaveForm('c0-overview', { });
   return (
     <>
       <B2BPageTemplate
+      saveStatus={saveStatus}
         title="Tổng quan Phần C: Hợp nhất (Summary HQ)"
         description="Chào mừng Ban điều hành cấp cao. Nơi quy tụ kết quả làm việc của tất cả các SBU về một mối."
       >

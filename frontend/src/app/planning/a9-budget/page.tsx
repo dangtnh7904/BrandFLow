@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -15,6 +16,7 @@ const PNL_DATA = [
 ];
 
 export default function PageA9Budget() {
+  const { localData, saveStatus } = useAutoSaveForm('a9-budget', { items: PNL_DATA });
   const COLUMNS = [
     { key: 'item', header: 'Hạng mục P&L', className: 'bg-white font-medium text-slate-700' },
     { key: 't0', header: 'Năm t0', align: 'right' as const, headerClassName: 'bg-purple-100 text-purple-900', className: 'bg-purple-50 text-purple-700 font-semibold' },
@@ -26,6 +28,7 @@ export default function PageA9Budget() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Ngân sách hợp nhất dự phóng (Đơn vị: Tỷ VNĐ)"
       description="Bảng dự phóng tài chính tổng hợp tất cả dòng doanh thu, chi phí và lợi nhuận cho chu kỳ."
     >
@@ -35,7 +38,7 @@ export default function PageA9Budget() {
         </InstructionAlert>
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={PNL_DATA} />
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/a8-strategies" prevLabel="Về A.8" nextLink="/planning/b0-overview" nextLabel="Hoàn thành Phần A! 👉 Sang Phần B" />
       </div>

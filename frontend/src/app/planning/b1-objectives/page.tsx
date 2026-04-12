@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -13,6 +14,7 @@ const OBJ_DATA = [
 ];
 
 export default function PageB1Objectives() {
+  const { localData, saveStatus } = useAutoSaveForm('b1-objectives', { items: OBJ_DATA });
   const COLUMNS = [
     { key: 'pair', header: 'Cặp Sản phẩm / Phân khúc', className: 'bg-white font-medium text-slate-700' },
     { key: 'vol', header: 'Mục tiêu Khối lượng', align: 'center' as const, className: 'bg-indigo-50 font-semibold text-indigo-700' },
@@ -24,6 +26,7 @@ export default function PageB1Objectives() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Mục tiêu và Chiến lược Tổng thể (1 Năm)"
       description="Chiến lược và ngân sách phân bổ theo từng Sản phẩm / Phân khúc."
     >
@@ -33,7 +36,7 @@ export default function PageB1Objectives() {
         </InstructionAlert>
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={OBJ_DATA} />
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/b0-overview" prevLabel="Về B.0 Tổng quan" nextLink="/planning/b2-action" nextLabel="Tiếp tục: B.2 Kế hoạch Hành động" />
       </div>

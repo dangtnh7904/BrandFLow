@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import TacticalGantt from '@/components/b2b/TacticalGantt';
@@ -7,10 +8,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 
 export default function PageB3Action() {
+  const { localData, saveStatus } = useAutoSaveForm('b3-action', { });
   const { t } = useLanguage();
 
   return (
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title={t('b3.title' as TranslationKey) as string || "Kế hoạch Hành động"}
       description={t('b3.desc' as TranslationKey) as string || "Thiết lập mục tiêu chiến thuật rõ ràng, chỉ định người phụ trách và quản lý ngân sách bao trùm."}
     >

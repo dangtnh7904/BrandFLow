@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -15,6 +16,7 @@ const DASHBOARD_DATA = [
 ];
 
 export default function PageC4Dashboard() {
+  const { localData, saveStatus } = useAutoSaveForm('c4-dashboard', { items: DASHBOARD_DATA });
   const COLUMNS = [
     { key: 'sbu', header: 'SBU/Đơn vị', className: 'bg-white font-medium text-slate-700' },
     { key: 'kpi', header: 'KPI Đo lường', className: 'bg-slate-50 text-slate-700' },
@@ -24,6 +26,7 @@ export default function PageC4Dashboard() {
 
   return (
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Bảng KPI Chiến lược theo SBU (Dashboard)"
       description="Bảng điều khiển (Dashboard) đặt các mục tiêu KPI cạnh nhau."
     >
@@ -33,7 +36,7 @@ export default function PageC4Dashboard() {
         </InstructionAlert>
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={DASHBOARD_DATA} />
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/c3-issues" prevLabel="Về C.3" />
       </div>

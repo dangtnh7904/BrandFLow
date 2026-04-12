@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -13,6 +14,7 @@ const ISSUES_DATA = [
 ];
 
 export default function PageC3Issues() {
+  const { localData, saveStatus } = useAutoSaveForm('c3-issues', { items: ISSUES_DATA });
   const COLUMNS = [
     { key: 'sbu', header: 'Tên SBU', className: 'bg-white font-bold text-slate-800' },
     { key: 'market', header: 'Đặc điểm Thị trường', className: 'bg-slate-50 text-slate-600 border-l border-white' },
@@ -23,6 +25,7 @@ export default function PageC3Issues() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Bảng Phân tích Vấn đề (Major Issues)"
       description="Tạo bảng so sánh chéo (cross-reference) vấn đề để HQ dễ dàng ra quyết định."
     >
@@ -32,7 +35,7 @@ export default function PageC3Issues() {
         </InstructionAlert>
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={ISSUES_DATA} />
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/c2-history" prevLabel="Về C.2" nextLink="/planning/c4-dashboard" nextLabel="Tiếp tục: C.4 Bảng điều khiển" />
       </div>

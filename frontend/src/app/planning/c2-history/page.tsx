@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -14,6 +15,7 @@ const PORT_DATA = [
 ];
 
 export default function PageC2History() {
+  const { localData, saveStatus } = useAutoSaveForm('c2-history', { items: PORT_DATA });
   const COLUMNS = [
     { key: 'bcg', header: 'Phân loại SBU (BCG)', className: 'bg-white font-bold text-slate-700' },
     { key: 'sbu', header: 'Tên Đơn vị kinh doanh', className: 'bg-slate-50 text-slate-600' },
@@ -24,6 +26,7 @@ export default function PageC2History() {
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Tóm tắt Lịch sử & Danh mục (Portfolio Summary)"
       description="Biểu đồ danh mục đầu tư (Matrix) đặt tất cả các SBU lên cùng một ma trận."
     >
@@ -33,7 +36,7 @@ export default function PageC2History() {
         </InstructionAlert>
         
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={PORT_DATA} />
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/c1-direction" prevLabel="Về C.1" nextLink="/planning/c3-issues" nextLabel="Tiếp tục: C.3 Phân tích Vấn đề" />
       </div>

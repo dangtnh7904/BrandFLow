@@ -124,7 +124,7 @@ core_module.prompts = prompts_module
 core_module.documents = documents_module
 
 import main
-from access_audit import VisitorAuditStore
+from app.core.access_audit import VisitorAuditStore
 from main import app
 
 client = TestClient(app)

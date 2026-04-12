@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UploadCloud, Link as LinkIcon, FileText, CheckCircle2, Globe, Share2, Plus, X } from 'lucide-react';
+import { UploadCloud, Link as LinkIcon, FileText, CheckCircle2, Globe, Share2, Plus, X, ShieldCheck, Lock, Server } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -12,7 +12,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | 'dashboard') => void }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
   
   // UI States for dynamic fields
@@ -135,6 +135,27 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
                      <p className="text-slate-800 font-bold mb-1">{t('screen1.upload_zone')}</p>
                      <p className="text-xs text-slate-500">{t('screen1.upload_zone_desc')}</p>
                  </div>
+                 
+                 {/* ENTERPRISE SECURITY AUDIT & TRUST BADGE */}
+                 <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="mt-4 px-6 py-5 rounded-xl border ultra-thin-border bg-gradient-to-b from-white to-slate-50/50 shadow-sm w-full"
+                 >
+                     <p className="text-[13px] leading-relaxed text-slate-600 mb-5 text-center">
+                        <Lock className="w-3.5 h-3.5 inline-block mr-1.5 text-slate-400 mb-0.5" />
+                        {language === 'vi' 
+                          ? <span>Tài liệu nội bộ được bảo vệ bởi chuẩn <b>Mã hóa Đầu cuối</b>. Nhằm đảm bảo tuyệt mật, hệ thống sẽ <b>tiêu hủy file gốc vĩnh viễn</b> khỏi máy chủ ngay sau khi phân tích. Trí tuệ Nhân tạo tuyệt đối không sử dụng Dữ liệu của bạn để tự huấn luyện.</span>
+                          : <span>Internal documents are protected by <b>End-to-End Encryption</b>. For absolute privacy, original files are <b>permanently destroyed</b> from servers after analysis. Our AI strictly does not train on your confidential data.</span>}
+                     </p>
+                     <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-emerald-500" /> Enterprise Privacy</span>
+                        <span className="flex items-center gap-1.5"><Lock className="w-4 h-4 text-emerald-500" /> AES-256 Encrypted</span>
+                        <span className="flex items-center gap-1.5"><Server className="w-4 h-4 text-emerald-500" /> Zero Retention</span>
+                     </div>
+                 </motion.div>
+
                </motion.div>
             )}
 

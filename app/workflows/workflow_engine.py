@@ -14,7 +14,7 @@ Kiến trúc: Stateless.
 """
 
 import json
-from agents_core import build_creative_chain, build_cfo_chain, safe_invoke_chain
+from app.agents.planner.agents_core import build_creative_chain, build_cfo_chain, safe_invoke_chain
 
 # =============================================================================
 # HELPER — In bảng hoạt động đẹp mắt lên Terminal

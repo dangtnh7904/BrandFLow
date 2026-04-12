@@ -97,6 +97,7 @@ Context:
 - Ngân sách (Budget): {budget} VNĐ
 - Khách hàng mục tiêu: {target_audience}
 - Ràng buộc/Lưu ý (Constraints): {constraints}
+- Bối cảnh Thị trường Vĩ mô (Market Context): {market_context}
 
 CRITICAL RULES (LUẬT SỐNG CÒN BẮT BUỘC TUÂN THỦ):
 1. GIỌNG VĂN: Chuyên nghiệp, sắc bén. Không dùng từ ngữ sáo rỗng.
@@ -147,38 +148,20 @@ CRITICAL RULES (LUẬT SỐNG CÒN BẮT BUỘC TUÂN THỦ):
    - Các hoạt động cốt lõi gắn nhãn "MUST_HAVE" hoặc "SHOULD_HAVE".
 4. Tất cả con số tiền phải là SỐ NGUYÊN thuần túy (VD: 15000000, KHÔNG phải 15.000.000).
 
-Trả về JSON hợp lệ theo schema sau (KHÔNG bọc trong markdown):
-{{
-  "executive_summary": {{
-    "campaign_name": "string",
-    "campaign_summary": "string",
-    "core_objectives": "string",
-    "total_budget_vnd": integer
-  }},
-  "target_audience_and_brand_voice": {{
-    "target_audience": "string",
-    "brand_voice": "string"
-  }},
-  "phased_execution": [
-    {{ "phase_id": "phase_1", "phase_name": "string", "duration": "string" }}
-  ],
-  "activity_and_financial_breakdown": [
-    {{
-      "phase_id": "phase_1",
-      "activities": [
-        {{
-          "activity_name": "string",
-          "description": "string",
-          "cost_vnd": integer,
-          "kpi_commitment": "string",
-          "moscow_tag": "MUST_HAVE | SHOULD_HAVE | COULD_HAVE"
-        }}
-      ]
-    }}
-  ]
-    }}
-  ]
-}}"""
+149. TRẢ VỀ DỮ LIỆU ĐÚNG THEO YÊU CẦU CỦA Pydantic SCHEMA LẬP TRÌNH BÊN DƯỚI.
+Lưu ý quan trọng cho Agent 0: Ở mục `description` của mỗi `Activity`, bạn CHỈ VIẾT DUY NHẤT 1 CÂU NGẮN MÔ TẢ TRIẾT LÝ, KHÔNG CẦN VIẾT DÀI vì các Agent sau sẽ tự động viết phần thịt để tiết kiệm Tokens.
+"""
+
+EXPAND_ACTIVITY_PROMPT = """Bạn là Chuyên gia Copywriter (Agent 1).
+Dựa trên sườn chiến lược (Skeleton) của Giám đốc Chiến lược (Agent 0). Chức trách của bạn là 'Đắp thịt' chi tiết vào Hoạt động sau để sinh ra nội dung (description) đọc lọt tai, dễ hiểu, thuyết phục doanh nghiệp.
+
+- Chiến dịch: {campaign_name}
+- Tệp khách hàng: {target_audience}
+- Tên hoạt động: {activity_name} (Chi phí: {cost_vnd} VND)
+- Mục tiêu KPI: {kpi_commitment}
+
+Yêu cầu: Viết ĐOẠN MÔ TẢ CHI TIẾT (tối đa 60 chữ) để giải thích hoạt động này sẽ diễn ra như thế nào. TRẢ VỀ CHỈ ĐOẠN TEXT, KHÔNG MARKDOWN.
+"""
 
 REFINE_PLANNER_PROMPT = """Bạn là Giám đốc Marketing (CMO) cấp cao của hệ thống BrandFlow.
 Bạn đã lập ra một Kế hoạch ban đầu, nhưng CEO/Khách hàng vừa phản hồi yêu cầu thay đổi.
@@ -250,11 +233,16 @@ def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
     return plan
 
 
-def run_master_planner(goal: str, industry: str, budget: int, target_audience: str, constraints: str) -> dict:
-    """Agent 1: Gọi Groq llama-3.3-70b-versatile để sinh Master Plan (JSON mode)."""
+def run_master_planner(goal: str, industry: str, budget: int, target_audience: str, constraints: str, market_context: str = "") -> dict:
+    """Kiến trúc Cập nhật: Agent 0 (Mạnh) rải sườn Schema + Agent 1 (Rẻ) đắp nội dung."""
+    from langchain_groq import ChatGroq
+    from langchain_core.prompts import PromptTemplate
+    from langchain_core.output_parsers import StrOutputParser
+    import time
+    
     print(f"\n{'═' * 70}")
-    print(f"👑 [AGENT 1 — MASTER PLANNER] Đang lên chiến lược Marketing...")
-    print(f"   API: Groq | Model: llama-3.3-70b-versatile | Mode: JSON")
+    print(f"👑 [AGENT 0 — THE ORCHESTRATOR] Đang vẽ khung bằng Structured JSON Schema...")
+    print(f"   API: Groq | Model: llama-3.3-70b-versatile (Gánh xương sống)")
     print(f"{'═' * 70}")
 
     prompt = MASTER_PLANNER_PROMPT.format(
@@ -263,46 +251,48 @@ def run_master_planner(goal: str, industry: str, budget: int, target_audience: s
         budget=budget,
         target_audience=target_audience or "Chưa xác định",
         constraints=constraints or "Không có",
+        market_context=market_context or "Chưa có thông tin khảo sát tự động.",
     )
 
-    client = _create_groq_client()
     try:
-        response = _chat_completion_with_timeout(
-            client,
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.4,
-            max_tokens=4096,
-            response_format={"type": "json_object"},
-        )
+        # Bước 1: Gọi Model 70B cực mạnh thông qua Tool Calling rập thẳng vào Class Pydantic
+        # Điều này GIẢI QUYẾT TRIỆT ĐỂ rủi ro "ngắt giữa chừng" và parse lỗi JSON do model ảo giác.
+        api_key = os.getenv("GROQ_API_KEY")
+        llm_orchestrator = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key, max_retries=2)
+        structured_llm = llm_orchestrator.with_structured_output(MasterPlanOutput)
+        
+        # Gọi phát được luôn Object Python chuẩn
+        master_plan_obj = structured_llm.invoke(prompt)
+        
+        campaign_name = master_plan_obj.executive_summary.campaign_name
+        print(f"   ✅ Agent 0 đã đẻ khung thành công: {campaign_name}")
+        
+        # Bước 2: Khởi động bầy Worker Agent 1 (Model 8B siêu rẻ) để đắp thịt vào Description
+        print(f"\n   ⚙️ [WORKER STAGE] Gọi Agent 1 (llama-3.1-8b-instant) bù đắp Text siêu tiết kiệm token...")
+        llm_worker = ChatGroq(model="llama-3.1-8b-instant", temperature=0.7, api_key=api_key)
+        chain_worker = PromptTemplate.from_template(EXPAND_ACTIVITY_PROMPT) | llm_worker | StrOutputParser()
+        
+        for phase in master_plan_obj.activity_and_financial_breakdown:
+            for act in phase.activities:
+                print(f"      ⛏️ Đang viết tóm tắt cho act: {act.activity_name}...")
+                expanded_desc = chain_worker.invoke({
+                    "campaign_name": campaign_name,
+                    "target_audience": master_plan_obj.target_audience_and_brand_voice.target_audience,
+                    "activity_name": act.activity_name,
+                    "cost_vnd": act.cost_vnd,
+                    "kpi_commitment": act.kpi_commitment
+                })
+                # Ghi đè Description cộc lốc của Agent 0 bằng Description dài của Agent 1
+                act.description = expanded_desc.strip()
+                # Nghỉ ngơi tránh vấp Rate Limit
+                time.sleep(0.5)
+        
+        # Trộn hoàn hảo và trả về Frontend (Trả về dict để các component khác tương thích nguyên trạng)
+        return master_plan_obj.model_dump()
+        
     except Exception as e:
-        if _is_timeout_error(e):
-            raise TimeoutError(
-                f"Master planner timeout sau {int(GROQ_TIMEOUT_SECONDS)} giay."
-            ) from e
-        raise
-    raw_text = response.choices[0].message.content.strip()
-
-    if raw_text.startswith("```json"):
-        raw_text = raw_text[7:]
-    elif raw_text.startswith("```"):
-        raw_text = raw_text[3:]
-    if raw_text.endswith("```"):
-        raw_text = raw_text[:-3]
-    raw_text = raw_text.strip()
-
-    try:
-        plan = json.loads(raw_text)
-    except Exception as e:
-        print(f"🔴 [MASTER PLANNER] JSON Parse Error: {e}")
-        print(f"🔴 [MASTER PLANNER] Raw Output:\n{raw_text}")
+        print(f"🔴 [FATAL] Master Planner lỗi: {e}")
         raise e
-
-    # Log ra terminal
-    campaign_name = plan.get("executive_summary", {}).get("campaign_name", "N/A")
-    print(f"   ✅ Tên Chiến Dịch: {campaign_name}")
-
-    return plan
 
 
 # =============================================================================

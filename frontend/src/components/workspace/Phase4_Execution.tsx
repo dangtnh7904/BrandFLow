@@ -1,23 +1,79 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Bot, Send, Sparkles, Verify, ShieldCheck, CheckSquare, RefreshCw, ArrowLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Bot, Send, Sparkles, CheckCircle, ShieldCheck, CheckSquare, RefreshCw, ArrowLeft, BrainCircuit } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getRelevantRules, saveRule } from '@/mocks/mockKnowledgeBase';
+import { runExecutorAgent, runLearnerAgent } from '@/mocks/agentServices';
 
 export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
   const { language } = useLanguage();
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCanvas, setShowCanvas] = useState(false);
+  
+  const [generatedOutput, setGeneratedOutput] = useState('');
+  const [feedbackMode, setFeedbackMode] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [clarifyingQuestion, setClarifyingQuestion] = useState<string | null>(null);
+  const [feedbackContext, setFeedbackContext] = useState<string>('');
+  const [isLearning, setIsLearning] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
-  const handleSend = () => {
-    if (!prompt.trim()) return;
+  const handleSend = async () => {
+    if (!prompt.trim() || isGenerating) return;
     setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
+    setShowCanvas(false);
+    
+    try {
+      // 1. Fetch relevant rules (simulating Global knowledge retrieval)
+      const relevantRules = await getRelevantRules(prompt);
+      
+      // 2. Run mock executor
+      const output = await runExecutorAgent(prompt, relevantRules);
+      setGeneratedOutput(output);
       setShowCanvas(true);
-    }, 1500);
+    } catch(e) {
+      console.error(e);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSendFeedback = async () => {
+    if (!feedback.trim() || !generatedOutput) return;
+    
+    setIsLearning(true);
+    
+    try {
+      const fullFeedback = feedbackContext ? `${feedbackContext} DETAILS: ${feedback}` : feedback;
+      const distilledResult = await runLearnerAgent(generatedOutput, fullFeedback) as any;
+      
+      if (distilledResult.needs_clarification) {
+          setClarifyingQuestion(distilledResult.clarifying_question);
+          setFeedbackContext(fullFeedback);
+          setFeedback('');
+          return;
+      }
+      
+      await saveRule({
+        trigger_keywords: distilledResult.trigger_keywords,
+        distilled_rule: distilledResult.distilled_rule
+      });
+      
+      setFeedback('');
+      setClarifyingQuestion(null);
+      setFeedbackContext('');
+      setFeedbackMode(false);
+      
+      setShowSuccessToast(true);
+      setTimeout(() => setShowSuccessToast(false), 3000);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLearning(false);
+    }
   };
 
   return (
@@ -111,17 +167,76 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
                 <div className="font-bold text-slate-900 mb-1">{language === 'vi' ? 'Bản nháp bài viết LinkedIn' : 'LinkedIn Post Draft'}</div>
                 <div className="text-xs text-slate-500 font-medium">{language === 'vi' ? 'Mục tiêu: B2B C-Level' : 'Targeting: B2B C-Level'}</div>
               </div>
-              <div className="p-6 text-sm text-slate-700 leading-relaxed font-medium space-y-4">
-                <p>Is your agency relying on human "Full-stack" marketers? 🤔</p>
-                <p>Data shows that specialized parallel computing outperforms individual multitasking by 300%. Our latest Whitepaper breaks down how to integrate an AI Agent network into your marketing pipeline to eliminate Financial Hallucinations mathematically.</p>
-                <p>👇 Download the Q3 Whitepaper below and see the Exact Budget Math hooking in action.</p>
-                <p className="text-blue-600 font-bold">#AI #DataDriven #MarketingStrategy #BrandFlow</p>
+              <div className="p-6 text-sm text-slate-700 leading-relaxed font-medium space-y-4 whitespace-pre-wrap font-mono">
+                {generatedOutput}
               </div>
               <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end space-x-3">
-                 <button className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50 transition-colors shadow-sm">{language === 'vi' ? 'Sửa' : 'Edit'}</button>
+                 <button 
+                  onClick={() => setFeedbackMode(!feedbackMode)}
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50 transition-colors shadow-sm"
+                 >
+                   {language === 'vi' ? 'Sửa / Cải thiện' : 'Edit / Improve'}
+                 </button>
                  <button className="px-4 py-2 rounded-lg text-xs font-semibold text-white gradient-ai-bg">{language === 'vi' ? 'Gửi duyệt tới Integration' : 'Publish to Integration'}</button>
               </div>
+
+              {/* Feedback Mode UI */}
+              <AnimatePresence>
+                {feedbackMode && (
+                  <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="border-t border-slate-200 bg-blue-50/50 p-6"
+                  >
+                    <div className="flex items-center gap-2 text-sm font-bold text-blue-900 mb-3">
+                      <BrainCircuit className="w-4 h-4 text-blue-600" />  
+                      {language === 'vi' ? 'Dạy AI viết tốt hơn (Global DB)' : 'Teach AI to write better (Global DB)'}
+                    </div>
+                    
+                    {clarifyingQuestion && (
+                      <div className="bg-amber-50 border-l-4 border-amber-500 p-3 mb-4 rounded text-xs text-amber-800 font-medium">
+                        <span className="font-bold mr-2 text-amber-900">Agent:</span> 
+                        {clarifyingQuestion}
+                      </div>
+                    )}
+                    
+                    <textarea 
+                      className="w-full border border-slate-300 rounded p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none bg-white"
+                      rows={3}
+                      placeholder={clarifyingQuestion ? "Giải thích kỹ hơn..." : "Ví dụ: Giọng điệu còn hơi cứng, bỏ chữ 'đột phá' đi."}
+                      value={feedback}
+                      onChange={(e) => setFeedback(e.target.value)}
+                      disabled={isLearning}
+                    />
+                    <div className="flex justify-end mt-3">
+                      <button 
+                        onClick={handleSendFeedback}
+                        disabled={!feedback.trim() || isLearning}
+                        className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white px-4 py-2 rounded text-xs font-medium transition-colors flex items-center gap-2"
+                      >
+                         {isLearning ? (language === 'vi' ? "Đang đúc kết..." : "Distilling...") : (language === 'vi' ? "Gửi hướng dẫn" : "Send Feedback")}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
+            
+            {/* Success Toast */}
+            <AnimatePresence>
+              {showSuccessToast && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="mt-6 bg-emerald-100 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-lg text-sm font-medium flex items-center shadow-sm"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2 text-emerald-600" />
+                  Luật mới đã được áp dụng vào Vector DB Chung!
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ) : (
           <div className="h-full flex items-center justify-center flex-col opacity-50">

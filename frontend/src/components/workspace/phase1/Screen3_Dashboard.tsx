@@ -77,7 +77,7 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Module 1: Hero Scorecard (Full Width Top) */}
+        {/* Module 1: Sức Khỏe Thương hiệu (Hero Scorecard) */}
         <motion.div 
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
@@ -94,70 +94,80 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
                      strokeWidth="8" 
                      strokeDasharray="440"
                      initial={{ strokeDashoffset: 440 }}
-                     animate={{ strokeDashoffset: 440 - (440 * 85) / 100 }}
+                     animate={{ strokeDashoffset: 440 - (440 * 75) / 100 }}
                      transition={{ duration: 1.5, ease: "easeOut" }}
                      strokeLinecap="round"
                   />
                </svg>
                <div className="text-center absolute">
-                  <span className="block text-4xl font-black text-slate-800">85</span>
-                  <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-widest">{t('dashboard.score')}</span>
+                  <span className="block text-4xl font-black text-slate-800">75</span>
+                  <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-widest">{language === 'vi' ? 'Uy tín (AI Chấm)' : 'Trust Score'}</span>
                </div>
            </div>
            <div>
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">{t('dashboard.summary')}</h3>
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">{language === 'vi' ? 'Đánh giá Vị thế (Executive Audit)' : 'Executive Status'}</h3>
               <p className="text-lg text-slate-700 leading-relaxed font-medium">
-                 {t('dashboard.summary_text')}
+                 {language === 'vi' ? 'Thương hiệu lâu đời, có nền tảng tốt nhưng đang có dấu hiệu già hóa tệp khách hàng. Cần xây dựng hình ảnh năng động hơn.' : 'Established brand with good foundation but signs of aging customer base. Needs dynamic facelift.'}
               </p>
            </div>
         </motion.div>
 
-        {/* Module 2: Brand DNA */}
+        {/* Module 2: Visual Brand DNA */}
         <motion.div 
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ delay: 0.2 }}
            className="bento-card p-6 border-slate-200"
         >
-           <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">{t('dashboard.dna')}</h3>
+           <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">🎨 Visual Brand DNA</h3>
            <div className="flex items-center mb-6">
-              <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mr-4 shadow-sm border border-blue-100">
-                 <Shield className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center mr-4 shadow-sm border border-orange-100">
+                 <Shield className="w-6 h-6 text-orange-600" />
               </div>
                <div>
-                 <p className="text-lg font-bold text-slate-800">{language === 'vi' ? 'Người Hùng (The Hero)' : 'The Hero'}</p>
-                 <p className="text-xs text-slate-500">{language === 'vi' ? 'Hình mẫu Chính' : 'Primary Archetype'}</p>
+                 <p className="text-lg font-bold text-slate-800">{language === 'vi' ? 'Tối giản, Chuyên nghiệp' : 'Minimal, Pro'}</p>
+                 <p className="text-xs text-slate-500">{language === 'vi' ? 'Khung thiết kế (Archetype)' : 'Archetype'}</p>
+              </div>
+           </div>
+           
+           <div className="mb-4">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Bảng màu đề xuất' : 'Suggested Palette'}</p>
+              <div className="flex space-x-2">
+                 <div className="w-6 h-6 rounded-full border border-slate-300" style={{ backgroundColor: "#0F172A" }}></div>
+                 <div className="w-6 h-6 rounded-full border border-slate-200" style={{ backgroundColor: "#10B981" }}></div>
+                 <div className="w-6 h-6 rounded-full border border-slate-200" style={{ backgroundColor: "#F8FAFC" }}></div>
               </div>
            </div>
            
            <div className="space-y-2">
-              <span className="inline-block px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 mr-2 mb-2 shadow-sm">{language === 'vi' ? 'Chất lượng Cao cấp' : 'High Quality'}</span>
-              <span className="inline-block px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 mr-2 mb-2 shadow-sm">{language === 'vi' ? 'Giao hàng Thần tốc' : 'Fast Delivery'}</span>
-              <span className="inline-block px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 mr-2 mb-2 shadow-sm">{language === 'vi' ? 'Bảo mật Dữ liệu' : 'Data Security'}</span>
+              <span className="inline-block px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 mr-2 mb-2 shadow-sm">Corporate</span>
+              <span className="inline-block px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 mr-2 mb-2 shadow-sm">Trust</span>
+              <span className="inline-block px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 mr-2 mb-2 shadow-sm">Innovation</span>
            </div>
         </motion.div>
 
-        {/* Module 3: Threat Radar */}
+        {/* Module 3: Opportunities & Refinements */}
         <motion.div 
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ delay: 0.3 }}
            className="bento-card p-6 border-slate-200"
         >
-           <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">{t('dashboard.radar')}</h3>
+           <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">🔍 Market Audit</h3>
            
            <div className="mb-4">
-              <h4 className="text-[10px] text-red-500 font-bold uppercase tracking-wider mb-2">{t('dashboard.radar_1')}</h4>
+              <h4 className="text-[10px] text-amber-500 font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Điểm chưa hoàn thiện (Weaknesses)' : 'Areas for Refinement'}</h4>
               <ul className="space-y-2">
-                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Chiến tranh giá cả từ đối thủ chiết khấu' : 'Price war from direct discounters'}</li>
+                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Chưa tối ưu hóa trải nghiệm mượt mà trên môi trường Digital' : 'Digital UX requires further seamless integration'}</li>
+                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Cần đồng bộ lại thông điệp tại hệ thống điểm bán lẻ' : 'POS messaging consistency can be unified'}</li>
               </ul>
            </div>
            
            <div>
-              <h4 className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider mb-2">{t('dashboard.radar_2')}</h4>
+              <h4 className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Cơ hội Tăng trưởng (Opportunities)' : 'Growth Opportunities'}</h4>
               <ul className="space-y-2">
-                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Giải quyết nỗi đau giá cao của khách hàng' : 'Solve high-price customer pain point'}</li>
-                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Mở rộng danh sách cơ sở dữ liệu CRM' : 'Expand CRM database targeting'}</li>
+                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Tiếp cận tập khách hàng Z thông qua Video ngắn (TikTok)' : 'Capture Gen-Z segment via short-form video'}</li>
+                 <li className="flex items-start text-sm text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Đóng gói sản phẩm thành Set quà tặng B2B mùa Lễ' : 'Bundle products for Corporate Holiday gifting'}</li>
               </ul>
            </div>
         </motion.div>

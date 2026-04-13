@@ -12,7 +12,7 @@ export default function PricingSection() {
   const TIERS = [
     {
       name: t('landing_pricing.tier1_name'),
-      price: "0 VNĐ",
+      price: t('landing_pricing.tier1_price'),
       description: t('landing_pricing.tier1_desc'),
       features: [
         t('landing_pricing.tier1_f1'),
@@ -26,7 +26,7 @@ export default function PricingSection() {
     },
     {
       name: t('landing_pricing.tier2_name'),
-      price: "499.000 VNĐ",
+      price: t('landing_pricing.tier2_price'),
       period: t('landing_pricing.tier2_period'),
       description: t('landing_pricing.tier2_desc'),
       features: [

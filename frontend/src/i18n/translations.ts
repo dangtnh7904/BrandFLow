@@ -299,6 +299,7 @@ export const translations = {
     title: { en: "Solutions for Every Scale", vi: "Giải pháp cho mọi quy mô" },
     desc: { en: "Try it free today or unlock the full power of the AI Agents Network.", vi: "Dùng thử miễn phí ngay hôm nay hoặc mở khóa sức mạnh toàn diện của Mạng Lưới AI Agents." },
     tier1_name: { en: "Free", vi: "Miễn Phí" },
+    tier1_price: { en: "$0", vi: "0 VNĐ" },
     tier1_desc: { en: "Experience the basic power of AI in planning.", vi: "Trải nghiệm cơ bản sức mạnh của AI trong việc lập kế hoạch." },
     tier1_f1: { en: "Basic Dashboard Access", vi: "Sử dụng Dashboard Cơ Bản" },
     tier1_f2: { en: "Limit 10 prompts / day", vi: "Giới hạn 10 câu lệnh (Prompts) / ngày" },
@@ -307,6 +308,7 @@ export const translations = {
     tier1_cta: { en: "Start for free", vi: "Bắt đầu miễn phí" },
     
     tier2_name: { en: "Pro (Gemini-style)", vi: "Đề Xuất (Pro)" },
+    tier2_price: { en: "$19", vi: "499.000 VNĐ" },
     tier2_period: { en: "/month", vi: "/tháng" },
     tier2_desc: { en: "For Marketing professionals needing full automation.", vi: "Dành cho chuyên gia Marketing cần bộ công cụ tự động hóa toàn diện." },
     tier2_f1: { en: "All Free features", vi: "Tất cả tính năng của gói Free" },

@@ -8,7 +8,7 @@ import { Terminal, BrainCircuit, LineChart } from 'lucide-react';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-linear-bg selection:bg-cyan-500/30 selection:text-cyan-50">
+    <div className="min-h-screen bg-transparent selection:bg-cyan-500/30 selection:text-cyan-50">
       <Navbar />
       
       <main>

@@ -2,13 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-
-const METRICS = [
-  { value: 124, suffix: "+", label: "Tỷ VNĐ Doanh thu sinh ra" },
-  { value: 5, suffix: "M+", label: "Lượt hiển thị AI Search" },
-  { value: 312, suffix: "k", label: "Giờ làm việc tự động hoá" },
-  { value: 10, suffix: "k+", label: "Campaign Tối ưu" },
-];
+import { useLanguage } from '@/contexts/LanguageContext';
 
 function AnimatedCounter({ end, suffix }: { end: number, suffix: string }) {
   const [count, setCount] = useState(0);
@@ -34,6 +28,15 @@ function AnimatedCounter({ end, suffix }: { end: number, suffix: string }) {
 }
 
 export default function MetricsBanner() {
+  const { t } = useLanguage();
+  
+  const METRICS = [
+    { value: 12, suffix: "+", label: t('landing_metrics.m1') },
+    { value: 50, suffix: "ms", label: t('landing_metrics.m2') },
+    { value: 8, suffix: "+", label: t('landing_metrics.m3') },
+    { value: 100, suffix: "%", label: t('landing_metrics.m4') },
+  ];
+
   return (
     <section className="relative -mt-16 z-30 px-6">
       <div className="max-w-6xl mx-auto">
@@ -60,7 +63,7 @@ export default function MetricsBanner() {
                 <h3 className="text-4xl md:text-5xl font-black mb-3 tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70 dark:from-white dark:to-slate-400">
                   <AnimatedCounter end={metric.value} suffix={metric.suffix} />
                 </h3>
-                <p className="text-xs md:text-sm uppercase tracking-widest text-linear-text-muted font-bold max-w-[150px]">
+                <p className="text-xs md:text-sm uppercase tracking-widest text-linear-text-muted font-bold max-w-[180px] mx-auto text-balance">
                   {metric.label}
                 </p>
               </div>

@@ -3,10 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { BrandFlowLogo } from '../brand/BrandFlowLogo';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Footer() {
+  const { t } = useLanguage();
   return (
-    <footer className="bg-background pt-16 pb-8 overflow-hidden relative">
+    <footer className="bg-transparent border-t ultra-thin-border pt-16 pb-8 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 pb-12">
           
@@ -19,56 +21,56 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-linear-text-muted text-sm leading-relaxed max-w-xs mb-8">
-              B2B Marketing AI Platform. Chúng tôi xây dựng mô hình Multi-Agent để tự động hóa toàn bộ luồng quy trình hoạch định và thực thi ngân sách truyền thông.
+              {t('landing_footer.desc')}
             </p>
           </div>
 
           {/* Links Columns */}
           <div className="md:col-span-4 lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-8">
             <div>
-              <h4 className="font-bold text-foreground mb-4">Sản Phẩm</h4>
+              <h4 className="font-bold text-foreground mb-4">{t('landing_footer.col1_title')}</h4>
               <ul className="space-y-3 text-sm text-linear-text-muted">
-                <li><Link href="#features" className="hover:text-cyan-500 transition-colors">AI Agents</Link></li>
-                <li><Link href="/workspace" className="hover:text-cyan-500 transition-colors">Workspace</Link></li>
-                <li><Link href="/planning/a1-mission" className="hover:text-cyan-500 transition-colors">Planning Board</Link></li>
-                <li><Link href="#pricing" className="hover:text-cyan-500 transition-colors">Bảng giá</Link></li>
+                <li><Link href="#features" className="hover:text-cyan-500 transition-colors">{t('landing_footer.col1_l1')}</Link></li>
+                <li><Link href="/workspace" className="hover:text-cyan-500 transition-colors">{t('landing_footer.col1_l2')}</Link></li>
+                <li><Link href="/planning/a1-mission" className="hover:text-cyan-500 transition-colors">{t('landing_footer.col1_l3')}</Link></li>
+                <li><Link href="#pricing" className="hover:text-cyan-500 transition-colors">{t('landing_footer.col1_l4')}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-foreground mb-4">Giải Pháp</h4>
+              <h4 className="font-bold text-foreground mb-4">{t('landing_footer.col2_title')}</h4>
               <ul className="space-y-3 text-sm text-linear-text-muted">
-                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">Cho SME</span></li>
-                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">Cho Agency</span></li>
-                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">Enterprise</span></li>
-                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">Case Studies</span></li>
+                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">{t('landing_footer.col2_l1')}</span></li>
+                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">{t('landing_footer.col2_l2')}</span></li>
+                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">{t('landing_footer.col2_l3')}</span></li>
+                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">{t('landing_footer.col2_l4')}</span></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-foreground mb-4">Công Ty</h4>
+              <h4 className="font-bold text-foreground mb-4">{t('landing_footer.col3_title')}</h4>
               <ul className="space-y-3 text-sm text-linear-text-muted">
-                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">Về Chúng Tôi</span></li>
-                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">Tuyển Dụng</span></li>
-                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">Liên Hệ</span></li>
-                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">Bảo Mật</span></li>
+                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">{t('landing_footer.col3_l1')}</span></li>
+                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">{t('landing_footer.col3_l2')}</span></li>
+                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">{t('landing_footer.col3_l3')}</span></li>
+                <li><span className="hover:text-cyan-500 transition-colors cursor-pointer">{t('landing_footer.col3_l4')}</span></li>
               </ul>
             </div>
           </div>
 
           {/* Newsletter Column */}
           <div className="md:col-span-4 lg:col-span-3">
-            <h4 className="font-bold text-foreground mb-4">Cập nhật tin tức AI</h4>
-            <p className="text-sm text-linear-text-muted mb-4">Nhận báo cáo hàng tháng về ứng dụng AI trong Marketing B2B.</p>
+            <h4 className="font-bold text-foreground mb-4">{t('landing_footer.nl_title')}</h4>
+            <p className="text-sm text-linear-text-muted mb-4">{t('landing_footer.nl_desc')}</p>
             <form className="flex" onSubmit={(e) => e.preventDefault()}>
               <input 
                 type="email" 
-                placeholder="Email của bạn" 
+                placeholder={t('landing_footer.nl_ph')} 
                 className="w-full bg-linear-surface border ultra-thin-border rounded-l-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-cyan-500"
               />
               <button 
                 type="submit" 
                 className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-r-lg text-sm font-bold transition-colors"
               >
-                Đăng ký
+                {t('landing_footer.nl_btn')}
               </button>
             </form>
           </div>
@@ -76,7 +78,7 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-linear-text-muted text-sm">&copy; 2026 BrandFlow AI Platform. All rights reserved.</p>
+          <p className="text-linear-text-muted text-sm">{t('landing_footer.copyright')}</p>
           <div className="flex gap-4">
             <span className="w-8 h-8 rounded-full bg-linear-surface border ultra-thin-border flex items-center justify-center text-linear-text-muted hover:text-cyan-500 transition-colors cursor-pointer cursor-pointer hover:border-cyan-500/50">
               {/* x/twitter icon placeholder */}

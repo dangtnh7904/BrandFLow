@@ -4,19 +4,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Zap } from 'lucide-react';
 import Link from 'next/link';
-import NodeNetworkCanvas from './NodeNetworkCanvas';
 import LiveCommandCenter from './LiveCommandCenter';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function HeroSection() {
+  const { t } = useLanguage();
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden bg-background">
-      {/* Background Glows */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-600/10 dark:bg-blue-600/15 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-500/10 dark:bg-cyan-500/15 rounded-full blur-[120px] pointer-events-none" />
-      
-      {/* Node Network Canvas spanning the entire hero */}
-      <NodeNetworkCanvas />
-
+    <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden bg-transparent">
       <div className="max-w-7xl mx-auto px-6 w-full flex flex-col lg:flex-row items-center gap-12 relative z-10">
         
         {/* Left Column (Content & CTA) */}
@@ -28,18 +22,18 @@ export default function HeroSection() {
             className="inline-flex items-center px-4 py-2 rounded-full border border-linear-border bg-linear-surface/50 backdrop-blur-sm mb-6 shadow-sm"
           >
             <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse mr-3 shrink-0" />
-            <span className="text-sm font-semibold text-foreground tracking-wide">BrandFlow Multi-Agent System</span>
+            <span className="text-sm font-semibold text-foreground tracking-wide">{t('landing_hero.badge')}</span>
           </motion.div>
 
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.1] mb-6"
+            className="text-[32px] min-[400px]:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.3] md:leading-[1.1] mb-6"
           >
-            Tuyệt đối chính xác. <br className="hidden sm:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-500 dark:to-cyan-400">
-              Hoàn toàn tự động.
+            <span className="whitespace-nowrap">{t('landing_hero.title_1')}</span> <br />
+            <span className="whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-500 dark:to-cyan-400">
+              {t('landing_hero.title_2')}
             </span>
           </motion.h1>
 
@@ -47,10 +41,10 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg md:text-xl text-linear-text-muted mb-10 max-w-xl leading-relaxed space-y-4"
+            className="text-lg md:text-xl text-linear-text-muted mb-10 max-w-xl leading-relaxed space-y-4 text-pretty"
           >
             <p>
-              Mỗi chiến lược marketing đều được thẩm định bởi "Math Engine" chống ảo giác tài chính, đảm bảo ngân sách quảng cáo của bạn luôn được kiểm soát tuyệt đối bằng dữ liệu thực.
+              {t('landing_hero.desc')}
             </p>
           </motion.div>
 
@@ -62,11 +56,11 @@ export default function HeroSection() {
           >
             <Link href="/workspace" className="w-full sm:w-auto">
               <button className="flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-cyan-500/50 hover:-translate-y-0.5 transition-all duration-200 w-full group">
-                TRUY CẬP HỆ THỐNG <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                {t('landing_hero.btn_start')} <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
             <button className="flex items-center justify-center px-8 py-4 rounded-xl border border-linear-border bg-linear-surface hover:bg-linear-surface/80 text-foreground font-semibold backdrop-blur-sm transition-all duration-200 w-full sm:w-auto group shadow-sm z-20 relative hover:text-cyan-500">
-              <Zap className="w-5 h-5 mr-2 text-cyan-500" /> Phân tích ngân sách
+              <Zap className="w-5 h-5 mr-2 text-cyan-500" /> {t('landing_hero.btn_demo')}
             </button>
           </motion.div>
         </div>

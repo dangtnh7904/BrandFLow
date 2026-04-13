@@ -94,4 +94,13 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   .gradient-ai-bg:hover {
     background-image: linear-gradient(to right, #1d4ed8, #0891b2);
   }
+
+  /* Hide scrollbar for everywhere */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 }

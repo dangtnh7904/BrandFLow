@@ -3,20 +3,29 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrainCircuit, LineChart, Target, Terminal, CheckCircle2, Megaphone, PenTool } from 'lucide-react';
-
-const NOTIFICATIONS = [
-  { agent: "Market Agent", text: "Phân tích xong 10,000+ dữ liệu đối thủ", icon: LineChart, color: "text-blue-500", bg: "bg-blue-500/10" },
-  { agent: "Creative Agent", text: "Đề xuất phong cách thiết kế Minimalist", icon: PenTool, color: "text-cyan-500", bg: "bg-cyan-500/10" },
-  { agent: "Copywriter", text: "Sáng tạo 15 thông điệp truyền thông mới", icon: Megaphone, color: "text-indigo-500", bg: "bg-indigo-500/10" },
-  { agent: "Math Engine", text: "Đã duyệt quỹ. Tối ưu hoá RoAS dự phóng +24%", icon: BrainCircuit, color: "text-emerald-500", bg: "bg-emerald-500/10" }
-];
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type LogEntry = {
   id: string;
-  data: typeof NOTIFICATIONS[0];
+  data: {
+    agent: string;
+    text: string;
+    icon: any;
+    color: string;
+    bg: string;
+  };
 };
 
 export default function LiveCommandCenter() {
+  const { t } = useLanguage();
+  
+  const NOTIFICATIONS = [
+    { agent: t('landing_live.agent1'), text: t('landing_live.msg1'), icon: LineChart, color: "text-blue-500", bg: "bg-blue-500/10" },
+    { agent: t('landing_live.agent2'), text: t('landing_live.msg2'), icon: PenTool, color: "text-cyan-500", bg: "bg-cyan-500/10" },
+    { agent: t('landing_live.agent3'), text: t('landing_live.msg3'), icon: Megaphone, color: "text-indigo-500", bg: "bg-indigo-500/10" },
+    { agent: t('landing_live.agent4'), text: t('landing_live.msg4'), icon: BrainCircuit, color: "text-emerald-500", bg: "bg-emerald-500/10" }
+  ];
+
   const [activeStep, setActiveStep] = useState(0);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const logIndexRef = useRef(0);
@@ -34,7 +43,7 @@ export default function LiveCommandCenter() {
     const logInterval = setInterval(() => {
       setLogs((prev) => {
         // Prevent accidental duplicates in strict mode / hot reload
-        if (prev.length > 0 && prev[prev.length - 1].data === NOTIFICATIONS[logIndexRef.current]) {
+        if (prev.length > 0 && prev[prev.length - 1].data.text === NOTIFICATIONS[logIndexRef.current].text) {
           logIndexRef.current = (logIndexRef.current + 1) % NOTIFICATIONS.length;
         }
         
@@ -51,7 +60,7 @@ export default function LiveCommandCenter() {
       });
     }, 2200);
     return () => clearInterval(logInterval);
-  }, []);
+  }, [t]);
 
   return (
     <div className="w-full max-w-lg bento-card p-6 flex flex-col gap-6 relative overflow-hidden bg-linear-surface/80 backdrop-blur-xl border border-linear-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] z-10">
@@ -60,36 +69,39 @@ export default function LiveCommandCenter() {
       <div className="flex items-center justify-between border-b border-linear-border/50 pb-4">
         <div className="flex items-center gap-2">
           <BrainCircuit className="w-5 h-5 text-cyan-500" />
-          <span className="font-bold text-sm tracking-widest text-foreground uppercase">Agent Cortex</span>
+          <span className="font-bold text-sm tracking-widest text-foreground uppercase">{t('landing_live.agent_cortex')}</span>
         </div>
         <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[10px] uppercase text-emerald-600 dark:text-emerald-400 font-bold tracking-wider">Đang hoạt động</span>
+          <span className="text-[10px] uppercase text-emerald-600 dark:text-emerald-400 font-bold tracking-wider">{t('landing_live.online')}</span>
         </div>
       </div>
 
       {/* Agents Status */}
       <div className="space-y-4">
         <AgentStatusRow 
-          name="Market Agent" 
+          name={t('landing_live.agent1')}
           icon={<LineChart className="w-4 h-4" />}
           isActive={activeStep === 0} 
           isDone={activeStep > 0} 
-          color="bg-blue-500" 
+          color="bg-blue-500"
+          processingText={t('landing_live.processing')}
         />
         <AgentStatusRow 
-          name="Creative Agent" 
+          name={t('landing_live.agent2')}
           icon={<Target className="w-4 h-4" />}
           isActive={activeStep === 1} 
           isDone={activeStep > 1} 
-          color="bg-cyan-500" 
+          color="bg-cyan-500"
+          processingText={t('landing_live.processing')}
         />
         <AgentStatusRow 
-          name="Copywriter Agent" 
+          name={t('landing_live.agent3')}
           icon={<Terminal className="w-4 h-4" />}
           isActive={activeStep === 2} 
           isDone={activeStep > 2 || activeStep === 3} 
-          color="bg-indigo-500" 
+          color="bg-indigo-500"
+          processingText={t('landing_live.processing')}
         />
       </div>
 
@@ -126,7 +138,7 @@ export default function LiveCommandCenter() {
   );
 }
 
-function AgentStatusRow({ name, icon, isActive, isDone, color }: { name: string, icon: React.ReactNode, isActive: boolean, isDone: boolean, color: string }) {
+function AgentStatusRow({ name, icon, isActive, isDone, color, processingText }: { name: string, icon: React.ReactNode, isActive: boolean, isDone: boolean, color: string, processingText: string }) {
   return (
     <div className={`p-3 rounded-xl border transition-all duration-300 flex flex-col gap-2 ${isActive ? 'bg-linear-surface shadow-md border-cyan-500/30' : 'bg-transparent border-transparent opacity-60'}`}>
       <div className="flex items-center justify-between">
@@ -138,7 +150,7 @@ function AgentStatusRow({ name, icon, isActive, isDone, color }: { name: string,
         </div>
         {isDone && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
         {isActive && !isDone && (
-          <span className="text-[10px] font-mono text-cyan-500 animate-pulse font-bold tracking-wider">ĐANG XỬ LÝ...</span>
+          <span className="text-[10px] font-mono text-cyan-500 animate-pulse font-bold tracking-wider">{processingText}</span>
         )}
       </div>
 

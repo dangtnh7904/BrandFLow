@@ -11,12 +11,12 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const ARCHETYPES = [
- { id: 'innovator', title: { en: 'The Innovator', vi: 'Người Sáng tạo' }, desc: { en: 'Pushing boundaries and redefining the status quo.', vi: 'Phá vỡ giới hạn và tái định trạng.' }, icon: Lightbulb, color: 'text-amber-500' },
- { id: 'caregiver', title: { en: 'The Caregiver', vi: 'Người Chăm sóc' }, desc: { en: 'Nurturing, protecting, and putting customers first.', vi: 'Nuôi dưỡng, bảo vệ và đặt khách hàng lên hàng đầu.' }, icon: Heart, color: 'text-pink-500' },
- { id: 'hero', title: { en: 'The Hero', vi: 'Người Hùng' }, desc: { en: 'Overcoming challenges with courage and mastery.', vi: 'Vượt qua thử thách bằng lòng dũng cảm và bản lĩnh.' }, icon: Shield, color: 'text-blue-600' },
- { id: 'magician', title: { en: 'The Magician', vi: 'Phù thủy' }, desc: { en: 'Transforming situations with visionary power.', vi: 'Thay đổi cục diện bằng sức mạnh tầm nhìn.' }, icon: Zap, color: 'text-purple-500' },
- { id: 'sage', title: { en: 'The Sage', vi: 'Cố vấn triết gia' }, desc: { en: 'Seeking truth through wisdom and analytics.', vi: 'Tìm kiếm chân lý qua trí tuệ và phân tích.' }, icon: Search, color: 'text-blue-600' },
- { id: 'explorer', title: { en: 'The Explorer', vi: 'Nhà Thám hiểm' }, desc: { en: 'Discovering new frontiers and freedom.', vi: 'Khám phá những chân trời và tự do mới.' }, icon: Globe, color: 'text-orange-500' },
+ { id: 'innovator', title: { en: 'The Innovator', vi: 'Người Sáng tạo' }, desc: { en: 'Pushing boundaries and redefining the status quo.', vi: 'Phá vỡ giới hạn và tái định trạng.' }, icon: Lightbulb, color: 'text-amber-500 dark:text-amber-400' },
+ { id: 'caregiver', title: { en: 'The Caregiver', vi: 'Người Chăm sóc' }, desc: { en: 'Nurturing, protecting, and putting customers first.', vi: 'Nuôi dưỡng, bảo vệ và đặt khách hàng lên hàng đầu.' }, icon: Heart, color: 'text-pink-500 dark:text-pink-400' },
+ { id: 'hero', title: { en: 'The Hero', vi: 'Người Hùng' }, desc: { en: 'Overcoming challenges with courage and mastery.', vi: 'Vượt qua thử thách bằng lòng dũng cảm và bản lĩnh.' }, icon: Shield, color: 'text-blue-600 dark:text-blue-400' },
+ { id: 'magician', title: { en: 'The Magician', vi: 'Phù thủy' }, desc: { en: 'Transforming situations with visionary power.', vi: 'Thay đổi cục diện bằng sức mạnh tầm nhìn.' }, icon: Zap, color: 'text-purple-500 dark:text-purple-400' },
+ { id: 'sage', title: { en: 'The Sage', vi: 'Cố vấn triết gia' }, desc: { en: 'Seeking truth through wisdom and analytics.', vi: 'Tìm kiếm chân lý qua trí tuệ và phân tích.' }, icon: Search, color: 'text-blue-600 dark:text-blue-400' },
+ { id: 'explorer', title: { en: 'The Explorer', vi: 'Nhà Thám hiểm' }, desc: { en: 'Discovering new frontiers and freedom.', vi: 'Khám phá những chân trời và tự do mới.' }, icon: Globe, color: 'text-orange-500 dark:text-orange-400' },
 ];
 
 export default function WizardStep2() {
@@ -53,7 +53,7 @@ export default function WizardStep2() {
  className={cn(
  "relative p-4 rounded-xl cursor-pointer transition-all duration-200 border",
  isSelected 
- ? "bg-blue-50 border-blue-400 shadow-sm scale-[1.02]" 
+ ? "bg-blue-50 dark:bg-blue-500/10 border-blue-400 dark:border-blue-500/50 shadow-sm scale-[1.02]" 
  : "bg-linear-surface border-linear-border hover:bg-linear-surface/80"
  )}
  >
@@ -76,7 +76,7 @@ export default function WizardStep2() {
  value={visionText}
  onChange={(e) => setVisionText(e.target.value)}
  placeholder={t('wizard.step2_vision_ph')}
- className="w-full px-4 py-3 bg-linear-surface text-foreground border border-linear-border rounded-xl shadow-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-400"
+ className="w-full px-4 py-3 bg-linear-surface text-foreground border border-linear-border rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#0B1120] focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500/50 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-400"
  />
  </div>
  </div>

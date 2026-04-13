@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { BrandFlowLogo } from '@/components/brand/BrandFlowLogo';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -88,15 +89,17 @@ export default function Sidebar() {
  initial={false}
  animate={{ width: isCollapsed ? 80 : 256 }}
  className="border-r ultra-thin-border bg-linear-surface/30 backdrop-blur-md flex flex-col py-6 h-screen sticky top-0 overflow-hidden shrink-0"
- >
- <div className={cn("flex items-center mb-10 pt-2", isCollapsed ? "justify-center px-0" : "px-6")}>
- <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
- <div className="w-8 h-8 rounded-lg gradient-ai-bg flex items-center justify-center shrink-0">
- <Sparkles className="w-4 h-4 text-white" />
- </div>
- {!isCollapsed && <h2 className="text-xl font-bold tracking-tight text-foreground ml-3 whitespace-nowrap">BrandFlow</h2>}
- </Link>
- </div>
+  >
+      <div className={cn("flex items-center mb-10 pt-2", isCollapsed ? "justify-center px-0" : "px-6")}>
+        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <BrandFlowLogo className="w-10 h-10 shrink-0" />
+          {!isCollapsed && (
+            <h2 className="text-xl font-bold tracking-tight text-foreground ml-3 whitespace-nowrap">
+              Brand<span className="text-cyan-500">F</span>low
+            </h2>
+          )}
+        </Link>
+      </div>
 
  <nav className="flex-1 px-3 overflow-x-hidden overflow-y-auto no-scrollbar min-h-0">
  <div className="mb-6">

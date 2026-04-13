@@ -18,11 +18,11 @@ const PERF_DATA = [
 export default function PageA2Performance() {
   const { localData, saveStatus } = useAutoSaveForm('a2-performance', { items: PERF_DATA });
   const COLUMNS = [
-    { key: 'metric', header: 'Chỉ số (Cố định giá)', className: 'bg-white font-medium text-slate-700' },
-    { key: 'y3', header: 'Năm t-3 (2023)', align: 'center' as const, className: 'bg-slate-50 text-slate-600' },
-    { key: 'y2', header: 'Năm t-2 (2024)', align: 'center' as const, className: 'bg-slate-50 text-slate-600' },
-    { key: 'y1', header: 'Năm ngoái (2025)', align: 'center' as const, headerClassName: 'text-indigo-900 bg-indigo-100', className: 'bg-indigo-50 font-bold text-indigo-700' },
-    { key: 'reason', header: 'Nguyên nhân chính', className: 'bg-white text-slate-600 text-sm' },
+    { key: 'metric', header: 'Chỉ số (Cố định giá)', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 'y3', header: 'Năm t-3 (2023)', align: 'center' as const, className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
+    { key: 'y2', header: 'Năm t-2 (2024)', align: 'center' as const, className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
+    { key: 'y1', header: 'Năm ngoái (2025)', align: 'center' as const, headerClassName: 'text-cyan-400 bg-cyan-500/10', className: 'bg-cyan-500/10 font-bold text-cyan-400' },
+    { key: 'reason', header: 'Nguyên nhân chính', className: 'bg-linear-surface text-linear-text-muted text-sm' },
   ];
 
   return (
@@ -37,8 +37,8 @@ export default function PageA2Performance() {
             Bảng dữ liệu định lượng và phần bình luận giải thích lý do chính về hiệu suất trong giai đoạn vừa qua.
           </InstructionAlert>
           
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-             <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest">Tóm tắt hiệu suất</h3>
+          <div className="bento-card p-6">
+             <h3 className="text-sm font-semibold text-linear-text-muted mb-4 uppercase tracking-widest">Tóm tắt hiệu suất</h3>
              <PastelTable columns={COLUMNS} data={localData.items} />
           </div>
           <WizardNavigation 

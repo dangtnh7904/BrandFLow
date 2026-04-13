@@ -17,10 +17,10 @@ const BUDGET_DATA = [
 export default function PageB3Budget() {
   const { localData, saveStatus } = useAutoSaveForm('b3-budget', { items: BUDGET_DATA });
   const COLUMNS = [
-    { key: 'item', header: 'Hạng mục chi phí', className: 'bg-white font-medium text-slate-700' },
-    { key: 'past', header: 'Năm ngoái', align: 'right' as const, className: 'bg-slate-50 text-slate-500' },
-    { key: 'now', header: 'Ước tính năm nay', align: 'right' as const, headerClassName: 'bg-purple-100 text-purple-900', className: 'bg-purple-50 text-purple-700 font-semibold border-x border-white' },
-    { key: 'next', header: 'Ngân sách năm tới', align: 'right' as const, headerClassName: 'bg-emerald-100 text-emerald-900', className: 'bg-emerald-50 text-emerald-700 font-bold' },
+    { key: 'item', header: 'Hạng mục chi phí', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 'past', header: 'Năm ngoái', align: 'right' as const, className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
+    { key: 'now', header: 'Ước tính năm nay', align: 'right' as const, headerClassName: 'bg-purple-100 dark:bg-purple-900/30 text-purple-900 dark:text-purple-400', className: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-semibold border-x border-white dark:border-slate-800' },
+    { key: 'next', header: 'Ngân sách năm tới', align: 'right' as const, headerClassName: 'bg-cyan-500/10 text-cyan-400', className: 'bg-cyan-500/10 text-cyan-400 font-bold' },
   ];
 
   return (
@@ -35,7 +35,7 @@ export default function PageB3Budget() {
           So sánh chi phí marketing của năm ngoái, năm nay và ngân sách cấp cho năm tới.
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div className="bento-card p-6">
            <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/b2-action" prevLabel="Về B.2" nextLink="/planning/b4-contingency" nextLabel="Tiếp tục: B.4 Dự phòng" />

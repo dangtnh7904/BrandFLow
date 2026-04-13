@@ -8,11 +8,11 @@ export default function TacticalGantt() {
  const { language } = useLanguage();
 
  const TASKS = [
- { id: 1, name: language === 'vi' ? "Giai đoạn Nghiên cứu Thị trường" : "Market Research Phase", startMonth: 1, endMonth: 2, owner: "Strategy Team", budget: "$15,000", color: "bg-purple-500" },
- { id: 2, name: language === 'vi' ? "Phát triển Sản phẩm (Beta)" : "Product Development (Beta)", startMonth: 2, endMonth: 5, owner: "Product Team", budget: "$80,000", color: "bg-blue-500" },
- { id: 3, name: language === 'vi' ? "Chiến dịch Marketing Tiền ra mắt" : "Pre-launch Marketing Campaign", startMonth: 4, endMonth: 6, owner: "Marketing", budget: "$45,000", color: "bg-blue-500" },
- { id: 4, name: language === 'vi' ? "Ra mắt Chính thức & Go-to-market" : "Official Launch & Go-to-market", startMonth: 6, endMonth: 8, owner: "Sales & MKT", budget: "$120,000", color: "bg-orange-500" },
- { id: 5, name: language === 'vi' ? "Đánh giá Hậu ra mắt" : "Post-launch Evaluation", startMonth: 9, endMonth: 12, owner: "Data Team", budget: "$10,000", color: "bg-slate-500" }
+ { id: 1, name: language === 'vi' ? "Giai đoạn Nghiên cứu Thị trường" : "Market Research Phase", startMonth: 1, endMonth: 2, owner: "Strategy Team", budget: "$15,000", color: "bg-purple-50 dark:bg-purple-500/100" },
+ { id: 2, name: language === 'vi' ? "Phát triển Sản phẩm (Beta)" : "Product Development (Beta)", startMonth: 2, endMonth: 5, owner: "Product Team", budget: "$80,000", color: "bg-blue-50 dark:bg-blue-500/100" },
+ { id: 3, name: language === 'vi' ? "Chiến dịch Marketing Tiền ra mắt" : "Pre-launch Marketing Campaign", startMonth: 4, endMonth: 6, owner: "Marketing", budget: "$45,000", color: "bg-blue-50 dark:bg-blue-500/100" },
+ { id: 4, name: language === 'vi' ? "Ra mắt Chính thức & Go-to-market" : "Official Launch & Go-to-market", startMonth: 6, endMonth: 8, owner: "Sales & MKT", budget: "$120,000", color: "bg-orange-50 dark:bg-orange-500/100" },
+ { id: 5, name: language === 'vi' ? "Đánh giá Hậu ra mắt" : "Post-launch Evaluation", startMonth: 9, endMonth: 12, owner: "Data Team", budget: "$10,000", color: "bg-slate-50 dark:bg-slate-800/500" }
  ];
 
  const MONTHS_VI = ['Th 1', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7', 'Th 8', 'Th 9', 'Th 10', 'Th 11', 'Th 12'];
@@ -42,7 +42,7 @@ export default function TacticalGantt() {
  <td className="py-3 px-4 text-linear-text-muted border-l border-linear-border">
  <span className="bg-linear-surface/50 border border-linear-border border border-linear-border px-2 py-1 rounded text-xs font-bold text-foreground">{t.owner}</span>
  </td>
- <td className="py-3 px-4 text-right text-purple-700 font-bold font-mono border-l border-linear-border">{t.budget}</td>
+ <td className="py-3 px-4 text-right text-purple-700 dark:text-purple-400 font-bold font-mono border-l border-linear-border">{t.budget}</td>
  </tr>
  ))}
  </tbody>

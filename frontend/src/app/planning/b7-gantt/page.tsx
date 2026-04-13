@@ -18,8 +18,8 @@ export default function PageB7Gantt() {
       description={t('b7.desc' as TranslationKey) as string || "Biểu đồ tiến độ thực thi vi mô minh họa tất cả các điểm chạm vận hành trong suốt năm tài chính."}
     >
       <div className="space-y-6">
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-md">
-          <p className="text-sm text-blue-900 font-medium">
+        <div className="bg-blue-50 dark:bg-blue-500/10 border-l-4 border-blue-500 p-4 rounded-r-md">
+          <p className="text-sm text-blue-900 dark:text-blue-400 font-medium">
             <strong>{t('b7.alert_title' as TranslationKey) as string || "Kiểm tra Vận hành:"}</strong> {t('b7.alert_desc' as TranslationKey) as string || "Đảm bảo tất cả các điểm chạm chiến thuật được ánh xạ bên dưới có tương ứng trực tiếp với ngân sách đã được phê duyệt trong Bảng Kế hoạch Hành động (B3)."}
           </p>
         </div>

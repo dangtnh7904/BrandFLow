@@ -35,7 +35,7 @@ export default function TextBuilderForm() {
  newArr[idx] = e.target.value;
  setDirections(newArr);
  }} />
- <button onClick={() => setDirections(directions.filter((_, i) => i !== idx))} className="p-2 text-linear-text-muted hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"><Trash2 className="w-4 h-4" /></button>
+ <button onClick={() => setDirections(directions.filter((_, i) => i !== idx))} className="p-2 text-linear-text-muted hover:text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10 rounded-md transition-colors"><Trash2 className="w-4 h-4" /></button>
  </div>
  ))}
  <button onClick={() => setDirections([...directions, ''])} className="mt-2 flex items-center px-4 py-2 text-sm font-bold text-cyan-700 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-md transition-colors">

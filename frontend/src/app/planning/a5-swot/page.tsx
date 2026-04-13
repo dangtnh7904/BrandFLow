@@ -21,11 +21,11 @@ export default function PageA5Swot() {
   const { localData, saveStatus } = useAutoSaveForm('a5-swot', { items: KSF_DATA });
   const { t } = useLanguage();
   const COLUMNS = [
-    { key: 'ksf', header: 'Yếu tố thành công (CSFs)', className: 'bg-white font-medium text-slate-700' },
-    { key: 'weight', header: 'Trọng số', align: 'center' as const, className: 'bg-slate-100 font-semibold' },
-    { key: 'our_score', header: 'Điểm SBU (1-10)', align: 'center' as const, headerClassName: 'bg-[#eecbff] text-purple-900', className: 'bg-purple-50 text-purple-600 font-bold border-r border-white' },
-    { key: 'comp_score', header: 'Điểm Đối thủ', align: 'center' as const, headerClassName: 'bg-[#ffdec2] text-orange-900', className: 'bg-orange-50 text-orange-600 font-bold' },
-    { key: 'issue', header: 'Vấn đề then chốt rút ra', className: 'bg-white text-slate-600 border-l border-slate-100' },
+    { key: 'ksf', header: 'Yếu tố thành công (CSFs)', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 'weight', header: 'Trọng số', align: 'center' as const, className: 'bg-slate-100 dark:bg-slate-800/30 font-semibold' },
+    { key: 'our_score', header: 'Điểm SBU (1-10)', align: 'center' as const, headerClassName: 'bg-[#eecbff] text-purple-900 dark:text-purple-400', className: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold border-r border-white dark:border-slate-800' },
+    { key: 'comp_score', header: 'Điểm Đối thủ', align: 'center' as const, headerClassName: 'bg-[#ffdec2] text-orange-900 dark:text-orange-400', className: 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold' },
+    { key: 'issue', header: 'Vấn đề then chốt rút ra', className: 'bg-linear-surface text-linear-text-muted border-l border-linear-border' },
   ];
 
   return (
@@ -40,15 +40,15 @@ export default function PageA5Swot() {
           {t('a5.alert_desc' as TranslationKey) as string || "Bạn phải lặp lại Form này cho MỖI phân khúc khách hàng/sản phẩm quan trọng."}
         </InstructionAlert>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest">Phân khúc: Mẹ bỉm sữa & Trẻ em</h3>
+        <div className="bento-card p-6">
+           <h3 className="text-sm font-semibold text-linear-text-muted mb-4 uppercase tracking-widest">Phân khúc: Mẹ bỉm sữa & Trẻ em</h3>
            <PastelTable 
              columns={COLUMNS} 
              data={localData.items}
              footerContent={
                <tr>
                  <td className="px-4 py-3 text-right">Tổng cộng:</td>
-                 <td className="px-4 py-3 text-center text-slate-200">100%</td>
+                 <td className="px-4 py-3 text-center text-linear-text-muted">100%</td>
                  <td className="px-4 py-3 text-center text-purple-200">8.30</td>
                  <td className="px-4 py-3 text-center text-orange-200">7.65</td>
                  <td className="px-4 py-3"></td>

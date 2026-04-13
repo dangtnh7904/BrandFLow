@@ -46,8 +46,8 @@ export default function FinancialDataGrid() {
  <tr>
  <th className="py-3 px-4 font-bold text-linear-text-muted">{language === 'vi' ? 'Chỉ số Tài chính' : 'Financial Metric'}</th>
  <th className="py-3 px-4 font-bold text-linear-text-muted text-right w-32 border-l border-linear-border">{language === 'vi' ? 'Năm (t-1)' : 'Year (t-1)'}</th>
- <th className="py-3 px-4 font-bold text-purple-700 text-right w-32 border-l border-linear-border bg-purple-50">{language === 'vi' ? 'Năm Hiện tại (t0)' : 'Current Year (t0)'}</th>
- <th className="py-3 px-4 font-bold text-blue-700 text-right w-32 border-l border-linear-border bg-blue-50">{language === 'vi' ? 'Dự phóng (t+3)' : 'Projection (t+3)'}</th>
+ <th className="py-3 px-4 font-bold text-purple-700 dark:text-purple-400 text-right w-32 border-l border-linear-border bg-purple-50 dark:bg-purple-500/10">{language === 'vi' ? 'Năm Hiện tại (t0)' : 'Current Year (t0)'}</th>
+ <th className="py-3 px-4 font-bold text-blue-700 dark:text-blue-400 text-right w-32 border-l border-linear-border bg-blue-50 dark:bg-blue-500/10">{language === 'vi' ? 'Dự phóng (t+3)' : 'Projection (t+3)'}</th>
  </tr>
  </thead>
  <tbody>
@@ -55,8 +55,8 @@ export default function FinancialDataGrid() {
  <tr key={idx} className="border-b border-linear-border hover:bg-linear-surface/80 transition-colors">
  <td className="py-3 px-4 font-semibold text-foreground">{row.metric}</td>
  <td className="py-3 px-4 text-right text-linear-text-muted border-l border-linear-border">{formatCurrency(row.tMinus1, row.metric)}</td>
- <td className="py-3 px-4 text-right text-purple-700 border-l border-linear-border font-bold bg-purple-50">{formatCurrency(row.t0, row.metric)}</td>
- <td className="py-3 px-4 text-right text-blue-700 border-l border-linear-border font-bold bg-blue-50">{formatCurrency(row.tPlus3, row.metric)}</td>
+ <td className="py-3 px-4 text-right text-purple-700 dark:text-purple-400 border-l border-linear-border font-bold bg-purple-50 dark:bg-purple-500/10">{formatCurrency(row.t0, row.metric)}</td>
+ <td className="py-3 px-4 text-right text-blue-700 dark:text-blue-400 border-l border-linear-border font-bold bg-blue-50 dark:bg-blue-500/10">{formatCurrency(row.tPlus3, row.metric)}</td>
  </tr>
  ))}
  
@@ -65,8 +65,8 @@ export default function FinancialDataGrid() {
  <tr className="bg-linear-surface/50 border border-linear-border text-foreground font-bold">
  <td className="py-4 px-4">{marginData.metric}</td>
  <td className="py-4 px-4 text-right border-l border-linear-border text-foreground">{marginData.tMinus1.toFixed(1)}%</td>
- <td className="py-4 px-4 text-right border-l border-linear-border text-purple-700">{marginData.t0.toFixed(1)}%</td>
- <td className="py-4 px-4 text-right border-l border-linear-border text-blue-700">{marginData.tPlus3.toFixed(1)}%</td>
+ <td className="py-4 px-4 text-right border-l border-linear-border text-purple-700 dark:text-purple-400">{marginData.t0.toFixed(1)}%</td>
+ <td className="py-4 px-4 text-right border-l border-linear-border text-blue-700 dark:text-blue-400">{marginData.tPlus3.toFixed(1)}%</td>
  </tr>
  )}
  </tbody>

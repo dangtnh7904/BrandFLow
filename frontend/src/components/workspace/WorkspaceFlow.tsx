@@ -7,6 +7,8 @@ import Phase3_Tactics from './Phase3_Tactics';
 import Phase4_Execution from './Phase4_Execution';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+import AmbientParticles from '@/components/AmbientParticles';
+
 export default function WorkspaceFlow() {
  const { t } = useLanguage();
  const [currentStage, setCurrentStage] = useState(1);
@@ -22,7 +24,13 @@ export default function WorkspaceFlow() {
  };
 
  return (
- <div className="flex flex-col h-full w-full bg-background hover:bg-linear-surface/50 relative">
+ <div className="flex flex-col h-full w-full bg-background relative overflow-hidden z-0">
+ {/* Background Decorators */}
+ <div className="absolute inset-0 bg-[url('/img/grid.svg')] opacity-[0.02] dark:opacity-[0.05] z-0 pointer-events-none" />
+ <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyan-500/5 dark:bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+ <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+ <AmbientParticles />
+ 
  
  {/* Global Stage Indicator - Compact & Glassmorphism */}
  <div className="w-full bg-linear-surface/80 border-b border-linear-border backdrop-blur-lg px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] mt-12 md:mt-0 sticky top-0 z-50 transition-all duration-300">

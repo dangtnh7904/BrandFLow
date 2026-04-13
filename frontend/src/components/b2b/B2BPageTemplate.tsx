@@ -3,14 +3,16 @@
 import React from 'react';
 import { Download, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import SaveIndicator from './SaveIndicator';
 
 interface PageTemplateProps {
   title: string;
   description: string;
   children: React.ReactNode;
+  saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
 }
 
-export default function B2BPageTemplate({ title, description, children }: PageTemplateProps) {
+export default function B2BPageTemplate({ title, description, children, saveStatus }: PageTemplateProps) {
   const { t } = useLanguage();
   return (
     <div className="flex flex-col h-full w-full">
@@ -20,7 +22,8 @@ export default function B2BPageTemplate({ title, description, children }: PageTe
           <p className="text-sm text-linear-text-muted mt-1">{description}</p>
         </div>
         <div className="flex items-center space-x-3">
-          <button className="flex items-center px-4 py-2 border border-linear-border rounded-md bg-linear-surface text-sm font-medium text-foreground hover:bg-slate-50 transition-colors shadow-sm">
+          {saveStatus && <SaveIndicator status={saveStatus} />}
+          <button className="flex items-center px-4 py-2 border border-linear-border rounded-md bg-linear-surface text-sm font-medium text-foreground hover:bg-linear-surface/80 transition-colors shadow-sm">
             <Save className="w-4 h-4 mr-2" />
             {t('b2b_tools.save_draft' as any)}
           </button>

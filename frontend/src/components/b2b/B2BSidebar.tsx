@@ -88,13 +88,13 @@ export default function B2BSidebar() {
             <span className="text-white text-xs font-bold">HQ</span>
           </div>
         )}
-        <button onClick={() => setIsCollapsed(!isCollapsed)} className={cn("text-linear-text-muted hover:text-slate-600 transition-colors", isCollapsed ? "absolute right-0 left-0 mx-auto mt-14 hidden" : "")}>
+        <button onClick={() => setIsCollapsed(!isCollapsed)} className={cn("text-linear-text-muted hover:text-linear-text-muted transition-colors", isCollapsed ? "absolute right-0 left-0 mx-auto mt-14 hidden" : "")}>
           {isCollapsed ? null : <PanelLeftClose className="w-4 h-4" />}
         </button>
       </div>
 
       {isCollapsed && (
-        <button onClick={() => setIsCollapsed(false)} className="mx-auto mt-4 text-linear-text-muted hover:text-slate-600 transition-colors">
+        <button onClick={() => setIsCollapsed(false)} className="mx-auto mt-4 text-linear-text-muted hover:text-linear-text-muted transition-colors">
           <PanelLeftOpen className="w-5 h-5" />
         </button>
       )}
@@ -105,7 +105,7 @@ export default function B2BSidebar() {
             {!isCollapsed ? (
               <button
                 onClick={() => toggleSection(section.title)}
-                className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-foreground hover:bg-slate-100 rounded-md transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-foreground hover:bg-slate-100 dark:bg-slate-800/30 rounded-md transition-colors"
                 title={section.title}
               >
                 <div className="flex items-center">
@@ -137,8 +137,8 @@ export default function B2BSidebar() {
                         className={cn(
                           "flex items-center px-3 py-1.5 ml-5 text-sm rounded-md transition-colors",
                           isActive
-                            ? 'bg-blue-50 text-blue-700 font-medium'
-                            : 'text-linear-text-muted hover:text-slate-900 hover:bg-slate-100'
+                            ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-medium'
+                            : 'text-linear-text-muted hover:text-slate-900 hover:bg-slate-100 dark:bg-slate-800/30'
                         )}
                         title={item.label}
                       >

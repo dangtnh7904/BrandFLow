@@ -31,7 +31,7 @@ export default function ScoringMatrix() {
  <p className="text-sm font-medium text-linear-text-muted">{language === 'vi' ? 'Đánh giá Năng lực Cạnh tranh (Weighted Key Success Factors)' : 'Competitive Capability Assessment (Weighted KSFs)'}</p>
  </div>
  {!isValid && (
- <div className="flex items-center text-red-700 bg-red-50 px-3 py-1.5 rounded-md text-sm font-bold border border-red-200">
+ <div className="flex items-center text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-3 py-1.5 rounded-md text-sm font-bold border border-red-200">
  <AlertCircle className="w-4 h-4 mr-2" />
  {language === 'vi' ? `Lỗi tỷ trọng: Tổng Weight phải bằng 100 (Hiện tại: ${totalWeight})` : `Weight Error: Total must equal 100 (Current: ${totalWeight})`}
  </div>
@@ -44,8 +44,8 @@ export default function ScoringMatrix() {
  <tr>
  <th className="py-3 px-4 font-bold text-foreground border-r border-linear-border">Key Success Factor</th>
  <th className="py-3 px-4 font-bold text-center text-foreground w-24 border-r border-linear-border">{language === 'vi' ? 'Trọng số' : 'Weight'} (%)</th>
- <th className="py-3 px-4 font-bold text-center w-32 border-r border-linear-border bg-purple-50 text-purple-700">{language === 'vi' ? 'Điểm của ta' : 'Our Score'} (1-10)</th>
- <th className="py-3 px-4 font-bold text-center w-32 bg-orange-50 text-orange-700">{language === 'vi' ? 'Đối thủ' : 'Competitor'} (1-10)</th>
+ <th className="py-3 px-4 font-bold text-center w-32 border-r border-linear-border bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400">{language === 'vi' ? 'Điểm của ta' : 'Our Score'} (1-10)</th>
+ <th className="py-3 px-4 font-bold text-center w-32 bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400">{language === 'vi' ? 'Đối thủ' : 'Competitor'} (1-10)</th>
  </tr>
  </thead>
  <tbody>
@@ -55,15 +55,15 @@ export default function ScoringMatrix() {
  <td className="py-2 px-2 border-r border-linear-border">
  <input type="number" className="w-full text-center font-semibold py-1.5 bg-background text-foreground border border-linear-border rounded focus:bg-white focus:ring-1 focus:ring-purple-500 outline-none" defaultValue={row.weight} onBlur={(e) => handleWeightChange(row.id, e.target.value)} />
  </td>
- <td className="py-2 px-4 border-r border-linear-border text-center font-bold text-purple-700 bg-purple-50">{row.myScore}</td>
- <td className="py-2 px-4 text-center font-bold text-orange-700 bg-orange-50">{row.compScore}</td>
+ <td className="py-2 px-4 border-r border-linear-border text-center font-bold text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10">{row.myScore}</td>
+ <td className="py-2 px-4 text-center font-bold text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10">{row.compScore}</td>
  </tr>
  ))}
  <tr className="bg-linear-surface/50 border border-linear-border/50 text-foreground font-bold text-base">
  <td className="py-3 px-4 text-right">{language === 'vi' ? 'Tổng Điểm Có Trọng Số:' : 'Weighted Total:'}</td>
- <td className={`py-3 px-4 text-center border-l border-linear-border ${!isValid ? 'text-red-600' : 'text-blue-600'}`}>{totalWeight}%</td>
- <td className="py-3 px-4 text-center border-l border-linear-border text-purple-700">{myCalculatedScore.toFixed(2)}</td>
- <td className="py-3 px-4 text-center border-l border-linear-border text-orange-700">{compCalculatedScore.toFixed(2)}</td>
+ <td className={`py-3 px-4 text-center border-l border-linear-border ${!isValid ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>{totalWeight}%</td>
+ <td className="py-3 px-4 text-center border-l border-linear-border text-purple-700 dark:text-purple-400">{myCalculatedScore.toFixed(2)}</td>
+ <td className="py-3 px-4 text-center border-l border-linear-border text-orange-700 dark:text-orange-400">{compCalculatedScore.toFixed(2)}</td>
  </tr>
  </tbody>
  </table>

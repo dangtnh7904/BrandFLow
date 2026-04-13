@@ -11,11 +11,11 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const INDUSTRIES = [
- { id: 'fb', key: 'ind_fb', icon: Coffee, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200' },
- { id: 'tech', key: 'ind_tech', icon: Laptop, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
- { id: 'edu', key: 'ind_edu', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
- { id: 'cosmetics', key: 'ind_cosmetics', icon: Sparkles, color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-200' },
- { id: 'other', key: 'ind_other', icon: LayoutGrid, color: 'text-linear-text-muted', bg: 'bg-background', border: 'border-linear-border' },
+ { id: 'fb', key: 'ind_fb', icon: Coffee, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-500/10', border: 'border-amber-200 dark:border-amber-500/30' },
+ { id: 'tech', key: 'ind_tech', icon: Laptop, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/10', border: 'border-blue-200 dark:border-blue-500/30' },
+ { id: 'edu', key: 'ind_edu', icon: BookOpen, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/10', border: 'border-blue-200 dark:border-blue-500/30' },
+ { id: 'cosmetics', key: 'ind_cosmetics', icon: Sparkles, color: 'text-pink-600 dark:text-pink-400', bg: 'bg-pink-50 dark:bg-pink-500/10', border: 'border-pink-200 dark:border-pink-500/30' },
+ { id: 'other', key: 'ind_other', icon: LayoutGrid, color: 'text-linear-text-muted', bg: 'bg-background dark:bg-slate-800', border: 'border-linear-border dark:border-slate-700' },
 ];
 
 export default function WizardStep1() {

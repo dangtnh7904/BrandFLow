@@ -95,7 +95,7 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
  };
 
  return (
- <div className="flex h-full w-full overflow-hidden relative bg-background border-t border-linear-border">
+ <div className="flex h-full w-full overflow-hidden relative bg-transparent border-t border-linear-border">
  
  {/* Left Pane: Chat Interface */}
  <div className="w-[450px] shrink-0 h-full bg-linear-surface border-r border-linear-border flex flex-col relative z-10 shadow-sm">

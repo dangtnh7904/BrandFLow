@@ -47,10 +47,10 @@ export default function VisualDashboards() {
  
  {/* Matrix Background quadrants */}
  <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 ml-14 mb-8">
- <div className="border-r border-b border-linear-border border-dashed bg-blue-500/10 flex items-start justify-end p-2 text-xs font-bold text-linear-text-muted">Invest/Grow</div>
- <div className="border-b border-linear-border border-dashed bg-slate-500/10 flex items-start justify-end p-2 text-xs font-bold text-linear-text-muted">Selectivity</div>
- <div className="border-r border-linear-border border-dashed bg-orange-500/10 flex items-start justify-end p-2 text-xs font-bold text-linear-text-muted">Protect</div>
- <div className="bg-red-500/10 flex items-start justify-end p-2 text-xs font-bold text-linear-text-muted">Harvest/Divest</div>
+ <div className="border-r border-b border-linear-border border-dashed bg-blue-50 dark:bg-blue-500/100/10 flex items-start justify-end p-2 text-xs font-bold text-linear-text-muted">Invest/Grow</div>
+ <div className="border-b border-linear-border border-dashed bg-slate-50 dark:bg-slate-800/500/10 flex items-start justify-end p-2 text-xs font-bold text-linear-text-muted">Selectivity</div>
+ <div className="border-r border-linear-border border-dashed bg-orange-50 dark:bg-orange-500/100/10 flex items-start justify-end p-2 text-xs font-bold text-linear-text-muted">Protect</div>
+ <div className="bg-red-50 dark:bg-red-500/100/10 flex items-start justify-end p-2 text-xs font-bold text-linear-text-muted">Harvest/Divest</div>
  </div>
 
  <ResponsiveContainer width="100%" height="100%">

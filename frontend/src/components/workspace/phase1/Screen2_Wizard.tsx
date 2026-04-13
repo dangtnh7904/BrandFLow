@@ -58,7 +58,7 @@ export default function Screen2_Wizard({ onBack, onComplete }: { onBack: () => v
  const STEPS: TranslationKey[] = ["wizard.step_c1", "wizard.step_c2", "wizard.step_c3"];
 
  return (
- <div className="flex flex-col h-full w-full bg-background relative">
+ <div className="flex flex-col h-full w-full bg-transparent relative">
  {/* Pinned Progress Bar */}
  <div className="sticky top-0 z-50 bg-linear-surface/90 backdrop-blur-md border-b border-linear-border pt-8 pb-4 px-8 w-full shadow-sm">
  <div className="max-w-4xl mx-auto">

@@ -83,7 +83,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
         // 4. Load forms đã lưu trước đó
         await get().loadAllForms();
       } else {
-        console.error("Không thể tạo hoặc tìm project.");
+        console.error("LỖI KẾT NỐI: Không thể tạo hoặc tìm project. (Khả năng cao do Máy chủ Backend Python/FastAPI chưa được bật. Vui lòng tắt terminal hiện tại và chạy file start_fullstack.bat để bật cả 2 server cùng lúc)");
         set({ saveStatus: 'error', isLoading: false });
       }
     } catch (e) {

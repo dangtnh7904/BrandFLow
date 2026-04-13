@@ -70,7 +70,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto relative bg-background">
+    <div className="w-full h-full overflow-y-auto relative bg-transparent">
       <div className="flex flex-col p-8 max-w-4xl mx-auto w-full min-h-full">
         <button onClick={onBack} className="absolute left-8 top-8 text-linear-text-muted hover:text-foreground transition-colors flex items-center text-sm font-semibold bento-card !py-2 !px-4 !rounded-lg !shadow-sm">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back

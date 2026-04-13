@@ -18,12 +18,12 @@ const GANTT_DATA = [
 export default function PageB6Gantt() {
   const { localData, saveStatus } = useAutoSaveForm('b6-gantt', { items: GANTT_DATA });
   const COLUMNS = [
-    { key: 'name', header: 'Chiến dịch / Hành động', className: 'bg-white font-medium text-slate-800', width: '250px' },
-    { key: 't8', header: 'Tháng 8', align: 'center' as const, render: (r: any) => r.t8 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-white bg-slate-50' },
-    { key: 't9', header: 'Tháng 9', align: 'center' as const, render: (r: any) => r.t9 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-white bg-slate-50' },
-    { key: 't10', header: 'Tháng 10', align: 'center' as const, render: (r: any) => r.t10 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-white bg-slate-50' },
-    { key: 't11', header: 'Tháng 11', align: 'center' as const, render: (r: any) => r.t11 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-white bg-slate-50' },
-    { key: 't12', header: 'Tháng 12', align: 'center' as const, render: (r: any) => r.t12 ? <div className="h-6 w-full bg-emerald-400 rounded-sm"></div> : null, className: 'border-l border-white bg-slate-50' },
+    { key: 'name', header: 'Chiến dịch / Hành động', className: 'bg-linear-surface font-medium text-foreground', width: '250px' },
+    { key: 't8', header: 'Tháng 8', align: 'center' as const, render: (r: any) => r.t8 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-linear-border bg-linear-surface' },
+    { key: 't9', header: 'Tháng 9', align: 'center' as const, render: (r: any) => r.t9 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-linear-border bg-linear-surface' },
+    { key: 't10', header: 'Tháng 10', align: 'center' as const, render: (r: any) => r.t10 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-linear-border bg-linear-surface' },
+    { key: 't11', header: 'Tháng 11', align: 'center' as const, render: (r: any) => r.t11 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-linear-border bg-linear-surface' },
+    { key: 't12', header: 'Tháng 12', align: 'center' as const, render: (r: any) => r.t12 ? <div className="h-6 w-full bg-cyan-500 rounded-sm"></div> : null, className: 'border-l border-linear-border bg-linear-surface' },
   ];
 
   return (
@@ -38,7 +38,7 @@ export default function PageB6Gantt() {
           Biểu đồ Gantt theo tháng/tuần đánh dấu thời gian bắt đầu và kết thúc của các chiến dịch lớn.
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 overflow-x-auto">
+        <div className="bento-card p-6 overflow-x-auto">
            <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/b5-pnl" prevLabel="Về B.5" nextLink="/planning/c0-overview" nextLabel="Hoàn thành Phần B! 👉 Sang Phần C" />

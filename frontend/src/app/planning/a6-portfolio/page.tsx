@@ -19,10 +19,10 @@ export default function PageA6Portfolio() {
   const { localData, saveStatus } = useAutoSaveForm('a6-portfolio', { items: DPM_DATA });
   const { t } = useLanguage();
   const COLUMNS = [
-    { key: 'segment', header: 'Phân khúc', className: 'bg-white font-medium text-slate-700' },
-    { key: 'attr', header: 'Sức hấp dẫn thị trường', align: 'center' as const, className: 'bg-sky-50 text-sky-700 font-semibold' },
-    { key: 'pos', header: 'Vị thế cạnh tranh', align: 'center' as const, className: 'bg-emerald-50 text-emerald-700 font-semibold border-l border-white' },
-    { key: 'decision', header: 'Quyết định đầu tư', className: 'bg-white text-slate-600' },
+    { key: 'segment', header: 'Phân khúc', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 'attr', header: 'Sức hấp dẫn thị trường', align: 'center' as const, className: 'bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 font-semibold' },
+    { key: 'pos', header: 'Vị thế cạnh tranh', align: 'center' as const, className: 'bg-cyan-500/10 text-cyan-400 font-semibold border-l border-white dark:border-slate-800' },
+    { key: 'decision', header: 'Quyết định đầu tư', className: 'bg-linear-surface text-linear-text-muted' },
   ];
 
   return (
@@ -37,13 +37,13 @@ export default function PageA6Portfolio() {
           {t('a6.strategy' as TranslationKey) as string || "Xuất ra một ma trận trực quan với trục tung/hoành phân loại các phân khúc."}
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div className="bento-card p-6">
            <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         
         {/* Placeholder for visual 2x2 or 3x3 matrix */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 min-h-[300px] flex items-center justify-center">
-           <span className="text-slate-400">--- DPM / GE Matrix Interactive Chart ---</span>
+        <div className="bento-card p-6 min-h-[300px] flex items-center justify-center">
+           <span className="text-linear-text-muted">--- DPM / GE Matrix Interactive Chart ---</span>
         </div>
         <WizardNavigation prevLink="/planning/a5-swot" prevLabel="Về A.5" nextLink="/planning/a7-assumptions" nextLabel="Tiếp tục: A.7 Giả định" />
       </div>

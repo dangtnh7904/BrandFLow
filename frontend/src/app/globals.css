@@ -7,7 +7,20 @@
   --color-linear-surface: var(--surface);
   --color-linear-border: var(--border);
   --color-linear-text-muted: var(--text-muted);
+  
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-sweep: sweep 1.5s ease-in-out infinite;
+  
+  @keyframes sweep {
+    0% { transform: translateX(-150%) skewX(30deg); }
+    100% { transform: translateX(200%) skewX(30deg); }
+  }
 }
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 
 @layer base {
   :root {
@@ -21,9 +34,9 @@
   .dark {
     --background: #0B1120;
     --foreground: #ffffff;
-    --surface: #1e293b;
-    --border: #334155;
-    --text-muted: #94a3b8;
+    --surface: #0F172A; /* Deep Slate replacing greyish 1e293b */
+    --border: #1E293B; /* Softer border shifting towards blue */
+    --text-muted: #8496ae;
   }
 }
 
@@ -33,6 +46,11 @@ body {
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-space-grotesk), Arial, Helvetica, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 @layer utilities {

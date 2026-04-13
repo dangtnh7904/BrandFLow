@@ -70,8 +70,8 @@ export default function WizardStep3() {
  className={cn(
  "relative p-4 rounded-xl cursor-pointer transition-all duration-200 border flex items-start",
  isSelected 
- ? "bg-red-50 border-red-300 shadow-sm scale-[1.02]" 
- : "bg-linear-surface border-linear-border hover:bg-linear-surface/80 hover:border-cyan-500/30"
+ ? "bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/50 shadow-sm scale-[1.02]" 
+ : "bg-linear-surface border-linear-border hover:bg-linear-surface/80 hover:border-cyan-500/30 dark:hover:border-slate-600"
  )}
  >
  <Icon className={cn("w-6 h-6 mt-1", isSelected ? "text-red-500" : "text-linear-text-muted")} />
@@ -101,7 +101,7 @@ export default function WizardStep3() {
  className={cn(
  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border",
  isSelected 
- ? "bg-orange-50 text-orange-700 border-orange-300 shadow-sm" 
+ ? "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-300 dark:border-orange-500/50 shadow-sm" 
  : "bg-linear-surface text-linear-text-muted border-linear-border hover:border-cyan-500/30"
  )}
  >
@@ -129,7 +129,7 @@ export default function WizardStep3() {
  step="1000"
  value={revenue} 
  onChange={(e) => setRevenue(Number(e.target.value))}
- className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+ className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
  />
  <div className="flex justify-between items-center text-xs text-linear-text-muted mt-4">
  <span>$1k</span>
@@ -170,7 +170,7 @@ export default function WizardStep3() {
  value={businessNote}
  onChange={(e) => setBusinessNote(e.target.value)}
  placeholder={t('wizard.step3_note_ph')}
- className="w-full px-4 py-3 bg-linear-surface text-foreground border border-linear-border rounded-xl shadow-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-400"
+ className="w-full px-4 py-3 bg-linear-surface text-foreground border border-linear-border rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#0B1120] focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500/50 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-400"
  />
  </div>
  </div>

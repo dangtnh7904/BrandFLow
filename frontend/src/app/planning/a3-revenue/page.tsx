@@ -19,12 +19,12 @@ export default function PageA3Revenue() {
   const { localData, saveStatus } = useAutoSaveForm('a3-revenue', { items: FIN_DATA });
   const { t } = useLanguage();
   const FIN_COLUMNS = [
-    { key: 'metric', header: 'Hạng mục dự báo', className: 'bg-white font-medium text-slate-700' },
-    { key: 't0', header: 'Năm t0 (Nay)', align: 'center' as const, headerClassName: 'bg-purple-100 text-purple-900', className: 'bg-purple-50 font-semibold text-purple-700' },
-    { key: 't1', header: 'Năm t+1', align: 'center' as const, className: 'bg-slate-50 text-slate-600' },
-    { key: 't2', header: 'Năm t+2', align: 'center' as const, className: 'bg-slate-50 text-slate-600' },
-    { key: 't3', header: 'Năm t+3', align: 'center' as const, headerClassName: 'bg-emerald-100 text-emerald-900', className: 'bg-emerald-50 font-bold text-emerald-700' },
-    { key: 'source', header: 'Nguồn tăng trưởng', className: 'bg-white text-slate-600 text-xs' },
+    { key: 'metric', header: 'Hạng mục dự báo', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 't0', header: 'Năm t0 (Nay)', align: 'center' as const, headerClassName: 'bg-purple-100 dark:bg-purple-900/30 text-purple-900 dark:text-purple-400', className: 'bg-purple-50 dark:bg-purple-500/10 font-semibold text-purple-700 dark:text-purple-400' },
+    { key: 't1', header: 'Năm t+1', align: 'center' as const, className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
+    { key: 't2', header: 'Năm t+2', align: 'center' as const, className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
+    { key: 't3', header: 'Năm t+3', align: 'center' as const, headerClassName: 'bg-cyan-500/10 text-cyan-400', className: 'bg-cyan-500/10 font-bold text-cyan-400' },
+    { key: 'source', header: 'Nguồn tăng trưởng', className: 'bg-linear-surface text-linear-text-muted text-xs' },
   ];
 
   return (
@@ -35,20 +35,20 @@ export default function PageA3Revenue() {
       description={t('a3.desc' as TranslationKey) as string || "Tính toán và trực quan hóa kỳ vọng P&L dài hạn."}
     >
       <div className="space-y-6">
-        <InstructionAlert className="!bg-[#e6fcf2] !border-emerald-400 !text-emerald-800">
+        <InstructionAlert className="!bg-cyan-500/10 border-cyan-500 !text-cyan-400">
            <strong>{t('a3.alert_title' as TranslationKey) as string || "Mục tiêu Tài chính:"}</strong> {t('a3.alert_desc' as TranslationKey) as string || "Bảng tóm tắt trực quan để người đọc nắm bắt ngay kết quả tài chính (từ Form 3)."}
         </InstructionAlert>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest">Dự báo (Projections)</h3>
+        <div className="bento-card p-6">
+           <h3 className="text-sm font-semibold text-linear-text-muted mb-4 uppercase tracking-widest">Dự báo (Projections)</h3>
            <PastelTable columns={FIN_COLUMNS} data={localData.items} />
         </div>
 
         {/* Charts Mock */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 min-h-[350px] flex flex-col">
-           <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest text-center">Biểu đồ Doanh Thu Cột/Đường</h3>
-           <div className="flex-1 flex items-center justify-center border-2 border-dashed border-slate-100 rounded-lg">
-             <span className="text-slate-400">--- Chart Area ---</span>
+        <div className="bento-card p-6 min-h-[350px] flex flex-col">
+           <h3 className="text-sm font-semibold text-linear-text-muted mb-4 uppercase tracking-widest text-center">Biểu đồ Doanh Thu Cột/Đường</h3>
+           <div className="flex-1 flex items-center justify-center border-2 border-dashed border-linear-border rounded-lg">
+             <span className="text-linear-text-muted">--- Chart Area ---</span>
            </div>
         </div>
         

@@ -20,7 +20,7 @@ export default function B2BHeader() {
  <div className="flex items-center space-x-4">
  <button className="text-linear-text-muted hover:text-foreground transition-colors relative">
  <Bell className="w-5 h-5" />
- <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+ <span className="absolute top-0 right-0 w-2 h-2 bg-red-50 dark:bg-red-500/100 rounded-full border-2 border-white dark:border-slate-800"></span>
  </button>
  <button className="text-linear-text-muted hover:text-foreground transition-colors">
  <Settings className="w-5 h-5" />

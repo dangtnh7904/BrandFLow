@@ -11,7 +11,7 @@ export default function Phase1_Ingestion({ onNext }: { onNext: (data: any) => vo
  const [currentScreen, setCurrentScreen] = useState<1 | 2 | 3>(1);
 
  return (
- <div className="w-full h-full relative overflow-hidden bg-background">
+ <div className="w-full h-full relative overflow-hidden bg-transparent">
  <AnimatePresence mode="wait">
  {currentScreen === 1 && (
  <motion.div 

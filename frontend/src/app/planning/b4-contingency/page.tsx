@@ -14,7 +14,7 @@ const CONT_DATA = [
 ];
 
 export default function PageB4Contingency() {
-  const { localData, saveStatus } = useAutoSaveForm('b4-contingency', { items: CONT_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('b4-contingency', { items: [] });
   const COLUMNS = [
     { key: 'risk', header: 'Giả định rủi ro', className: 'bg-white font-medium text-slate-700' },
     { key: 'level', header: 'Mức độ', align: 'center' as const, className: 'bg-amber-50 text-amber-700 font-semibold border-x border-white' },

@@ -14,7 +14,7 @@ const OBJ_DATA = [
 ];
 
 export default function PageB1Objectives() {
-  const { localData, saveStatus } = useAutoSaveForm('b1-objectives', { items: OBJ_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('b1-objectives', { items: [] });
   const COLUMNS = [
     { key: 'pair', header: 'Cặp Sản phẩm / Phân khúc', className: 'bg-white font-medium text-slate-700' },
     { key: 'vol', header: 'Mục tiêu Khối lượng', align: 'center' as const, className: 'bg-indigo-50 font-semibold text-indigo-700' },
@@ -25,29 +25,29 @@ export default function PageB1Objectives() {
 
   return (
     <>
-    <B2BPageTemplate
-      saveStatus={saveStatus}
-      title="Mục tiêu và Chiến lược Tổng thể (1 Năm)"
-      description="Chiến lược và ngân sách phân bổ theo từng Sản phẩm / Phân khúc."
-    >
-      <div className="space-y-6">
-        <InstructionAlert>
-          Bảng Mục tiêu Định lượng và Danh sách Chiến lược (đã gộp Form 1 & 2 của Kế hoạch Vận hành).
-        </InstructionAlert>
-        
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={localData.items} />
+      <B2BPageTemplate
+        saveStatus={saveStatus}
+        title="Mục tiêu và Chiến lược Tổng thể (1 Năm)"
+        description="Chiến lược và ngân sách phân bổ theo từng Sản phẩm / Phân khúc."
+      >
+        <div className="space-y-6">
+          <InstructionAlert>
+            Bảng Mục tiêu Định lượng và Danh sách Chiến lược (đã gộp Form 1 & 2 của Kế hoạch Vận hành).
+          </InstructionAlert>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <PastelTable columns={COLUMNS} data={localData.items} />
+          </div>
+          <WizardNavigation prevLink="/planning/b0-overview" prevLabel="Về B.0 Tổng quan" nextLink="/planning/b2-action" nextLabel="Tiếp tục: B.2 Kế hoạch Hành động" />
         </div>
-        <WizardNavigation prevLink="/planning/b0-overview" prevLabel="Về B.0 Tổng quan" nextLink="/planning/b2-action" nextLabel="Tiếp tục: B.2 Kế hoạch Hành động" />
-      </div>
-    </B2BPageTemplate>
-    <MascotChatbot 
-      formName="B.1 Mục tiêu Vận hành"
-      purpose="Giờ là lúc chẻ nhỏ giấc mơ 3 năm ở Phần A thành các mục tiêu 12 tháng. Phải rõ ràng để nhân viên hiểu họ cần làm gì ngay ngày mai!"
-      sections={[
-        { title: 'Tác động mong đợi', explanation: 'Chỉ số đo lường thành công là gì? Ví dụ: Tăng 20% lượng user mới.' }
-      ]}
-    />
+      </B2BPageTemplate>
+      <MascotChatbot
+        formName="B.1 Mục tiêu Vận hành"
+        purpose="Giờ là lúc chẻ nhỏ giấc mơ 3 năm ở Phần A thành các mục tiêu 12 tháng. Phải rõ ràng để nhân viên hiểu họ cần làm gì ngay ngày mai!"
+        sections={[
+          { title: 'Tác động mong đợi', explanation: 'Chỉ số đo lường thành công là gì? Ví dụ: Tăng 20% lượng user mới.' }
+        ]}
+      />
     </>
   );
 }

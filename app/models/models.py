@@ -31,6 +31,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=True, index=True)
     display_name = Column(String(255), nullable=True)
     tier = Column(String(10), default="FREE", nullable=False)  # FREE / PLUS / PRO
+    password_hash = Column(String(255), nullable=True) # Mật khẩu mã hoá (NẾU ĐĂNG KÝ BẰNG EMAIL)
     avatar_url = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=_now, nullable=False)

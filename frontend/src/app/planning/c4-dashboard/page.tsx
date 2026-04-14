@@ -16,7 +16,7 @@ const DASHBOARD_DATA = [
 ];
 
 export default function PageC4Dashboard() {
-  const { localData, saveStatus } = useAutoSaveForm('c4-dashboard', { items: DASHBOARD_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('c4-dashboard', { items: [] });
   const COLUMNS = [
     { key: 'sbu', header: 'SBU/Đơn vị', className: 'bg-white font-medium text-slate-700' },
     { key: 'kpi', header: 'KPI Đo lường', className: 'bg-slate-50 text-slate-700' },

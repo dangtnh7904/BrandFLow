@@ -16,7 +16,7 @@ const PERF_DATA = [
 ];
 
 export default function PageA2Performance() {
-  const { localData, saveStatus } = useAutoSaveForm('a2-performance', { items: PERF_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('a2-performance', { items: [] });
   const COLUMNS = [
     { key: 'metric', header: 'Chỉ số (Cố định giá)', className: 'bg-white font-medium text-slate-700' },
     { key: 'y3', header: 'Năm t-3 (2023)', align: 'center' as const, className: 'bg-slate-50 text-slate-600' },

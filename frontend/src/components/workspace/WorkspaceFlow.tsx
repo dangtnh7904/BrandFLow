@@ -9,16 +9,22 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function WorkspaceFlow() {
   const { t } = useLanguage();
-  const [currentStage, setCurrentStage] = useState(1);
+  const [currentStage, setCurrentStage] = useState(() => {
+    if (typeof window !== 'undefined') {
+       return parseInt(localStorage.getItem('bf_ws_stage') || '1');
+    }
+    return 1;
+  });
   const [globalBudget, setGlobalBudget] = useState('100000000');
 
   const goToState = (stage: number) => {
     setCurrentStage(stage);
+    if (typeof window !== 'undefined') localStorage.setItem('bf_ws_stage', stage.toString());
   };
 
   const handlePhase1Next = (data: any) => {
     if (data.budget) setGlobalBudget(data.budget);
-    setCurrentStage(2);
+    goToState(2);
   };
 
   return (

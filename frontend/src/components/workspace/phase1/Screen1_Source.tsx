@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UploadCloud, Link as LinkIcon, FileText, CheckCircle2, Globe, Share2, Plus, X, ShieldCheck, Lock, Server } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -19,6 +19,87 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
   const [isDragging, setIsDragging] = useState(false);
   const [socialLinks, setSocialLinks] = useState(['']);
   const [webLinks, setWebLinks] = useState(['']);
+
+  // Upload states
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [uploadResult, setUploadResult] = useState<any>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Upload trực tiếp tới backend (bypass Next.js proxy body size limit)
+  const BACKEND_URL = typeof window !== 'undefined'
+    ? `${window.location.protocol}//${window.location.hostname}:8000`
+    : 'http://127.0.0.1:8000';
+
+  const handleUpload = async (filesToUpload: File[]) => {
+    setUploadStatus('uploading');
+    setUploadError(null);
+    setUploadResult(null);
+
+    try {
+      const formData = new FormData();
+      filesToUpload.forEach(file => formData.append('files', file));
+
+      // Try full upload first (saves to ChromaDB), fallback to test-upload (extract only)
+      let res: Response;
+      try {
+        res = await fetch(`${BACKEND_URL}/api/v1/onboarding/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+      } catch {
+        // Backend unreachable on direct port, fallback to Next.js proxy
+        res = await fetch('/api/v1/onboarding/upload', {
+          method: 'POST',
+          body: formData,
+        });
+      }
+
+      // Fallback: if ChromaDB/AI pipeline unavailable, use extract-only endpoint
+      if (!res.ok && (res.status === 500 || res.status === 503)) {
+        const fallbackForm = new FormData();
+        filesToUpload.forEach(file => fallbackForm.append('files', file));
+        try {
+          res = await fetch(`${BACKEND_URL}/api/v1/onboarding/test-upload`, {
+            method: 'POST',
+            body: fallbackForm,
+          });
+        } catch {
+          res = await fetch('/api/v1/onboarding/test-upload', {
+            method: 'POST',
+            body: fallbackForm,
+          });
+        }
+      }
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: 'Upload thất bại' }));
+        throw new Error(err.detail || `Lỗi ${res.status}`);
+      }
+
+      const data = await res.json();
+      
+      // Combine extracted text segments to save for later gap analysis
+      let fullText = "";
+      Object.keys(data).forEach(key => {
+        if (key !== 'status' && key !== 'message' && typeof data[key] === 'object') {
+           if (data[key].cleaned_text) fullText += data[key].cleaned_text + "\n";
+        }
+      });
+      if (!fullText && data.data && data.data.text) fullText = data.data.text;
+      
+      if (typeof window !== 'undefined') {
+          localStorage.setItem('bf_doc_text', fullText);
+      }
+      
+      setUploadResult(data.data || data);
+      setUploadStatus('success');
+    } catch (err: any) {
+      setUploadError(err.message || 'Lỗi kết nối máy chủ khi upload.');
+      setUploadStatus('error');
+    }
+  };
 
   const CARDS = [
     {
@@ -48,11 +129,8 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
   };
 
   const handleProceed = () => {
-    if (selectedSources.includes('questionnaire')) {
-       onNext('wizard');
-    } else {
-       onNext('dashboard');
-    }
+    // Luôn luôn hướng user tới màn hình Wizard (Câu hỏi Lãnh đạo) thay vì cho phép bỏ qua để đảm bảo quy trình phân tích Gaps
+    onNext('wizard');
   };
 
   const updateArray = (arr: string[], setArr: any, index: number, val: string) => {
@@ -72,7 +150,7 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full h-full overflow-y-auto relative">
       <div className="flex flex-col items-center p-8 max-w-5xl mx-auto w-full min-h-full">
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -127,15 +205,100 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
                  className="w-full mb-6 overflow-hidden"
                >
                  <div 
-                   className={cn("w-full border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center transition-colors h-48", isDragging ? "bg-blue-50 border-blue-400" : "bg-slate-50 border-slate-300 hover:border-slate-400 hover:bg-slate-100")}
+                   className={cn("w-full border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center transition-colors cursor-pointer", isDragging ? "bg-blue-50 border-blue-400" : "bg-slate-50 border-slate-300 hover:border-slate-400 hover:bg-slate-100", uploadStatus === 'uploading' ? "pointer-events-none opacity-60" : "")}
                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                    onDragLeave={() => setIsDragging(false)}
-                   onDrop={(e) => { e.preventDefault(); setIsDragging(false); }}
+                   onDrop={(e) => {
+                     e.preventDefault();
+                     setIsDragging(false);
+                     const droppedFiles = Array.from(e.dataTransfer.files);
+                     if (droppedFiles.length > 0) {
+                       setFiles(prev => [...prev, ...droppedFiles]);
+                       handleUpload(droppedFiles);
+                     }
+                   }}
+                   onClick={() => fileInputRef.current?.click()}
                  >
-                     <UploadCloud className="w-10 h-10 text-slate-400 mb-3" />
-                     <p className="text-slate-800 font-bold mb-1">{t('screen1.upload_zone')}</p>
-                     <p className="text-xs text-slate-500">{t('screen1.upload_zone_desc')}</p>
+                     <input 
+                       ref={fileInputRef}
+                       type="file" 
+                       multiple 
+                       accept=".pdf,.docx,.txt,.csv"
+                       className="hidden"
+                       onChange={(e) => {
+                         const selected = Array.from(e.target.files || []);
+                         if (selected.length > 0) {
+                           setFiles(prev => [...prev, ...selected]);
+                           handleUpload(selected);
+                         }
+                         e.target.value = '';
+                       }}
+                     />
+                     {uploadStatus === 'uploading' ? (
+                       <div className="flex flex-col items-center">
+                         <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-3" />
+                         <p className="text-blue-600 font-bold text-sm">Đang tải lên & phân tích...</p>
+                       </div>
+                     ) : (
+                       <>
+                         <UploadCloud className="w-10 h-10 text-slate-400 mb-3" />
+                         <p className="text-slate-800 font-bold mb-1">{t('screen1.upload_zone')}</p>
+                         <p className="text-xs text-slate-500">{t('screen1.upload_zone_desc')}</p>
+                       </>
+                     )}
                  </div>
+
+                 {/* Uploaded Files List */}
+                 {files.length > 0 && (
+                   <div className="mt-3 space-y-2">
+                     {files.map((file, idx) => (
+                       <div key={idx} className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm">
+                         <div className="flex items-center gap-3 min-w-0">
+                           <FileText className="w-5 h-5 text-red-500 shrink-0" />
+                           <div className="min-w-0">
+                             <p className="text-sm font-semibold text-slate-800 truncate">{file.name}</p>
+                             <p className="text-[10px] text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                           </div>
+                         </div>
+                         <div className="flex items-center gap-2 shrink-0">
+                           {uploadStatus === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                           {uploadStatus === 'error' && <span className="text-[10px] text-rose-500 font-bold">Lỗi</span>}
+                           <button onClick={(e) => { e.stopPropagation(); setFiles(prev => prev.filter((_, i) => i !== idx)); }} className="text-slate-400 hover:text-rose-500 transition-colors p-1 rounded-lg hover:bg-rose-50">
+                             <X className="w-4 h-4" />
+                           </button>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 )}
+
+                 {/* Upload Result Preview */}
+                 {uploadResult && (
+                   <div className="mt-3 bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                     <p className="text-xs font-bold text-emerald-700 mb-2 flex items-center gap-1.5">
+                       <CheckCircle2 className="w-4 h-4" /> Phân tích hoàn tất
+                     </p>
+                     {/* ChromaDB upload: {message: "..."} */}
+                     {uploadResult.message && (
+                       <p className="text-[11px] text-slate-600">{uploadResult.message}</p>
+                     )}
+                     {/* Test-upload: {filename: {cleaned_text: "..."}} */}
+                     {!uploadResult.message && typeof uploadResult === 'object' && (
+                       Object.entries(uploadResult).filter(([key]) => key !== 'status').map(([filename, data]: [string, any]) => (
+                         <div key={filename} className="mb-2">
+                           <p className="text-[11px] font-semibold text-slate-700">{filename}</p>
+                           <p className="text-[11px] text-slate-500 line-clamp-3 leading-relaxed">{typeof data === 'object' ? data.cleaned_text?.substring(0, 300) : String(data).substring(0, 300)}...</p>
+                         </div>
+                       ))
+                     )}
+                   </div>
+                 )}
+
+                 {uploadError && (
+                   <div className="mt-3 bg-rose-50 border border-rose-200 rounded-xl p-4">
+                     <p className="text-xs font-bold text-rose-600">{uploadError}</p>
+                   </div>
+                 )}
                  
                  {/* ENTERPRISE SECURITY AUDIT & TRUST BADGE */}
                  <motion.div 

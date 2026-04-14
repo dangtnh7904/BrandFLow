@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 import { motion } from 'framer-motion';
@@ -16,7 +16,9 @@ import {
   Network,
   PanelLeftClose,
   PanelLeftOpen,
-  PenSquare
+  PenSquare,
+  LogOut,
+  User
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -77,8 +79,26 @@ const MENU_ITEMS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { t, language, toggleLanguage } = useLanguage();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const email = localStorage.getItem('brandflow_email');
+    setUserEmail(email);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('brandflow_token');
+    localStorage.removeItem('brandflow_user_id');
+    localStorage.removeItem('brandflow_email');
+    // Xóa rác Caching của quy trình Nhập liệu
+    localStorage.removeItem('bf_ws_stage');
+    localStorage.removeItem('bf_phase1_screen');
+    localStorage.removeItem('bf_doc_text');
+    window.location.href = '/login';
+  };
 
   return (
     <motion.aside 
@@ -188,7 +208,36 @@ export default function Sidebar() {
 
       <div className={cn("mt-auto pb-4 shrink-0 pt-2 bg-linear-surface/30 backdrop-blur-md relative z-10", isCollapsed ? "px-2" : "px-4")}>
 
-         
+         {/* User Profile & Logout */}
+         {userEmail && (
+           <div className={cn(
+             "mb-3 rounded-xl border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white p-2.5 transition-all",
+             isCollapsed ? "flex flex-col items-center" : ""
+           )}>
+             <div className={cn("flex items-center", isCollapsed ? "flex-col gap-1" : "gap-2.5")}>
+               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shrink-0 shadow-sm">
+                 <span className="text-white text-xs font-bold">{userEmail.charAt(0).toUpperCase()}</span>
+               </div>
+               {!isCollapsed && (
+                 <div className="flex-1 min-w-0">
+                   <p className="text-xs font-semibold text-slate-700 truncate" title={userEmail}>{userEmail}</p>
+                   <p className="text-[10px] text-slate-400">Free Plan</p>
+                 </div>
+               )}
+               <button
+                 onClick={handleLogout}
+                 className={cn(
+                   "flex items-center justify-center rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all",
+                   isCollapsed ? "w-8 h-8 mt-1" : "w-8 h-8"
+                 )}
+                 title="Đăng xuất"
+               >
+                 <LogOut className="w-4 h-4" />
+               </button>
+             </div>
+           </div>
+         )}
+
          <div className={cn("flex gap-2 items-center", isCollapsed ? "flex-col" : "")}>
             <button 
               onClick={() => setIsCollapsed(!isCollapsed)}

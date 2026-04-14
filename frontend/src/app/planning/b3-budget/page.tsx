@@ -15,7 +15,7 @@ const BUDGET_DATA = [
 ];
 
 export default function PageB3Budget() {
-  const { localData, saveStatus } = useAutoSaveForm('b3-budget', { items: BUDGET_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('b3-budget', { items: [] });
   const COLUMNS = [
     { key: 'item', header: 'Hạng mục chi phí', className: 'bg-white font-medium text-slate-700' },
     { key: 'past', header: 'Năm ngoái', align: 'right' as const, className: 'bg-slate-50 text-slate-500' },

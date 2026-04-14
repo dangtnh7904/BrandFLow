@@ -25,10 +25,10 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-blue-600 transition-colors hidden sm:block">
+          <Link href="/login" className="text-sm font-medium text-foreground hover:text-blue-600 transition-colors hidden sm:block">
             Đăng nhập
           </Link>
-          <Link href="/dashboard">
+          <Link href="/login">
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

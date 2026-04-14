@@ -14,7 +14,7 @@ const ACTION_DATA = [
 ];
 
 export default function PageB2Action() {
-  const { localData, saveStatus } = useAutoSaveForm('b2-action', { items: ACTION_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('b2-action', { items: [] });
   const COLUMNS = [
     { key: 'obj', header: 'Mục tiêu phụ', className: 'bg-white font-medium text-slate-700', width: '200px' },
     { key: 'tactic', header: 'Hành động / Chiến thuật', className: 'bg-slate-50 text-slate-700' },

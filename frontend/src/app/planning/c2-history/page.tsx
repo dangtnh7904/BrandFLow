@@ -15,7 +15,7 @@ const PORT_DATA = [
 ];
 
 export default function PageC2History() {
-  const { localData, saveStatus } = useAutoSaveForm('c2-history', { items: PORT_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('c2-history', { items: [] });
   const COLUMNS = [
     { key: 'bcg', header: 'Phân loại SBU (BCG)', className: 'bg-white font-bold text-slate-700' },
     { key: 'sbu', header: 'Tên Đơn vị kinh doanh', className: 'bg-slate-50 text-slate-600' },

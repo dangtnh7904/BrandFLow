@@ -1,18 +1,22 @@
 import { create } from 'zustand';
 
-// Dev user mặc định - sau này thay bằng JWT auth
-const DEV_USER_ID = "user-001";
 const PROJECT_NAME = "BrandFlow Strategy Plan";
 
+// Hàm lấy User ID an toàn từ LocalStorage
+const getUserId = () => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('brandflow_user_id') || "";
+  }
+  return "";
+};
+
 interface FormStore {
-  // Trạng thái
   forms: Record<string, any>;
   projectId: string | null;
   isLoading: boolean;
   saveStatus: 'idle' | 'saving' | 'saved' | 'error';
   initialized: boolean;
 
-  // Hành động
   loadAllForms: () => Promise<void>;
   updateForm: (formKey: string, data: any) => Promise<void>;
   initializeProject: () => Promise<void>;
@@ -26,27 +30,20 @@ export const useFormStore = create<FormStore>((set, get) => ({
   initialized: false,
 
   initializeProject: async () => {
-    // Chỉ chạy 1 lần duy nhất
     if (get().initialized) return;
+    
+    const tokenUserId = getUserId();
+    if (!tokenUserId) {
+      if (typeof window !== 'undefined') window.location.href = '/login';
+      return;
+    }
+
     set({ initialized: true });
 
     try {
-      // 1. Tạo user trước (upsert)
-      await fetch('/api/v1/forms/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-User-Id': DEV_USER_ID,
-        },
-        body: JSON.stringify({
-          email: "dev@brandflow.vn",
-          display_name: "Dev User"
-        })
-      });
-
-      // 2. List projects của user, tìm project đã có
+      // List projects của user, tìm project đã có
       const listRes = await fetch('/api/v1/forms/projects', {
-        headers: { 'X-User-Id': DEV_USER_ID }
+        headers: { 'X-User-Id': tokenUserId }
       });
       
       let projectId: string | null = null;
@@ -54,7 +51,6 @@ export const useFormStore = create<FormStore>((set, get) => ({
       if (listRes.ok) {
         const projects = await listRes.json();
         if (projects.length > 0) {
-          // Dùng project đầu tiên
           projectId = projects[0].id;
         }
       }
@@ -65,7 +61,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-User-Id': DEV_USER_ID,
+            'X-User-Id': tokenUserId,
           },
           body: JSON.stringify({
             name: PROJECT_NAME,
@@ -99,7 +95,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
     set({ isLoading: true });
     try {
       const res = await fetch(`/api/v1/forms/projects/${projectId}/forms`, {
-        headers: { 'X-User-Id': DEV_USER_ID }
+        headers: { 'X-User-Id': getUserId() }
       });
       if (res.ok) {
         const json = await res.json();
@@ -135,7 +131,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-User-Id': DEV_USER_ID
+          'X-User-Id': getUserId()
         },
         body: JSON.stringify({ data: newData })
       });

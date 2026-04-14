@@ -15,7 +15,7 @@ const MAP_DATA = [
 ];
 
 export default function PageA4Market() {
-  const { localData, saveStatus } = useAutoSaveForm('a4-market', { items: MAP_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('a4-market', { items: [] });
   const COLUMNS = [
     { key: 'point', header: 'Điểm luân chuyển / Kênh', className: 'bg-white font-medium text-slate-700' },
     { key: 'ratio', header: 'Tỷ trọng', align: 'center' as const, headerClassName: 'bg-indigo-100 text-indigo-900', className: 'bg-indigo-50 font-bold text-indigo-600' },

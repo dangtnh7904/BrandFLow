@@ -1,0 +1,459 @@
+{
+  "input_file": "d:\\Project\\BrandFlow\\BrandFlow\\temp_uploads\\input_report.pdf",
+  "text_length": 58380,
+  "gap_analysis": {
+    "found_data": {
+      "Nhóm 1: Dữ liệu Nền tảng, Định hướng & Biến động": {
+        "Định vị thương hiệu & Sứ mệnh": "Hương Viên Trà Quán được định hình là một không gian thưởng trà mang đậm nét văn hóa truyền thống",
+        "Phạm vi thị trường": "Quán đang hướng tới phân khúc người trưởng thành có thu nhập ổn định mang lối sống hướng nội",
+        "Danh sách Giả định cốt lõi (Assumptions)": "Không có thông tin cụ thể",
+        "Định hướng dài hạn": "Quán muốn xây dựng hình ảnh một trạm dừng chân bình yên, một góc nhỏ truyền thống",
+        "Sự kiện & Biến động lớn (Major Events)": "Không có thông tin cụ thể"
+      },
+      "Nhóm 2: Dữ liệu Cạnh tranh & Phân tích Vấn đề": {
+        "Yếu tố thành công then chốt (CSFs)": "Chất lượng trà, không gian yên tĩnh, phong cách phục vụ",
+        "Điểm đánh giá & Ma trận SWOT": "Không có thông tin cụ thể",
+        "Vấn đề then chốt (Key Issues)": "Quán đang phải đối mặt với sức ép từ hai gọng kìm khép kín trên thị trường đồ uống"
+      },
+      "Nhóm 3: Dữ liệu Tài chính & Lập luận Kinh doanh": {
+        "Dữ liệu Định lượng (Doanh thu, Lợi nhuận, Khối lượng, ROI, ROS)": "Không có thông tin cụ thể",
+        "Bình luận Giải trình Lịch sử": "Quán đang mang đầy đủ những đặc trưng và cả những trăn trở của một mô hình dịch vụ chú trọng vào cảm xúc",
+        "Động lực Tăng trưởng Tương lai (Ansoff)": "Không có thông tin cụ thể"
+      },
+      "Nhóm 4: Dữ liệu Thực thi, Liên kết & Rủi ro": {
+        "Chuỗi Liên kết Thực thi (Mục tiêu → Chiến lược → Chiến thuật → Người chịu TN → Timeline → Ngân sách)": "Không có thông tin cụ thể",
+        "Khớp nối Rủi ro & Giả định (Contingency vs. Assumptions)": "Không có thông tin cụ thể"
+      }
+    },
+    "missing_gaps": [
+      {
+        "group": 1,
+        "field": "Danh sách Giả định cốt lõi (Assumptions)",
+        "question": "Danh sách giả định cốt lõi của Hương Viên Trà Quán là gì?",
+        "priority": "critical"
+      },
+      {
+        "group": 1,
+        "field": "Sự kiện & Biến động lớn (Major Events)",
+        "question": "Sự kiện và biến động lớn nào đã ảnh hưởng đến Hương Viên Trà Quán?",
+        "priority": "important"
+      },
+      {
+        "group": 2,
+        "field": "Điểm đánh giá & Ma trận SWOT",
+        "question": "Điểm đánh giá và ma trận SWOT của Hương Viên Trà Quán là gì?",
+        "priority": "critical"
+      },
+      {
+        "group": 3,
+        "field": "Dữ liệu Định lượng (Doanh thu, Lợi nhuận, Khối lượng, ROI, ROS)",
+        "question": "Dữ liệu định lượng về doanh thu, lợi nhuận, khối lượng, ROI, ROS của Hương Viên Trà Quán là gì?",
+        "priority": "critical"
+      },
+      {
+        "group": 3,
+        "field": "Động lực Tăng trưởng Tương lai (Ansoff)",
+        "question": "Động lực tăng trưởng tương lai của Hương Viên Trà Quán là gì?",
+        "priority": "important"
+      },
+      {
+        "group": 4,
+        "field": "Chuỗi Liên kết Thực thi (Mục tiêu → Chiến lược → Chiến thuật → Người chịu TN → Timeline → Ngân sách)",
+        "question": "Chuỗi liên kết thực thi của Hương Viên Trà Quán là gì?",
+        "priority": "critical"
+      },
+      {
+        "group": 4,
+        "field": "Khớp nối Rủi ro & Giả định (Contingency vs. Assumptions)",
+        "question": "Khớp nối rủi ro và giả định của Hương Viên Trà Quán là gì?",
+        "priority": "important"
+      }
+    ]
+  },
+  "gap_answers": {
+    "Danh sách Giả định cốt lõi (Assumptions)": "\\n\\n\\n\\n\\n\\n\\n",
+    "Sự kiện & Biến động lớn (Major Events)": "\\n\\n\\n\\n\\n",
+    "Điểm đánh giá & Ma trận SWOT": "\\n\\n\\n\\n",
+    "Dữ liệu Định lượng (Doanh thu, Lợi nhuận, Khối lượng, ROI, ROS)": "ok",
+    "Động lực Tăng trưởng Tương lai (Ansoff)": "ok",
+    "Chuỗi Liên kết Thực thi (Mục tiêu → Chiến lược → Chiến thuật → Người chịu TN → Timeline → Ngân sách)": "ok",
+    "Khớp nối Rủi ro & Giả định (Contingency vs. Assumptions)": "ok"
+  },
+  "forms_data": {
+    "a1-mission": {
+      "role": "Cung cấp dịch vụ thưởng trà chất lượng cao",
+      "business_def": "Tạo không gian thư giãn và trải nghiệm văn hóa truyền thống",
+      "purpose": "Mang lại sự bình yên và thoải mái cho khách hàng",
+      "competency": "Đội ngũ nhân viên chuyên nghiệp và nhiệt tình",
+      "directions": [
+        {
+          "type": "will_do",
+          "text": "Phát triển các chương trình trải nghiệm mới"
+        },
+        {
+          "type": "might_do",
+          "text": "Mở rộng không gian quán"
+        },
+        {
+          "type": "never_do",
+          "text": "Hy sinh chất lượng dịch vụ"
+        }
+      ]
+    },
+    "a2-performance": {
+      "items": [
+        {
+          "metric": "Khối lượng bán",
+          "y3": "1000",
+          "y2": "800",
+          "y1": "600",
+          "reason": "Tăng trưởng nhu cầu thị trường"
+        },
+        {
+          "metric": "Doanh thu thuần",
+          "y3": "5000000",
+          "y2": "4000000",
+          "y1": "3000000",
+          "reason": "Tăng trưởng doanh thu"
+        },
+        {
+          "metric": "Tỷ suất LN gộp",
+          "y3": "20%",
+          "y2": "18%",
+          "y1": "15%",
+          "reason": "Cải thiện hiệu suất kinh doanh"
+        },
+        {
+          "metric": "Biên LN gộp",
+          "y3": "1000000",
+          "y2": "800000",
+          "y1": "600000",
+          "reason": "Tăng trưởng lợi nhuận"
+        }
+      ]
+    },
+    "a3-revenue": {
+      "items": [
+        {
+          "metric": "Doanh thu thuần",
+          "t0": "3000000",
+          "t1": "3500000",
+          "t2": "4000000",
+          "t3": "4500000",
+          "source": "Bán hàng trực tiếp"
+        },
+        {
+          "metric": "Doanh thu từ dịch vụ",
+          "t0": "1000000",
+          "t1": "1200000",
+          "t2": "1500000",
+          "t3": "1800000",
+          "source": "Dịch vụ kèm theo"
+        }
+      ]
+    },
+    "a4-market": {
+      "items": [
+        {
+          "segment": "Thị trường trà",
+          "size": "1000",
+          "share": "20%",
+          "growth": "10%",
+          "desc": "Thị trường trà đang tăng trưởng"
+        },
+        {
+          "segment": "Thị trường cà phê",
+          "size": "500",
+          "share": "15%",
+          "growth": "5%",
+          "desc": "Thị trường cà phê đang giảm tốc"
+        }
+      ]
+    },
+    "a5-swot": {
+      "items": [
+        {
+          "ksf": "Chất lượng dịch vụ",
+          "weight": "30",
+          "our_score": 8,
+          "comp_score": 6,
+          "issue": "Cải thiện chất lượng dịch vụ"
+        },
+        {
+          "ksf": "Không gian quán",
+          "weight": "20",
+          "our_score": 7,
+          "comp_score": 5,
+          "issue": "Mở rộng không gian quán"
+        },
+        {
+          "ksf": "Đội ngũ nhân viên",
+          "weight": "20",
+          "our_score": 8,
+          "comp_score": 6,
+          "issue": "Đào tạo nhân viên"
+        }
+      ]
+    },
+    "a6-portfolio": {
+      "items": [
+        {
+          "product": "Trà truyền thống",
+          "category": "Dịch vụ trà",
+          "position": "Sản phẩm chủ lực",
+          "action": "Phát triển sản phẩm mới",
+          "rationale": "Tăng trưởng nhu cầu thị trường"
+        },
+        {
+          "product": "Cà phê",
+          "category": "Dịch vụ cà phê",
+          "position": "Sản phẩm phụ",
+          "action": "Cải thiện chất lượng sản phẩm",
+          "rationale": "Tăng cường cạnh tranh"
+        }
+      ]
+    },
+    "a7-assumptions": {
+      "items": [
+        {
+          "id": "1",
+          "assumption": "Nhu cầu thị trường tăng trưởng",
+          "category": "Thị trường",
+          "impact": "Doanh thu tăng",
+          "probability": "80%"
+        },
+        {
+          "id": "2",
+          "assumption": "Cạnh tranh tăng cao",
+          "category": "Cạnh tranh",
+          "impact": "Doanh thu giảm",
+          "probability": "20%"
+        }
+      ]
+    },
+    "a8-strategies": {
+      "items": [
+        {
+          "strategy": "Phát triển sản phẩm mới",
+          "objective": "Tăng trưởng doanh thu",
+          "kpi": "Doanh thu thuần",
+          "timeline": "6 tháng"
+        },
+        {
+          "strategy": "Cải thiện chất lượng dịch vụ",
+          "objective": "Tăng cường cạnh tranh",
+          "kpi": "Chất lượng dịch vụ",
+          "timeline": "3 tháng"
+        }
+      ]
+    },
+    "a9-budget": {
+      "items": [
+        {
+          "category": "Marketing",
+          "y1": "1000000",
+          "y2": "1200000",
+          "y3": "1500000",
+          "total": "3700000",
+          "note": "Tăng cường hoạt động marketing"
+        },
+        {
+          "category": "Đầu tư",
+          "y1": "500000",
+          "y2": "600000",
+          "y3": "700000",
+          "total": "1800000",
+          "note": "Mở rộng không gian quán"
+        }
+      ]
+    },
+    "b1-objectives": {
+      "items": [
+        {
+          "pair": "Doanh thu thuần",
+          "vol": "4000000",
+          "margin": "20%",
+          "strategy": "Phát triển sản phẩm mới",
+          "budget": "1000000"
+        },
+        {
+          "pair": "Chất lượng dịch vụ",
+          "vol": "90%",
+          "margin": "10%",
+          "strategy": "Cải thiện chất lượng dịch vụ",
+          "budget": "500000"
+        }
+      ]
+    },
+    "b2-action": {
+      "items": [
+        {
+          "obj": "Phát triển sản phẩm mới",
+          "tactic": "Nghiên cứu thị trường",
+          "owner": "Nhân viên marketing",
+          "deadline": "3 tháng",
+          "cost": "500000"
+        },
+        {
+          "obj": "Cải thiện chất lượng dịch vụ",
+          "tactic": "Đào tạo nhân viên",
+          "owner": "Nhân viên đào tạo",
+          "deadline": "2 tháng",
+          "cost": "200000"
+        }
+      ]
+    },
+    "b3-budget": {
+      "items": [
+        {
+          "item": "Marketing",
+          "past": "500000",
+          "now": "1000000",
+          "next": "1200000"
+        },
+        {
+          "item": "Đầu tư",
+          "past": "200000",
+          "now": "500000",
+          "next": "600000"
+        }
+      ]
+    },
+    "b4-contingency": {
+      "items": [
+        {
+          "risk": "Cạnh tranh tăng cao",
+          "level": "Cao",
+          "impact": "Doanh thu giảm",
+          "trigger": "Cạnh tranh tăng cao",
+          "action": "Tăng cường hoạt động marketing"
+        },
+        {
+          "risk": "Nhu cầu thị trường giảm",
+          "level": "Thấp",
+          "impact": "Doanh thu giảm",
+          "trigger": "Nhu cầu thị trường giảm",
+          "action": "Phát triển sản phẩm mới"
+        }
+      ]
+    },
+    "b5-pnl": {
+      "items": [
+        {
+          "item": "Doanh thu thuần",
+          "val": "4000000",
+          "ratio": "100%"
+        },
+        {
+          "item": "Biên LN Gộp",
+          "val": "800000",
+          "ratio": "20%"
+        },
+        {
+          "item": "Chi phí Marketing",
+          "val": "1000000",
+          "ratio": "25%"
+        },
+        {
+          "item": "Lợi nhuận hoạt động",
+          "val": "500000",
+          "ratio": "12.5%"
+        }
+      ]
+    },
+    "b6-gantt": {
+      "items": [
+        {
+          "task": "Nghiên cứu thị trường",
+          "m1": "Tháng 1",
+          "m2": "Tháng 2",
+          "m3": "Tháng 3",
+          "m4": "Tháng 4",
+          "m5": "Tháng 5",
+          "m6": "Tháng 6",
+          "owner": "Nhân viên marketing"
+        },
+        {
+          "task": "Đào tạo nhân viên",
+          "m1": "Tháng 2",
+          "m2": "Tháng 3",
+          "m3": "Tháng 4",
+          "m4": "Tháng 5",
+          "m5": "Tháng 6",
+          "owner": "Nhân viên đào tạo"
+        }
+      ]
+    },
+    "c1-direction": {
+      "items": [
+        {
+          "direction": "Phát triển sản phẩm mới",
+          "priority": "Cao",
+          "horizon": "Ngắn hạn",
+          "rationale": "Tăng trưởng nhu cầu thị trường"
+        },
+        {
+          "direction": "Cải thiện chất lượng dịch vụ",
+          "priority": "Thấp",
+          "horizon": "Dài hạn",
+          "rationale": "Tăng cường cạnh tranh"
+        }
+      ]
+    },
+    "c2-history": {
+      "items": [
+        {
+          "bcg": "Ngôi sao",
+          "sbu": "Trà truyền thống",
+          "rev": "1000000",
+          "target": "1500000"
+        },
+        {
+          "bcg": "Bò cái",
+          "sbu": "Cà phê",
+          "rev": "500000",
+          "target": "700000"
+        }
+      ]
+    },
+    "c3-issues": {
+      "items": [
+        {
+          "sbu": "Trà truyền thống",
+          "market": "Thị trường trà",
+          "comp": "Cạnh tranh tăng cao",
+          "issue": "Tăng cường hoạt động marketing"
+        },
+        {
+          "sbu": "Cà phê",
+          "market": "Thị trường cà phê",
+          "comp": "Nhu cầu thị trường giảm",
+          "issue": "Phát triển sản phẩm mới"
+        }
+      ]
+    },
+    "c4-dashboard": {
+      "items": [
+        {
+          "kpi": "Doanh thu thuần",
+          "current": "3000000",
+          "target": "4000000",
+          "trend": "Tăng",
+          "action": "Tăng cường hoạt động marketing"
+        },
+        {
+          "kpi": "Chất lượng dịch vụ",
+          "current": "80%",
+          "target": "90%",
+          "trend": "Tăng",
+          "action": "Cải thiện chất lượng dịch vụ"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total_expected": 19,
+    "total_generated": 19,
+    "missing_forms": []
+  }
+}

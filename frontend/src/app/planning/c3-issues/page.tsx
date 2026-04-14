@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -13,16 +14,18 @@ const ISSUES_DATA = [
 ];
 
 export default function PageC3Issues() {
+  const { localData, saveStatus } = useAutoSaveForm('c3-issues', { items: ISSUES_DATA });
   const COLUMNS = [
-    { key: 'sbu', header: 'Tên SBU', className: 'bg-white font-bold text-slate-800' },
-    { key: 'market', header: 'Đặc điểm Thị trường', className: 'bg-slate-50 text-slate-600 border-l border-white' },
-    { key: 'comp', header: 'Đặc điểm Cạnh tranh', className: 'bg-slate-50 text-slate-600 border-l border-white' },
-    { key: 'issue', header: 'Vấn đề Chiến lược Then chốt', className: 'bg-rose-50 text-rose-700 font-medium border-l border-white' },
+    { key: 'sbu', header: 'Tên SBU', className: 'bg-linear-surface font-bold text-foreground' },
+    { key: 'market', header: 'Đặc điểm Thị trường', className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted border-l border-white dark:border-slate-800' },
+    { key: 'comp', header: 'Đặc điểm Cạnh tranh', className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted border-l border-white dark:border-slate-800' },
+    { key: 'issue', header: 'Vấn đề Chiến lược Then chốt', className: 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 font-medium border-l border-white dark:border-slate-800' },
   ];
 
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Bảng Phân tích Vấn đề (Major Issues)"
       description="Tạo bảng so sánh chéo (cross-reference) vấn đề để HQ dễ dàng ra quyết định."
     >
@@ -31,8 +34,8 @@ export default function PageC3Issues() {
            Mang tất cả các Đặc thù Thị trường và Vấn đề Then chốt (từ SWOT của từng SBU) nhập lên HQ để tìm kiếm điểm cộng hưởng (Synergy).
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={ISSUES_DATA} />
+        <div className="bento-card p-6">
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/c2-history" prevLabel="Về C.2" nextLink="/planning/c4-dashboard" nextLabel="Tiếp tục: C.4 Bảng điều khiển" />
       </div>

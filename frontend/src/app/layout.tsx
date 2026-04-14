@@ -1,41 +1,45 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const inter = Inter({
+ variable: "--font-inter",
+ subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const spaceGrotesk = Space_Grotesk({
+ variable: "--font-space-grotesk",
+ subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "BrandFlow | Multi-Agent AI Marketing Platform",
-  description: "An automated marketing team featuring detailed planning, brand identity creation, content generation, and financial risk warnings.",
+ title: "BrandFlow | Multi-Agent AI Marketing Platform",
+ description: "An automated marketing team featuring detailed planning, brand identity creation, content generation, and financial risk warnings.",
 };
 
 export default function RootLayout({
-  children,
+ children,
 }: Readonly<{
-  children: React.ReactNode;
+ children: React.ReactNode;
 }>) {
-  return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-    >
-      <body className="bg-linear-bg text-slate-800 min-h-screen overflow-x-hidden">
-        <LanguageProvider>
-          <LayoutWrapper>
-            {children}
-          </LayoutWrapper>
-        </LanguageProvider>
-      </body>
-    </html>
-  );
+ return (
+ <html
+ lang="en"
+ className={`${inter.variable} ${spaceGrotesk.variable}`}
+ suppressHydrationWarning
+ >
+ <body className="antialiased font-sans min-h-screen overflow-x-hidden transition-colors duration-300">
+ <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+ <LanguageProvider>
+ <LayoutWrapper>
+ {children}
+ </LayoutWrapper>
+ </LanguageProvider>
+ </ThemeProvider>
+ </body>
+ </html>
+ );
 }

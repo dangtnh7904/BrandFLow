@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -15,15 +16,17 @@ const PNL_DATA = [
 ];
 
 export default function PageB5Pnl() {
+  const { localData, saveStatus } = useAutoSaveForm('b5-pnl', { items: PNL_DATA });
   const COLUMNS = [
-    { key: 'item', header: 'Hạng mục Tài chính', className: 'bg-white font-medium text-slate-700' },
-    { key: 'val', header: 'Giá trị (Tỷ VNĐ)', align: 'right' as const, className: 'bg-indigo-50 text-indigo-700 font-bold border-x border-white' },
-    { key: 'ratio', header: 'Tỷ lệ (% Doanh thu)', align: 'center' as const, className: 'bg-slate-50 text-slate-600' },
+    { key: 'item', header: 'Hạng mục Tài chính', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 'val', header: 'Giá trị (Tỷ VNĐ)', align: 'right' as const, className: 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-bold border-x border-white dark:border-slate-800' },
+    { key: 'ratio', header: 'Tỷ lệ (% Doanh thu)', align: 'center' as const, className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
   ];
 
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Báo cáo Lãi Lỗ Dự phóng ngắn hạn (P&L)"
       description="Tổng hợp báo cáo lãi lỗ dựa trên chiến dịch 1 năm."
     >
@@ -32,8 +35,8 @@ export default function PageB5Pnl() {
           Báo cáo ROS và ROI ngắn hạn để trình ban giám đốc xét duyệt ngân sách.
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={PNL_DATA} />
+        <div className="bento-card p-6">
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/b4-contingency" prevLabel="Về B.4" nextLink="/planning/b6-gantt" nextLabel="Tiếp tục: B.6 Gantt Chart" />
       </div>

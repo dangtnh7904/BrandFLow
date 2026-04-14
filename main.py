@@ -22,20 +22,28 @@ from app.schemas.schemas import (
     PlanIntent,
     ExecutionRequest,
 )
-from app.services.memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
-from app.agents.intake.intake_agent import analyze_raw_input, check_required_info, extract_document_summary
-from app.workflows.workflow_graph import (
-    build_error_envelope,
-    run_plan_wizard_contract,
-    run_pipeline,
-    run_refinement_pipeline,
-    run_week1_orchestration_contract,
-)
+# ── AI Pipeline imports (optional – may fail if langchain deps missing) ──
+_AI_PIPELINE_AVAILABLE = False
+try:
+    from app.services.memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
+    from app.agents.intake.intake_agent import analyze_raw_input, check_required_info, extract_document_summary
+    from app.workflows.workflow_graph import (
+        build_error_envelope,
+        run_plan_wizard_contract,
+        run_pipeline,
+        run_refinement_pipeline,
+        run_week1_orchestration_contract,
+    )
+    from app.services.document_processor import DocumentIngestor
+    _AI_PIPELINE_AVAILABLE = True
+except ImportError as _import_err:
+    print(f"[WARN] AI pipeline modules unavailable: {_import_err}")
+    print("[WARN] Form CRUD and DB features will still work normally.")
+
 from app.core.access_audit import VisitorAuditStore
 from app.core.database import init_db as init_form_db
 from app.api.form_routes import router as form_router
 from app.api.design_routes import router as design_router
-from app.services.document_processor import DocumentIngestor
 from pydantic import BaseModel
 import os
 import uuid

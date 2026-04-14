@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -13,16 +14,18 @@ const CONT_DATA = [
 ];
 
 export default function PageB4Contingency() {
+  const { localData, saveStatus } = useAutoSaveForm('b4-contingency', { items: CONT_DATA });
   const COLUMNS = [
-    { key: 'risk', header: 'Giả định rủi ro', className: 'bg-white font-medium text-slate-700' },
-    { key: 'level', header: 'Mức độ', align: 'center' as const, className: 'bg-amber-50 text-amber-700 font-semibold border-x border-white' },
-    { key: 'impact', header: 'Tác động tài chính', className: 'bg-slate-50 text-slate-700' },
-    { key: 'trigger', header: 'Điểm kích hoạt', align: 'center' as const, headerClassName: 'bg-rose-100 text-rose-900', className: 'bg-rose-50 text-rose-700 font-bold border-x border-white' },
-    { key: 'action', header: 'Hành động dự phòng thực tế', className: 'bg-emerald-50 text-emerald-800' },
+    { key: 'risk', header: 'Giả định rủi ro', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 'level', header: 'Mức độ', align: 'center' as const, className: 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 font-semibold border-x border-white dark:border-slate-800' },
+    { key: 'impact', header: 'Tác động tài chính', className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
+    { key: 'trigger', header: 'Điểm kích hoạt', align: 'center' as const, headerClassName: 'bg-rose-100 dark:bg-rose-900/30 text-rose-900 dark:text-rose-400', className: 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 font-bold border-x border-white dark:border-slate-800' },
+    { key: 'action', header: 'Hành động dự phòng thực tế', className: 'bg-cyan-500/10 text-cyan-400' },
   ];
 
   return (
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Kế hoạch Dự phòng (Contingency Plan)"
       description="Đánh giá rủi ro (Downside risk assessment) để trả lời câu hỏi 'Điều gì xảy ra nếu...?'"
     >
@@ -31,8 +34,8 @@ export default function PageB4Contingency() {
           Lập kế hoạch hành động "Backup" cho các giả định rủi ro có khả năng xảy ra cao nhất, kèm điểm kích hoạt (Trigger point) rõ ràng.
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={CONT_DATA} />
+        <div className="bento-card p-6">
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/b3-budget" prevLabel="Về B.3" nextLink="/planning/b5-pnl" nextLabel="Tiếp tục: B.5 Lãi lỗ" />
       </div>

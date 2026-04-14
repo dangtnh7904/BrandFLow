@@ -7,7 +7,7 @@ export interface ColumnDef<T> {
   render?: (row: T) => React.ReactNode;
   width?: string;
   align?: 'left' | 'center' | 'right';
-  className?: string; // e.g. 'bg-purple-50' for a whole column
+  className?: string; // e.g. 'bg-purple-50 dark:bg-purple-500/10' for a whole column
   headerClassName?: string;
 }
 
@@ -19,9 +19,9 @@ interface PastelTableProps<T> {
 
 export default function PastelTable<T>({ columns, data, footerContent }: PastelTableProps<T>) {
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-linear-border bg-background shadow-lg backdrop-blur-xl">
       <table className="w-full text-sm text-left">
-        <thead className="bg-[#a6a6a6] text-white">
+        <thead className="bg-linear-surface text-cyan-400 border-b border-linear-border uppercase tracking-widest text-[11px]">
           <tr>
             {columns.map((col, idx) => (
               <th 
@@ -39,9 +39,9 @@ export default function PastelTable<T>({ columns, data, footerContent }: PastelT
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100/50">
+        <tbody className="divide-y divide-linear-border/50">
           {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="group">
+            <tr key={rowIndex} className="group hover:bg-linear-surface/40 transition-colors">
               {columns.map((col, colIndex) => (
                 <td 
                   key={colIndex} 
@@ -49,7 +49,7 @@ export default function PastelTable<T>({ columns, data, footerContent }: PastelT
                     "px-4 py-3.5 transition-colors",
                     col.align === 'center' && 'text-center',
                     col.align === 'right' && 'text-right',
-                    col.className || "bg-white group-hover:bg-slate-50/50 text-slate-600"
+                    col.className || "text-foreground"
                   )}
                 >
                   {col.render ? col.render(row) : (row as any)[col.key]}
@@ -59,7 +59,7 @@ export default function PastelTable<T>({ columns, data, footerContent }: PastelT
           ))}
         </tbody>
         {footerContent && (
-          <tfoot className="bg-[#8b8b8b] text-white font-semibold">
+          <tfoot className="bg-linear-surface text-cyan-300 font-semibold border-t border-linear-border">
             {footerContent}
           </tfoot>
         )}

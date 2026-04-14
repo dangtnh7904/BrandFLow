@@ -1,26 +1,24 @@
 @echo off
-title BrandFlow Fullstack Run
-echo ==============================================
-echo 🚀 Khởi động BrandFlow Fullstack Local
-echo ==============================================
+echo ========================================================
+echo   🚀 KHOI DONG HE THONG BRANDFLOW (Frontend + Backend)
+echo ========================================================
+echo.
 
-if not exist ".env" (
-    echo [CANH BAO] Khong tim thay file .env! Vui long copy tu .env.example
-    pause
-    exit /b
-)
+REM Kiem tra xem co thu muc temp_uploads khong (tranh loi backend)
+if not exist "temp_uploads" mkdir temp_uploads
+
+echo [1/2] Dang bat Backend (FastAPI) cong 8000...
+start "BrandFlow Backend (FastAPI)" cmd /k "python -m uvicorn main:app --host 0.0.0.0 --port 8000"
+
+echo [2/2] Dang bat Frontend (Next.js) cong 3000...
+start "BrandFlow Frontend (Next.js)" cmd /k "cd frontend && npm run dev"
 
 echo.
-echo [1] Dang chay Backend FastAPI (Tab moi)...
-start "BrandFlow Backend" cmd /k "cd /d %~dp0 && venv\Scripts\activate && uvicorn main:app --reload --port 8000"
-
-echo [2] Dang chay Frontend Next.js (Tab moi)...
-start "BrandFlow Frontend" cmd /k "cd /d %~dp0frontend && npm run dev"
-
+echo ✅ Hoan tat! 
 echo.
-echo ==============================================
-echo ✅ Hoan thanh! Vui long vao trinh duyet:
-echo 🌍 Frontend: http://localhost:3000
-echo 🔌 Backend (Swagger UI): http://localhost:8000/docs
-echo ==============================================
+echo Ban co the truy cap vao trang:
+echo Frontend: http://localhost:3000/planning/a1-mission
+echo Backend API Docs: http://localhost:8000/docs
+echo.
+echo Luu y: De tat he thong, hay dong ca 2 cua so CMD vua duoc bat len.
 pause

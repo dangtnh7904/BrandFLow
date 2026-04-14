@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -15,17 +16,19 @@ const PNL_DATA = [
 ];
 
 export default function PageA9Budget() {
+  const { localData, saveStatus } = useAutoSaveForm('a9-budget', { items: PNL_DATA });
   const COLUMNS = [
-    { key: 'item', header: 'Hạng mục P&L', className: 'bg-white font-medium text-slate-700' },
-    { key: 't0', header: 'Năm t0', align: 'right' as const, headerClassName: 'bg-purple-100 text-purple-900', className: 'bg-purple-50 text-purple-700 font-semibold' },
-    { key: 't1', header: 'Năm t+1', align: 'right' as const, className: 'bg-emerald-50 text-emerald-600 font-semibold' },
-    { key: 't2', header: 'Năm t+2', align: 'right' as const, className: 'bg-emerald-50/70 text-emerald-700 font-bold' },
-    { key: 't3', header: 'Năm t+3', align: 'right' as const, headerClassName: 'bg-emerald-200 text-emerald-900', className: 'bg-emerald-100 text-emerald-800 font-black border-l border-white' },
+    { key: 'item', header: 'Hạng mục P&L', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 't0', header: 'Năm t0', align: 'right' as const, headerClassName: 'bg-purple-100 dark:bg-purple-900/30 text-purple-900 dark:text-purple-400', className: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-semibold' },
+    { key: 't1', header: 'Năm t+1', align: 'right' as const, className: 'bg-cyan-500/10 text-cyan-400 font-semibold' },
+    { key: 't2', header: 'Năm t+2', align: 'right' as const, className: 'bg-cyan-500/10/70 text-cyan-400 font-bold' },
+    { key: 't3', header: 'Năm t+3', align: 'right' as const, headerClassName: 'bg-cyan-500/20 text-cyan-400', className: 'bg-emerald-100 text-cyan-400 font-black border-l border-white dark:border-slate-800' },
   ];
 
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Ngân sách hợp nhất dự phóng (Đơn vị: Tỷ VNĐ)"
       description="Bảng dự phóng tài chính tổng hợp tất cả dòng doanh thu, chi phí và lợi nhuận cho chu kỳ."
     >
@@ -34,8 +37,8 @@ export default function PageA9Budget() {
           Đầu ra phải khớp hoàn toàn với các quy ước, đầu mục doanh thu/chi phí tài chính tiêu chuẩn của công ty và tương thích với Tóm tắt tài chính ở Form 3.
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={PNL_DATA} />
+        <div className="bento-card p-6">
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/a8-strategies" prevLabel="Về A.8" nextLink="/planning/b0-overview" nextLabel="Hoàn thành Phần A! 👉 Sang Phần B" />
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -24,23 +25,25 @@ const FOUR_P_DATA = [
 ];
 
 export default function PageA8Strategies() {
+  const { localData, saveStatus } = useAutoSaveForm('a8-strategies', { items: MATRIX_DATA });
   const MATRIX_COLS = [
-    { key: 'level', header: 'Cấp độ Mục tiêu', className: 'bg-white font-medium text-slate-700' },
-    { key: 'past', header: 'Năm ngoái (t-1)', align: 'center' as const, className: 'bg-slate-50 text-slate-500' },
-    { key: 'now', header: 'Năm nay (t0)', align: 'center' as const, headerClassName: 'bg-purple-100 text-purple-900', className: 'bg-purple-50 text-purple-700 font-semibold border-x border-white' },
-    { key: 'target', header: 'Mục tiêu (t+3)', align: 'center' as const, headerClassName: 'bg-emerald-100 text-emerald-900', className: 'bg-emerald-50 text-emerald-600 font-bold' },
-    { key: 'note', header: 'Ghi chú', className: 'bg-white text-slate-600' },
+    { key: 'level', header: 'Cấp độ Mục tiêu', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 'past', header: 'Năm ngoái (t-1)', align: 'center' as const, className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
+    { key: 'now', header: 'Năm nay (t0)', align: 'center' as const, headerClassName: 'bg-purple-100 dark:bg-purple-900/30 text-purple-900 dark:text-purple-400', className: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-semibold border-x border-white dark:border-slate-800' },
+    { key: 'target', header: 'Mục tiêu (t+3)', align: 'center' as const, headerClassName: 'bg-cyan-500/10 text-cyan-400', className: 'bg-cyan-500/10 text-cyan-400 font-bold' },
+    { key: 'note', header: 'Ghi chú', className: 'bg-linear-surface text-linear-text-muted' },
   ];
 
   const FOUR_P_COLS = [
-    { key: 'p', header: 'Chiến thuật 4P', className: 'bg-slate-50 font-bold text-slate-800' },
-    { key: 'content', header: 'Nội dung triển khai chiến lược', className: 'bg-white text-slate-700' },
-    { key: 'cost', header: 'Chi phí ước tính (3 năm)', align: 'right' as const, className: 'bg-rose-50 text-rose-700 font-semibold border-l border-white' },
+    { key: 'p', header: 'Chiến thuật 4P', className: 'bg-slate-50 dark:bg-slate-800/50 font-bold text-foreground' },
+    { key: 'content', header: 'Nội dung triển khai chiến lược', className: 'bg-linear-surface text-linear-text-muted' },
+    { key: 'cost', header: 'Chi phí ước tính (3 năm)', align: 'right' as const, className: 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 font-semibold border-l border-white dark:border-slate-800' },
   ];
 
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Mục tiêu và Chiến lược Marketing (Form 8-11)"
       description="Thiết lập bảng so sánh chi tiết các chỉ số mục tiêu và Chiến lược 4Ps."
     >
@@ -49,13 +52,13 @@ export default function PageA8Strategies() {
           Phần này bao gồm Form 8, 9, 10 (Gộp Mục tiêu) và Form 11 (Chiến lược 4Ps).
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest">Ma trận Mục tiêu (Khối lượng, Phân khúc, Sản phẩm)</h3>
-           <PastelTable columns={MATRIX_COLS} data={MATRIX_DATA} />
+        <div className="bento-card p-6">
+           <h3 className="text-sm font-semibold text-linear-text-muted mb-4 uppercase tracking-widest">Ma trận Mục tiêu (Khối lượng, Phân khúc, Sản phẩm)</h3>
+           <PastelTable columns={MATRIX_COLS} data={localData.items} />
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest">Chiến lược Marketing 4P & Ước tính chi phí</h3>
+        <div className="bento-card p-6">
+           <h3 className="text-sm font-semibold text-linear-text-muted mb-4 uppercase tracking-widest">Chiến lược Marketing 4P & Ước tính chi phí</h3>
            <PastelTable columns={FOUR_P_COLS} data={FOUR_P_DATA} />
         </div>
         <WizardNavigation prevLink="/planning/a7-assumptions" prevLabel="Về A.7" nextLink="/planning/a9-budget" nextLabel="Tiếp tục: A.9 Ngân sách" />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
@@ -13,15 +14,17 @@ const ASSUMP_DATA = [
 ];
 
 export default function PageA7Assumptions() {
+  const { localData, saveStatus } = useAutoSaveForm('a7-assumptions', { items: ASSUMP_DATA });
   const COLUMNS = [
-    { key: 'core', header: 'Giả định cốt lõi', className: 'bg-white font-medium text-slate-700' },
-    { key: 'logic', header: 'Điều kiện Logic', className: 'bg-slate-50 text-slate-600' },
-    { key: 'action', header: 'Hành động loại bỏ nếu sai', className: 'bg-rose-50 text-rose-700 font-semibold' },
+    { key: 'core', header: 'Giả định cốt lõi', className: 'bg-linear-surface font-medium text-linear-text-muted' },
+    { key: 'logic', header: 'Điều kiện Logic', className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
+    { key: 'action', header: 'Hành động loại bỏ nếu sai', className: 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 font-semibold' },
   ];
 
   return (
     <>
     <B2BPageTemplate
+      saveStatus={saveStatus}
       title="Các giả định (Assumptions)"
       description="Danh sách ngắn gọn các giả định cốt lõi tác động trực tiếp đến kế hoạch."
     >
@@ -30,8 +33,8 @@ export default function PageA7Assumptions() {
           Nếu một giả định không xảy ra mà kế hoạch vẫn có thể thực hiện được, thì loại bỏ giả định đó khỏi danh sách.
         </InstructionAlert>
         
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-           <PastelTable columns={COLUMNS} data={ASSUMP_DATA} />
+        <div className="bento-card p-6">
+           <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
         <WizardNavigation prevLink="/planning/a6-portfolio" prevLabel="Về A.6" nextLink="/planning/a8-strategies" nextLabel="Tiếp tục: A.8 Mục tiêu & Chiến lược" />
       </div>

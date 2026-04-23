@@ -1,0 +1,72 @@
+{
+  "company": {
+    "name": "San Diegency",
+    "hq_location": "San Diego, CA",
+    "mission": "To empower San Diego organizations to effectively communicate with current and potential stakeholders"
+  },
+  "plan_year": "2026",
+  "objective": "To delight and attract businesses in the greater San Diego area with the promise of excellent and unbeatable agency services.",
+  "authors": [
+    {"name": "Alex Smith", "email": "asmith@sandiegency.com"},
+    {"name": "Serena Li", "email": "sli@sandiegency.com"}
+  ],
+  "marketing_leaders": [
+    {"name": "Naman Malik", "title": "CEO", "bio": "Started the agency in 2014. MBA from USC with concentration in Marketing and Entrepreneurship."},
+    {"name": "Serena Li", "title": "CMO", "bio": "A decade of experience in digital marketing. Specialties in content marketing, SEO, PR, and PPC."},
+    {"name": "Alex Smith", "title": "Director of Demand Generation", "bio": "Manages organic acquisition and content marketing teams. 20 years in journalism."}
+  ],
+  "swot": {
+    "strengths": ["80 full-time employees dedicated to serving San Diego businesses", "Serves some of the area's largest, most influential organizations"],
+    "weaknesses": ["Lack of specialization — services identical to other agencies", "Low profit margins due to competition"],
+    "opportunities": ["Growing demand for digital marketing services in SD", "Growing population increases number of businesses"],
+    "threats": ["At least 12 other major San Diego area agencies plus nationwide ones", "Organizations still struggling to recover from economic downturn"]
+  },
+  "initiatives": [
+    {"name": "Invest in Account-Based Marketing", "description": "Hire three dedicated ABM reps for targeted account-based initiatives.", "goal": "Appeal to larger, higher-volume clients.", "metrics": "10 accounts acquired through ABM campaigns."},
+    {"name": "Explode our Online Presence", "description": "Invest resources into strategically growing online presence.", "goal": "Tap into new personas and appeal to more potential clients.", "metrics": "Double organic traffic and paid ad leads."},
+    {"name": "Become SD's Webinar Destination", "description": "Pursue webinars for online content, community, and education.", "goal": "Produce minimum six webinars for new leads and client engagement.", "metrics": "3,000 webinar registrants, 50 new QLs."}
+  ],
+  "target_market": {
+    "industries": [
+      {"name": "Restaurants", "description": "SD's restaurant and brewery scene continues to grow with rising demand for delivery."},
+      {"name": "Schools & Universities", "description": "150+ schools and universities — an untapped market, particularly private institutes."}
+    ],
+    "buyer_personas": [
+      {"name": "Chef/Owner Charlotte", "description": "Restaurant owner in her early 30s. Worries about sustainability, skeptical about off-premise dining."},
+      {"name": "Dean Daniel", "description": "Head of advancement, 50s. Wants high enrollment and donation numbers."}
+    ],
+    "competitors": [
+      {"name": "Nation's Marketing Agency", "compete": "Same services with nationwide resources and affordability.", "win": "We offer hyper-localized, personalized services."},
+      {"name": "California Marketing Brothers", "compete": "Identical services except video.", "win": "Hyper-localized work plus video services."},
+      {"name": "Duff & Sandler Agency", "compete": "San Diego-based agency with multiple connections.", "win": "First mover advantage with larger team and resources."}
+    ]
+  },
+  "market_strategy": {
+    "product": "San Diegency is a full digital marketing agency, offering expert support and services in all of the following areas: Content Marketing, SEO, Paid Marketing Campaigns, Video Production, Graphic Design, Website Development, General Marketing Strategy. Our services provide a range of options for businesses and organizations of all size and experience. We're happy to work with for-profit and nonprofit, private and public, large and small businesses alike.",
+    "price": "Our price range varies by business type, size, and need. We craft specific packages based on the impact our work will have on our clients' bottom lines, the amount of output our team will produce, and the administrative and research billable hours our team will undertake. Packages start at $3,000 minimum but can go as high as six figures for ongoing, high-impact projects.",
+    "promotion": "We promote our services in the following ways: Organic channels, such as our website and our blog. Paid campaigns on social media and search engines for targeted business owners in San Diego. Webinars – our newest investment to speak to prospects, customers, and new contacts alike. Communal integration and working with local institutions for volunteering and sponsorship opportunities. This strategy combines paid, personal, and organic opportunities to reach new customers and engage existing ones.",
+    "people": "Our Marketing Team has 28 individuals sitting under three teams. We have specialists in demand gen, events, brand, and social eager to help our company reach new heights.",
+    "process": "Due to our sprint approach, our process will look different for all customers. Clients will receive any and all services they are interested in, and we will work with them on a timeline that best suits their needs and budget.",
+    "services": ["Content Marketing", "SEO", "Paid Marketing Campaigns", "Video Production", "Graphic Design", "Website Development", "General Marketing Strategy"]
+  },
+  "budget": {
+    "expenses": [
+      {"name": "Marketing Software", "amount": 10000},
+      {"name": "Event Sponsorships", "amount": 5000},
+      {"name": "Paid Social", "amount": 12000},
+      {"name": "Paid Search", "amount": 30000}
+    ],
+    "total": 57000,
+    "currency": "USD"
+  },
+  "marketing_channels": [
+    {"name": "Webinars", "purpose": "Brand awareness, customer acquisition, and client engagement.", "metrics": "Webinar signups, signup-to-attendance rate, attendee-to-QL rate.", "target_value": 3000},
+    {"name": "Instagram", "purpose": "Employee branding, company brand awareness, visual engagement.", "metrics": "Followers, likes.", "target_value": 50000}
+  ],
+  "marketing_technology": [
+    {"name": "HubSpot CRM", "category": "Marketing CRM", "description": "We use HubSpot CRM, as it integrates our marketing, sales, and customer service software in one central location. It also connects us to a suite of other marketing tools our team (and our customer base) utilizes."},
+    {"name": "HubSpot Email", "category": "Email Marketing Software", "description": "Our HubSpot email marketing software enables us to send mass communications to our customer base, enroll our webinar registrants in nurture streams before and after their attendance, and enable salespeople to communicate in sync with marketing."},
+    {"name": "HubSpot CMS", "category": "Blogging Software", "description": "HubSpot's blogging software and CMS allows us to quickly write, publish, and historically optimize our blog posts. We hold ourselves to a three-times-a-week publication cadence, and HubSpot lets us churn out interactive content quickly."},
+    {"name": "HubSpot Social", "category": "Social Media Management Software", "description": "We manage our social media publishing with HubSpot's social media software. We can post on multiple platforms and see engagement in one place."}
+  ]
+}

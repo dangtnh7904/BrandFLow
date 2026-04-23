@@ -1,0 +1,70 @@
+{
+  "company": {
+    "name": "",
+    "hq_location": "",
+    "mission": ""
+  },
+  "plan_year": "",
+  "objective": "",
+  "authors": [
+    { "name": "", "email": "" }
+  ],
+  "marketing_leaders": [
+    { "name": "", "title": "", "bio": "" }
+  ],
+  "swot": {
+    "strengths": [""],
+    "weaknesses": [""],
+    "opportunities": [""],
+    "threats": [""]
+  },
+  "initiatives": [
+    {
+      "name": "",
+      "description": "",
+      "goal": "",
+      "metrics": ""
+    }
+  ],
+  "target_market": {
+    "industries": [
+      { "name": "", "description": "" }
+    ],
+    "buyer_personas": [
+      { "name": "", "description": "" }
+    ],
+    "competitors": [
+      { "name": "", "compete": "", "win": "" }
+    ]
+  },
+  "market_strategy": {
+    "product": "",
+    "price": "",
+    "promotion": "",
+    "people": "",
+    "process": "",
+    "services": [""]
+  },
+  "budget": {
+    "expenses": [
+      { "name": "", "amount": 0 }
+    ],
+    "total": 0,
+    "currency": "USD"
+  },
+  "marketing_channels": [
+    {
+      "name": "",
+      "purpose": "",
+      "metrics": "",
+      "target_value": 0
+    }
+  ],
+  "marketing_technology": [
+    {
+      "name": "",
+      "category": "",
+      "description": ""
+    }
+  ]
+}

@@ -72,3 +72,17 @@ This map tracks the organization of the Next.js B2B Marketing Planning interface
 
 ### Database File
 - `brandflow.db`: SQLite dev database (auto-created, gitignored). Switch to PostgreSQL by setting `DATABASE_URL` in `.env`.
+
+### Phase D: Report Output (NEW — 2026-04-23)
+- `d0-report/`: Marketing Plan Report page — full report with stats, SWOT, initiatives, strategy, budget charts, channels, technology.
+
+## Marketing Plan Data Layer (NEW)
+- `data/marketing_plan_schema.json`: JSON Schema (draft-07) defining complete Marketing Plan structure.
+- `data/marketing_plan_template.json`: Empty JSON template for data entry.
+- `data/sample_marketing_plan.json`: Sample data (San Diegency) with full PDF content.
+- `frontend/src/app/api/marketing-plan-data/route.ts`: Next.js API route serving JSON data from `../data/`.
+
+## Python Scripts (NEW)
+- `scripts/generate_pdf_report.py`: PDF generator (ReportLab + Matplotlib charts).
+- `scripts/report_agent.py`: CLI orchestrator — `pdf` and `serve` commands.
+- `scripts/extract_pdf.py`: PDF text extractor (PyMuPDF).

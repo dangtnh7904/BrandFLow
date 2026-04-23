@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Marketing Plan Report",
+  "description": "Schema for BrandFlow Marketing Plan report output — supports text, tables, and charts",
+  "type": "object",
+  "required": ["company", "plan_year", "objective", "authors", "swot", "initiatives", "target_market", "market_strategy", "budget", "marketing_channels", "marketing_technology"],
+  "properties": {
+    "company": {
+      "type": "object",
+      "required": ["name", "hq_location", "mission"],
+      "properties": {
+        "name":        { "type": "string", "description": "Company name" },
+        "hq_location": { "type": "string", "description": "Headquarters location" },
+        "mission":     { "type": "string", "description": "Company mission statement" }
+      }
+    },
+    "plan_year": {
+      "type": "string",
+      "description": "Fiscal year of the marketing plan, e.g. '2026'"
+    },
+    "objective": {
+      "type": "string",
+      "description": "Overall marketing objective summary"
+    },
+    "authors": {
+      "type": "array",
+      "description": "Authors of the marketing plan document",
+      "items": {
+        "type": "object",
+        "required": ["name", "email"],
+        "properties": {
+          "name":  { "type": "string" },
+          "email": { "type": "string", "format": "email" }
+        }
+      }
+    },
+    "marketing_leaders": {
+      "type": "array",
+      "description": "Marketing leadership team",
+      "items": {
+        "type": "object",
+        "required": ["name", "title", "bio"],
+        "properties": {
+          "name":  { "type": "string", "description": "Full name" },
+          "title": { "type": "string", "description": "Job title, e.g. CEO, CMO" },
+          "bio":   { "type": "string", "description": "Short biography" }
+        }
+      }
+    },
+    "swot": {
+      "type": "object",
+      "description": "SWOT Analysis — renders as 2x2 table",
+      "required": ["strengths", "weaknesses", "opportunities", "threats"],
+      "properties": {
+        "strengths":     { "type": "array", "items": { "type": "string" } },
+        "weaknesses":    { "type": "array", "items": { "type": "string" } },
+        "opportunities": { "type": "array", "items": { "type": "string" } },
+        "threats":       { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "initiatives": {
+      "type": "array",
+      "description": "Business initiatives — renders as card list or table",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "goal", "metrics"],
+        "properties": {
+          "name":        { "type": "string", "description": "Initiative name" },
+          "description": { "type": "string", "description": "What will be done" },
+          "goal":        { "type": "string", "description": "Expected outcome" },
+          "metrics":     { "type": "string", "description": "KPIs to measure success" }
+        }
+      }
+    },
+    "target_market": {
+      "type": "object",
+      "required": ["industries", "buyer_personas", "competitors"],
+      "properties": {
+        "industries": {
+          "type": "array",
+          "description": "Target industries",
+          "items": {
+            "type": "object",
+            "required": ["name", "description"],
+            "properties": {
+              "name":        { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "buyer_personas": {
+          "type": "array",
+          "description": "Ideal customer profiles",
+          "items": {
+            "type": "object",
+            "required": ["name", "description"],
+            "properties": {
+              "name":        { "type": "string", "description": "Persona name" },
+              "description": { "type": "string", "description": "Demographics, pain points, goals" }
+            }
+          }
+        },
+        "competitors": {
+          "type": "array",
+          "description": "Competitive analysis — renders as comparison table",
+          "items": {
+            "type": "object",
+            "required": ["name", "compete", "win"],
+            "properties": {
+              "name":    { "type": "string", "description": "Competitor name" },
+              "compete": { "type": "string", "description": "How they compete with us" },
+              "win":     { "type": "string", "description": "How we can win against them" }
+            }
+          }
+        }
+      }
+    },
+    "market_strategy": {
+      "type": "object",
+      "description": "Marketing mix strategy (5P)",
+      "required": ["product", "price", "promotion", "people", "process"],
+      "properties": {
+        "product":   { "type": "string", "description": "Product/service description" },
+        "price":     { "type": "string", "description": "Pricing strategy" },
+        "promotion": { "type": "string", "description": "Promotion channels and tactics" },
+        "people":    { "type": "string", "description": "Team structure and roles" },
+        "process":   { "type": "string", "description": "Delivery and support process" },
+        "services": {
+          "type": "array",
+          "description": "List of service names (optional, for tag display)",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "description": "Budget breakdown — renders as table + pie chart",
+      "required": ["expenses", "total", "currency"],
+      "properties": {
+        "expenses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "amount"],
+            "properties": {
+              "name":   { "type": "string", "description": "Expense category name" },
+              "amount": { "type": "number", "description": "Amount in currency unit" }
+            }
+          }
+        },
+        "total":    { "type": "number", "description": "Total budget sum" },
+        "currency": { "type": "string", "description": "Currency code, e.g. USD, VND", "default": "USD" }
+      }
+    },
+    "marketing_channels": {
+      "type": "array",
+      "description": "Marketing channels — renders as table + bar chart",
+      "items": {
+        "type": "object",
+        "required": ["name", "purpose", "metrics", "target_value"],
+        "properties": {
+          "name":         { "type": "string", "description": "Channel name" },
+          "purpose":      { "type": "string", "description": "Why this channel is used" },
+          "metrics":      { "type": "string", "description": "How success is measured" },
+          "target_value": { "type": "number", "description": "Numeric target (for chart)" }
+        }
+      }
+    },
+    "marketing_technology": {
+      "type": "array",
+      "description": "Tech stack used for marketing",
+      "items": {
+        "type": "object",
+        "required": ["name", "category", "description"],
+        "properties": {
+          "name":        { "type": "string", "description": "Tool/software name" },
+          "category":    { "type": "string", "description": "Category, e.g. CRM, Email Marketing" },
+          "description": { "type": "string", "description": "How it is used" }
+        }
+      }
+    }
+  }
+}

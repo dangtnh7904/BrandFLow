@@ -40,6 +40,11 @@ try:
 except ImportError as _import_err:
     print(f"[WARN] AI pipeline modules unavailable: {_import_err}")
     print("[WARN] Form CRUD and DB features will still work normally.")
+    # Fallback: vẫn thử import DocumentIngestor riêng lẻ (không phụ thuộc LangChain)
+    try:
+        from app.services.document_processor import DocumentIngestor
+    except ImportError:
+        DocumentIngestor = None  # type: ignore
 
 from app.core.access_audit import VisitorAuditStore
 from app.core.database import init_db as init_form_db
@@ -73,7 +78,7 @@ app = FastAPI(
 
 # Cấu hình CORS chặt chẽ: Đóng chặt cửa, chỉ cho phép luồng chạy từ chính Frontend của bạn.
 # Trên Server Riêng, bạn mở file .env và thêm dòng: BRANDFLOW_FRONTEND_URLS=https://ten-mien-frontend-cua-ban.com
-raw_origins = os.environ.get("BRANDFLOW_FRONTEND_URLS", "http://localhost:3000,http://localhost:3001")
+raw_origins = os.environ.get("BRANDFLOW_FRONTEND_URLS", "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001")
 allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
 
 app.add_middleware(
@@ -124,6 +129,8 @@ async def app_startup() -> None:
 
 
 # ── Đăng ký Form Data CRUD Router ─────────────────────────────────
+from app.api.auth_routes import router as auth_router
+app.include_router(auth_router, prefix="/api/v1")
 app.include_router(form_router)
 
 # ── Đăng ký Design Module Router ──────────────────────────────────
@@ -812,6 +819,8 @@ def test_url_extract_only(request: UrlRequestCustom):
         raise HTTPException(status_code=400, detail="Không có URL nào được gửi lên.")
 
     try:
+        if DocumentIngestor is None:
+            raise HTTPException(status_code=503, detail="Dịch vụ xử lý tài liệu chưa sẵn sàng (thiếu thư viện AI).")
         ingestor = DocumentIngestor()
         results = {}
         for url in request.urls:
@@ -950,6 +959,8 @@ async def onboarding_extract_summary(files: List[UploadFile] = File(...), tenant
         raise HTTPException(status_code=400, detail="Không có file nào được tải lên.")
 
     try:
+        if DocumentIngestor is None:
+            raise HTTPException(status_code=503, detail="Dịch vụ xử lý tài liệu chưa sẵn sàng (thiếu thư viện AI).")
         temp_dir = "./temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
         from app.services.document_processor import DocumentIngestor
@@ -1396,6 +1407,48 @@ async def process_intake(request: RawInputRequest):
             "message": "Hệ thống AI đang quá tải hoặc gặp sự cố, vui lòng thử lại sau giây lát.",
             "debug_info": str(e)
         })
+
+class AnalyzeGapsRequest(BaseModel):
+    document_text: str
+
+@app.post("/api/v1/planning/analyze-gaps")
+async def process_analyze_gaps(request: AnalyzeGapsRequest):
+    """
+    Bước 1: Phân tích văn bản, tìm khoảng trống (Gaps) và sinh câu hỏi cho User.
+    """
+    try:
+        from app.services.ai_form_generator import analyze_gaps
+        result = analyze_gaps(request.document_text)
+        return {"status": "success", "data": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class GenerateFormsRequest(BaseModel):
+    document_text: str
+    gap_answers: Dict[str, str]
+    project_id: str
+    user_id: str
+
+@app.post("/api/v1/planning/generate-forms")
+async def process_generate_forms(request: GenerateFormsRequest):
+    """
+    Bước 2 & 3: Lấy văn bản tổng + Câu trả lời User -> Generate toàn bộ 23 Form data -> Lưu DB.
+    """
+    try:
+        from app.services.ai_form_generator import generate_all_forms, save_forms_to_db
+        # 生成 Data
+        forms_data = generate_all_forms(request.document_text, request.gap_answers)
+        
+        # Lưu Database
+        saved_count = save_forms_to_db(request.project_id, request.user_id, forms_data)
+        
+        return {
+            "status": "success", 
+            "message": f"Đã sinh và lưu {saved_count} form vào database.",
+            "data": forms_data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/v1/planning/refine")
 async def process_refine(request: RefineRequest):

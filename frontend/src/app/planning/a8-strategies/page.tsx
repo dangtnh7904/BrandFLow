@@ -25,7 +25,7 @@ const FOUR_P_DATA = [
 ];
 
 export default function PageA8Strategies() {
-  const { localData, saveStatus } = useAutoSaveForm('a8-strategies', { items: MATRIX_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('a8-strategies', { items: [] });
   const MATRIX_COLS = [
     { key: 'level', header: 'Cấp độ Mục tiêu', className: 'bg-linear-surface font-medium text-linear-text-muted' },
     { key: 'past', header: 'Năm ngoái (t-1)', align: 'center' as const, className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },

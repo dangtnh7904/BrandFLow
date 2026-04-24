@@ -9,6 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 import { Plus, Trash2, Save, Loader2, CheckCircle2 } from 'lucide-react';
 import clsx from 'clsx';
+import { useRef } from 'react';
 import { useFormStore } from '@/store/useFormStore';
 
 export default function PageA1Mission() {
@@ -20,15 +21,13 @@ export default function PageA1Mission() {
   
   // State cục bộ (tránh lag khi gõ)
   const [localData, setLocalData] = useState({
-    role: "Đơn vị mũi nhọn tạo lợi nhuận, khai thác phân khúc ăn vặt cao cấp.",
-    business_def: "Giải pháp dinh dưỡng tiện lợi, bảo toàn vi chất và lợi khuẩn.",
-    purpose: "Biến bữa ăn nhẹ thành hành động chăm sóc sức khỏe chủ động.",
-    competency: "Công nghệ sấy thăng hoa âm 40°C khép kín, giữ 98% cấu trúc.",
-    directions: [
-      { type: 'will_do', text: 'Phủ sóng kênh siêu thị.' },
-      { type: 'never_do', text: 'Dùng hương liệu nhân tạo.' }
-    ]
+    role: "",
+    business_def: "",
+    purpose: "",
+    competency: "",
+    directions: [] as { type: string; text: string }[]
   });
+  const userHasEdited = useRef(false);
 
   // Khởi tạo DB khi mở trang lần đầu
   useEffect(() => {
@@ -44,8 +43,8 @@ export default function PageA1Mission() {
 
   // Bộ đếm 1 giây sau khi User ngừng gõ -> Lưu lên DB (Debounce Auto-save)
   useEffect(() => {
+    if (!userHasEdited.current) return;
     const handler = setTimeout(() => {
-      // Vì tránh loop load lần đầu do object ref, ta chỉ gọi updateForm khi thực sự có localData mới
       updateForm(formKey, localData);
     }, 1000);
     return () => clearTimeout(handler);
@@ -53,10 +52,12 @@ export default function PageA1Mission() {
 
   // Hàm helper cập nhật Field
   const handleFieldChange = (field: string, value: string) => {
+    userHasEdited.current = true;
     setLocalData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleDirectionChange = (idx: number, type: string, text: string) => {
+    userHasEdited.current = true;
     const newArr = [...localData.directions];
     newArr[idx] = { type, text };
     setLocalData(prev => ({ ...prev, directions: newArr }));
@@ -141,6 +142,7 @@ export default function PageA1Mission() {
                        value={dir.text} onChange={(e) => handleDirectionChange(idx, dir.type, e.target.value)} />
                      
                      <button onClick={() => {
+                        userHasEdited.current = true;
                         const newArr = localData.directions.filter((_, i) => i !== idx);
                         setLocalData(prev => ({...prev, directions: newArr}));
                      }} className="p-2.5 mt-0.5 text-linear-text-muted hover:text-rose-500 hover:bg-rose-50 dark:bg-rose-500/10 rounded-lg transition-colors">
@@ -150,6 +152,7 @@ export default function PageA1Mission() {
                  ))}
                  
                  <button onClick={() => {
+                    userHasEdited.current = true;
                     const newArr = [...localData.directions, { type: 'will_do', text: '' }];
                     setLocalData(prev => ({...prev, directions: newArr}));
                  }} className="mt-4 flex items-center px-4 py-2.5 text-sm font-semibold text-cyan-400 border border-dashed border-cyan-500/30 bg-cyan-500/10/50 rounded-lg hover:bg-cyan-500/10 transition-colors w-full justify-center">

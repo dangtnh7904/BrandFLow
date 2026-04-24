@@ -14,7 +14,7 @@ const ISSUES_DATA = [
 ];
 
 export default function PageC3Issues() {
-  const { localData, saveStatus } = useAutoSaveForm('c3-issues', { items: ISSUES_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('c3-issues', { items: [] });
   const COLUMNS = [
     { key: 'sbu', header: 'Tên SBU', className: 'bg-linear-surface font-bold text-foreground' },
     { key: 'market', header: 'Đặc điểm Thị trường', className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted border-l border-white dark:border-slate-800' },

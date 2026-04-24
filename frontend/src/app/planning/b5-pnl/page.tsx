@@ -16,7 +16,7 @@ const PNL_DATA = [
 ];
 
 export default function PageB5Pnl() {
-  const { localData, saveStatus } = useAutoSaveForm('b5-pnl', { items: PNL_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('b5-pnl', { items: [] });
   const COLUMNS = [
     { key: 'item', header: 'Hạng mục Tài chính', className: 'bg-linear-surface font-medium text-linear-text-muted' },
     { key: 'val', header: 'Giá trị (Tỷ VNĐ)', align: 'right' as const, className: 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-bold border-x border-white dark:border-slate-800' },

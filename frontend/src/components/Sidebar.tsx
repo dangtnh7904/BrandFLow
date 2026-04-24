@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { BrandFlowLogo } from '@/components/brand/BrandFlowLogo';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 import { ThemeToggle } from './ThemeToggle';

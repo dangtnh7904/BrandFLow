@@ -16,7 +16,7 @@ const FIN_DATA = [
 ];
 
 export default function PageA3Revenue() {
-  const { localData, saveStatus } = useAutoSaveForm('a3-revenue', { items: FIN_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('a3-revenue', { items: [] });
   const { t } = useLanguage();
   const FIN_COLUMNS = [
     { key: 'metric', header: 'Hạng mục dự báo', className: 'bg-linear-surface font-medium text-linear-text-muted' },

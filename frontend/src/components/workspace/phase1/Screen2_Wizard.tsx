@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, X, Server } from 'lucide-react';
 import WizardStep1 from './WizardStep1';
 import WizardStep2 from './WizardStep2';
 import WizardStep3 from './WizardStep3';
@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useFormStore } from '@/store/useFormStore';
 
 function cn(...inputs: ClassValue[]) {
  return twMerge(clsx(inputs));

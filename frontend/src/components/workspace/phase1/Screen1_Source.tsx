@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UploadCloud, Link as LinkIcon, FileText, CheckCircle2, Globe, Share2, Plus, X, ShieldCheck, Lock, Server, Loader2, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -258,7 +258,7 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
   const getFileExt = (name: string) => name.split('.').pop()?.toUpperCase() || 'FILE';
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full h-full overflow-y-auto relative">
       <div className="flex flex-col items-center p-8 max-w-5xl mx-auto w-full min-h-full">
 
         {/* Header */}

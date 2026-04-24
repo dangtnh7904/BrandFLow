@@ -16,7 +16,7 @@ const PNL_DATA = [
 ];
 
 export default function PageA9Budget() {
-  const { localData, saveStatus } = useAutoSaveForm('a9-budget', { items: PNL_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('a9-budget', { items: [] });
   const COLUMNS = [
     { key: 'item', header: 'Hạng mục P&L', className: 'bg-linear-surface font-medium text-linear-text-muted' },
     { key: 't0', header: 'Năm t0', align: 'right' as const, headerClassName: 'bg-purple-100 dark:bg-purple-900/30 text-purple-900 dark:text-purple-400', className: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-semibold' },

@@ -14,7 +14,7 @@ const ASSUMP_DATA = [
 ];
 
 export default function PageA7Assumptions() {
-  const { localData, saveStatus } = useAutoSaveForm('a7-assumptions', { items: ASSUMP_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('a7-assumptions', { items: [] });
   const COLUMNS = [
     { key: 'core', header: 'Giả định cốt lõi', className: 'bg-linear-surface font-medium text-linear-text-muted' },
     { key: 'logic', header: 'Điều kiện Logic', className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },

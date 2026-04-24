@@ -18,7 +18,7 @@ const KSF_DATA = [
 ];
 
 export default function PageA5Swot() {
-  const { localData, saveStatus } = useAutoSaveForm('a5-swot', { items: KSF_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('a5-swot', { items: [] });
   const { t } = useLanguage();
   const COLUMNS = [
     { key: 'ksf', header: 'Yếu tố thành công (CSFs)', className: 'bg-linear-surface font-medium text-linear-text-muted' },

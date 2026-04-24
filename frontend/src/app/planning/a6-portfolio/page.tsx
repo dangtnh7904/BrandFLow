@@ -16,7 +16,7 @@ const DPM_DATA = [
 ];
 
 export default function PageA6Portfolio() {
-  const { localData, saveStatus } = useAutoSaveForm('a6-portfolio', { items: DPM_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('a6-portfolio', { items: [] });
   const { t } = useLanguage();
   const COLUMNS = [
     { key: 'segment', header: 'Phân khúc', className: 'bg-linear-surface font-medium text-linear-text-muted' },

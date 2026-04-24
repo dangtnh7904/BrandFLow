@@ -17,7 +17,7 @@ const DIR_DATA = [
 ];
 
 export default function PageC1Direction() {
-  const { localData, saveStatus } = useAutoSaveForm('c1-direction', { items: DIR_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('c1-direction', { items: [] });
   const { t } = useLanguage();
   const COLUMNS = [
     { key: 'item', header: 'Yếu tố Cấp Tập đoàn (HQ)', className: 'bg-linear-surface font-medium text-linear-text-muted w-1/3' },

@@ -16,7 +16,7 @@ const GANTT_DATA = [
 ];
 
 export default function PageB6Gantt() {
-  const { localData, saveStatus } = useAutoSaveForm('b6-gantt', { items: GANTT_DATA });
+  const { localData, saveStatus } = useAutoSaveForm('b6-gantt', { items: [] });
   const COLUMNS = [
     { key: 'name', header: 'Chiến dịch / Hành động', className: 'bg-linear-surface font-medium text-foreground', width: '250px' },
     { key: 't8', header: 'Tháng 8', align: 'center' as const, render: (r: any) => r.t8 ? <div className="h-6 w-full bg-indigo-400 rounded-sm"></div> : null, className: 'border-l border-linear-border bg-linear-surface' },

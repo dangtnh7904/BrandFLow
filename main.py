@@ -18,11 +18,12 @@ from app.schemas.schemas import (
     RefineRequest,
     MicroExecuteRequest,
     OrchestrationMockRequest,
-<<<<<<< HEAD
     PlanWizardRequest,
     PlanIntent,
     ExecutionRequest,
+    DesignGenerateRequest,
 )
+
 # ── AI Pipeline imports (optional – may fail if langchain deps missing) ──
 _AI_PIPELINE_AVAILABLE = False
 try:
@@ -36,6 +37,7 @@ try:
         run_week1_orchestration_contract,
     )
     from app.services.document_processor import DocumentIngestor
+    from design_agent import generate_brand_identity
     _AI_PIPELINE_AVAILABLE = True
 except ImportError as _import_err:
     print(f"[WARN] AI pipeline modules unavailable: {_import_err}")
@@ -50,20 +52,6 @@ from app.core.access_audit import VisitorAuditStore
 from app.core.database import init_db as init_form_db
 from app.api.form_routes import router as form_router
 from app.api.design_routes import router as design_router
-=======
-    DesignGenerateRequest,
-)
-from design_agent import generate_brand_identity
-from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
-from intake_agent import analyze_raw_input, check_required_info, extract_document_summary
-from workflow_graph import (
-    build_error_envelope,
-    run_pipeline,
-    run_refinement_pipeline,
-    run_week1_orchestration_contract,
-)
-from document_processor import DocumentIngestor
->>>>>>> origin/feature/design-logo-generation
 from pydantic import BaseModel
 import os
 import uuid

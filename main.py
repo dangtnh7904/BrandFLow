@@ -866,7 +866,7 @@ async def onboarding_extract_summary(files: List[UploadFile] = File(...), tenant
     try:
         temp_dir = "./temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
-        from document_processor import DocumentIngestor
+        from app.services.document_processor import DocumentIngestor
         ingestor = DocumentIngestor(tenant_id=tenant_id)
         
         combined_text = ""
@@ -1354,21 +1354,22 @@ async def process_micro_execute(request: MicroExecuteRequest):
     Giai đoạn 4: Sản xuất Content Đơn lẻ (Micro-execution).
     """
     try:
-        from agents_core import run_cmo_micro_execution, run_customer_agent_feedback
+        # Missing implementation: from agents_core import run_cmo_micro_execution, run_customer_agent_feedback
+        raise NotImplementedError("agents_core is not implemented yet")
         
-        cmo_content = run_cmo_micro_execution(request.brand_dna, request.usp, request.command)
+        # cmo_content = run_cmo_micro_execution(request.brand_dna, request.usp, request.command)
         
-        persona_feedback = run_customer_agent_feedback(
-            request.persona_prompt,
-            "Cần viết theo Tone of Voice phù hợp",
-            [cmo_content.get("content", "")]
-        )
+        # persona_feedback = run_customer_agent_feedback(
+        #     request.persona_prompt,
+        #     "Cần viết theo Tone of Voice phù hợp",
+        #     [cmo_content.get("content", "")]
+        # )
         
-        return {
-            "status": "success",
-            "content": cmo_content.get("content", ""),
-            "persona_feedback": persona_feedback
-        }
+        # return {
+        #     "status": "success",
+        #     "content": cmo_content.get("content", ""),
+        #     "persona_feedback": persona_feedback
+        # }
     except Exception as e:
         raise HTTPException(status_code=500, detail={"status": "error", "message": "Lỗi AI sinh nội dung.", "debug_info": str(e)})
 
@@ -1376,7 +1377,7 @@ async def process_micro_execute(request: MicroExecuteRequest):
 def get_db_stats():
     """Lấy thống kê số lượng bản ghi trong database."""
     try:
-        from document_processor import DocumentIngestor
+        from app.services.document_processor import DocumentIngestor
         ingestor = DocumentIngestor()
         from langchain_chroma import Chroma
         vectorstore = Chroma(
@@ -1404,7 +1405,7 @@ def dispatch_async_task(request: AsyncPlanRequest):
     nhảy luôn vào hàng đợi Redis và nhả ID ra cho Frontend ngay tức thì.
     """
     try:
-        from celery_worker import execute_heavy_ai_plan
+        from app.core.celery_worker import execute_heavy_ai_plan
         task = execute_heavy_ai_plan.delay({"plan_hash": request.plan_hash, "answers": request.answers})
         return {"status": "success", "task_id": task.id, "message": "Đã xếp hàng vào Background Queue."}
     except Exception as e:
@@ -1416,7 +1417,7 @@ def get_task_status(task_id: str):
     Frontend dùng ID để hỏi thăm (Polling) 3 giây / lần.
     """
     try:
-        from celery_worker import celery
+        from app.core.celery_worker import celery
         task = celery.AsyncResult(task_id)
         if task.state == 'PENDING':
             return {"task_status": "pending", "progress": 0, "message": "Task đang chờ Worker bốc để xử lý."}

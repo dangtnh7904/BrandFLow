@@ -739,44 +739,51 @@ async def test_upload_extract_only(
     force_ai: bool = Form(False)
 ):
     """
-    API test: Nhận file và trả về text trích xuất được để kiểm tra nhận diện PDF, 
+    API test: Nhận file (PDF, DOCX, TXT, CSV, XLSX...) và trả về text trích xuất.
     KHÔNG lưu ChromaDB, KHÔNG gọi AI (tránh tốn token).
     """
     if not files:
         raise HTTPException(status_code=400, detail="Không có file nào được tải lên.")
 
-    try:
-        temp_dir = "./temp_uploads"
-        os.makedirs(temp_dir, exist_ok=True)
-        
-        ingestor = DocumentIngestor()
-        results = {}
-        
-        for file in files:
-            unique_filename = f"{uuid.uuid4()}_{file.filename}"
-            temp_file_path = os.path.join(temp_dir, unique_filename)
-            
-            with open(temp_file_path, "wb") as buffer:
-                content = await file.read()
-                buffer.write(content)
-                
-            try:
-                raw_text = ingestor.ingest_file(temp_file_path, force_ai=force_ai)
-                cleaned_text = ingestor.clean_text(raw_text)
-                
+    temp_dir = "./temp_uploads"
+    os.makedirs(temp_dir, exist_ok=True)
+    ingestor = DocumentIngestor()
+    results = {}
+
+    for file in files:
+        unique_filename = f"{uuid.uuid4()}_{file.filename}"
+        temp_file_path = os.path.join(temp_dir, unique_filename)
+
+        try:
+            content = await file.read()
+            with open(temp_file_path, "wb") as buf:
+                buf.write(content)
+
+            parse_result = ingestor.parse_file(temp_file_path)
+            if parse_result.success:
+                cleaned = ingestor.clean_text(parse_result.text)
                 results[file.filename] = {
-                    "cleaned_text": cleaned_text
+                    "status": "success",
+                    "method": parse_result.method,
+                    "char_count": parse_result.char_count,
+                    "pages": parse_result.page_count or None,
+                    "sheets": parse_result.sheet_count or None,
+                    "cleaned_text": cleaned[:5000],  # preview 5000 ký tự đầu
+                    "truncated": len(cleaned) > 5000,
                 }
-            finally:
-                # Bảo mật TUYỆT ĐỐI: Dù AI đọc file thành công hay bị Crash,
-                # file mật của công ty luôn luôn tiêu hủy.
-                if os.path.exists(temp_file_path):
-                    os.remove(temp_file_path)
-                
-        return {"status": "success", "data": results}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Lỗi khi xử lý file: {str(e)}")
+            else:
+                results[file.filename] = {
+                    "status": "error",
+                    "method": parse_result.method,
+                    "error": parse_result.error,
+                }
+        except Exception as e:
+            results[file.filename] = {"status": "error", "error": str(e)}
+        finally:
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
+
+    return {"status": "success", "data": results}
 
 class UrlRequestCustom(BaseModel):
     urls: List[str]
@@ -805,55 +812,119 @@ def test_url_extract_only(request: UrlRequestCustom):
 @app.post("/api/v1/onboarding/upload-url")
 def onboarding_upload_url(request: UrlRequestCustom):
     """
-    Nhận tập hợp URL, bóc tách nội dung HTML và lưu rải rác vào ChromaDB.
+    Nhận tập hợp URL, bóc tách nội dung HTML và lưu vào ChromaDB.
+    Trả về kết quả chi tiết từng URL, tiếp tục xử lý dù có URL lỗi.
     """
     if not request.urls:
         raise HTTPException(status_code=400, detail="Không có URL nào gửi lên.")
-    try:
-        ingestor = DocumentIngestor()
-        count = 0
-        for url in request.urls:
+
+    ingestor = DocumentIngestor()
+    results = []
+    ok_count = 0
+    fail_count = 0
+
+    for url in request.urls:
+        try:
             raw_text = ingestor.ingest_url(url)
-            ingestor.process_and_store_text(raw_text=raw_text, filename=url, category="brand_guidelines")
-            count += 1
-        return {"status": "success", "message": f"Đã lưu thành công {count} URL vào ChromaDB."}
-    except Exception as e:
-         raise HTTPException(status_code=500, detail=f"Lỗi khi xử lý URL: {str(e)}")
+            cleaned = ingestor.clean_text(raw_text)
+            ingestor.process_and_store_text(raw_text=cleaned, filename=url, category="brand_guidelines")
+            results.append({
+                "url": url,
+                "status": "success",
+                "char_count": len(cleaned),
+            })
+            ok_count += 1
+        except Exception as e:
+            results.append({
+                "url": url,
+                "status": "error",
+                "error": str(e),
+            })
+            fail_count += 1
+
+    status = "success" if fail_count == 0 else ("partial" if ok_count > 0 else "error")
+    message = (
+        f"Đã thu thập và lưu thành công {ok_count}/{len(request.urls)} trang web vào ChromaDB."
+        if ok_count > 0
+        else f"Tất cả {fail_count} URL đều thất bại."
+    )
+    return {"status": status, "message": message, "results": results}
+
 
 @app.post("/api/v1/onboarding/upload")
 async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str = Form("default")):
     """
-    Nhận file, băm nhỏ và lưu vào ChromaDB (Bộ não thương hiệu).
+    Nhận file (PDF, DOCX, TXT, CSV, XLSX, HTML...), băm nhỏ và lưu vào ChromaDB.
+    Trả về kết quả chi tiết từng file, bao gồm lỗi nếu có.
     """
     if not files:
         raise HTTPException(status_code=400, detail="Không có file nào được tải lên.")
 
-    try:
-        temp_dir = "./temp_uploads"
-        os.makedirs(temp_dir, exist_ok=True)
-        ingestor = DocumentIngestor(tenant_id=tenant_id)
-        
-        for file in files:
-            unique_filename = f"{uuid.uuid4()}_{file.filename}"
-            temp_file_path = os.path.join(temp_dir, unique_filename)
-            
-            with open(temp_file_path, "wb") as buffer:
-                content = await file.read()
-                buffer.write(content)
-            
-            try:
-                # 1. Bóc tách tài liệu
-                raw_text = ingestor.ingest_file(temp_file_path)
-                # 2. Lưu vào ChromaDB phân mảnh theo Từng Khách hàng (Isolate Tenant DB)
-                ingestor.process_and_store_text(raw_text=raw_text, filename=file.filename, category="brand_guidelines")
-            finally:
-                # Bảo mật TUYỆT ĐỐI Zero-Data Retention
-                if os.path.exists(temp_file_path):
-                    os.remove(temp_file_path)
-                
-        return {"status": "success", "message": f"Đã lưu thành công {len(files)} tài liệu vào ChromaDB."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    temp_dir = "./temp_uploads"
+    os.makedirs(temp_dir, exist_ok=True)
+    ingestor = DocumentIngestor(tenant_id=tenant_id)
+
+    results = []
+    ok_count = 0
+    fail_count = 0
+
+    for file in files:
+        unique_filename = f"{uuid.uuid4()}_{file.filename}"
+        temp_file_path = os.path.join(temp_dir, unique_filename)
+
+        # Ghi file tạm
+        try:
+            content = await file.read()
+            with open(temp_file_path, "wb") as buf:
+                buf.write(content)
+        except Exception as e:
+            results.append({"filename": file.filename, "status": "error", "error": f"Không ghi được file tạm: {e}"})
+            fail_count += 1
+            continue
+
+        try:
+            # Parse đa định dạng
+            parse_result = ingestor.parse_file(temp_file_path)
+
+            if not parse_result.success:
+                results.append({
+                    "filename": file.filename,
+                    "status": "error",
+                    "error": parse_result.error,
+                    "method": parse_result.method,
+                })
+                fail_count += 1
+            else:
+                # Lưu vào ChromaDB
+                ingestor.process_and_store_text(
+                    raw_text=parse_result.text,
+                    filename=file.filename,
+                    category="brand_guidelines",
+                )
+                results.append({
+                    "filename": file.filename,
+                    "status": "success",
+                    "char_count": parse_result.char_count,
+                    "method": parse_result.method,
+                    "pages": parse_result.page_count or None,
+                    "sheets": parse_result.sheet_count or None,
+                })
+                ok_count += 1
+        except Exception as e:
+            results.append({"filename": file.filename, "status": "error", "error": str(e)})
+            fail_count += 1
+        finally:
+            # Zero-Data Retention: tiêu hủy file tạm ngay lập tức
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
+
+    status = "success" if fail_count == 0 else ("partial" if ok_count > 0 else "error")
+    message = (
+        f"Đã lưu thành công {ok_count}/{len(files)} tài liệu vào ChromaDB."
+        if ok_count > 0
+        else f"Tất cả {fail_count} file đều thất bại."
+    )
+    return {"status": status, "message": message, "results": results}
 
 @app.post("/api/v1/onboarding/extract-summary")
 async def onboarding_extract_summary(files: List[UploadFile] = File(...), tenant_id: str = Form("default")):

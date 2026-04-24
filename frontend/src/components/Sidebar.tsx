@@ -65,6 +65,12 @@ const B2B_SECTIONS = [
       { id: "c3", label: { en: "C.3 Issues Analysis", vi: "C.3 Phân tích Vấn đề" }, href: "/planning/c3-issues" },
       { id: "c4", label: { en: "C.4 Exec Matrix", vi: "C.4 Dashboard Chiến lược" }, href: "/planning/c4-dashboard" },
     ]
+  },
+  {
+    title: { en: "Phase D - Report Output", vi: "Phần D - Báo cáo Output" },
+    items: [
+      { id: "d0", label: { en: "D.0 Marketing Plan Report", vi: "📊 Báo cáo Marketing Plan" }, href: "/planning/d0-report" },
+    ]
   }
 ];
 

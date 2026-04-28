@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const PNL_DATA = [
   { item: 'Doanh thu thuần', val: '60.0', ratio: '100%' },
@@ -41,13 +40,6 @@ export default function PageB5Pnl() {
         <WizardNavigation prevLink="/planning/b4-contingency" prevLabel="Về B.4" nextLink="/planning/b6-gantt" nextLabel="Tiếp tục: B.6 Gantt Chart" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="B.5 Báo cáo Lãi Lỗ (P&L)"
-      purpose="Thước phim quay nhanh về dòng chảy của tiền trong suốt 12 tháng qua."
-      sections={[
-        { title: 'Đóng góp biên', explanation: 'Sau khi trừ đi mọi chi phí biến đổi, sản phẩm này thực sự đang làm giàu hay phá hoại công ty?' }
-      ]}
-    />
-    </>
+        </>
   );
 }

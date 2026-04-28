@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const PERF_DATA = [
   { metric: 'Khối lượng bán ra', y3: '50 tấn', y2: '85 tấn', y1: '150 tấn', reason: 'Nắm bắt xu hướng "healthy"' },
@@ -48,14 +47,6 @@ export default function PageA2Performance() {
         </div>
       </B2BPageTemplate>
       
-      <MascotChatbot 
-        formName="Hiệu suất SBU (3 Năm Trước)"
-        purpose="Phần này giống như 'Sổ liên lạc' của doanh nghiệp trong 3 năm qua. Nó giúp phát hiện công ty đang đi lên hay đi lùi."
-        sections={[
-          { title: 'Tỷ suất Lợi nhuận', explanation: 'Bán 100k bạn lờ lãi được bao nhiêu tiền? Nếu con số này tăng lên mỗi năm, chứng tỏ bạn đang kinh doanh rất hiệu quả.' },
-          { title: 'Nguyên nhân chính', explanation: 'Hãy viết ngắn gọn 1 lý do lớn nhất khiến doanh thu bạn nhảy vọt hoặc sụt giảm trong năm đó. Ví dụ: Chạy chiến dịch TikTok thành công.' }
-        ]}
-      />
-    </>
+          </>
   );
 }

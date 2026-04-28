@@ -4,7 +4,6 @@ import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { Target, TrendingUp, ShieldAlert, PieChart, Users } from 'lucide-react';
 
 export default function PageA0Overview() {
@@ -62,14 +61,6 @@ export default function PageA0Overview() {
         </div>
       </B2BPageTemplate>
       
-      <MascotChatbot 
-        formName="Tổng quan Phần A"
-        purpose="Tôi đứng đây để đảm bảo bạn khởi đầu suôn sẻ! Tính năng 'Tổng quan' này giúp bạn nắm được bản đồ tư duy trước khi lạc vào mê hồn trận của Planning."
-        sections={[
-          { title: 'Phần này khó cỡ nào?', explanation: 'Bình thường! Đa phần là các câu hỏi giúp bạn nhìn nhận lại việc kinh doanh. Dữ liệu tài chính sẽ có Mẫu AI điền giúp.' },
-          { title: 'Tôi chưa có đủ số liệu?', explanation: 'Không sao cả! Lập kế hoạch là nghệ thuật dự phóng. Chỗ nào thiếu, bạn cứ đưa ra Giả định (Assumptions) nhé!' }
-        ]}
-      />
-    </>
+          </>
   );
 }

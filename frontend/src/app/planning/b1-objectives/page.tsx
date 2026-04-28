@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const OBJ_DATA = [
   { pair: 'Vị nguyên bản / Mẹ & Bé', vol: '130 tấn', margin: '42%', strategy: 'Đẩy mạnh Sampling & TVC', budget: '1,500' },
@@ -38,14 +37,8 @@ export default function PageB1Objectives() {
         <div className="bento-card p-6">
            <PastelTable columns={COLUMNS} data={localData.items} />
         </div>
-      </B2BPageTemplate>
-      <MascotChatbot
-        formName="B.1 Mục tiêu Vận hành"
-        purpose="Giờ là lúc chẻ nhỏ giấc mơ 3 năm ở Phần A thành các mục tiêu 12 tháng. Phải rõ ràng để nhân viên hiểu họ cần làm gì ngay ngày mai!"
-        sections={[
-          { title: 'Tác động mong đợi', explanation: 'Chỉ số đo lường thành công là gì? Ví dụ: Tăng 20% lượng user mới.' }
-        ]}
-      />
-    </>
+      </div>
+    </B2BPageTemplate>
+          </>
   );
 }

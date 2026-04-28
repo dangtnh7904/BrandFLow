@@ -5,6 +5,7 @@ import { Bot, Send, Sparkles, ShieldCheck, RefreshCw, ArrowLeft, CheckCircle, Ch
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ReactFlow, Background, Controls, MarkerType, useNodesState, useEdgesState } from '@xyflow/react';
+import { useRouter } from 'next/navigation';
 import '@xyflow/react/dist/style.css';
 import { getRelevantRules, saveRule } from '@/mocks/mockKnowledgeBase';
 import { runExecutorAgent, runLearnerAgent } from '@/mocks/agentServices';
@@ -24,6 +25,7 @@ const initialEdges = [
 
 export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
  const { language } = useLanguage();
+ const router = useRouter();
  const [prompt, setPrompt] = useState('');
  const [isGenerating, setIsGenerating] = useState(false);
  const [showCanvas, setShowCanvas] = useState(false);
@@ -202,7 +204,10 @@ export default function Phase4_Execution({ onBack }: { onBack: () => void }) {
  >
  {language === 'vi' ? 'Sửa / Cải thiện' : 'Edit / Improve'}
  </button>
- <button className="px-4 py-2 rounded-lg text-xs font-semibold text-white gradient-ai-bg">{language === 'vi' ? 'Gửi duyệt tới Integration' : 'Publish to Integration'}</button>
+ <button onClick={() => router.push('/dashboard')} className="px-4 py-2 rounded-lg text-xs font-semibold text-white gradient-ai-bg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center">
+   <CheckSquare className="w-4 h-4 mr-1" />
+   {language === 'vi' ? 'Lưu Dự án & Về Dashboard' : 'Save & Return to Dashboard'}
+ </button>
  </div>
 
  <AnimatePresence>

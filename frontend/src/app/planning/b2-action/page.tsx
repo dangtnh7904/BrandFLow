@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const ACTION_DATA = [
   { obj: 'Trực quan hóa công dụng lợi khuẩn', tactic: 'Sản xuất TVC hoạt hình: 1 Mascot duy nhất vươn tay chỉ trực diện vào đồ họa đường ruột đang tiêu hóa tốt.', owner: 'Creative Team', deadline: 'Tuần 3, Tháng 8', cost: '300,000,000' },
@@ -41,13 +40,6 @@ export default function PageB2Action() {
         <WizardNavigation prevLink="/planning/b1-objectives" prevLabel="Về B.1" nextLink="/planning/b3-budget" nextLabel="Tiếp tục: B.3 Ngân sách Marketing" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="B.2 Kế hoạch Hành động"
-      purpose="Không có kế hoạch hành động, mục tiêu chỉ là điều ước. Gán ngay cái tên vào từng việc!"
-      sections={[
-        { title: 'Ai chịu trách nhiệm?', explanation: 'Một việc mà 2 người chịu trách nhiệm là không ai chịu trách nhiệm cả. Ghi rành rọt tên người cầm trịch vào đây.' }
-      ]}
-    />
-    </>
+        </>
   );
 }

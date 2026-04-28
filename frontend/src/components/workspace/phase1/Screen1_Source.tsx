@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UploadCloud, Link as LinkIcon, FileText, CheckCircle2, Globe, Share2, Plus, X, ShieldCheck, Lock, Server, Loader2, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFormStore } from '@/store/useFormStore';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -13,6 +14,7 @@ function cn(...inputs: ClassValue[]) {
 
 export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | 'dashboard') => void }) {
   const { t, language } = useLanguage();
+  const setExtractedAnswers = useFormStore(state => state.setExtractedAnswers);
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
 
   // UI States for dynamic fields
@@ -215,6 +217,11 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
         setUploadStatus('success');
       }
 
+      // Lưu kết quả AI vào store nếu có
+      if (data.extracted_answers && Object.keys(data.extracted_answers).length > 0) {
+        setExtractedAnswers(data.extracted_answers);
+      }
+
       // Tạo message chi tiết từng file
       if (Array.isArray(data.results) && data.results.length > 0) {
         const lines: string[] = [data.message || ''];
@@ -265,10 +272,16 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8 shrink-0"
+          className="text-center mb-10 shrink-0 relative z-10"
         >
-          <h2 className="text-3xl font-bold text-foreground tracking-tight mb-3">{t('screen1.title')}</h2>
-          <p className="text-linear-text-muted max-w-xl mx-auto text-sm">{t('screen1.desc')}</p>
+          <div className="inline-flex items-center px-4 py-2 rounded-full border border-linear-border bg-linear-surface/50 backdrop-blur-sm mb-4 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse mr-3 shrink-0" />
+            <span className="text-xs font-semibold text-foreground tracking-wide uppercase">Stage 1: Ingestion</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight mb-4">
+            {language === 'vi' ? 'Khởi tạo' : 'Initialize'} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Brand DNA</span>
+          </h2>
+          <p className="text-linear-text-muted max-w-2xl mx-auto text-base">{t('screen1.desc')}</p>
         </motion.div>
 
         {/* Source Cards */}

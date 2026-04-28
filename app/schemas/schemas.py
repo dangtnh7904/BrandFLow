@@ -11,7 +11,17 @@ class RawInputRequest(BaseModel):
     raw_text: str = Field(..., description="Ngôn ngữ tự nhiên từ người dùng")
     budget: Optional[int] = Field(None, description="Ngân sách cố định do người dùng nhập (VND)")
     comprehensive_form: Optional[Dict[str, Any]] = Field(None, description="Dữ liệu form trắc nghiệm")
+    brand_dna: Optional[Dict[str, Any]] = Field(None, description="Brand DNA đã trích xuất")
     tenant_id: str = Field("default", description="Mã định danh phiên làm việc của người dùng")
+
+class ExtractDNARequest(BaseModel):
+    form_data: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Dữ liệu form từ người dùng")
+    document_content: Optional[str] = Field("", description="Nội dung text đã trích xuất từ file hoặc link")
+    tenant_id: str = Field("default", description="Mã định danh phiên làm việc")
+
+class MarketResearchRequest(BaseModel):
+    industry: str = Field(..., description="Ngành nghề")
+    brand_dna: Optional[Dict[str, Any]] = Field(None, description="Brand DNA đã trích xuất")
 
 class RefineRequest(BaseModel):
     previous_plan: dict = Field(..., description="Kế hoạch cũ dạng JSON")
@@ -164,49 +174,75 @@ class CFOTacticalFeedback(BaseModel):
     budget_allocations: list[dict]
 
 # ============================================================================
-# NEW B2B WORKFLOW SCHEMAS (10 STEPS)
+# KOTLER & MCDONALD PROFESSIONAL B2B SCHEMAS (TOKEN OPTIMIZED)
 # ============================================================================
 
-class MissionStatement(BaseModel):
-    role_of_business: str = Field(..., description="Vai trò của doanh nghiệp")
-    business_definition_benefits: str = Field(..., description="Định nghĩa kinh doanh dựa trên lợi ích cốt lõi")
-    brand_purpose: str = Field(..., description="Mục đích tối thượng của thương hiệu")
-    core_competency: str = Field(..., description="Năng lực cốt lõi khác biệt")
-    red_lines: list[str] = Field(..., description="Những vùng cấm / lằn ranh đỏ tuyệt đối không bao giờ làm")
+class VRIO_Competency(BaseModel):
+    competency: str = Field(..., description="Năng lực (VD: Bản quyền công nghệ)")
+    is_vrio: bool = Field(..., description="Đạt chuẩn VRIO không?")
 
 class CorporateObjective(BaseModel):
-    financial_goals: list[str] = Field(..., description="Mục tiêu tài chính (Doanh số, Lợi nhuận, ROI)")
-    non_financial_goals: list[str] = Field(..., description="Mục tiêu phi tài chính (Phát triển bền vững, R&D, Xã hội)")
+    financial_goals: list[str] = Field(..., max_length=2, description="2 mục tiêu tài chính (ROI, Margin)")
+    marketing_goals: list[str] = Field(..., max_length=2, description="2 mục tiêu Marketing (Market Share, CAC/LTV)")
 
 class GoalSettingPhase1(BaseModel):
-    mission: MissionStatement
+    mission_statement: str = Field(..., description="Tuyên bố sứ mệnh ngắn gọn")
+    core_competencies: list[VRIO_Competency] = Field(..., max_length=2)
     objectives: CorporateObjective
+    red_lines: list[str] = Field(..., max_length=2, description="2 rủi ro pháp lý/tài chính cấm kỵ")
+
+class DMU_Profile(BaseModel):
+    role: Literal["Initiator", "Influencer", "Decider", "Buyer", "User"]
+    pain_points: list[str] = Field(..., max_length=2)
+    decision_drivers: list[str] = Field(..., max_length=2)
 
 class NeedsBasedAudience(BaseModel):
     segment_name: str
-    core_pain_points: list[str] = Field(..., description="Nỗi đau cốt lõi")
-    decision_drivers: list[str] = Field(..., description="Động lực ra quyết định chính")
-    quantified_value_proposition: str = Field(..., description="Tuyên bố giá trị: Benefit - Sacrifice")
+    dmu_profiles: list[DMU_Profile] = Field(..., max_length=2, description="2 roles chính trong DMU")
+    value_proposition: str = Field(..., description="Benefit vs Sacrifice statement")
 
-class CSFFactor(BaseModel):
-    factor_name: str = Field(..., description="Tên Yếu tố thành công then chốt")
-    weight_percentage: float = Field(..., description="Trọng số (%) mức độ quan trọng")
-    score_1_to_10: int = Field(..., description="Điểm thực lực của doanh nghiệp (1-10)")
+class CompetitiveBenchmark(BaseModel):
+    factor_name: str = Field(..., description="CSF")
+    our_score: int = Field(..., ge=1, le=10)
+    industry_benchmark_score: int = Field(..., ge=1, le=10)
+    weight_percentage: float
 
 class DownsideRiskAssessment(BaseModel):
-    risk_scenario: str = Field(..., description="Kịch bản rủi ro nếu giả định thất bại")
-    trigger_point: str = Field(..., description="Điểm kích hoạt (Tín hiệu số liệu báo động)")
-    contingency_action: str = Field(..., description="Kế hoạch B để bù đắp")
+    risk_scenario: str
+    trigger_point_metric: str = Field(..., description="VD: CPL > 500k")
+    contingency_plan_b: str
+
+class SituationAuditPhase2(BaseModel):
+    target_segments: list[NeedsBasedAudience] = Field(..., max_length=2)
+    benchmarks: list[CompetitiveBenchmark] = Field(..., max_length=3)
+    tows_strategic_options: list[str] = Field(..., max_length=2, description="2 chiến lược TOWS rút ra từ Audit")
+
+class StrategyPhase3(BaseModel):
+    ansoff_matrix_choice: str = Field(..., description="Chiến lược cốt lõi")
+    positioning_statement: str = Field(..., description="Tuyên bố định vị với POP và POD")
+    expected_roi_justification: str = Field(..., description="Biện luận tính khả thi ROI ngắn gọn")
+
+class Tactic7P(BaseModel):
+    p_name: Literal["Product", "Price", "Place", "Promotion", "People", "Process", "Physical Evidence"]
+    action_bullet: str = Field(..., description="1 hành động cốt lõi")
+    kpi: str = Field(..., description="1 KPI định lượng")
+    budget_vnd: int
+    moscow_tag: Literal["MUST_HAVE", "SHOULD_HAVE", "COULD_HAVE"] = Field(..., description="Mức độ ưu tiên")
+
+class TacticsPhase4(BaseModel):
+    tactics_7ps: list[Tactic7P] = Field(..., max_length=4, description="Chọn 4 chữ P quan trọng nhất để dồn ngân sách")
+    total_budget_used: int
+
+class CFODefenseOutput(BaseModel):
+    cfo_comment: str
+    risk_assessment: list[DownsideRiskAssessment] = Field(..., max_length=2)
 
 class MasterPlanPhase4Output(BaseModel):
     goal_setting: GoalSettingPhase1
-    target_segments: list[NeedsBasedAudience]
-    csf_analysis: list[CSFFactor]
-    gap_analysis_result: str = Field(default="")
-    ansoff_strategy: str = Field(default="")
-    phased_execution: list[dict] = Field(description="List of PhasedExecution dictionaries")
-    activity_and_financial_breakdown: list[dict] = Field(description="List of ActivityAndFinancialBreakdown dictionaries")
-    risk_assessment: list[DownsideRiskAssessment]
+    situation_audit: SituationAuditPhase2
+    strategy: StrategyPhase3
+    tactics: TacticsPhase4
+    cfo_risk: CFODefenseOutput
 
 
 # ============================================================================
@@ -219,10 +255,16 @@ class VisualLanguage(BaseModel):
     mood: str = Field(..., description="Cảm giác thị giác tổng thể (VD: Sang trọng, công nghệ, vui nhộn...)")
 
 class DesignGenerateRequest(BaseModel):
+    brand_name: str = Field(..., description="Tên thương hiệu")
+    goal: str = Field(..., description="Mục tiêu chiến dịch / thương hiệu")
     industry: str = Field(..., description="Ngành hàng của doanh nghiệp")
-    core_usps: list[str] = Field(..., description="Các USP cốt lõi")
-    target_audience_insights: list[str] = Field(..., description="Insight khách hàng mục tiêu")
-    tone_of_voice: str = Field(..., description="Giọng điệu thương hiệu")
+    target_audience: str = Field(default="", description="Tệp khách hàng mục tiêu")
+    brand_dna_context: Optional[Dict[str, Any]] = Field(None, description="Brand DNA từ DB")
+    
+    # Backward compatibility
+    core_usps: list[str] = Field(default_factory=list, description="Các USP cốt lõi")
+    target_audience_insights: list[str] = Field(default_factory=list, description="Insight khách hàng mục tiêu")
+    tone_of_voice: str = Field(default="", description="Giọng điệu thương hiệu")
     strict_rules: list[str] = Field(default_factory=list, description="Các điều kiêng kị / quy tắc bắt buộc")
 
 class DesignOutput(BaseModel):
@@ -238,3 +280,41 @@ class DesignReviseRequest(BaseModel):
     original_request: DesignGenerateRequest
     original_output: DesignOutput
     user_feedback: str = Field(..., description="Yêu cầu sửa đổi từ người dùng")
+
+# ============================================================================
+# BUSINESS METRICS & AI TELEMETRY SCHEMAS (AGENT 0 - REAL-TIME)
+# ============================================================================
+
+class MarketFunnelMetrics(BaseModel):
+    tam: float | None = Field(None, description="Tổng nhu cầu thị trường (Total Addressable Market)")
+    sam: float | None = Field(None, description="Thị trường có thể phục vụ (Serviceable Addressable Market)")
+    som: float | None = Field(None, description="Thị phần thực tế có thể nắm giữ (Serviceable Obtainable Market)")
+    cagr: float | None = Field(None, description="Tỷ lệ tăng trưởng kép hàng năm (%)")
+
+class FinancialHealthMetrics(BaseModel):
+    cac: float | None = Field(None, description="Chi phí để có được một khách hàng mới")
+    ltv: float | None = Field(None, description="Giá trị trọn đời của một khách hàng")
+    ltv_cac_ratio: float | None = Field(None, description="Tỷ lệ LTV/CAC")
+    roi: float | None = Field(None, description="Tỷ lệ lợi nhuận trên tổng vốn đầu tư (%)")
+
+class MarketPositionMetrics(BaseModel):
+    market_share: float | None = Field(None, description="Thị phần của doanh nghiệp (%)")
+    retention_rate: float | None = Field(None, description="Tỷ lệ khách hàng cũ quay lại (%)")
+    proxy_nps: float | None = Field(None, description="Net Promoter Score giả lập từ đối thủ")
+
+class AITelemetryMetrics(BaseModel):
+    model_accuracy: float | None = Field(None, description="Độ chính xác của dự đoán mô hình")
+    loss_function_trend: float | None = Field(None, description="Xu hướng giảm sai số")
+    inference_latency: float | None = Field(None, description="Thời gian phản hồi thực tế (ms)")
+    training_cost_per_run: float | None = Field(None, description="Chi phí tài nguyên cho mỗi lần training")
+    data_acquisition_cost: float | None = Field(None, description="Chi phí thu thập dữ liệu (DAC)")
+    resource_utilization: float | None = Field(None, description="Tỷ lệ sử dụng phần cứng (%)")
+    retention_rate_improvement: float | None = Field(None, description="Tỷ lệ giữ chân tăng sau model update (%)")
+    ltv_estimation: float | None = Field(None, description="Dự báo LTV từ AI")
+    nps_correlation: float | None = Field(None, description="Tương quan độ chính xác AI và NPS")
+
+class CombinedBusinessMetrics(BaseModel):
+    market_funnel: MarketFunnelMetrics
+    financial_health: FinancialHealthMetrics
+    market_position: MarketPositionMetrics
+    ai_telemetry: AITelemetryMetrics | None = None

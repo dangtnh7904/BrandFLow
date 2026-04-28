@@ -4,7 +4,6 @@ import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { PlayCircle, Clock, ShieldCheck } from 'lucide-react';
 
 export default function PageB0Overview() {
@@ -58,13 +57,6 @@ export default function PageB0Overview() {
         </div>
       </B2BPageTemplate>
       
-      <MascotChatbot 
-        formName="Tổng quan Phần B"
-        purpose="Đây là lúc bạn bắt tay 'xắn tay áo' lên! Đừng viết chiến lược trong mây nữa, hãy ấn định ai là người làm và tiền rót vào đâu."
-        sections={[
-          { title: 'Sự khác biệt với Phần A?', explanation: 'Phần A nhìn xa 3-5 năm. Phần B chỉ tập trung làm tốt trong 1 năm tới (12 tháng). Rất thực chiến!' },
-        ]}
-      />
-    </>
+          </>
   );
 }

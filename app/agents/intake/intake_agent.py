@@ -153,11 +153,12 @@ def extract_document_summary(raw_text: str) -> dict:
     print(f"{'═' * 70}")
     
     prompt = f"""Bạn là Cố vấn Thương hiệu Cấp cao (Executive Auditor).
-Nhiệm vụ của bạn là đọc tài liệu nội bộ sau để Đánh giá Mức độ Trưởng thành của Doanh nghiệp.
+Nhiệm vụ của bạn là đọc tài liệu nội bộ sau để Đánh giá Mức độ Trưởng thành của Doanh nghiệp bằng lăng kính chuyên gia (PESTLE & Porter's Five Forces).
 
 QUY TẮC QUAN TRỌNG:
-1. Ở phần 'critical_weaknesses', NGHIÊM CẤM dùng từ ngữ hạ thấp (như chém gió, yếu kém, thất bại). PHẢI dùng ngôn ngữ ngoại giao, tinh tế (VD: "Chưa tối ưu hóa độ phủ", "Còn dư địa để mở rộng").
+1. Ở phần 'critical_weaknesses', NGHIÊM CẤM dùng từ ngữ hạ thấp. PHẢI dùng ngôn ngữ ngoại giao, tinh tế (VD: "Chưa tối ưu hóa độ phủ", "Còn dư địa để mở rộng").
 2. Dựa vào mô tả, hãy tự suy luận ra một bộ Visual Brand DNA (mã màu HEX, kiểu chữ) để làm định hướng thiết kế UI/UX sau này.
+3. NO FLUFF: Trả về các phân tích siêu ngắn gọn, đi thẳng vào trọng tâm, tuyệt đối không viết dài dòng.
 
 Tài liệu:
 "{raw_text[:20000]}"

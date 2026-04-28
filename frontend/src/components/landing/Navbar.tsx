@@ -38,10 +38,10 @@ export default function Navbar() {
    >🇻🇳 VI</button>
  </div>
  <ThemeToggle />
- <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-blue-600 transition-colors hidden sm:block">
+ <Link href="/onboarding" className="text-sm font-medium text-foreground hover:text-blue-600 transition-colors hidden sm:block">
  {t('landing_nav.login')}
  </Link>
- <Link href="/dashboard">
+ <Link href="/onboarding">
  <motion.button 
  whileHover={{ scale: 1.05 }}
  whileTap={{ scale: 0.95 }}

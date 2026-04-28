@@ -11,7 +11,7 @@ interface WizardNavigationProps {
 
 export default function WizardNavigation({ prevLink, prevLabel, nextLink, nextLabel }: WizardNavigationProps) {
   return (
-    <div className="flex items-center justify-between mt-10 pt-6 border-t border-linear-border">
+    <div className="print-hide flex items-center justify-between mt-10 pt-6 border-t border-linear-border">
       {prevLink && prevLabel ? (
         <Link href={prevLink} className="flex items-center px-5 py-2.5 rounded-lg text-linear-text-muted hover:text-foreground hover:bg-slate-100 dark:bg-slate-800/30 transition-colors font-medium">
           <ArrowLeft className="w-4 h-4 mr-2" /> Quay lại: {prevLabel}

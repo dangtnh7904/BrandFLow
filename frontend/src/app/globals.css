@@ -104,3 +104,93 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     scrollbar-width: none; /* Firefox */
   }
 }
+
+/* Sync Print Design with Full Report (ExecutiveReport) */
+body.printing-section .bento-card,
+body.printing-section .print-section-view .bg-white.rounded-xl,
+body.preview-mode .bento-card,
+body.preview-mode .print-section-view .bg-white.rounded-xl {
+  box-shadow: none !important;
+  border-radius: 0.75rem !important; /* rounded-xl */
+  border: 1px solid #e2e8f0 !important; /* slate-200 */
+  background: #f8fafc !important; /* slate-50 */
+  padding: 1.5rem !important; /* p-6 */
+  margin-bottom: 2rem !important;
+}
+
+body.printing-section .print-section-view h3,
+body.preview-mode .print-section-view h3 {
+  color: #0f172a !important; /* slate-900 */
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important; /* text-2xl */
+  margin-bottom: 1.5rem !important; /* mb-6 */
+}
+
+body.printing-section .print-section-view input,
+body.printing-section .print-section-view textarea,
+body.printing-section .print-section-view select,
+body.preview-mode .print-section-view input,
+body.preview-mode .print-section-view textarea,
+body.preview-mode .print-section-view select {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  padding: 0.25rem 0 !important; /* Strip horizontal padding for perfect alignment */
+  color: black !important;
+  resize: none !important;
+  font-size: 1rem !important;
+}
+
+body.printing-section .print-section-view button,
+body.preview-mode .print-section-view button {
+  display: none !important;
+}
+
+body.printing-section .sidebar-container,
+body.printing-section .b2b-header-nav,
+body.printing-section .print-hide,
+body.printing-section .print-hide *,
+body.preview-mode .sidebar-container,
+body.preview-mode .b2b-header-nav,
+body.preview-mode .print-hide,
+body.preview-mode .print-hide * {
+  display: none !important;
+}
+
+@media print {
+  body:not(.printing-section) * {
+    visibility: hidden;
+  }
+  
+  body:not(.printing-section) #print-root, 
+  body:not(.printing-section) #print-root * {
+    visibility: visible;
+  }
+  
+  body:not(.printing-section) #print-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+  }
+
+  /* Section printing mode overrides */
+  body.printing-section {
+    background-color: white !important;
+  }
+
+
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

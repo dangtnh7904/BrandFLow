@@ -56,8 +56,7 @@ export default function PastelTable<T>({ columns, data, footerContent }: PastelT
                 </td>
               ))}
             </tr>
-          ))
-          )}
+          ))}
         </tbody>
         {footerContent && (
           <tfoot className="bg-linear-surface text-cyan-300 font-semibold border-t border-linear-border">

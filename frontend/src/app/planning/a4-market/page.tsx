@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const MAP_DATA = [
   { point: 'Kênh MT (Siêu thị)', ratio: '40%', segments: 'Dân văn phòng, Gia đình', decisions: 'Kệ hàng, Thiết kế bao bì hiện đại/tối giản' },
@@ -41,13 +40,6 @@ export default function PageA4Market() {
         <WizardNavigation prevLink="/planning/a3-revenue" prevLabel="Về A.3" nextLink="/planning/a5-swot" nextLabel="Tiếp tục: A.5 SWOT" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="Bản đồ Thị trường"
-      purpose="Xác định những điểm nghẽn và động cơ khiến ví tiền của khách hàng mở ra."
-      sections={[
-        { title: 'Điểm quyết định mua', explanation: 'Người mua ở siêu thị (MT) sẽ nhìn vào Bao bì. Người mua Online lại tin vào Review. Đừng tốn tiền làm Review cho gian hàng siêu thị!' }
-      ]}
-    />
-    </>
+        </>
   );
 }

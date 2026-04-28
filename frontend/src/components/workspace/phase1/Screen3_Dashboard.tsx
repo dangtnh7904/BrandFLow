@@ -11,7 +11,7 @@ function cn(...inputs: ClassValue[]) {
  return twMerge(clsx(inputs));
 }
 
-export default function Screen3_Dashboard({ onComplete }: { onComplete: () => void }) {
+export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGoToHub: () => void, onGoToWorkspace: () => void }) {
  const { t, language } = useLanguage();
  const [loading, setLoading] = useState(true);
  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
@@ -66,15 +66,28 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
  }
 
  return (
- <div className="w-full h-full overflow-y-auto">
- <div className="flex flex-col w-full max-w-5xl mx-auto p-8 min-h-full">
+ <div className="w-full h-full overflow-y-auto bg-slate-50 dark:bg-[#0B1120] relative">
+ {/* Enhance Visuals: Background Ambient Glows */}
+ <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyan-500/10 dark:bg-cyan-500/20 rounded-full blur-[120px] pointer-events-none z-0" />
+ <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/10 dark:bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-0" />
+
+ <div className="flex flex-col w-full max-w-5xl mx-auto p-8 min-h-full relative z-10">
  <motion.div 
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
- className="mb-8"
+ className="mb-10"
  >
- <h2 className="text-3xl font-bold text-foreground mb-2">{t('dashboard.title')}</h2>
- <p className="text-linear-text-muted">{t('dashboard.desc')}</p>
+ <div className="inline-flex items-center px-4 py-2 rounded-full border border-linear-border bg-linear-surface/50 backdrop-blur-sm mb-4 shadow-sm">
+ <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse mr-3 shrink-0" />
+ <span className="text-xs font-semibold text-foreground tracking-wide uppercase">AI Research Completed</span>
+ </div>
+ <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight mb-4">
+ {language === 'vi' ? 'Phân tích' : 'Brand'}{' '}
+ <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
+ {language === 'vi' ? 'DNA' : 'DNA'}
+ </span>
+ </h2>
+ <p className="text-linear-text-muted text-lg max-w-2xl">{t('dashboard.desc')}</p>
  </motion.div>
 
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -222,13 +235,24 @@ export default function Screen3_Dashboard({ onComplete }: { onComplete: () => vo
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.5 }}
- className="flex justify-end"
+ className="flex flex-col sm:flex-row items-center justify-end gap-4 mt-8 pt-8 border-t border-linear-border/50"
  >
  <button 
- onClick={onComplete}
- className="px-8 py-4 rounded-xl font-bold transition-all shadow-md flex items-center gradient-ai-bg text-white hover:shadow-lg hover:scale-105"
+ onClick={onGoToHub}
+ className="px-8 py-4 rounded-xl font-bold transition-all shadow-sm flex items-center bg-linear-surface border border-linear-border text-foreground hover:bg-linear-surface/80 hover:text-cyan-500 w-full sm:w-auto justify-center"
  >
- {t('dashboard.btn')} <ChevronRight className="w-5 h-5 ml-2" />
+ {language === 'vi' ? 'Khám phá Tính năng khác' : 'Explore Other Features'}
+ </button>
+ 
+ <button 
+ onClick={onGoToWorkspace}
+ className="group relative px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-1 w-full sm:w-auto justify-center overflow-hidden"
+ >
+ {/* Shine effect */}
+ <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+ <span className="relative z-10 flex items-center">
+ 🚀 {language === 'vi' ? 'Bắt đầu Lập Kế hoạch Chiến lược' : 'Start Strategic Planning'} <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+ </span>
  </button>
  </motion.div>
  </div>

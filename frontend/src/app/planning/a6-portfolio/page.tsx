@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 
@@ -48,13 +47,6 @@ export default function PageA6Portfolio() {
         <WizardNavigation prevLink="/planning/a5-swot" prevLabel="Về A.5" nextLink="/planning/a7-assumptions" nextLabel="Tiếp tục: A.7 Giả định" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="Ma trận Danh mục"
-      purpose="Quyết định ai được nuôi tiếp, ai bị chôn đi."
-      sections={[
-        { title: 'GE Matrix nôm na', explanation: 'Trục ngang là độ mạnh của bạn, trục dọc là sức hấp dẫn của thị trường. Nhóm đỉnh cao sẽ được đổ dồn tiền marketing.' }
-      ]}
-    />
-    </>
+        </>
   );
 }

@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 
@@ -58,13 +57,6 @@ export default function PageA3Revenue() {
         />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="Dự phóng Doanh thu"
-      purpose="Bảng tiêu chuẩn dành cho CEO nhìn vào để biết tiền vào bằng chừng nào, tiền ra bằng mức nào."
-      sections={[
-        { title: 'Tương lai là thứ không ai biết', explanation: 'Chính xác! Các số liệu t+1, t+2 chỉ mang tính giả thực tế. Nhưng bạn cần điền đầy đủ và tự hỏi: "Nếu nỗ lực hết sức, khả thi để đạt mốc này không?"' }
-      ]}
-    />
-    </>
+        </>
   );
 }

@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 
@@ -42,13 +41,6 @@ export default function PageC1Direction() {
         <WizardNavigation prevLink="/planning/c0-overview" prevLabel="Về C.0 Tổng quan" nextLink="/planning/c2-history" nextLabel="Tiếp tục: C.2 Lịch sử Danh mục" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="C.1 Tuyên bố Định hướng"
-      purpose="Bản tóm tắt dành cho Giám đốc điều hành Tập đoàn. Đọc một phát hiểu ngay công ty con này sẽ đi về đâu."
-      sections={[
-        { title: 'Tại sao cần đọc lướt?', explanation: 'Ở cấp HQ, họ không có thời gian quan tâm bạn chạy ads nào. Họ chỉ cần biết hướng đi (Tấn công/Phòng thủ/Thoái vốn) và Cốt lõi.' }
-      ]}
-    />
-    </>
+        </>
   );
 }

@@ -31,7 +31,7 @@ export default function Footer() {
               <h4 className="font-bold text-foreground mb-4">{t('landing_footer.col1_title')}</h4>
               <ul className="space-y-3 text-sm text-linear-text-muted">
                 <li><Link href="#features" className="hover:text-cyan-500 transition-colors">{t('landing_footer.col1_l1')}</Link></li>
-                <li><Link href="/workspace" className="hover:text-cyan-500 transition-colors">{t('landing_footer.col1_l2')}</Link></li>
+                <li><Link href="/onboarding" className="hover:text-cyan-500 transition-colors">{t('landing_footer.col1_l2')}</Link></li>
                 <li><Link href="/planning/a1-mission" className="hover:text-cyan-500 transition-colors">{t('landing_footer.col1_l3')}</Link></li>
                 <li><Link href="#pricing" className="hover:text-cyan-500 transition-colors">{t('landing_footer.col1_l4')}</Link></li>
               </ul>

@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 import { ThemeToggle } from './ThemeToggle';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
   MessageSquare,
@@ -85,16 +85,31 @@ const MENU_ITEMS = [
   { id: 'settings', langKey: 'sidebar.settings', icon: Settings, href: '/settings', group: 'system' },
 ] as const;
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
  const pathname = usePathname();
  const { t, language, toggleLanguage } = useLanguage();
- const [isCollapsed, setIsCollapsed] = useState(false);
+ const isCollapsed = false;
 
  return (
+ <>
+  {/* Overlay backdrop */}
+  <AnimatePresence>
+  {isOpen && (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90]"
+      onClick={onClose}
+    />
+  )}
+  </AnimatePresence>
+  
  <motion.aside 
- initial={false}
- animate={{ width: isCollapsed ? 80 : 256 }}
- className="border-r ultra-thin-border bg-linear-surface/30 backdrop-blur-md flex flex-col py-6 h-screen sticky top-0 overflow-hidden shrink-0"
+ initial={{ x: "-100%" }}
+ animate={{ x: isOpen ? 0 : "-100%" }}
+ transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+ className="fixed top-0 left-0 h-screen w-64 bg-slate-50/95 dark:bg-[#0B1120]/95 backdrop-blur-xl border-r border-linear-border/50 flex flex-col py-6 z-[100] shadow-2xl overflow-hidden shrink-0"
   >
       <div className={cn("flex items-center mb-10 pt-2", isCollapsed ? "justify-center px-0" : "px-6")}>
         <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
@@ -203,32 +218,15 @@ export default function Sidebar() {
  
  <div className={cn("flex gap-2 items-center", isCollapsed ? "flex-col" : "")}>
  <button 
- onClick={() => setIsCollapsed(!isCollapsed)}
- className={cn(
- "flex items-center justify-center rounded-lg bg-linear-surface/50 border ultra-thin-border text-linear-text-muted hover:text-foreground hover:bg-linear-surface transition-all shrink-0",
- isCollapsed ? "w-10 h-10 mb-2 mt-2" : "h-10 w-10"
- )}
- title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+ onClick={onClose}
+ className="flex items-center justify-center rounded-lg bg-linear-surface/50 border ultra-thin-border text-linear-text-muted hover:text-foreground hover:bg-linear-surface transition-all shrink-0 h-10 w-10"
+ title="Close Sidebar"
  >
- {isCollapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+ <PanelLeftClose className="w-5 h-5" />
  </button>
-
- <ThemeToggle />
-
- {!isCollapsed && (
- <div className="flex flex-1 bg-background/50 rounded-lg p-1 border ultra-thin-border h-10">
- <button 
- onClick={toggleLanguage}
- className={cn("flex-1 text-xs font-bold rounded-md transition-all flex items-center justify-center", language === 'en' ? "bg-linear-surface text-cyan-400 shadow-sm border border-cyan-500/20" : "text-linear-text-muted hover:text-foreground")}
- >🇺🇸 EN</button>
- <button 
- onClick={toggleLanguage}
- className={cn("flex-1 text-xs font-bold rounded-md transition-all flex items-center justify-center", language === 'vi' ? "bg-linear-surface text-cyan-400 shadow-sm border border-cyan-500/20" : "text-linear-text-muted hover:text-foreground")}
- >🇻🇳 VI</button>
- </div>
- )}
  </div>
  </div>
  </motion.aside>
+ </>
  );
 }

@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const PORT_DATA = [
   { bcg: 'Ngôi sao (Star)', sbu: 'Sữa chua sấy lạnh', rev: '45 tỷ', target: '120 tỷ' },
@@ -41,13 +40,6 @@ export default function PageC2History() {
         <WizardNavigation prevLink="/planning/c1-direction" prevLabel="Về C.1" nextLink="/planning/c3-issues" nextLabel="Tiếp tục: C.3 Phân tích Vấn đề" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="C.2 Lịch sử Danh mục"
-      purpose="Để Ban lãnh đạo thấy được quá trình tiến hóa của các dự án."
-      sections={[
-        { title: 'Vì sao cần xem lại?', explanation: 'Nếu dự án 3 năm liên tiếp dậm chân tại chỗ, đã đến lúc HQ phải ra tay can thiệp.' }
-      ]}
-    />
-    </>
+        </>
   );
 }

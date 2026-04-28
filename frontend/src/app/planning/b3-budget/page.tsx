@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const BUDGET_DATA = [
   { item: 'Quảng cáo số (Ads)', past: '800 triệu', now: '1.2 tỷ', next: '1.5 tỷ' },
@@ -41,13 +40,6 @@ export default function PageB3Budget() {
         <WizardNavigation prevLink="/planning/b2-action" prevLabel="Về B.2" nextLink="/planning/b4-contingency" nextLabel="Tiếp tục: B.4 Dự phòng" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="B.3 Ngân sách Marketing"
-      purpose="Tiền không tự sinh ra. Trình bày xem team marketing của bạn định đốt bao nhiêu để đổi lại số doanh thu đã hứa?"
-      sections={[
-        { title: 'Tỷ lệ % Ngân sách', explanation: 'Hiểu xem bạn đang đổ dồn bao nhiêu tiền vào việc gì trong tổng ngân sách.' }
-      ]}
-    />
-    </>
+        </>
   );
 }

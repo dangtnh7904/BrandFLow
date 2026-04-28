@@ -21,7 +21,7 @@ export default function PricingSection() {
         t('landing_pricing.tier1_f4')
       ],
       cta: t('landing_pricing.tier1_cta'),
-      link: "/dashboard",
+      link: "/onboarding",
       popular: false
     },
     {
@@ -37,7 +37,7 @@ export default function PricingSection() {
         t('landing_pricing.tier2_f5')
       ],
       cta: t('landing_pricing.tier2_cta'),
-      link: "/dashboard",
+      link: "/onboarding",
       popular: true
     },
     {

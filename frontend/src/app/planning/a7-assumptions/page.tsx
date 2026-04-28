@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const ASSUMP_DATA = [
   { core: 'Xu hướng "Clean Label" tăng 15%/năm', logic: 'Thị hiếu tiêu dùng không đảo chiều', action: 'Giảm chi phí R&D dòng sản phẩm mới' },
@@ -39,13 +38,6 @@ export default function PageA7Assumptions() {
         <WizardNavigation prevLink="/planning/a6-portfolio" prevLabel="Về A.6" nextLink="/planning/a8-strategies" nextLabel="Tiếp tục: A.8 Mục tiêu & Chiến lược" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="Các giả định"
-      purpose="Bảo hiểm rủi ro cho kế hoạch của bạn. Khi kế hoạch thất bại, đổ lỗi cho giả định sai!"
-      sections={[
-        { title: 'Giả định là gì?', explanation: 'Là những biến số bạn không kiểm soát được nhưng tin là nó sẽ giữ nguyên. VD: Lạm phát dưới 5%, Không có Covid.' }
-      ]}
-    />
-    </>
+        </>
   );
 }

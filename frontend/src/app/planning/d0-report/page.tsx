@@ -80,6 +80,24 @@ export default function MarketingPlanReport() {
         : `${data.company.name} — Marketing Plan FY ${data.plan_year}`
       }
     >
+      {/* ── Action Bar ── */}
+      <div className="flex justify-end mb-6">
+        <button 
+          onClick={() => {
+            const btn = document.getElementById('export-btn');
+            if(btn) btn.innerHTML = '<span class="animate-pulse">Đang xuất PDF...</span>';
+            setTimeout(() => {
+              window.print();
+              if(btn) btn.innerHTML = '📥 Xuất File PDF';
+            }, 1000);
+          }}
+          id="export-btn"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+        >
+          📥 {language === 'vi' ? 'Xuất File PDF' : 'Export PDF'}
+        </button>
+      </div>
+
       <div className="space-y-8">
 
         {/* ── Overview Stats ── */}
@@ -286,12 +304,12 @@ export default function MarketingPlanReport() {
             <div className="flex items-center justify-center">
               <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
-                  <Pie data={budgetChartData} cx="50%" cy="50%" innerRadius={55} outerRadius={100} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                  <Pie data={budgetChartData} cx="50%" cy="50%" innerRadius={55} outerRadius={100} paddingAngle={3} dataKey="value" label={({ name, percent }) => percent !== undefined ? `${name} ${(percent * 100).toFixed(0)}%` : name}>
                     {budgetChartData.map((_, i) => (
                       <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(val: number) => `$${val.toLocaleString()}`} />
+                  <Tooltip formatter={(val: any) => `$${Number(val).toLocaleString()}`} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -318,7 +336,7 @@ export default function MarketingPlanReport() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#64748b' }} />
                 <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
-                <Tooltip formatter={(val: number) => val.toLocaleString()} />
+                <Tooltip formatter={(val: any) => Number(val).toLocaleString()} />
                 <Bar dataKey="target" radius={[6, 6, 0, 0]}>
                   {channelChartData.map((_, i) => (
                     <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />

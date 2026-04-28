@@ -1,0 +1,81 @@
+Framework
+Lớp 1: Thu thập Dữ liệu Đặc thù (Data Ingestion Layer)
+Các nguồn thu thập data và các trường thông tin trọng yếu hệ thống cần lấy:
+F&B / Ẩm thực:
+Nguồn: Các nền tảng giao đồ ăn (ShopeeFood, Grab), Google Maps, hội nhóm review Facebook.
+Dữ liệu cần trích xuất: Phân tích cảm xúc (Sentiment Analysis) về hương vị, giá cả, dịch vụ; Nhận diện xu hướng nguyên liệu/món ăn mới nổi tại từng khu vực địa lý.
+Công nghệ & SaaS (Tập trung B2B/B2C):
+Nguồn: Nền tảng review phần mềm (G2, Capterra), diễn đàn công nghệ, website đối thủ.
+Dữ liệu cần trích xuất: Thu thập tình báo cạnh tranh (Competitive Intelligence) bao gồm: Tính năng cốt lõi, Mô hình giá (Pricing), Thời gian chu kỳ  hàng (B2B buying cycle), và đặc biệt là phân tích "Pain points" từ các đánh giá 1-3 sao của khách hàng đối thủ.
+Mỹ phẩm & Làm đẹp:
+Nguồn: Nền tảng thiên về hình ảnh/video (TikTok, Instagram), Beauty Blogs, sàn TMĐT.
+Dữ liệu cần trích xuất: Động thái Nghiên cứu & Phát triển (R&D) về xu hướng thành phần mỹ phẩm (VD: thuần chay, hoạt chất mới), tỷ lệ chuyển đổi qua KOL/KOC, và phân tích các luồng tranh luận về tiêu chuẩn an toàn.
+Giáo dục & EdTech:
+Nguồn: Các nền tảng khóa học (Coursera, Udemy, nền tảng nội địa), báo cáo xu hướng việc làm.
+Dữ liệu cần trích xuất: Phân tích cung - cầu kỹ năng trên thị trường, cấu trúc giá khóa học, đánh giá uy tín nền tảng/giảng viên.
+Lớp 2: Động cơ Xử lý & Chuẩn hóa (AI Processing & Logic Layer)
+Đẩy dữ liệu Lớp 1 vào các ma trận sau:
+Mô hình Phân tích Vĩ mô: Tự động gắn thẻ (tagging) các tin tức, chính sách, hoặc xu hướng kinh tế tác động đến từng ngành.
+Xây dựng Hồ sơ Đối thủ: Tự động trích xuất Điểm mạnh / Điểm yếu của top đối thủ trên thị trường để chuẩn bị cho bước lập ma trận SWOT.
+Phân cụm Khách hàng (Clustering): Gom nhóm hành vi người tiêu dùng (Ví dụ: Nhóm SMEs cần SaaS giá rẻ tinh gọn vs. Doanh nghiệp lớn cần SaaS bảo mật cao).
+Lớp 3: Đầu ra Chiến lược (Strategic Output Layer)
+Output trả về được:
+Khoảng trống Thị trường (Market Gap): Chỉ ra được nhu cầu nào chưa được đối thủ đáp ứng tốt.
+Gợi ý Năng lực Cốt lõi (Core Competency Match): Đề xuất định vị cho doanh nghiệp dựa trên khoảng trống vừa tìm được.
+Dữ liệu Trực quan: Định dạng output sẵn sàng để chuyển đổi thành các biểu đồ BI (như Market Share, Trend Volume).
+Metric Groups
+CHỈ SỐ THUẦN KINH DOANH
+1. Nhóm chỉ số Quy mô và Tiềm năng (Phễu thị trường)
+TAM (Total Addressable Market): Tổng nhu cầu thị trường. Đây là mức doanh thu tối đa nếu chiếm được 100% thị phần
+SAM (Serviceable Addressable Market): Thị trường có thể phục vụ trong khả năng địa lý và mô hình kinh doanh
+SOM (Serviceable Obtainable Market): Thị phần thực tế có thể nắm giữ trong ngắn hạn (ví dụ: mục tiêu chiếm 5% phân khúc)
+CAGR (Compound Annual Growth Rate): Tỷ lệ tăng trưởng kép hàng năm. Chỉ số này giúp cho biết thị trường đang nở ra hay thu hẹp lại theo thời gian.
+Luồng hoạt động (Workflow):
+Bước 1: Thu thập dữ liệu vĩ mô từ Lớp 1 (báo cáo ngành, số liệu dân số, tổng giá trị ngành hàng) để xác định TAM và CAGR.
+Bước 2: Hệ thống lấy dữ liệu bộ lọc địa lý (Việt Nam) và định vị doanh nghiệp (SMEs) làm "Bộ lọc" sẽ cắt TAM xuống thành SAM.
+Bước 3: Hệ thống lấy số liệu về ngân sách hoặc năng lực sản xuất của doanh nghiệp để tính ra SOM khả thi. (Thường là 2-5% SAM)
+2. Nhóm chỉ số Hiệu quả Kinh doanh (Sức khỏe Tài chính)
+CAC (Customer Acquisition Cost): Chi phí để có được một khách hàng mới. Bao gồm quảng cáo, sales, marketing.
+LTV (Lifetime Value): Giá trị trọn đời của một khách hàng. Tổng doanh thu một khách hàng mang lại cho  trước khi họ ngừng sử dụng sản phẩm.
+Tỷ lệ LTV/CAC: 
+< 1:  đang lỗ (chi tiền mua khách nhiều hơn tiền họ mang lại).
+3:1: Mức lý tưởng cho sự phát triển bền vững.
+ROI (Return on Investment): Tỷ lệ lợi nhuận trên tổng vốn đầu tư. Giúp doanh nghiệp quyết định chiến dịch nào đáng để đổ thêm tiền.
+Luồng hoạt động (Workflow):
+Kết nối Dữ liệu: Kết nối dữ liệu chi tiêu quảng cáo hiện tại (để tính CAC) và dữ liệu doanh thu vòng đời (LTV).
+Động cơ Cảnh báo (Alert Engine): Thiết lập luật (Rule-based):
+Nếu hệ thống tính toán thấy LTV/CAC < 1, lập tức kích hoạt "Cảnh báo Đỏ", chặn các Agent tạo thêm chiến dịch đốt tiền và đề xuất chiến dịch tập trung vào CRM/ Retention Rate.
+Nếu LTV/CAC >= 3, AI Agent sẽ tự động đề xuất tăng ngân sách cho các chiến dịch tương tự (scale up) để chiếm thị phần
+3. Nhóm chỉ số Cạnh tranh và Xu hướng (Vị thế thị trường)
+Market Share (Thị phần): Doanh số của doanh nghiệp so với tổng doanh số của toàn bộ đối thủ trong ngành.
+Retention Rate (Tỷ lệ giữ chân): Tỷ lệ khách hàng cũ quay lại mua hàng. Hiện tại, việc giữ khách cũ quan trọng hơn nhiều so với việc đốt tiền tìm khách mới do chi phí quảng cáo tăng cao.
+Net Promoter Score (NPS): Chỉ số đo lường sự hài lòng và khả năng khách hàng giới thiệu  cho người khác.
+Luồng hoạt động (Workflow):
+NPS & Dịch vụ khách hàng (Của đối thủ): Từ lớp 1, "Phân tích Cảm xúc" (Sentiment Analysis), AI sẽ đọc hàng ngàn review/đánh giá đối thủ để tính ra điểm NPS giả lập (Proxy NPS) cho thị trường, giúp doanh nghiệp thấy đối thủ đang làm khách hàng thất vọng ở đâu.
+Market Share (Thị phần ước tính): Dev có thể tích hợp API của các công cụ như SimilarWeb (đo traffic) hoặc App Store/ Play Store (đo lượt tải đối với ngành SaaS/EdTech) để nội suy ra độ lớn của các big fish trong ngành.
+Retention Rate (Tỷ lệ giữ chân): Hệ thống cần một cổng kết nối với CRM nội bộ của doanh nghiệp (hoặc form nhập tay) tại không gian làm việc.
+CHỈ SỐ KINH DOANH KẾT HỢP CÔNG NGHỆ (BETA)
+1. Giới thiệu (Overview)
+Tài liệu này quy định các chỉ số (KPIs) và cấu trúc dữ liệu cần thiết cho hệ thống AI Training Pipeline. Mục tiêu là đảm bảo mô hình AI không chỉ đạt độ chính xác về kỹ thuật mà còn tối ưu hóa về chi phí vận hành (CAC) và giá trị kinh doanh (LTV).
+2. Cấu trúc các nhóm chỉ số đo lường (Metric Groups)
+A. Nhóm Chỉ số Hiệu năng Kỹ thuật (Model Performance) (Cái này bên dev sẽ rõ hơn, mình mới research qua thôi nhé)
+Đo lường độ chính xác và khả năng học của mô hình trong Pipeline.
+
+Accuracy/Precision/Recall: Độ chính xác của dự đoán.
+Loss Function Trend: Xu hướng giảm sai số qua từng epoch.
+Inference Latency: Thời gian phản hồi của AI khi triển khai thực tế.
+B. Nhóm Chỉ số Hiệu quả Chi phí (Economic Efficiency)
+Đo lường mức độ tiêu tốn tài nguyên để chuyển đổi thành giá trị kinh doanh.
+
+Training Cost per Run: Tổng chi phí tài nguyên (GPU/Cloud) cho mỗi lần training.
+Data Acquisition Cost (DAC): Chi phí thu thập và gán nhãn dữ liệu (Tương đương CAC trong marketing).
+Resource Utilization: Tỷ lệ sử dụng GPU/RAM thực tế so với mức cấp phát.
+C. Nhóm Chỉ số Tương tác & Giá trị (Market & User Impact)
+Kết nối kết quả AI với hành vi người dùng thực tế.
+
+Retention Rate Improvement: Tỷ lệ giữ chân người dùng tăng lên bao nhiêu sau khi cập nhật mô hình mới.
+LTV Estimation: Dự báo giá trị trọn đời của khách hàng dựa trên các đề xuất cá nhân hóa từ AI.
+NPS (Net Promoter Score) Correlation: Sự tương quan giữa độ chính xác của AI và mức độ hài lòng của khách hàng.
+
+
+

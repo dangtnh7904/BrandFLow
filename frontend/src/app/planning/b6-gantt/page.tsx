@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const GANTT_DATA = [
   { name: 'On-air TVC Mascot ruột', t8: true, t9: true, t10: false, t11: false, t12: false },
@@ -44,13 +43,6 @@ export default function PageB6Gantt() {
         <WizardNavigation prevLink="/planning/b5-pnl" prevLabel="Về B.5" nextLink="/planning/c0-overview" nextLabel="Hoàn thành Phần B! 👉 Sang Phần C" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="B.6 Tactical Gantt"
-      purpose="Bảng chấm công tập thể. Treo lên tường để không ai biện minh là quên lịch."
-      sections={[
-        { title: 'Biểu đồ Gantt', explanation: 'Thanh ngang trực quan hóa tiến độ công việc theo từng tháng để biết task nào đang trễ hạn.' }
-      ]}
-    />
-    </>
+        </>
   );
 }

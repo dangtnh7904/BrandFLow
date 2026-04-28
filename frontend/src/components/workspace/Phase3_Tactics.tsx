@@ -21,6 +21,7 @@ const TASKS_VI = [
 ];
 
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFormStore } from '@/store/useFormStore';
 
 const SlotMachineTicker = ({ exactValue, isCalculating, baseBudget }: { exactValue: string, isCalculating: boolean, baseBudget: number }) => {
  const [displayValue, setDisplayValue] = useState('---');
@@ -53,7 +54,46 @@ const SlotMachineTicker = ({ exactValue, isCalculating, baseBudget }: { exactVal
 
 export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNext: () => void, onBack: () => void, globalBudget: string }) {
  const { language, t } = useLanguage();
- const TASKS = language === 'vi' ? TASKS_VI : TASKS_EN;
+ const { tacticsPlan } = useFormStore();
+ 
+ const dynamicTasks = React.useMemo(() => {
+   if (!tacticsPlan || !tacticsPlan.activity_and_financial_breakdown) {
+     return language === 'vi' ? TASKS_VI : TASKS_EN;
+   }
+   
+   const breakdown = tacticsPlan.activity_and_financial_breakdown;
+   const tasks: any[] = [];
+   let totalCost = 0;
+   
+   breakdown.forEach((phase: any) => {
+     (phase.activities || []).forEach((act: any) => {
+       totalCost += Number(act.cost_vnd) || 0;
+     });
+   });
+   
+   if (totalCost === 0) return language === 'vi' ? TASKS_VI : TASKS_EN;
+   
+   let index = 1;
+   breakdown.forEach((phase: any, pIdx: number) => {
+     (phase.activities || []).forEach((act: any) => {
+       const cost = Number(act.cost_vnd) || 0;
+       const pct = Math.round((cost / totalCost) * 100);
+       tasks.push({
+         id: `t${index}`,
+         name: act.activity_name || `Hoạt động ${index}`,
+         month: (pIdx % 3) + 1,
+         duration: 1 + (index % 2),
+         type: ['setup', 'content', 'ads', 'seo', 'contingency'][index % 5],
+         pct: pct
+       });
+       index++;
+     });
+   });
+   
+   return tasks.slice(0, 8); // Giới hạn 8 task để UI không bị quá dài
+ }, [tacticsPlan, language]);
+
+ const TASKS = dynamicTasks;
  const [exactCosts, setExactCosts] = useState<Record<string, string>>({});
  const [isCalculating, setIsCalculating] = useState(false);
  const [isCalculated, setIsCalculated] = useState(false);

@@ -1,0 +1,65 @@
+{
+  "tech": {
+    "founder": [
+      {
+        "id": "t_f_1",
+        "question": "Lý do quan trọng nhất khiến anh/chị bắt đầu công việc này là gì?",
+        "type": "radio",
+        "options": [
+          "Tôi từng gặp chính vấn đề này và muốn tạo ra một giải pháp tốt hơn.",
+          "Tôi có chuyên môn vững và muốn phát triển theo hướng riêng.",
+          "Tôi nhận thấy cơ hội thị trường rõ ràng.",
+          "Tôi tiếp quản hoạt động kinh doanh có sẵn và muốn phát triển theo hướng mới.",
+          "Lý do khác."
+        ]
+      },
+      {
+        "id": "t_f_2",
+        "question": "Nếu khách hàng chỉ nhớ một điều về founder, anh/chị mong muốn đó là điều gì?",
+        "type": "radio",
+        "options": [
+          "Là người am hiểu chuyên môn và có quan điểm rõ ràng.",
+          "Là người làm việc nghiêm túc, có tiêu chuẩn và đáng tin cậy.",
+          "Là người có phong cách và bản sắc riêng.",
+          "Là người tạo ra kết quả rõ ràng.",
+          "Là người có câu chuyện và khả năng truyền cảm hứng."
+        ]
+      }
+    ]
+  },
+  "fnb": {
+    "enterprise": [
+      {
+        "id": "f_e_2",
+        "question": "Dòng tiền chính của quán hiện đến từ kênh nào?",
+        "type": "radio",
+        "options": [
+          "Khách dùng trực tiếp tại quán.",
+          "Khách mua mang đi.",
+          "Nền tảng giao hàng trực tuyến (ShopeeFood, Grab)."
+        ]
+      },
+      {
+        "id": "f_e_5",
+        "question": "Vấn đề chiến lược lớn nhất hiện nay là gì?",
+        "type": "radio",
+        "options": [
+          "Chi phí nguyên vật liệu và vận hành quá cao.",
+          "Lượng khách chưa ổn định theo ngày hoặc khung giờ.",
+          "Phụ thuộc quá nhiều vào ưu đãi và mã giảm giá.",
+          "Khách đến một lần rồi không quay lại."
+        ]
+      },
+      {
+        "id": "f_e_6",
+        "question": "Ngân sách marketing trung bình mỗi tháng hiện nay ở mức nào?",
+        "type": "radio",
+        "options": [
+          "Dưới 10 triệu đồng.",
+          "Từ 10 đến 50 triệu đồng.",
+          "Trên 50 triệu đồng."
+        ]
+      }
+    ]
+  }
+}

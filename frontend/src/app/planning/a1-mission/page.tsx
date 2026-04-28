@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 import { Plus, Trash2, Save, Loader2, CheckCircle2 } from 'lucide-react';
@@ -166,15 +165,6 @@ export default function PageA1Mission() {
         </div>
       </B2BPageTemplate>
       
-      <MascotChatbot 
-        formName="Tuyên bố Sứ mệnh"
-        purpose="Mục đích của Form này là giúp bạn và đội ngũ xác định rõ 'Lý do tồn tại' của dự án/công ty trước khi bắt đầu lập kế hoạch tài chính!"
-        sections={[
-          { title: 'Vai trò (Role)', explanation: 'Ví dụ nếu công ty bạn là một cái cây, vai trò của nó là tạo ra bóng mát hay sinh ra quả ngọt? Ở đây, SBU của bạn sinh ra để mang về lợi nhuận hay để lan tỏa thương hiệu?' },
-          { title: 'Định nghĩa Kinh doanh', explanation: 'Đừng nói bạn bán Giày. Hãy nói bạn bán "Sức khỏe đôi chân và sự tự tin khi chạy vấp đá không té". Bán giải pháp thay vì bán sản phẩm vật lý.' },
-          { title: 'Luật chơi độc quyền', explanation: 'Công nghệ bảo mật, máy móc công nghiệp độc quyền, hay công thức pha chế bí truyền của bạn là gì? Thứ mà đối thủ không thể copy được.' },
-        ]}
-      />
-    </>
+          </>
   );
 }

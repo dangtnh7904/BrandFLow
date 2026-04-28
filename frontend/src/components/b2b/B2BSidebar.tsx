@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronRight, FileText, BarChart2, Briefcase, LayoutDashboard, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileText, BarChart2, Briefcase, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Target } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -13,6 +13,20 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const SECTIONS = [
+  {
+    title: "Kế hoạch Marketing Chuẩn",
+    icon: Target,
+    items: [
+      { id: "p1", label: "1. Tóm tắt điều hành", href: "/planning/executive-summary" },
+      { id: "p2", label: "2. Tổng quan tình hình", href: "/planning/situation-analysis" },
+      { id: "p3", label: "3. Mục tiêu Marketing", href: "/planning/objectives" },
+      { id: "p4", label: "4. Chiến lược Marketing", href: "/planning/strategy" },
+      { id: "p5", label: "5. Chương trình hành động", href: "/planning/action-program" },
+      { id: "p6", label: "6. Kế hoạch triển khai", href: "/planning/implementation" },
+      { id: "p7", label: "7. Kiểm soát & Đánh giá", href: "/planning/control-evaluation" },
+      { id: "p8", label: "8. Định hướng tăng trưởng", href: "/planning/growth-direction" },
+    ]
+  },
   {
     title: "Phần A - Chiến lược",
     icon: Briefcase,
@@ -58,8 +72,9 @@ const SECTIONS = [
 export default function B2BSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    "Phần A - Chiến lược": true,
-    "Phần B - Vận hành": true,
+    "Kế hoạch Marketing Chuẩn": true,
+    "Phần A - Chiến lược": false,
+    "Phần B - Vận hành": false,
   });
   const pathname = usePathname();
 

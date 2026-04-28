@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const CONT_DATA = [
   { risk: 'Phí sàn TikTok tăng', level: 'TB', impact: 'Giảm 15% biên LN Online', trigger: 'CPO > 25%', action: 'Dịch chuyển 50% ngân sách sang kênh mầm non' },
@@ -39,13 +38,6 @@ export default function PageB4Contingency() {
         </div>
         <WizardNavigation prevLink="/planning/b3-budget" prevLabel="Về B.3" nextLink="/planning/b5-pnl" nextLabel="Tiếp tục: B.5 Lãi lỗ" />
       </div>
-      <MascotChatbot 
-        formName="B.4 Kế hoạch Dự phòng"
-        purpose="Phao cứu sinh. Đừng để đến khi đắm thuyền mới đi tìm xem phao giấu ở đâu."
-        sections={[
-          { title: 'Điểm kích hoạt (Trigger)', explanation: 'Khi nào thì dùng dự phòng? Ví dụ: Khi doanh thu rớt dưới 80% mục tiêu trong 2 tháng liên tiếp thì bật chế độ tiết kiệm.' }
-        ]}
-      />
-    </B2BPageTemplate>
+          </B2BPageTemplate>
   );
 }

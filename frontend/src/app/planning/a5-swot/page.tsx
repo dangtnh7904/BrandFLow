@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 
@@ -59,13 +58,6 @@ export default function PageA5Swot() {
         <WizardNavigation prevLink="/planning/a4-market" prevLabel="Về A.4" nextLink="/planning/a6-portfolio" nextLabel="Tiếp: A.6 Ma trận" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="Phân tích SWOT"
-      purpose="Giúp bạn soi chiếu sức mạnh của mình cạnh tranh thế nào so với thủ lĩnh thị trường."
-      sections={[
-        { title: 'CSF là gì?', explanation: 'Key Success Factors: Bán thuốc thì CSF là uy tín. Bán thời trang CSF là Trendy. Hãy liệt kê CSF cốt Tử của ngành.' }
-      ]}
-    />
-    </>
+        </>
   );
 }

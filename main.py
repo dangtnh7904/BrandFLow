@@ -27,7 +27,7 @@ from app.schemas.schemas import (
 # ── AI Pipeline imports (optional – may fail if langchain deps missing) ──
 _AI_PIPELINE_AVAILABLE = False
 try:
-    from app.services.memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
+    from app.services.memory_rag import inject_industry_presets, generate_guideline_from_qa, extract_unified_dna
     from app.agents.intake.intake_agent import analyze_raw_input, check_required_info, extract_document_summary
     from app.workflows.workflow_graph import (
         build_error_envelope,
@@ -118,7 +118,10 @@ async def app_startup() -> None:
 
 # ── Đăng ký Form Data CRUD Router ─────────────────────────────────
 from app.api.auth_routes import router as auth_router
+from app.api.research_routes import router as research_router
+from app.agents.intake.upload_analyzer import UploadAnalyzer
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(research_router)
 app.include_router(form_router)
 
 # ── Đăng ký Design Module Router ──────────────────────────────────
@@ -920,6 +923,7 @@ async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str 
                     "method": parse_result.method,
                     "pages": parse_result.page_count or None,
                     "sheets": parse_result.sheet_count or None,
+                    "raw_text_for_ai": parse_result.text[:10000] # Giới hạn mỗi file 10k ký tự cho AI
                 })
                 ok_count += 1
         except Exception as e:
@@ -936,7 +940,28 @@ async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str 
         if ok_count > 0
         else f"Tất cả {fail_count} file đều thất bại."
     )
-    return {"status": status, "message": message, "results": results}
+    
+    # ─── Phân tích file bằng AI để tự động điền Form ───
+    extracted_answers = {}
+    if ok_count > 0:
+        try:
+            # Gộp text của các file thành công
+            all_text = ""
+            for file in files:
+                fname = file.filename
+                # Tìm result tương ứng
+                res = next((r for r in results if r["filename"] == fname and r["status"] == "success"), None)
+                if res and "raw_text_for_ai" in res:
+                    all_text += f"\\n--- TÀI LIỆU: {fname} ---\\n" + res.pop("raw_text_for_ai")
+            
+            if all_text:
+                analyzer = UploadAnalyzer()
+                extracted_answers = analyzer.extract_answers(all_text)
+                print(f"✅ AI Auto-fill extracted: {extracted_answers}")
+        except Exception as e:
+            print(f"⚠️ Lỗi khi chạy AI phân tích file: {e}")
+            
+    return {"status": status, "message": message, "results": results, "extracted_answers": extracted_answers}
 
 @app.post("/api/v1/onboarding/extract-summary")
 async def onboarding_extract_summary(files: List[UploadFile] = File(...), tenant_id: str = Form("default")):
@@ -1298,11 +1323,15 @@ async def process_intake(request: RawInputRequest):
         raw_text = request.raw_text
         tenant_id = request.tenant_id
         
-        # Inject comprehensive_form data into raw_text if provided
         comp_form = request.comprehensive_form or {}
         if comp_form:
             form_context = f"\n[DỮ LIỆU TỪ BỘ CÂU HỎI TRẮC NGHIỆM CHI TIẾT ĐỂ LẬP CHIẾN LƯỢC QUAN TRỌNG]\n{json.dumps(comp_form, ensure_ascii=False)}\n[HẾT DỮ LIỆU CÂU HỎI]"
             raw_text += form_context
+            
+        brand_dna = request.brand_dna or {}
+        if brand_dna:
+            dna_context = f"\n[BRAND DNA & DESIGN DNA TỪ BỘ NHỚ]\n{json.dumps(brand_dna, ensure_ascii=False)}\n[HẾT BRAND DNA]"
+            raw_text += dna_context
 
         # --- SECRET MOCK MODE INTERCEPTOR ---
         secret_keywords = ["hương viên trà quán", "mã demo 1"]
@@ -1370,6 +1399,7 @@ async def process_intake(request: RawInputRequest):
             budget=parsed_data.get("budget", 0),
             csfs=parsed_data.get("csfs", []),
             resources=parsed_data.get("resources", ""),
+            brand_dna=request.brand_dna
         )
         
         return {
@@ -1572,6 +1602,7 @@ async def design_generate(request: DesignGenerateRequest):
             goal=request.goal,
             industry=request.industry,
             target_audience=request.target_audience,
+            brand_dna_context=request.brand_dna_context,
         )
 
         return {

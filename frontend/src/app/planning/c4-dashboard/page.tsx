@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const DASHBOARD_DATA = [
   { sbu: 'Sữa chua sấy', kpi: 'Thị phần phân khúc', now: '12%', next: '35%' },
@@ -40,13 +39,6 @@ export default function PageC4Dashboard() {
         </div>
         <WizardNavigation prevLink="/planning/c3-issues" prevLabel="Về C.3" />
       </div>
-      <MascotChatbot 
-        formName="C.4 Dashboard Chiến lược"
-        purpose="Trạm kiểm soát cuối cùng. Toàn bộ hiệu suất, rủi ro và KPIs nén vào một chỗ."
-        sections={[
-          { title: 'Ma trận Điều hành', explanation: 'Chỉ cần nhìn cột Trạng thái đỏ hay xanh là biết giám đốc chi nhánh đó có đang hoàn thành nhiệm vụ không.' }
-        ]}
-      />
-    </B2BPageTemplate>
+          </B2BPageTemplate>
   );
 }

@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const PNL_DATA = [
   { item: 'Doanh thu thuần', t0: '60.0', t1: '80.0', t2: '100.0', t3: '120.0' },
@@ -43,13 +42,6 @@ export default function PageA9Budget() {
         <WizardNavigation prevLink="/planning/a8-strategies" prevLabel="Về A.8" nextLink="/planning/b0-overview" nextLabel="Hoàn thành Phần A! 👉 Sang Phần B" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="Ngân sách tổng hợp"
-      purpose="Kế toán và CFO sẽ nhảy vào 'soi' bảng này. Đảm bảo mọi thứ bạn hứa ở các Form trước không khiến công ty phá sản!"
-      sections={[
-        { title: 'COGS là gì?', explanation: 'Giá vốn hàng bán (Cost of Goods Sold). Chi phí cơ bản nhất để tạo ra sản phẩm (mua nguyên liệu, thuê nhân công sản xuất).' }
-      ]}
-    />
-    </>
+        </>
   );
 }

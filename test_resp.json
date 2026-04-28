@@ -1,0 +1,35 @@
+{
+  "tam_sam_som": {
+    "tam": "USD 233.51 billion (2026), projected to USD 1368.28 billion by 2035",
+    "sam": "USD 116.75 billion (2026)",
+    "som": "USD 2.33 billion (2026)",
+    "cagr": "21.71% (2026-2035)",
+    "explanation": "The Total Addressable Market (TAM) is estimated based on the global 'test' market, encompassing various testing solutions including software quality assurance, test and measurement equipment, and specialized diagnostic tests, driven by digital transformation and quality assurance needs. The Serviceable Available Market (SAM) is estimated at 50% of the TAM, focusing on core segments like software quality assurance, general-purpose test equipment, and key industry verticals (BFSI, healthcare). The Serviceable Obtainable Market (SOM) is a realistic initial target of 2% of the SAM, representing a niche where a company can differentiate itself."
+  },
+  "competitors": [
+    {
+      "name": "Keysight Technologies",
+      "strengths": "Strong brand reputation, broad portfolio of high-precision test and measurement equipment, R&D leadership, global presence in hardware testing.",
+      "weaknesses": "High cost of equipment, complex user interfaces for some products, slower adaptation to purely software-defined testing and agile methodologies.",
+      "pain_points": "High initial investment for small to medium-sized enterprises (SMEs), steep learning curve for advanced features, integration challenges with modern agile software development pipelines."
+    },
+    {
+      "name": "Tricentis",
+      "strengths": "Leading platform for AI-powered continuous testing, strong focus on automation and shift-left testing, excellent for enterprise-level agile/DevOps environments.",
+      "weaknesses": "Can be complex to implement and manage for smaller teams, high licensing costs, requires significant training and expertise.",
+      "pain_points": "Cost barrier for smaller organizations, difficulty in customizing for highly niche testing scenarios, potential vendor lock-in concerns due to proprietary technology."
+    },
+    {
+      "name": "IBM (Rational Portfolio)",
+      "strengths": "Comprehensive suite of testing tools (e.g., Rational Quality Manager, Functional Tester), strong integration with other IBM enterprise solutions, global support, trusted by large enterprises.",
+      "weaknesses": "Perceived as legacy, slower innovation compared to specialized agile testing vendors, high cost, complex licensing and deployment.",
+      "pain_points": "Lack of agility for modern DevOps teams, outdated user interface/user experience (UI/UX), difficulty in integrating with non-IBM ecosystems, high total cost of ownership."
+    }
+  ],
+  "market_gap": "There is a significant market gap for integrated, cost-effective, and user-friendly testing solutions that cater to the rapid release cycles and enhanced software quality demands of modern organizations, particularly SMEs. Existing solutions often suffer from high costs, complexity, and integration challenges with agile/DevOps workflows, creating a need for more accessible, cloud-native, and AI-powered platforms that can bridge the gap between traditional test and measurement and contemporary software quality assurance.",
+  "trends": [
+    "Continuous Testing & DevOps Integration: The imperative for 'faster release cycles' (cited by 52% of organizations) drives the adoption of continuous testing practices and seamless integration of testing into the entire DevOps pipeline.",
+    "AI/ML-Powered Test Automation: To achieve 'enhanced software quality' (highlighted by 47% of organizations) and efficiency, AI and Machine Learning are increasingly used for intelligent test case generation, defect prediction, and self-healing test scripts.",
+    "Shift-Left Testing & Early Quality Assurance: The focus on preventing defects earlier in the development lifecycle is a critical trend, enabling organizations to achieve higher quality and faster time-to-market by integrating testing from the initial stages."
+  ]
+}

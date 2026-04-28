@@ -1025,6 +1025,7 @@ def run_pipeline(
     resources: str = "",
     target_audience: str = "Tệp khách hàng chung",
     constraints: str = "Không có",
+    brand_dna: dict = None,
 ) -> dict:
     """
     Pipeline tuyến tính: MasterPlanner → Python Interceptor → CFO/Persona Agents.
@@ -1039,7 +1040,8 @@ def run_pipeline(
     phase1_data = run_cmo_phase1_goal_setting(
         goal=goal,
         industry=industry,
-        budget=budget
+        budget=budget,
+        brand_dna=brand_dna
     )
     agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Hoàn thành Giai đoạn 1: Sứ mệnh & Mục tiêu doanh nghiệp."})
 

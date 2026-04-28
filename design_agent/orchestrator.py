@@ -167,6 +167,7 @@ def generate_brand_identity(
     industry: str = "General",
     target_audience: str = "",
     webhook_url: Optional[str] = None,
+    brand_dna_context: dict = None,
 ) -> dict:
     """
     Hàm chính của module: Sinh toàn bộ Brand Identity Assets.
@@ -197,19 +198,22 @@ def generate_brand_identity(
     print(f"   Đối tượng    : {target_audience or 'Chưa xác định'}")
     print(f"{'═' * 70}")
 
-    # ── STEP 1: Truy xuất Brand DNA từ ChromaDB ──
-    print(f"\n📚 [STEP 1] Truy xuất Brand DNA từ ChromaDB...")
-    try:
-        from memory_rag import get_relevant_guidelines
-
-        brand_dna = get_relevant_guidelines(goal, top_k=5)
-        if brand_dna:
-            print(f"   ✅ Tìm thấy Brand DNA ({len(brand_dna)} chars)")
-        else:
-            print(f"   ℹ️ ChromaDB trống — sẽ suy luận Design Language từ ngành hàng")
-    except Exception as e:
-        print(f"   ⚠️ Không truy xuất được ChromaDB ({e}) — tiếp tục bằng suy luận")
-        brand_dna = ""
+    # ── STEP 1: Sử dụng Brand DNA Context ──
+    print(f"\n📚 [STEP 1] Truy xuất Brand DNA...")
+    if brand_dna_context:
+        print(f"   ✅ Sử dụng Brand DNA từ payload")
+        brand_dna_str = str(brand_dna_context)
+    else:
+        try:
+            from app.services.memory_rag import get_relevant_guidelines
+            brand_dna_str = get_relevant_guidelines(goal, top_k=5)
+            if brand_dna_str:
+                print(f"   ✅ Tìm thấy Brand DNA từ ChromaDB ({len(brand_dna_str)} chars)")
+            else:
+                print(f"   ℹ️ ChromaDB trống — sẽ suy luận Design Language từ ngành hàng")
+        except Exception as e:
+            print(f"   ⚠️ Không truy xuất được ChromaDB ({e}) — tiếp tục bằng suy luận")
+            brand_dna_str = ""
 
     # ── STEP 2: Trích xuất Design Language bằng LLM ──
     print(f"\n🎨 [STEP 2] Trích xuất Design Language...")
@@ -217,7 +221,7 @@ def generate_brand_identity(
         goal=goal,
         industry=industry,
         target_audience=target_audience,
-        brand_dna=brand_dna,
+        brand_dna=brand_dna_str,
     )
 
     # ── STEP 3: Build prompt cho từng loại asset ──

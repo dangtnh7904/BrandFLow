@@ -103,3 +103,41 @@ class FormData(Base):
 
     def __repr__(self):
         return f"<FormData {self.form_key} v{self.version}>"
+
+# ═══════════════════════════════════════════════════════════════════
+# BUSINESS_METRIC — Dữ liệu phân tích và đánh giá doanh nghiệp (Agent 0)
+# ═══════════════════════════════════════════════════════════════════
+class BusinessMetric(Base):
+    __tablename__ = "business_metrics"
+
+    id = Column(String(36), primary_key=True, default=_uuid)
+    project_id = Column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, unique=True, index=True)
+    
+    # Nhóm 1: Phễu thị trường (Market Funnel) - Ngành
+    tam = Column(Float, nullable=True) # Total Addressable Market
+    sam = Column(Float, nullable=True) # Serviceable Addressable Market
+    som = Column(Float, nullable=True) # Serviceable Obtainable Market
+    cagr = Column(Float, nullable=True) # Compound Annual Growth Rate (%)
+    
+    # Nhóm 2: Sức khỏe Tài chính (Financial Health) - Doanh nghiệp
+    cac = Column(Float, nullable=True) # Customer Acquisition Cost
+    ltv = Column(Float, nullable=True) # Lifetime Value
+    ltv_cac_ratio = Column(Float, nullable=True) # Tỷ lệ LTV/CAC
+    roi = Column(Float, nullable=True) # Return on Investment (%)
+    
+    # Nhóm 3: Cạnh tranh & Xu hướng (Market Position)
+    market_share = Column(Float, nullable=True) # Thị phần (%)
+    retention_rate = Column(Float, nullable=True) # Tỷ lệ giữ chân (%)
+    proxy_nps = Column(Float, nullable=True) # Net Promoter Score giả lập
+    
+    # Nhóm 4: AI Telemetry (Công nghệ - JSON linh hoạt)
+    ai_telemetry_data = Column(JSON, nullable=True, default=dict)
+    
+    created_at = Column(DateTime, default=_now, nullable=False)
+    updated_at = Column(DateTime, default=_now, onupdate=_now, nullable=False)
+
+    # Relationships
+    project = relationship("Project", backref="metrics")
+
+    def __repr__(self):
+        return f"<BusinessMetric Project: {self.project_id}>"

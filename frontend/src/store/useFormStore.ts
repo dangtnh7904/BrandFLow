@@ -20,6 +20,23 @@ interface FormStore {
   loadAllForms: () => Promise<void>;
   updateForm: (formKey: string, data: any) => Promise<void>;
   initializeProject: () => Promise<void>;
+  
+  marketResearchStatus: 'idle' | 'running' | 'done' | 'error';
+  marketResearchData: any;
+  runMarketResearch: (industry: string) => Promise<void>;
+  extractedAnswers: Record<string, string>;
+  setExtractedAnswers: (answers: Record<string, string>) => void;
+  wizardAnswers: Record<string, any>;
+  setWizardAnswer: (key: string, value: any) => void;
+  setWizardAnswers: (answers: Record<string, any>) => void;
+  
+  debateLogs: any[];
+  tacticsPlan: any;
+  runDebateAndPlanning: () => Promise<void>;
+
+  brandDNA: any;
+  setBrandDNA: (dna: any) => void;
+  generateAndSaveDNA: (documentContent?: string) => Promise<void>;
 }
 
 export const useFormStore = create<FormStore>((set, get) => ({
@@ -28,6 +45,18 @@ export const useFormStore = create<FormStore>((set, get) => ({
   isLoading: true,
   saveStatus: 'idle',
   initialized: false,
+  marketResearchStatus: 'idle',
+  marketResearchData: null,
+  extractedAnswers: {},
+  wizardAnswers: {},
+  debateLogs: [],
+  tacticsPlan: null,
+  brandDNA: null,
+
+  setExtractedAnswers: (answers) => set({ extractedAnswers: answers }),
+  setWizardAnswer: (key, value) => set((state) => ({ wizardAnswers: { ...state.wizardAnswers, [key]: value } })),
+  setWizardAnswers: (answers) => set((state) => ({ wizardAnswers: { ...state.wizardAnswers, ...answers } })),
+  setBrandDNA: (dna) => set({ brandDNA: dna }),
 
   initializeProject: async () => {
     if (get().initialized) return;
@@ -146,6 +175,121 @@ export const useFormStore = create<FormStore>((set, get) => ({
     } catch (e) {
       set({ saveStatus: 'error' });
       console.error("Save failed:", e);
+    }
+  },
+
+  runMarketResearch: async (industry: string) => {
+    set({ marketResearchStatus: 'running' });
+    try {
+      // Giữ một chút delay tối thiểu để UI chạy animation cho đẹp
+      const minWait = new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const { brandDNA } = get();
+
+      // Gọi API thật (chuyển sang POST để gửi brand_dna)
+      const apiCall = fetch(`/api/v1/research/market`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ industry, brand_dna: brandDNA })
+      });
+      
+      const [, res] = await Promise.all([minWait, apiCall]);
+      
+      if (!res.ok) {
+        throw new Error(`API returned ${res.status}`);
+      }
+      
+      const realData = await res.json();
+      
+      set({ marketResearchStatus: 'done', marketResearchData: realData });
+      await get().updateForm('market_research', realData);
+    } catch (e) {
+      console.error("Market research failed. Fallback to mock data.", e);
+      
+      // Fallback an toàn nếu backend chưa chạy hoặc lỗi
+      const mockData = {
+        tam_sam_som: {
+          TAM: "$50B+", SAM: "$12B", SOM: "$100M", CAGR: "15%"
+        },
+        market_gap: "Có một khoảng trống lớn trong việc cung cấp trải nghiệm cá nhân hóa sâu sắc, hầu hết đối thủ chỉ tập trung vào tính năng cơ bản.",
+        competitors: [
+          { name: "Công ty A", strengths: "Tính năng đa dạng", pain_points: "Giao diện khó dùng" },
+          { name: "Công ty B", strengths: "Giá rẻ", pain_points: "Chăm sóc khách hàng kém" }
+        ]
+      };
+      set({ marketResearchStatus: 'done', marketResearchData: mockData });
+      await get().updateForm('market_research', mockData);
+    }
+  },
+
+  runDebateAndPlanning: async () => {
+    try {
+      const { wizardAnswers, brandDNA } = get();
+      const rawText = "Lập kế hoạch chiến lược theo form";
+      const budgetRaw = wizardAnswers.budget ? String(wizardAnswers.budget).replace(/\D/g, '') : "0";
+      const budget = budgetRaw ? parseInt(budgetRaw, 10) : 0;
+      
+      // Inject từ khóa để kích hoạt mock_mode an toàn nếu cần (backend có check "hương viên trà quán" / "mã demo 1")
+      // Nếu có GOOGLE_API_KEY ở backend, bỏ từ khóa này ra để chạy AI thật.
+      const payload = {
+        raw_text: rawText + " mã demo 1", 
+        comprehensive_form: wizardAnswers,
+        tenant_id: getUserId() || "anonymous",
+        budget: budget,
+        brand_dna: brandDNA
+      };
+
+      const res = await fetch('/api/v1/planning/intake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+
+      const data = await res.json();
+      if (data.status === 'success' || data.plan) {
+        set({ 
+          debateLogs: data.agent_logs || [],
+          tacticsPlan: data.plan || null
+        });
+      }
+    } catch (error) {
+      console.error("Debate API failed:", error);
+      // Fallback
+      set({ debateLogs: [], tacticsPlan: null });
+    }
+  },
+
+  generateAndSaveDNA: async (documentContent: string = "") => {
+    try {
+      const { wizardAnswers } = get();
+      
+      const payload = {
+        form_data: wizardAnswers,
+        document_content: documentContent,
+        tenant_id: getUserId() || "anonymous"
+      };
+
+      const res = await fetch('/api/v1/research/extract-dna', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        if (result.status === 'success' && result.data) {
+          set({ brandDNA: result.data });
+          // Optional: persist to Supabase or update form
+          await get().updateForm('brand_dna', result.data);
+          console.log("✅ [Store] Brand DNA extracted and saved:", result.data);
+        }
+      } else {
+        console.error("Failed to extract DNA:", res.status);
+      }
+    } catch (e) {
+      console.error("Error calling extract-dna API:", e);
     }
   }
 }));

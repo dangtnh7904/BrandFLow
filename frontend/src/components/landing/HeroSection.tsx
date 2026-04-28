@@ -54,7 +54,7 @@ export default function HeroSection() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
           >
-            <Link href="/workspace" className="w-full sm:w-auto">
+            <Link href="/onboarding" className="w-full sm:w-auto">
               <button className="flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-cyan-500/50 hover:-translate-y-0.5 transition-all duration-200 w-full group">
                 {t('landing_hero.btn_start')} <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>

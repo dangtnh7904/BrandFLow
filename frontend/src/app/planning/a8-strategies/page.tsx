@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const MATRIX_DATA = [
   { level: 'Tổng Khối lượng', past: '150 tấn', now: '200 tấn', target: '400 tấn', note: 'Động lực chính cho tăng trưởng' },
@@ -64,13 +63,6 @@ export default function PageA8Strategies() {
         <WizardNavigation prevLink="/planning/a7-assumptions" prevLabel="Về A.7" nextLink="/planning/a9-budget" nextLabel="Tiếp tục: A.9 Ngân sách" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="Mục tiêu & Chiến lược"
-      purpose="Đây là linh hồn của Marketing. Chỗ phân chia súng đạn (4P) ra chiến trường."
-      sections={[
-        { title: 'Chiến thuật 4P', explanation: 'Product (Bán cái gì), Price (Bán bao nhiêu), Place (Bán ở đâu) và Promo (Chạy ads thế nào).' }
-      ]}
-    />
-    </>
+        </>
   );
 }

@@ -174,12 +174,19 @@ async def parse_file_content(file: UploadFile) -> str:
     return text.strip()
 
 
+class DesignDNA(BaseModel):
+    colors: List[str] = Field(description="Màu sắc chủ đạo của thương hiệu (VD: Xanh dương, Trắng, #FF5733)")
+    typography: str = Field(description="Phong cách font chữ (VD: Sans-serif hiện đại, Serif cổ điển)")
+    imagery_vibe: str = Field(description="Phong cách hình ảnh (VD: Tối giản, Sặc sỡ, Chuyên nghiệp)")
+    logo_style: str = Field(description="Phong cách thiết kế logo (VD: Wordmark, Icon tĩnh, Trừu tượng)")
+
 class BrandDNA(BaseModel):
     """Schema cho phân tích Brand DNA từ file khách hàng tải lên."""
     core_usps: List[str] = Field(description="3-5 điểm bán hàng độc nhất (Unique Selling Points)")
     target_audience_insights: List[str] = Field(description="Chân dung và Insights khách hàng mục tiêu")
     tone_of_voice: str = Field(description="Giọng điệu thương hiệu (VD: Hiện đại, hài hước, chuyên gia...)")
     strict_rules: List[str] = Field(description="Các quy tắc DOs và DON'Ts quan trọng cho Marketing")
+    design_dna: DesignDNA = Field(description="Định hướng nhận diện thương hiệu và thiết kế")
 
 
 dna_parser = JsonOutputParser(pydantic_object=BrandDNA)
@@ -187,8 +194,9 @@ dna_parser = JsonOutputParser(pydantic_object=BrandDNA)
 dna_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
-        """Bạn là Giám đốc Chiến lược Thương hiệu (Brand Strategist) bậc thầy. Đọc tài liệu của khách hàng tải lên.
-Nhiệm vụ: Trích xuất các thông tin cốt lõi (Brand DNA) để làm nền tảng cho AI MasterPlanner lập kế hoạch sau này.
+        """Bạn là Giám đốc Chiến lược Thương hiệu (Brand Strategist) và Giám đốc Sáng tạo (Creative Director). 
+Dựa vào Dữ liệu Khảo sát (Form) và Tài liệu đính kèm (File/Link) của doanh nghiệp.
+Nhiệm vụ: Trích xuất thông tin cốt lõi (Brand DNA) và Nhận diện thiết kế (Design DNA) để làm nền tảng cho AI MasterPlanner và AI Design Generator.
 
 CHỈ TRẢ VỀ CHUỖI JSON HỢP LỆ. KHÔNG CÓ BẤT KỲ VĂN BẢN NÀO BÊN NGOÀI.
 
@@ -196,7 +204,10 @@ CHỈ TRẢ VỀ CHUỖI JSON HỢP LỆ. KHÔNG CÓ BẤT KỲ VĂN BẢN NÀO 
     ),
     (
         "human",
-        """Đây là toàn bộ nội dung tài liệu của doanh nghiệp:
+        """--- DỮ LIỆU KHẢO SÁT (FORM) ---
+{form_data}
+
+--- TÀI LIỆU CÔNG TY (TEXT/FILE) ---
 {document_content}
 
 Hãy trích xuất Brand DNA ngay lập tức."""
@@ -204,16 +215,13 @@ Hãy trích xuất Brand DNA ngay lập tức."""
 ])
 
 
-def analyze_and_extract_dna(document_content: str, tenant_id: str = "default") -> dict:
+def extract_unified_dna(form_data: dict, document_content: str, tenant_id: str = "default") -> dict:
     """
-    Sử dụng LLM để đọc text thô, trích xuất cấu trúc BrandDNA JSON.
+    Sử dụng LLM để đọc Form Data và Text thô, trích xuất cấu trúc BrandDNA JSON.
     Sau đó tự động lưu các strict_rules vào ChromaDB.
     """
-    if len(document_content) < 50:
-        raise ValueError("Nội dung file quá ngắn hoặc không có text để phân tích.")
-
-    # Cắt bớt text nếu quá dài cho Context Window của LLM cục bộ (giả định max 15000 ký tự cho an toàn)
-    safe_content = document_content[:15000]
+    safe_content = document_content[:15000] if document_content else "Không có tài liệu."
+    form_str = json.dumps(form_data, ensure_ascii=False, indent=2) if form_data else "Không có dữ liệu form."
 
     try:
         llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1)
@@ -225,10 +233,10 @@ def analyze_and_extract_dna(document_content: str, tenant_id: str = "default") -
             | dna_parser
         )
 
-        print(f"🧠 [Brand DNA] Bắt đầu phân tích tài liệu ({len(safe_content)} ký tự)...")
-        result = chain.invoke({"document_content": safe_content})
+        print(f"🧠 [Brand DNA] Bắt đầu phân tích DNA từ Form và Tài liệu...")
+        result = chain.invoke({"form_data": form_str, "document_content": safe_content})
 
-        # Lưu các strict_rules vào ChromaDB để AI nhớ mãi mãi
+        # Lưu các strict_rules vào ChromaDB
         vectorstore = get_vectorstore(tenant_id)
         strict_rules = result.get("strict_rules", [])
         if strict_rules:
@@ -244,7 +252,7 @@ def analyze_and_extract_dna(document_content: str, tenant_id: str = "default") -
 
         return {
             "status": "success",
-            "message": "Phân tích tài liệu thành công.",
+            "message": "Phân tích Brand DNA thành công.",
             "data": result
         }
 

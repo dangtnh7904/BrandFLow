@@ -6,7 +6,6 @@ import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import InstructionAlert from '@/components/b2b/InstructionAlert';
 import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 
 const ISSUES_DATA = [
   { sbu: 'Sữa chua sấy', market: 'Tăng trưởng nhanh (40%)', comp: 'Khốc liệt về giá, đa dạng đối thủ', issue: 'Mở rộng dung tích nhỏ để tối ưu giá dùng thử.' },
@@ -40,13 +39,6 @@ export default function PageC3Issues() {
         <WizardNavigation prevLink="/planning/c2-history" prevLabel="Về C.2" nextLink="/planning/c4-dashboard" nextLabel="Tiếp tục: C.4 Bảng điều khiển" />
       </div>
     </B2BPageTemplate>
-    <MascotChatbot 
-      formName="C.3 Phân tích Vấn đề"
-      purpose="Mổ xẻ các khoảng trống giữa Kỳ vọng của HQ và Khả năng thực chiến của SBU."
-      sections={[
-        { title: 'Gap Analysis', explanation: 'Khoảng trống năng lực là thứ nguy hiểm nhất. VD HQ giao mục tiêu tăng trưởng M&A nhưng SBU chưa từng mua bán bao giờ.' }
-      ]}
-    />
-    </>
+        </>
   );
 }

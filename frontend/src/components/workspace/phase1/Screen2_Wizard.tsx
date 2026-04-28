@@ -101,7 +101,7 @@ export default function Screen2_Wizard({ onBack, onComplete }: { onBack: () => v
  transition={{ duration: 0.3, ease: "easeInOut" }}
  className="w-full"
  >
- {step === 1 && <WizardStep1 />}
+ {step === 1 && <WizardStep1 onNext={handleNext} />}
  {step === 2 && <WizardStep2 />}
  {step === 3 && <WizardStep3 />}
  </motion.div>

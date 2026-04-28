@@ -4,7 +4,6 @@ import { useAutoSaveForm } from '@/hooks/useAutoSaveForm';
 import React from 'react';
 import B2BPageTemplate from '@/components/b2b/B2BPageTemplate';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
-import MascotChatbot from '@/components/b2b/MascotChatbot';
 import { Building2, Network, BarChart3 } from 'lucide-react';
 
 export default function PageC0Overview() {
@@ -58,13 +57,6 @@ export default function PageC0Overview() {
         </div>
       </B2BPageTemplate>
       
-      <MascotChatbot 
-        formName="Tổng quan Phần C"
-        purpose="Chào mừng tới vị trí Chỉ Huy Tối Cao (HQ). Góc nhìn của bạn ở đây không còn là 'Bán đôi giày này thế nào', mà là 'Sân chơi thời trang này đáng để chúng ta ném đi bao nhiêu tiền?'"
-        sections={[
-          { title: 'SBU nghĩa là gì?', explanation: 'SBU (Strategic Business Unit) là các Đơn vị kinh doanh chiến lược độc lập. Ví dụ Unilever có SBU Dầu gội, có SBU Bột giặt. Ở HQ, bạn nắm quyền sinh sát tất cả các SBU.' },
-        ]}
-      />
-    </>
+          </>
   );
 }

@@ -4,46 +4,61 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Bot, CheckCircle2, XCircle, AlertTriangle, FileText, ArrowLeft, Activity } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-
-const MOCK_DEBATE_EN = [
-  { agent: 'CMO', type: 'proposal', text: "Strategy Proposal: Boost Branding on LinkedIn and Youtube Ads. Budget allocation: 40% LinkedIn expert content, 60% Youtube." },
-  { agent: 'Customer', type: 'rejected', text: "Customer insights show C-level execs rarely watch Youtube. Focus 70% on LinkedIn InMail and Industry Whitepapers." },
-  { agent: 'CMO', type: 'proposal', text: "Agreed. Pivoting to 70% LinkedIn Whitepapers, 30% Google Search Ads (AEO) for deep conversions." },
-  { agent: 'CFO', type: 'warning', text: "Google Search Ads (AEO) CPC is exceptionally high, exceeding the 5% threshold of our $100k budget. Recommend lowering bids or relying on long-term SEO." },
-  { agent: 'CMO', type: 'proposal', text: "Revising matrix. Keeping Organic SEO/AEO (10%), 70% LinkedIn Ads, 20% Contingency fund." },
-  { agent: 'Customer', type: 'approved', text: "Allocation is logical, aligns perfectly with B2B behavioral patterns." },
-  { agent: 'CFO', type: 'approved', text: "Budget is secure, risk coefficient is fully covered." }
-];
-
-const MOCK_DEBATE_VI = [
-  { agent: 'CMO', type: 'proposal', text: "Đề xuất Chiến lược: Đẩy mạnh Branding trên LinkedIn và Youtube Ads. Ngân sách phân bổ: 40% LinkedIn nội dung chuyên gia, 60% Youtube." },
-  { agent: 'Customer', type: 'rejected', text: "Insights khách hàng cho thấy C-level ít thời gian xem Youtube. Tập trung 70% vào LinkedIn InMail và Báo cáo chuyên ngành (Whitepapers)." },
-  { agent: 'CMO', type: 'proposal', text: "Đồng ý điều chỉnh. Chuyển sang 70% LinkedIn Whitepapers, 30% Google Search Ads (AEO) đánh từ khóa chuyển đổi sâu." },
-  { agent: 'CFO', type: 'warning', text: "Chi phí Google Search Ads (AEO) hiện tại rất cao, vượt ngưỡng cho phép 5% của ngân sách 100tr. Đề xuất giảm thầu hoặc dùng SEO dài hạn." },
-  { agent: 'CMO', type: 'proposal', text: "Đã rà soát lại. Giữ SEO/AEO tự nhiên (10%), 70% LinkedIn Ads, 20% Dự phòng (Contingency)." },
-  { agent: 'Customer', type: 'approved', text: "Phân bổ hợp lý, tiếp cận đúng hành vi B2B." },
-  { agent: 'CFO', type: 'approved', text: "Ngân sách an toàn, hệ số rủi ro đã được cover." }
-];
+import { useFormStore } from '@/store/useFormStore';
 
 export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, onBack: () => void }) {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
+  const { debateLogs, runDebateAndPlanning } = useFormStore();
   const [messages, setMessages] = useState<any[]>([]);
   const [isLocked, setIsLocked] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
+  // Khởi động fetch dữ liệu nếu chưa có
   useEffect(() => {
-    const activeDebate = language === 'vi' ? MOCK_DEBATE_VI : MOCK_DEBATE_EN;
-    let i = 0;
+    let isMounted = true;
+    const initDebate = async () => {
+      setIsFetching(true);
+      // Nếu chưa có logs, gọi API
+      if (!debateLogs || debateLogs.length === 0) {
+        await runDebateAndPlanning();
+      }
+      if (isMounted) {
+        setIsFetching(false);
+      }
+    };
+    initDebate();
+    return () => { isMounted = false; };
+  }, [debateLogs, runDebateAndPlanning]);
+
+  // Hiệu ứng "gõ chữ" / replay từ API logs
+  useEffect(() => {
+    if (isFetching || !debateLogs || debateLogs.length === 0) return;
+    
+    // Nếu messages đã load xong rồi thì không chạy lại
+    if (messages.length === debateLogs.length) return;
+
+    let i = messages.length;
     const interval = setInterval(() => {
-      if (i < activeDebate.length) {
-        setMessages(prev => [...prev, activeDebate[i]]);
+      if (i < debateLogs.length) {
+        // Ánh xạ `role` từ backend hoặc dùng default
+        const log = debateLogs[i];
+        // Đôi khi backend gửi role = 'warning' / 'rejected' ở thuộc tính khác, ta map tay
+        const type = log.message?.toLowerCase().includes("cảnh báo") ? 'warning' : 'proposal';
+        
+        setMessages(prev => [...prev, {
+          agent: log.agent || 'SYSTEM',
+          type: log.type || type,
+          text: log.message || ''
+        }]);
         i++;
       } else {
         clearInterval(interval);
         setTimeout(() => setIsLocked(true), 1500);
       }
-    }, 1200); // Slightly slower, calmer
+    }, 1800); 
+    
     return () => clearInterval(interval);
-  }, [language]);
+  }, [isFetching, debateLogs]);
 
   const getAgentTheme = (agent: string, type: string) => {
     if (type === 'warning') return { bg: 'bg-red-50 dark:bg-red-500/10 backdrop-blur-md', border: 'border-red-200 dark:border-red-500/30', text: 'text-red-700 dark:text-red-400', iconBg: 'bg-red-100 dark:bg-red-500/20' };
@@ -139,7 +154,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
               );
             })}
             
-            {messages.length < (language === 'vi' ? MOCK_DEBATE_VI.length : MOCK_DEBATE_EN.length) && (
+            {messages.length < (debateLogs?.length || 1) && (
               <div className="relative z-10 flex ml-4 pr-4">
                 <div className="w-12 h-12 shrink-0 rounded-full bg-linear-surface border border-linear-border flex items-center justify-center mr-6">
                   <motion.div 
@@ -149,7 +164,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
                   />
                 </div>
                 <div className="text-cyan-500 text-sm flex items-center font-bold tracking-widest uppercase">
-                  {t('workspace_phase2.analyzing' as any) as string}
+                  {isFetching ? "Đang Khởi Chạy Lập Chiến Lược..." : t('workspace_phase2.analyzing' as any) as string}
                 </div>
               </div>
             )}

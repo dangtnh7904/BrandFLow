@@ -127,6 +127,10 @@ app.include_router(form_router)
 # ── Đăng ký Design Module Router ──────────────────────────────────
 app.include_router(design_router)
 
+# ── Đăng ký Content Lab Router ────────────────────────────────────
+from app.api.content_lab import router as content_lab_router
+app.include_router(content_lab_router, prefix="/api/content-lab", tags=["Content Lab"])
+
 
 @app.middleware("http")
 async def visitor_audit_middleware(request: Request, call_next):

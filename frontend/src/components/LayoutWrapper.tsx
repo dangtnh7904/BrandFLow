@@ -7,6 +7,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemeToggle } from "./ThemeToggle";
 import AmbientParticles from "./AmbientParticles";
 import NodeNetworkCanvas from "./landing/NodeNetworkCanvas";
+import SystemIntro from "./landing/SystemIntro";
+import GlobalMarqueeAnnotator from "./GlobalMarqueeAnnotator";
+
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
  const pathname = usePathname();
  const { language, toggleLanguage } = useLanguage();
@@ -68,6 +71,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   if (isLandingPage) {
     return (
       <div className="relative min-h-screen w-full overflow-x-hidden text-foreground bg-slate-50 dark:bg-[#0B1120]">
+        <SystemIntro />
         {CommonBackground}
         <main className="relative z-10 w-full h-full">{children}</main>
       </div>
@@ -76,7 +80,12 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
   // Login page → full width, không Sidebar
   if (isLoginPage) {
-    return <main className="w-full h-full min-h-screen">{children}</main>;
+    return (
+      <main className="w-full h-full min-h-screen">
+        <SystemIntro />
+        {children}
+      </main>
+    );
   }
 
   // Nếu chưa xác thực và không phải public route → không render gì (đang redirect)
@@ -87,6 +96,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   // Đã đăng nhập → Sidebar + nội dung chính
   return (
   <div className="flex flex-col text-foreground h-screen w-full relative overflow-hidden bg-slate-50 dark:bg-[#0B1120]">
+    <SystemIntro />
     {CommonBackground}
 
     {/* Global Header with Menu Button */}
@@ -122,6 +132,9 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     <main className="flex-1 overflow-y-auto overflow-x-hidden w-full relative z-10 flex flex-col">
       {children}
     </main>
+
+    {/* GLOBAL MARQUEE TOOL */}
+    <GlobalMarqueeAnnotator />
   </div>
   );
 }

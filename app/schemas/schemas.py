@@ -266,6 +266,7 @@ class DesignGenerateRequest(BaseModel):
     target_audience_insights: list[str] = Field(default_factory=list, description="Insight khách hàng mục tiêu")
     tone_of_voice: str = Field(default="", description="Giọng điệu thương hiệu")
     strict_rules: list[str] = Field(default_factory=list, description="Các điều kiêng kị / quy tắc bắt buộc")
+    custom_prompt: Optional[str] = Field(default="", description="Yêu cầu thiết kế tuỳ chỉnh từ người dùng")
 
 class DesignOutput(BaseModel):
     visual_language: VisualLanguage
@@ -281,7 +282,24 @@ class DesignReviseRequest(BaseModel):
     original_output: DesignOutput
     user_feedback: str = Field(..., description="Yêu cầu sửa đổi từ người dùng")
 
+# --- MỚI: BEHANCE CASE STUDY ENGINE ---
+
+class BlockData(BaseModel):
+    id: str = Field(..., description="ID định danh duy nhất của block")
+    type: str = Field(..., description="Tên loại component (ví dụ: HeroBlock, PaletteBlock, etc.)")
+    props: Dict[str, Any] = Field(..., description="Dữ liệu động để render Component")
+
+class CaseStudyOutput(BaseModel):
+    blocks: list[BlockData] = Field(..., description="Danh sách các block cấu thành Layout của Case Study")
+
+class ReviseBlockRequest(BaseModel):
+    target_block_id: str = Field(..., description="ID của block đang cần sửa đổi")
+    current_context: BlockData = Field(..., description="Dữ liệu block hiện tại")
+    user_prompt: str = Field(..., description="Câu lệnh sửa đổi từ người dùng (Comment-to-refine)")
+    brand_dna_context: Optional[Dict[str, Any]] = Field(None, description="Ngữ cảnh gốc để giữ DNA chuẩn")
+
 # ============================================================================
+
 # BUSINESS METRICS & AI TELEMETRY SCHEMAS (AGENT 0 - REAL-TIME)
 # ============================================================================
 

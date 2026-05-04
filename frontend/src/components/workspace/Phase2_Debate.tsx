@@ -14,7 +14,11 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
   const [isFetching, setIsFetching] = useState(true);
 
   // Khởi động fetch dữ liệu nếu chưa có
+  const initRef = React.useRef(false);
   useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+    
     let isMounted = true;
     const initDebate = async () => {
       setIsFetching(true);
@@ -28,7 +32,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
     };
     initDebate();
     return () => { isMounted = false; };
-  }, [debateLogs, runDebateAndPlanning]);
+  }, [runDebateAndPlanning]); // Removed debateLogs from dependencies to prevent infinite loop
 
   // Hiệu ứng "gõ chữ" / replay từ API logs
   useEffect(() => {
@@ -86,9 +90,9 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
 
   return (
     <div className="w-full h-full overflow-y-auto relative bg-transparent">
-      <div className="flex flex-col p-8 max-w-4xl mx-auto w-full min-h-full">
-        <button onClick={onBack} className="absolute left-8 top-8 text-linear-text-muted hover:text-foreground transition-colors flex items-center text-sm font-semibold bento-card !py-2 !px-4 !rounded-lg !shadow-sm">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
+      <div className="flex flex-col p-4 md:p-8 max-w-4xl mx-auto w-full min-h-full">
+        <button onClick={onBack} className="absolute left-4 md:left-8 top-4 md:top-8 text-linear-text-muted hover:text-foreground transition-colors flex items-center text-sm font-semibold bento-card !py-2 !px-4 !rounded-lg !shadow-sm">
+          <ArrowLeft className="w-4 h-4 mr-2" /> <span className="hidden sm:inline">Back</span>
         </button>
 
         <div className="mb-12 text-center mt-8">
@@ -102,7 +106,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
         {!isLocked ? (
           <div className="space-y-6 mb-24 relative">
             {/* Animated SVG Neural Data Line */}
-            <div className="absolute left-[39px] top-6 bottom-10 w-0.5 z-0 flex justify-center">
+            <div className="absolute left-[27px] md:left-[39px] top-6 bottom-10 w-0.5 z-0 flex justify-center hidden sm:flex">
               <div className="w-full h-full bg-linear-border rounded-full opacity-50 absolute"></div>
               <motion.div 
                className="w-1 h-32 bg-gradient-to-b from-transparent via-cyan-400 to-transparent absolute top-0 rounded-full blur-[1px]"
@@ -122,15 +126,15 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
                   key={idx} 
-                  className="relative z-10 flex ml-4 pr-4 group"
+                  className="relative z-10 flex flex-col sm:flex-row ml-0 sm:ml-4 pr-0 sm:pr-4 group"
                 >
                   {/* Agent Icon Node with glowing dot */}
-                  <div className="relative">
-                    <div className={`w-12 h-12 shrink-0 rounded-xl ${theme.iconBg} border border-linear-border flex items-center justify-center mr-6 shadow-md relative z-10 backdrop-blur-md`}>
-                      <Bot className={`w-6 h-6 ${theme.text}`} />
+                  <div className="relative mb-3 sm:mb-0">
+                    <div className={`w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-xl ${theme.iconBg} border border-linear-border flex items-center justify-center mr-3 md:mr-6 shadow-md relative z-10 backdrop-blur-md`}>
+                      <Bot className={`w-5 h-5 md:w-6 md:h-6 ${theme.text}`} />
                     </div>
                     {/* Node connection pip */}
-                    <div className={`absolute top-1/2 -left-4 w-4 h-[2px] ${theme.border} z-0`}></div>
+                    <div className={`absolute top-1/2 -left-4 w-4 h-[2px] ${theme.border} z-0 hidden sm:block`}></div>
                   </div>
 
                   {/* Agent Persona Card - Bento Style */}
@@ -155,8 +159,8 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
             })}
             
             {messages.length < (debateLogs?.length || 1) && (
-              <div className="relative z-10 flex ml-4 pr-4">
-                <div className="w-12 h-12 shrink-0 rounded-full bg-linear-surface border border-linear-border flex items-center justify-center mr-6">
+              <div className="relative z-10 flex flex-col sm:flex-row ml-0 sm:ml-4 pr-0 sm:pr-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-full bg-linear-surface border border-linear-border flex items-center justify-center mr-3 md:mr-6 mb-3 sm:mb-0">
                   <motion.div 
                     animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
                     transition={{ duration: 2, repeat: Infinity }}

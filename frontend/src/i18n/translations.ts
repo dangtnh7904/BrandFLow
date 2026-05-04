@@ -20,6 +20,7 @@ export const translations = {
     settings: { en: "Settings", vi: "Cài đặt Hệ thống" },
     activePlan: { en: "Enterprise Plan Active", vi: "Gói Enterprise Đang hoạt động" },
     usage: { en: "Usage", vi: "Mức sử dụng" },
+    content_lab: { en: "Content Lab", vi: "Phòng Lab Nội dung" },
   },
 
   // === B2B SIDEBAR ===

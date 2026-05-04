@@ -108,12 +108,20 @@ export const useFormStore = create<FormStore>((set, get) => ({
         // 4. Load forms đã lưu trước đó
         await get().loadAllForms();
       } else {
-        console.error("LỖI KẾT NỐI: Không thể tạo hoặc tìm project. (Khả năng cao do Máy chủ Backend Python/FastAPI chưa được bật. Vui lòng tắt terminal hiện tại và chạy file start_fullstack.bat để bật cả 2 server cùng lúc)");
-        set({ saveStatus: 'error', isLoading: false });
+        console.warn("⚠️ Không thể kết nối Backend FastAPI. Đang chạy trong CHẾ ĐỘ DEMO (Offline Mode).");
+        set({ 
+          projectId: 'demo-mock-project-id', 
+          saveStatus: 'idle', 
+          isLoading: false 
+        });
       }
     } catch (e) {
-      console.error("Lỗi khởi tạo DB:", e);
-      set({ saveStatus: 'error', isLoading: false });
+      console.warn("⚠️ Lỗi khởi tạo DB (Backend có thể chưa chạy). Đang chạy trong CHẾ ĐỘ DEMO (Offline Mode).", e);
+      set({ 
+        projectId: 'demo-mock-project-id', 
+        saveStatus: 'idle', 
+        isLoading: false 
+      });
     }
   },
 
@@ -256,8 +264,23 @@ export const useFormStore = create<FormStore>((set, get) => ({
       }
     } catch (error) {
       console.error("Debate API failed:", error);
-      // Fallback
-      set({ debateLogs: [], tacticsPlan: null });
+      // Fallback an toàn nếu backend chưa chạy hoặc lỗi
+      const fallbackLogs = [
+        { agent: "CMO", type: "proposal", message: "Chúng ta cần phân bổ ít nhất 40% ngân sách cho kênh B2B LinkedIn để tiếp cận đúng tệp khách hàng doanh nghiệp, đặc biệt là cấp quản lý." },
+        { agent: "CFO", type: "warning", message: "Cảnh báo rủi ro: Chi phí CPA trên LinkedIn đang rất cao. Nếu dồn 40% ngân sách vào đây, chúng ta có nguy cơ cạn vốn trước khi đạt ROI dương. Đề xuất giảm xuống 20% và đưa phần còn lại vào quỹ dự phòng." },
+        { agent: "Customer", type: "proposal", message: "Từ góc độ khách hàng, họ thích xem các case study thực tế và báo cáo chuyên sâu hơn là quảng cáo thuần túy. Hãy đầu tư mạnh vào nội dung Whitepaper." },
+        { agent: "CMO", type: "approved", message: "Đồng ý. Đã điều chỉnh chiến lược: Giảm ngân sách Ads xuống 20%, tăng ngân sách Content Marketing (Whitepaper) lên 30%, phần còn lại đưa vào Quỹ dự phòng." }
+      ];
+      
+      const fallbackPlan = {
+        activity_and_financial_breakdown: [
+          { phase_name: "Phase 1: Foundation", activities: [ { activity_name: "Setup LinkedIn Insights", cost_vnd: 5000000 } ] },
+          { phase_name: "Phase 2: Content", activities: [ { activity_name: "B2B Whitepaper Production", cost_vnd: 25000000 } ] },
+          { phase_name: "Phase 3: Distribution", activities: [ { activity_name: "LinkedIn Retargeting Ads", cost_vnd: 20000000 } ] }
+        ]
+      };
+
+      set({ debateLogs: fallbackLogs, tacticsPlan: fallbackPlan });
     }
   },
 

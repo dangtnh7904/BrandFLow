@@ -3,7 +3,7 @@ import os
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from app.schemas.schemas import DesignGenerateRequest, DesignOutput, DesignReviseRequest
+from app.schemas.schemas import DesignGenerateRequest, DesignOutput, DesignReviseRequest, ReviseBlockRequest
 from app.agents.design.image_client import DalleClient
 import asyncio
 
@@ -40,6 +40,7 @@ USPs cốt lõi: {core_usps}
 Khách hàng mục tiêu: {audience}
 Giọng điệu (Tone): {tone}
 Các Luật Bắt Buộc (Strict Rules - KHÔNG ĐƯỢC LÀM TRÁI): {rules}
+Yêu cầu riêng tư từ người dùng (Custom Prompt): {custom_prompt}
 
 Dựa vào thông tin trên, hãy suy luận ra Visual Language và sinh Prompt thiết kế thật chuyên nghiệp.""")
         ])
@@ -61,6 +62,7 @@ Dựa vào thông tin trên, hãy suy luận ra Visual Language và sinh Prompt 
                 "audience": ", ".join(request.target_audience_insights),
                 "tone": request.tone_of_voice,
                 "rules": formatted_rules,
+                "custom_prompt": request.custom_prompt or "Không có",
                 "format_instructions": self.output_parser.get_format_instructions()
             })
             
@@ -217,3 +219,106 @@ Hãy đóng vai Art Director, tiếp thu góp ý trên và đưa ra bộ Visual 
             "status": "success",
             "data": data
         }
+
+    # =========================================================================
+    # BEHANCE CASE STUDY ENGINE (BLOCK-LEVEL RAG & REVISION)
+    # =========================================================================
+
+    def generate_behance_layout(self, request: DesignGenerateRequest) -> dict:
+        """
+        Sử dụng Mocked RAG (layout_db) để lấy cấu trúc khung cho ngành nghề,
+        sau đó dùng LLM điền dữ liệu vào các block.
+        """
+        from app.agents.design.layout_db import get_layout_template
+        from app.schemas.schemas import CaseStudyOutput
+        import json
+
+        # Lấy layout mẫu
+        layout_template = get_layout_template(request.industry)
+        
+        # Định nghĩa output parser cho CaseStudyOutput
+        layout_parser = JsonOutputParser(pydantic_object=CaseStudyOutput)
+
+        # Prompt điền nội dung vào template
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", 
+             """Bạn là Giám đốc Nghệ thuật (Art Director) đang xây dựng một 'Behance Case Study' chuyên nghiệp.
+Bạn được cung cấp một Cấu trúc Layout tĩnh (Skeletal Structure) dạng mảng các khối (blocks).
+Nhiệm vụ của bạn là điền dữ liệu (copywriting, mã màu, thông số) vào thuộc tính `props` của từng block dựa trên Brand DNA.
+LUYÝ: KHÔNG THAY ĐỔI `id` và `type` của các block. Chỉ điền vào `props` sao cho thật sáng tạo, hấp dẫn.
+
+Brand DNA:
+Ngành hàng: {industry}
+Mục tiêu: {goal}
+USPs: {usps}
+Khán giả: {audience}
+Yêu cầu thiết kế riêng (Custom Prompt): {custom_prompt}
+
+CHỈ TRẢ VỀ CHUỖI JSON HỢP LỆ THEO ĐỊNH DẠNG SAU:
+{format_instructions}"""),
+            ("human", "Skeletal Layout Template:\n{template}\n\nHãy điền dữ liệu vào các props và trả về mảng blocks hoàn chỉnh.")
+        ])
+
+        chain = prompt | self.llm | layout_parser
+
+        try:
+            print(f"📐 [Brand Designer] Đang map cấu trúc Behance Layout cho ngành {request.industry}...")
+            result = chain.invoke({
+                "industry": request.industry,
+                "goal": request.goal,
+                "usps": ", ".join(request.core_usps),
+                "audience": request.target_audience,
+                "custom_prompt": request.custom_prompt or "Không có",
+                "template": json.dumps(layout_template, indent=2, ensure_ascii=False),
+                "format_instructions": layout_parser.get_format_instructions()
+            })
+            return {"status": "success", "data": result}
+        except Exception as e:
+            print(f"🔴 [Brand Designer] Lỗi generate_behance_layout: {e}")
+            return {"status": "error", "message": str(e)}
+
+    def revise_block(self, request: 'ReviseBlockRequest') -> dict:
+        """
+        Sửa đổi cục bộ (Partial Update) một block dựa trên comment của user.
+        """
+        from app.schemas.schemas import BlockData
+        import json
+
+        block_parser = JsonOutputParser(pydantic_object=BlockData)
+
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", 
+             """Bạn là Art Director đang chỉnh sửa cục bộ một phần trong Behance Case Study.
+Khách hàng vừa để lại comment (feedback) yêu cầu chỉnh sửa block này.
+Nhiệm vụ của bạn là đọc Dữ liệu Block hiện tại (Current Context) và cập nhật lại thuộc tính `props` theo ý khách hàng.
+KHÔNG thay đổi `id` và `type`. 
+
+CHỈ TRẢ VỀ CHUỖI JSON HỢP LỆ THEO ĐỊNH DẠNG SAU:
+{format_instructions}"""),
+            ("human", 
+             """Dữ liệu Block hiện tại:
+{current_context}
+
+Yêu cầu sửa đổi từ người dùng: "{user_prompt}"
+
+Brand DNA gốc (để tham khảo không đi chệch hướng):
+{dna_context}
+
+Hãy trả về Block đã được cập nhật props.""")
+        ])
+
+        chain = prompt | self.llm | block_parser
+
+        try:
+            print(f"🔄 [Brand Designer] Chỉnh sửa block {request.target_block_id} theo comment: '{request.user_prompt}'...")
+            result = chain.invoke({
+                "current_context": request.current_context.json(),
+                "user_prompt": request.user_prompt,
+                "dna_context": json.dumps(request.brand_dna_context or {}, ensure_ascii=False),
+                "format_instructions": block_parser.get_format_instructions()
+            })
+            return {"status": "success", "data": result}
+        except Exception as e:
+            print(f"🔴 [Brand Designer] Lỗi revise_block: {e}")
+            return {"status": "error", "message": str(e)}
+

@@ -3,48 +3,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Palette, Sparkles, TerminalSquare, AlertCircle, RefreshCw, 
-  CheckCircle2, Image as ImageIcon, Briefcase, Download, 
-  ArrowRight, Activity, ChevronRight, Type, Check, Hash, Network, Settings,
-  LineChart, BrainCircuit, PenTool
+  Palette, TerminalSquare, AlertCircle, RefreshCw, 
+  ImageIcon, Briefcase, Download, 
+  Activity, Type, Network, Settings,
+  LineChart, PenTool, Send, MousePointer2, CheckCircle2, FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-// Helper delay
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default function DesignStudioPage() {
   const { t } = useLanguage();
-  // --------- STATE: INPUT FORM ---------
   const [promptData, setPromptData] = useState({
     userPrompt: '',
-    creativeMode: 'balanced' // strict, balanced, wild
+    creativeMode: 'balanced'
   });
 
-  // --------- MOCK: BACKEND MASTER DNA ---------
   const masterDNA = {
-    industry: "Công nghệ Bán lẻ (Tech Retail)",
-    usps: "1. Đổi trả AI tự động\n2. Cửa hàng không người bán",
-    audience: "Gen Z (18-24), yêu thích công nghệ.",
-    tone: "Nhanh nhẹn, Đột phá."
+    brand_name: "TechNova",
+    goal: "Launch a new automated retail store",
+    industry: "Tech B2B",
+    core_usps: ["Đổi trả AI tự động", "Cửa hàng không người bán"],
+    target_audience: "Gen Z (18-24), yêu thích công nghệ.",
+    tone_of_voice: "Nhanh nhẹn, Đột phá."
   };
 
-  // --------- STATE: PROCESSING & RESULTS ---------
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<any>(null); // Old DALL-E Results
+  const [blocks, setBlocks] = useState<any[]>([]); // New Behance Layout Blocks
   const [error, setError] = useState<string | null>(null);
 
-  // --------- STATE: AGENTS BRAIN LOGS ---------
   const [agentLogs, setAgentLogs] = useState<{id: number, time: string, agent: string, text: string, type: 'info' | 'success' | 'warn'}[]>([]);
   const [activeAgent, setActiveAgent] = useState<string | null>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
-  // --------- STATE: REVISE ---------
-  const [feedbackInput, setFeedbackInput] = useState("");
-  const [revising, setRevising] = useState(false);
-  
-  // --------- STATE: UI INTERACT ---------
+  const [activeTab, setActiveTab] = useState<'visuals' | 'case-study'>('visuals');
+
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
 
   useEffect(() => {
@@ -63,101 +58,52 @@ export default function DesignStudioPage() {
       setLoading(true);
       setError(null);
       setResult(null);
+      setBlocks([]);
       setAgentLogs([]);
 
-      // Start Simulation Logs
       setActiveAgent('System');
-      addLog("System", "Initiating Neural Design Network...", "info");
+      addLog("System", "Initiating Design Network...", "info");
       await sleep(800);
       
-      setActiveAgent('Market Agent');
-      addLog("Market Agent", `Phân tích dữ liệu ngành: ${masterDNA.industry || 'Chung'}...`, "info");
-      await sleep(1500);
-      addLog("Market Agent", "Trích xuất Insight màu sắc phong thủy dựa trên tâm lý học Khách hàng mục tiêu.", "success");
-      await sleep(1200);
-      
-      let finalTone = masterDNA.tone;
-      if (promptData.creativeMode === 'wild') finalTone += " (PHÁ CÁCH: Hãy cực kỳ sáng tạo, vượt ra khỏi quy chuẩn ngành)";
-      else if (promptData.creativeMode === 'strict') finalTone += " (NGHIÊM TÚC: Bám sát 100% Core DNA, không phiêu lưu)";
-
-      setActiveAgent('Creative Agent');
-      addLog("Creative Agent", "Kích hoạt mô hình Generative. Rasterizing DNA...", "info");
-
       const payload = {
+        brand_name: masterDNA.brand_name,
+        goal: masterDNA.goal,
         industry: masterDNA.industry,
-        core_usps: masterDNA.usps.split('\n').filter(x => x.trim() !== ''),
-        target_audience_insights: masterDNA.audience.split('\n').filter(x => x.trim() !== ''),
-        tone_of_voice: finalTone,
-        strict_rules: promptData.userPrompt ? ["CẢNH BÁO TỪ USER: " + promptData.userPrompt] : ["Tuân thủ nguyên tắc thị giác cơ bản."]
+        core_usps: masterDNA.core_usps,
+        target_audience_insights: [masterDNA.target_audience],
+        target_audience: masterDNA.target_audience,
+        tone_of_voice: masterDNA.tone_of_voice,
+        strict_rules: [],
+        custom_prompt: promptData.userPrompt || ""
       };
 
-      const response = await fetch("http://localhost:8000/api/v1/design/generate-assets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) throw new Error("Lỗi kết nối hoặc API Key bị thiếu");
-      const resData = await response.json();
-      if (resData.status === "error") throw new Error(resData.message);
-
-      setActiveAgent('Copywriter Agent');
-      addLog("Copywriter Agent", "Sáng tạo Slogan phù hợp với nhận diện...", "success");
-      await sleep(1000);
-      
       setActiveAgent('Creative Agent');
-      addLog("Creative Agent", "DALL-E 3 Rendering Hoàn tất.", "success");
-      
-      setActiveAgent('System');
-      addLog("System", "Xuất Visual Asset về Canvas.", "info");
+      addLog("Creative Agent", "Đang xử lý song song DALL-E Visuals & Behance Layout...", "info");
 
+      // Chạy song song 2 luồng: Generate Assets (Old) và Generate Case Study (New)
+      const [assetsRes, caseStudyRes] = await Promise.all([
+        fetch("http://localhost:8000/api/v1/design/generate-assets", {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+        }).then(res => res.json()),
+        fetch("http://localhost:8000/api/v1/design/generate-case-study", {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+        }).then(res => res.json())
+      ]);
+
+      if (assetsRes.status === "error") throw new Error("Lỗi sinh Visual Assets: " + assetsRes.message);
+      if (caseStudyRes.status === "error") throw new Error("Lỗi sinh Case Study: " + caseStudyRes.message);
+
+      setActiveAgent('System');
+      addLog("System", "Render thành công 2 luồng.", "success");
       setActiveAgent('Done');
-      setResult(resData.data);
+      
+      setResult(assetsRes.data);
+      setBlocks(caseStudyRes.data.blocks);
     } catch (err: any) {
-      setError(err.message || "Failed to generate assets");
-      addLog("System", `Lỗi sinh Logo: ${err.message}`, "warn");
+      setError(err.message || "Failed to generate");
+      addLog("System", `Lỗi: ${err.message}`, "warn");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleRevise = async () => {
-    if (!feedbackInput.trim() || !result) return;
-    try {
-      setRevising(true);
-      setError(null);
-      addLog("System", "Tiếp nhận Feedback, tái cấu trúc tham số...", "warn");
-
-      const payload = {
-        original_request: {
-          industry: masterDNA.industry,
-          core_usps: masterDNA.usps.split('\n'),
-          target_audience_insights: masterDNA.audience.split('\n'),
-          tone_of_voice: "Updated config",
-          strict_rules: []
-        }, // Simplified for revise
-        original_output: result,
-        user_feedback: feedbackInput
-      };
-
-      const response = await fetch("http://localhost:8000/api/v1/design/revise-assets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) throw new Error("Lỗi kết nối hoặc API Key bị thiếu");
-      const resData = await response.json();
-      if (resData.status === "error") throw new Error(resData.message);
-
-      addLog("Creative Agent", "Đã cập nhật lại mảng thiết kế thành công.", "success");
-      setResult(resData.data);
-      setFeedbackInput("");
-    } catch (err: any) {
-      setError(err.message || "Failed to revise assets");
-      addLog("System", `Lỗi revise: ${err.message}`, "warn");
-    } finally {
-      setRevising(false);
     }
   };
 
@@ -167,6 +113,149 @@ export default function DesignStudioPage() {
     setTimeout(() => setCopiedColor(null), 2000);
   };
 
+  const handleExportPDF = async () => {
+    try {
+      const element = document.getElementById('behance-export-canvas');
+      if (!element) return;
+      
+      addLog("System", "Đang kết xuất PDF độ phân giải cao...", "warn");
+      
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+      
+      const canvas = await html2canvas(element, { 
+         scale: 2, // Retina quality
+         useCORS: true,
+         backgroundColor: "#f8fafc" // slate-50
+      });
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Xuất dưới dạng 1 trang cuộn dài đặc trưng của Behance
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`BrandBook_${masterDNA.brand_name.replace(/\s+/g, '_')}.pdf`);
+      
+      addLog("System", "Xuất PDF thành công!", "success");
+    } catch (err: any) {
+      addLog("System", `Lỗi xuất PDF: ${err.message}`, "warn");
+    }
+  };
+
+  // ---- BLOCK RENDERING LOGIC (SEAMLESS BEHANCE STYLE) ----
+  const renderBlock = (block: any) => {
+    const { type, props } = block;
+
+    if (type === 'HeroBlock' || type === 'GridHeroBlock') {
+      return (
+        <div className="w-full min-h-[600px] flex flex-col items-center justify-center relative p-16 overflow-hidden" style={{ backgroundColor: props.background_color || props.primary_color || '#0f172a' }}>
+          {props.image_url && <img src={props.image_url} alt="Hero" className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay" />}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-0"></div>
+          <h1 className="text-6xl md:text-8xl font-black text-white text-center z-10 tracking-tighter uppercase drop-shadow-2xl">{props.title}</h1>
+          <p className="text-xl md:text-3xl text-white/90 mt-6 text-center max-w-3xl z-10 font-light tracking-wide">{props.subtitle}</p>
+        </div>
+      );
+    }
+
+    if (type === 'MissionBlock' || type === 'DNAFeaturesBlock') {
+      return (
+        <div className="py-24 px-12 bg-white text-slate-900 flex flex-col items-center">
+           <div className="max-w-4xl w-full">
+             <h2 className="text-4xl md:text-5xl font-black mb-8 tracking-tight" style={{ color: props.accent_color || '#0f172a' }}>{props.headline || "Core Features"}</h2>
+             {props.body_text && <p className="text-slate-600 text-xl md:text-2xl leading-relaxed font-light mb-12 border-l-4 pl-6" style={{ borderColor: props.accent_color || '#cbd5e1' }}>{props.body_text}</p>}
+             {props.features && (
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 mt-8">
+                 {props.features.map((f: any, i: number) => (
+                   <div key={i} className="flex flex-col group">
+                     <div className="w-12 h-1 mb-6 transition-all duration-500 group-hover:w-full" style={{ backgroundColor: props.accent_color || '#0f172a' }}></div>
+                     <h3 className="text-2xl font-bold text-slate-900 mb-3">{f.title}</h3>
+                     <p className="text-lg text-slate-500 leading-relaxed">{f.desc}</p>
+                   </div>
+                 ))}
+               </div>
+             )}
+           </div>
+        </div>
+      );
+    }
+
+    if (type === 'PaletteBlock') {
+      return (
+        <div className="py-24 px-12 bg-slate-50 flex flex-col items-center">
+          <div className="max-w-4xl w-full">
+             <div className="flex items-center gap-4 mb-12">
+               <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight uppercase">Color Palette</h2>
+               <div className="flex-1 h-px bg-slate-300"></div>
+             </div>
+             
+             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-0 shadow-2xl rounded-2xl overflow-hidden">
+                {props.colors && props.colors.map((color: string, i: number) => (
+                   <div 
+                     key={i} 
+                     className="aspect-[3/4] relative group cursor-pointer flex flex-col justify-end p-6 transition-transform hover:-translate-y-2 hover:z-10" 
+                     style={{backgroundColor: color}}
+                     onClick={() => copyToClipboard(color)}
+                   >
+                      <div className="bg-white/90 backdrop-blur-md px-3 py-2 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity translate-y-4 group-hover:translate-y-0 text-center">
+                        <span className="text-xs font-mono font-bold text-slate-800 uppercase tracking-widest">{copiedColor === color ? 'COPIED' : color}</span>
+                      </div>
+                   </div>
+                ))}
+             </div>
+             <p className="text-lg text-slate-500 mt-10 max-w-2xl font-light">{props.description}</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (type === 'TypographyBlock') {
+      return (
+        <div className="py-24 px-12 bg-white text-slate-900 flex flex-col items-center">
+          <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-16">
+             <div className="flex flex-col justify-center">
+               <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight uppercase mb-8">Typography</h2>
+               <p className="text-lg text-slate-500 leading-relaxed font-light mb-8">{props.rationale}</p>
+             </div>
+             <div className="space-y-12">
+                <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
+                  <div className="text-xs text-slate-400 uppercase tracking-widest mb-4 font-bold">Primary Font</div>
+                  <div className="text-6xl md:text-7xl font-black text-slate-900 tracking-tighter truncate">{props.heading_font || "Inter"}</div>
+                  <div className="text-3xl text-slate-300 font-black mt-2">Aa Bb Cc</div>
+                </div>
+                <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
+                  <div className="text-xs text-slate-400 uppercase tracking-widest mb-4 font-bold">Secondary Font</div>
+                  <div className="text-4xl text-slate-700 font-medium truncate">{props.body_font || "Roboto"}</div>
+                  <div className="text-2xl text-slate-400 font-medium mt-2">Aa Bb Cc</div>
+                </div>
+             </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (type === 'GalleryBlock' || type === 'AppMockupBlock') {
+      return (
+        <div className="w-full aspect-video bg-slate-900 relative flex flex-col items-center justify-center overflow-hidden">
+           {props.screen_url || (props.images && props.images[0]?.url) ? (
+             <img src={props.screen_url || props.images[0].url} className="w-full h-full object-cover opacity-90 transition-transform duration-1000 hover:scale-105" />
+           ) : (
+             <div className="text-center p-12 max-w-lg">
+                <ImageIcon className="w-16 h-16 text-slate-700 mx-auto mb-6" />
+                <div className="text-slate-400 font-mono text-lg mb-2">{props.app_name || "Visual Asset Layout"}</div>
+                <div className="text-slate-500 text-sm">{props.screen_prompt || (props.images && props.images[0]?.prompt)}</div>
+             </div>
+           )}
+        </div>
+      );
+    }
+
+    return <div className="py-12 bg-red-50 text-red-500 text-center font-mono text-sm border-y border-red-200">System Error: Unmapped Block Type ({type})</div>;
+  };
+
   return (
     <div className="w-full h-[100vh] flex flex-col overflow-hidden relative z-10 py-6 px-6 lg:px-8">
       
@@ -174,117 +263,74 @@ export default function DesignStudioPage() {
       <div className="mb-6 flex items-center justify-between shrink-0">
         <div className="flex items-center space-x-3 text-foreground">
           <div className="w-12 h-12 bg-linear-surface/30 backdrop-blur-md rounded-2xl flex items-center justify-center border ultra-thin-border shadow-inner">
-            <Palette className="w-6 h-6 text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+            <Palette className="w-6 h-6 text-cyan-500" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight">{t('design_studio.title')}</h1>
-            <p className="text-linear-text-muted mt-1 text-sm font-medium">{t('design_studio.desc')}</p>
+            <h1 className="text-3xl font-extrabold tracking-tight">Design Studio</h1>
+            <p className="text-linear-text-muted mt-1 text-sm font-medium">Visual Identity & Case Study Generator</p>
           </div>
+        </div>
+        
+        {/* TABS HEADER (Luôn hiển thị) */}
+        <div className="flex bg-linear-surface border border-linear-border rounded-lg p-1">
+           <button onClick={() => setActiveTab('visuals')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'visuals' ? 'bg-cyan-500 text-white shadow-md' : 'text-linear-text-muted hover:text-foreground'}`}>Visual Assets (DALL-E)</button>
+           <button onClick={() => setActiveTab('case-study')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'case-study' ? 'bg-cyan-500 text-white shadow-md' : 'text-linear-text-muted hover:text-foreground'}`}>Behance Case Study</button>
         </div>
       </div>
 
-      {/* 3-COLUMN BENTO BOX GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0 pb-2">
         
-        {/* ================================================== */}
-        {/* COLUMN 1: THE INPUT (Form) (3/12) */}
-        {/* ================================================== */}
+        {/* ================= COLUMN 1: THE INPUT ================= */}
         <div className="lg:col-span-3 flex flex-col gap-6 overflow-y-auto no-scrollbar pb-6">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bento-card p-5 relative overflow-hidden flex flex-col shrink-0"
-          >
+          <motion.div className="bento-card p-5 relative overflow-hidden flex flex-col shrink-0">
             <div className="flex items-center mb-5 pb-3 border-b border-linear-border/50">
               <Network className="w-4 h-4 mr-2 text-indigo-400" />
-              <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">{t('design_studio.agent0_title')}</h2>
+              <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">DNA Sync</h2>
               <div className="ml-auto flex items-center">
                 <span className="flex w-2 h-2 rounded-full bg-indigo-500 animate-ping mr-2"></span>
-                <span className="text-[10px] text-indigo-400 font-mono">{t('design_studio.synced')}</span>
+                <span className="text-[10px] text-indigo-400 font-mono">LIVE</span>
               </div>
             </div>
 
             <div className="space-y-4 mb-6">
               <div>
-                <div className="text-[10px] font-bold text-linear-text-muted uppercase mb-1">{t('design_studio.ind_lbl')}</div>
+                <div className="text-[10px] font-bold text-linear-text-muted uppercase mb-1">Industry</div>
                 <div className="text-sm font-medium text-foreground">{masterDNA.industry}</div>
               </div>
               <div>
-                <div className="text-[10px] font-bold text-linear-text-muted uppercase mb-1">{t('design_studio.usps_lbl')}</div>
-                <div className="text-xs text-foreground whitespace-pre-line">{masterDNA.usps}</div>
+                <div className="text-[10px] font-bold text-linear-text-muted uppercase mb-1">Goal</div>
+                <div className="text-xs text-foreground bg-linear-surface p-2 rounded border border-linear-border/50">{masterDNA.goal}</div>
               </div>
-              <div>
-                <div className="text-[10px] font-bold text-linear-text-muted uppercase mb-1">{t('design_studio.aud_lbl')}</div>
-                <div className="text-xs text-foreground bg-linear-surface p-2 rounded border border-linear-border/50">{masterDNA.audience}</div>
-              </div>
-            </div>
 
-            <div className="flex items-center mb-4 mt-2">
-              <Settings className="w-4 h-4 mr-2 text-cyan-400" />
-              <h2 className="text-sm font-bold text-foreground">{t('design_studio.overrides_title')}</h2>
-            </div>
-
-            <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-linear-text-muted mb-2">{t('design_studio.add_msg')}</label>
+                <div className="text-[10px] font-bold text-cyan-400 uppercase mb-1">Custom Prompt (Yêu cầu riêng)</div>
                 <textarea 
-                  rows={4}
-                  placeholder={t('design_studio.add_msg_ph')}
-                  className="w-full bg-linear-surface/50 border border-linear-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all font-medium resize-none shadow-inner"
+                  className="w-full bg-linear-surface/50 p-3 rounded-lg border border-cyan-500/30 text-sm text-foreground focus:ring-1 focus:ring-cyan-500 focus:outline-none resize-none h-24 placeholder-slate-500 shadow-inner"
+                  placeholder="Ví dụ: Thiết kế mang hơi hướng công nghệ tương lai, dùng tone màu Dark Green..."
                   value={promptData.userPrompt}
-                  onChange={e => setPromptData({...promptData, userPrompt: e.target.value})}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-linear-text-muted mb-2">{t('design_studio.direction')}</label>
-                <div className="flex flex-col gap-2">
-                  <button 
-                    onClick={() => setPromptData({...promptData, creativeMode: 'strict'})}
-                    className={`text-left px-3 py-2 text-xs rounded-lg border transition-all cursor-pointer ${promptData.creativeMode === 'strict' ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400 font-bold shadow-[0_0_10px_rgba(6,182,212,0.1)]' : 'bg-linear-surface/30 border-linear-border text-linear-text-muted hover:bg-linear-surface/60'}`}
-                  >
-                    {t('design_studio.dir_1')}
-                  </button>
-                  <button 
-                    onClick={() => setPromptData({...promptData, creativeMode: 'balanced'})}
-                    className={`text-left px-3 py-2 text-xs rounded-lg border transition-all cursor-pointer ${promptData.creativeMode === 'balanced' ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400 font-bold shadow-[0_0_10px_rgba(6,182,212,0.1)]' : 'bg-linear-surface/30 border-linear-border text-linear-text-muted hover:bg-linear-surface/60'}`}
-                  >
-                    {t('design_studio.dir_2')}
-                  </button>
-                  <button 
-                    onClick={() => setPromptData({...promptData, creativeMode: 'wild'})}
-                    className={`text-left px-3 py-2 text-xs rounded-lg border transition-all cursor-pointer ${promptData.creativeMode === 'wild' ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400 font-bold shadow-[0_0_10px_rgba(6,182,212,0.1)]' : 'bg-linear-surface/30 border-linear-border text-linear-text-muted hover:bg-linear-surface/60'}`}
-                  >
-                    {t('design_studio.dir_3')}
-                  </button>
-                </div>
+                  onChange={(e) => setPromptData({...promptData, userPrompt: e.target.value})}
+                ></textarea>
               </div>
             </div>
 
             <button
               onClick={handleGenerate}
               disabled={loading}
-              className="mt-6 w-full py-3.5 rounded-xl flex items-center justify-center font-bold text-white transition-all overflow-hidden relative group cursor-pointer disabled:cursor-not-allowed border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)] bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400"
+              className="mt-6 w-full py-3.5 rounded-xl flex items-center justify-center font-bold text-white transition-all bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 disabled:opacity-50"
             >
-              {loading ? (
-                <span className="flex items-center text-sm">
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> {t('design_studio.btn_rendering')}
-                </span>
-              ) : (
-                <span className="flex items-center text-sm relative z-10">
-                  <Palette className="w-4 h-4 mr-2" /> {t('design_studio.btn_design')}
-                </span>
-              )}
+              {loading ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Palette className="w-4 h-4 mr-2" />} 
+              Auto-Generate Full Suite
             </button>
+            
             <AnimatePresence>
                 {error && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg flex items-start text-xs shadow-sm mt-4"
+                    className="bg-red-500/10 text-red-400 p-3 rounded-lg flex items-start text-xs shadow-sm mt-4"
                   >
-                    <AlertCircle className="w-4 h-4 mr-2 shrink-0 text-red-500" />
+                    <AlertCircle className="w-4 h-4 mr-2 shrink-0" />
                     <span>{error}</span>
                   </motion.div>
                 )}
@@ -292,123 +338,46 @@ export default function DesignStudioPage() {
           </motion.div>
         </div>
 
-        {/* ================================================== */}
-        {/* COLUMN 2: THE CANVAS (Preview & Mini Brand Book) (6/12) */}
-        {/* ================================================== */}
-        <div className="lg:col-span-6 flex flex-col gap-6 overflow-y-auto no-scrollbar pb-6 relative">
-           
-           {/* DEFAULT EMPTY STATE */}
-           {!loading && !result && (
-              <div className="w-full h-full bento-card p-10 flex flex-col items-center justify-center min-h-[500px]">
-                 <div className="w-24 h-24 rounded-full border border-dashed border-linear-border bg-linear-surface/30 flex items-center justify-center mb-6 shadow-inner">
-                    <ImageIcon className="w-8 h-8 text-linear-text-muted opacity-50" />
-                 </div>
-                 <h3 className="text-xl font-bold text-foreground mb-2">{t('design_studio.canvas_empty')}</h3>
+        {/* ================= COLUMN 2: CANVAS (Old DALL-E or New Behance) ================= */}
+        <div className="lg:col-span-6 flex flex-col overflow-y-auto no-scrollbar pb-6 relative rounded-xl border-x border-linear-border/30 px-2 select-none">
+           {!loading && !result && blocks.length === 0 && (
+              <div className="w-full h-full p-10 flex flex-col items-center justify-center min-h-[500px]">
+                 <ImageIcon className="w-12 h-12 text-linear-text-muted opacity-50 mb-4" />
+                 <h3 className="text-xl font-bold text-foreground mb-2">
+                    {activeTab === 'visuals' ? 'Visual Assets Canvas' : 'Behance Case Study Canvas'}
+                 </h3>
                  <p className="text-sm text-linear-text-muted text-center max-w-sm">
-                    {t('design_studio.canvas_empty_desc')}
+                    {activeTab === 'visuals' 
+                       ? 'Nhấn nút "Auto-Generate Full Suite" ở cột trái để AI DALL-E vẽ Logo và các ấn phẩm nhận diện.' 
+                       : 'Nhấn nút "Auto-Generate Full Suite" ở cột trái để hệ thống AI lên khung layout phong cách Behance chuẩn quốc tế.'}
                  </p>
               </div>
            )}
 
-           {/* LOADING FOG STATE */}
            {loading && (
-              <div className="w-full h-full bento-card p-10 flex flex-col items-center justify-center min-h-[500px] relative overflow-hidden group">
-                 <div className="absolute inset-0 bg-cover bg-center opacity-10 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')] mix-blend-overlay"></div>
-                 {/* Glass wipe effect scanner */}
-                 <motion.div 
-                    initial={{ top: "-10%" }}
-                    animate={{ top: "110%" }}
-                    transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                    className="absolute left-0 w-full h-[150px] bg-gradient-to-b from-transparent via-cyan-500/10 to-transparent blur-xl"
-                 />
-                 
-                 <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
-                  className="w-20 h-20 mb-6 rounded-full border-2 border-dashed border-cyan-500/30 border-t-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] z-10 relative bg-background flex items-center justify-center"
-                 >
-                    <Palette className="w-6 h-6 text-cyan-400 opacity-50 absolute" />
+              <div className="w-full h-full p-10 flex flex-col items-center justify-center min-h-[500px]">
+                 <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 4, ease: "linear" }}>
+                    <RefreshCw className="w-8 h-8 text-cyan-400" />
                  </motion.div>
-                 <h3 className="text-lg font-bold text-cyan-400 animate-pulse drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] z-10 relative">{t('design_studio.canvas_loading')}</h3>
-                 <p className="text-xs text-linear-text-muted mt-2 max-w-sm text-center z-10 relative">
-                   {t('design_studio.canvas_loading_desc')}
-                 </p>
+                 <h3 className="text-lg font-bold text-cyan-400 mt-4 animate-pulse">Rendering DALL-E & Behance Layout...</h3>
               </div>
            )}
 
-           {/* RESULT REVEAL */}
-           {!loading && result && (
-              <motion.div 
-                initial={{ opacity: 0, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, filter: 'blur(0px)' }}
-                transition={{ duration: 0.8 }}
-                className="flex flex-col gap-6"
-              >
+           {/* TAB: VISUALS (OLD) */}
+           {!loading && result && activeTab === 'visuals' && (
+              <div className="flex flex-col gap-6">
                   {/* Master Logo Box */}
-                  <div className="bento-card p-0 overflow-hidden relative">
+                  <div className="bento-card p-0 overflow-hidden relative border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
                      <div className="p-4 border-b border-linear-border flex justify-between items-center bg-linear-surface/50">
                         <div className="flex items-center font-bold text-sm text-foreground">
-                          <Briefcase className="w-4 h-4 text-cyan-500 mr-2" /> {t('design_studio.master_logo')}
+                          <Briefcase className="w-4 h-4 text-cyan-500 mr-2" /> Master Brand Logo
                         </div>
-                        <div className="flex items-center space-x-2">
-                           <span className="text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded flex items-center">
-                             <CheckCircle2 className="w-3 h-3 mr-1" /> {t('design_studio.vectorized')}
-                           </span>
-                           <button className="p-1 hover:bg-linear-surface rounded transition text-linear-text-muted hover:text-cyan-400" title="Tạo lại riêng phần này">
-                              <RefreshCw className="w-3.5 h-3.5" />
-                           </button>
-                        </div>
+                        <span className="text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded flex items-center">
+                          <CheckCircle2 className="w-3 h-3 mr-1" /> Vectorized
+                        </span>
                      </div>
                      <div className="aspect-[4/3] bg-gradient-to-br from-slate-900 to-slate-950 flex flex-col items-center justify-center p-8 relative">
                         <img src={result.logo_url} alt="Logo" className="w-[60%] h-[60%] object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.05)] hover:scale-105 transition-transform duration-500" />
-                     </div>
-                  </div>
-
-                  {/* Brand Guidelines: Colors & Typo grid */}
-                  <div className="grid grid-cols-2 gap-4">
-                     {/* Color Palette */}
-                     <div className="bento-card p-4 flex flex-col justify-between">
-                        <div className="flex justify-between items-center mb-3">
-                           <div className="text-xs font-bold text-linear-text-muted uppercase tracking-wider">{t('design_studio.palette')}</div>
-                           <button className="text-linear-text-muted hover:text-cyan-400 transition" title="Tạo lại Bảng màu" onClick={handleRevise}>
-                              <RefreshCw className="w-3.5 h-3.5" />
-                           </button>
-                        </div>
-                        <div className="flex h-16 w-full rounded-lg overflow-hidden border border-linear-border shadow-inner">
-                           {result.visual_language.primary_colors.map((color: string, i: number) => (
-                              <div 
-                                key={i} 
-                                className="flex-1 relative group cursor-pointer" 
-                                style={{backgroundColor: color}}
-                                onClick={() => copyToClipboard(color)}
-                              >
-                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[9px] font-mono font-bold text-white tracking-tighter backdrop-blur-sm">
-                                   {copiedColor === color ? 'COPIED!' : color}
-                                 </div>
-                              </div>
-                           ))}
-                        </div>
-                        <p className="text-[10px] text-linear-text-muted mt-2 line-clamp-1">{result.visual_language.mood}</p>
-                     </div>
-
-                     {/* Typography */}
-                     <div className="bento-card p-4 flex flex-col justify-between">
-                        <div className="flex justify-between items-center mb-3">
-                           <div className="text-xs font-bold text-linear-text-muted uppercase tracking-wider">{t('design_studio.typo')}</div>
-                           <button className="text-linear-text-muted hover:text-cyan-400 transition" title="Đổi Font chữ">
-                              <Type className="w-3.5 h-3.5" />
-                           </button>
-                        </div>
-                        <div className="space-y-2">
-                           <div className="flex items-center justify-between border-b border-linear-border/50 pb-2">
-                              <span className="text-[10px] text-linear-text-muted">Heading</span>
-                              <span className="text-sm font-bold text-foreground">Playfair Display</span>
-                           </div>
-                           <div className="flex items-center justify-between">
-                              <span className="text-[10px] text-linear-text-muted">Body</span>
-                              <span className="text-xs text-foreground font-medium">Inter Light</span>
-                           </div>
-                        </div>
                      </div>
                   </div>
 
@@ -416,181 +385,86 @@ export default function DesignStudioPage() {
                   <div className="bento-card p-0 overflow-hidden relative">
                      <div className="p-4 border-b border-linear-border flex justify-between items-center bg-linear-surface/50">
                         <div className="flex items-center font-bold text-sm text-foreground">
-                          <ImageIcon className="w-4 h-4 text-cyan-500 mr-2" /> {t('design_studio.mockup')}
+                          <ImageIcon className="w-4 h-4 text-cyan-500 mr-2" /> Fanpage Mockup
                         </div>
                      </div>
                      <div className="aspect-[21/9] bg-slate-100 dark:bg-slate-900 relative">
-                        {/* Cover image */}
                         <img src={result.banner_url} alt="Cover" className="absolute inset-0 w-full h-[60%] object-cover opacity-60 dark:opacity-40" />
-                        
-                        {/* Mock Avatar overlaps cover */}
                         <div className="absolute left-6 bottom-4 flex items-end">
                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-background overflow-hidden relative shadow-lg z-10">
                               <img src={result.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                            </div>
                            <div className="ml-4 mb-2 z-10 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-linear-border">
-                              <div className="text-sm font-bold text-foreground">Brand Name</div>
+                              <div className="text-sm font-bold text-foreground">{masterDNA.brand_name}</div>
                               <div className="text-[10px] text-linear-text-muted">{masterDNA.industry || 'Category'}</div>
                            </div>
                         </div>
                      </div>
                   </div>
 
-                  {/* REVISE/FEEDBACK BOX */}
-                  <div className="bento-card p-4 relative group overflow-hidden border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.05)]">
-                     <div className="flex bg-linear-surface border border-linear-border rounded-lg p-1">
-                        <input 
-                           type="text"
-                           placeholder={t('design_studio.revise_ph')}
-                           className="flex-1 bg-transparent px-3 text-sm focus:outline-none text-foreground placeholder-linear-text-muted font-medium"
-                           value={feedbackInput}
-                           onChange={e => setFeedbackInput(e.target.value)}
-                           disabled={revising}
-                           onKeyDown={(e) => e.key === 'Enter' && handleRevise()}
-                        />
-                        <button 
-                           onClick={handleRevise}
-                           disabled={revising || !feedbackInput.trim()}
-                           className="flex items-center px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded drop-shadow hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] text-white text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                           {revising ? <RefreshCw className="w-3.5 h-3.5 animate-spin mr-1" /> : <RefreshCw className="w-3.5 h-3.5 mr-1" />} {t('design_studio.btn_revise')}
-                        </button>
+                  {/* Brand Guidelines (Text) */}
+                  {result.guidelines && (
+                     <div className="bento-card p-6 relative overflow-hidden group">
+                        <div className="flex items-center font-bold text-sm text-foreground mb-4 border-b border-linear-border/50 pb-3">
+                           <Type className="w-4 h-4 text-cyan-500 mr-2" /> Brand Identity Guidelines
+                        </div>
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                           <pre className="whitespace-pre-wrap font-sans text-sm text-slate-700 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner">
+                              {result.guidelines}
+                           </pre>
+                        </div>
                      </div>
-                  </div>
+                  )}
+              </div>
+           )}
 
-                  {/* ===================== CALL TO ACTION B2B ===================== */}
-                  <div className="mt-4 mb-10 pt-4 border-t border-linear-border">
-                     <Link href="/workspace">
-                        <button className="w-full py-5 rounded-2xl flex items-center justify-center font-bold text-white text-lg transition-all overflow-hidden relative group cursor-pointer bg-gradient-to-r from-blue-700 to-cyan-500 hover:from-blue-600 hover:to-cyan-400 border-[rgba(255,255,255,0.1)] border shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:shadow-[0_0_40px_rgba(6,182,212,0.5)]">
-                          <span className="flex items-center relative z-10 tracking-wide">
-                            <Download className="w-5 h-5 mr-3" />
-                            {t('design_studio.export_btn')}
-                          </span>
-                          <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                        </button>
-                     </Link>
-                     <p className="text-center text-xs text-linear-text-muted flex items-center justify-center mt-3">
-                        <Activity className="w-3.5 h-3.5 mr-1 text-emerald-400" /> {t('design_studio.export_desc')}
-                     </p>
+           {/* TAB: CASE STUDY (NEW) */}
+           {!loading && blocks.length > 0 && activeTab === 'case-study' && (
+              <div className="flex flex-col gap-6 w-full">
+                  
+                  {/* SEAMLESS BEHANCE CANVAS WRAPPER */}
+                  <div id="behance-export-canvas" className="w-full bg-slate-50 shadow-2xl flex flex-col overflow-hidden max-w-[1400px] mx-auto rounded-none relative">
+                    {blocks.map((block) => (
+                         <div key={block.id} className="relative transition-all duration-300 w-full group">
+                            {/* Hover Outline specifically for HITL inside the canvas */}
+                            <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyan-400/30 z-50 pointer-events-none transition-colors"></div>
+                            {renderBlock(block)}
+                         </div>
+                    ))}
                   </div>
-
-              </motion.div>
+                  
+                  <div className="pt-10 pb-20 flex justify-center border-t border-linear-border/30 mt-4">
+                     <button onClick={handleExportPDF} className="flex items-center px-8 py-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-full hover:shadow-[0_0_20px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all font-bold text-sm">
+                        <FileText className="w-5 h-5 mr-2 text-cyan-400" />
+                        Download High-Res PDF (Client Ready)
+                     </button>
+                  </div>
+              </div>
            )}
 
         </div>
 
-        {/* ================================================== */}
-        {/* COLUMN 3: THE AGENTS' BRAIN (Console Simulation) (3/12) */}
-        {/* ================================================== */}
-        <div className="lg:col-span-3 flex flex-col gap-6 overflow-y-auto no-scrollbar pb-6 relative">
+        {/* ================= COLUMN 3: AGENT LOGS ================= */}
+        <div className="lg:col-span-3 flex flex-col gap-6 overflow-y-auto no-scrollbar pb-6 relative pointer-events-none">
            <div className="bento-card p-0 flex flex-col flex-1 border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.05)] relative overflow-hidden group">
               <div className="p-4 border-b border-linear-border flex justify-between items-center bg-linear-surface/80 backdrop-blur-md shrink-0">
                  <div className="flex items-center">
                    <TerminalSquare className="w-4 h-4 text-cyan-500 mr-2" />
-                   <h4 className="font-bold text-sm text-foreground tracking-wide">{t('design_studio.agents_cortex')}</h4>
+                   <h4 className="font-bold text-sm text-foreground tracking-wide">Multimodal Refiner</h4>
                  </div>
-                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" title={t('design_studio.system_online')}></div>
+                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"></div>
               </div>
 
-              {/* Visual Nodes UI */}
-              <div className="flex-1 bg-linear-surface/30 shadow-inner p-5 overflow-y-auto no-scrollbar flex flex-col gap-2 relative transition-colors duration-500">
-                 
-                 {/* Market Agent Node */}
-                 <div className={`p-4 rounded-xl border relative overflow-hidden transition-all duration-500 z-10 ${activeAgent === 'Market Agent' ? 'border-cyan-500/50 bg-cyan-500/5 dark:bg-cyan-500/10 shadow-[0_0_20px_rgba(6,182,212,0.15)] scale-105' : 'border-linear-border bg-linear-surface/80'}`}>
-                    <div className="flex items-center justify-between mb-2">
-                       <div className="flex items-center">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 transition-colors ${activeAgent === 'Market Agent' ? 'bg-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]' : 'bg-linear-surface text-linear-text-muted border border-linear-border'}`}>
-                             <LineChart className="w-4 h-4" />
-                          </div>
-                          <span className={`font-bold text-sm tracking-wide ${activeAgent === 'Market Agent' ? 'text-cyan-700 dark:text-cyan-300' : 'text-foreground/80'}`}>Market Agent</span>
+              <div className="flex-1 bg-linear-surface/30 p-5 overflow-y-auto no-scrollbar flex flex-col gap-3 relative">
+                 <div className="h-full overflow-y-auto flex flex-col justify-end text-xs font-mono text-foreground font-medium leading-relaxed gap-2 pb-2">
+                    {agentLogs.map(log => (
+                       <div key={log.id} className={`p-2 rounded bg-background/50 border ${log.type === 'warn' ? 'border-amber-500/30 text-amber-400' : log.type === 'success' ? 'border-cyan-500/30 text-cyan-400' : 'border-linear-border text-linear-text-muted'}`}>
+                          <div className="opacity-50 text-[9px] mb-1">[{log.time}] {log.agent}</div> 
+                          <div>{log.text}</div>
                        </div>
-                       {activeAgent === 'Market Agent' && <span className="flex w-2.5 h-2.5 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-ping" />}
-                    </div>
-                    <div className={`pl-11 text-[11px] font-mono line-clamp-1 h-4 ${activeAgent === 'Market Agent' ? 'text-cyan-600 dark:text-cyan-400' : 'text-linear-text-muted'}`}>
-                       {agentLogs.filter(l => l.agent === 'Market Agent').pop()?.text || "Standby for DNA..."}
-                    </div>
+                    ))}
+                    <div ref={logsEndRef} />
                  </div>
-
-                 {/* Connector */}
-                 <div className="w-0.5 h-6 mx-auto bg-linear-border relative overflow-hidden shrink-0 transition-colors">
-                    {loading && <motion.div animate={{y: ["-100%", "200%"]}} transition={{repeat: Infinity, duration: 1.5}} className="w-full h-full bg-gradient-to-b from-transparent via-cyan-500 to-transparent absolute" />}
-                 </div>
-
-                 {/* Creative Agent Node */}
-                 <div className={`p-4 rounded-xl border relative overflow-hidden transition-all duration-500 z-10 ${activeAgent === 'Creative Agent' ? 'border-indigo-500/50 bg-indigo-500/5 dark:bg-indigo-500/10 shadow-[0_0_20px_rgba(99,102,241,0.15)] scale-105' : 'border-linear-border bg-linear-surface/80'}`}>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-[40px] -mr-10 -mt-10 pointer-events-none" />
-                    <div className="flex items-center justify-between mb-2">
-                       <div className="flex items-center">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 transition-colors ${activeAgent === 'Creative Agent' ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.5)]' : 'bg-linear-surface text-linear-text-muted border border-linear-border'}`}>
-                             <Palette className="w-4 h-4" />
-                          </div>
-                          <span className={`font-bold text-sm tracking-wide ${activeAgent === 'Creative Agent' ? 'text-indigo-700 dark:text-indigo-300' : 'text-foreground/80'}`}>Creative Agent</span>
-                       </div>
-                       {activeAgent === 'Creative Agent' && <RefreshCw className="w-4 h-4 text-indigo-500 dark:text-indigo-400 animate-spin" />}
-                    </div>
-                    <div className={`pl-11 text-[11px] font-mono line-clamp-1 h-4 ${activeAgent === 'Creative Agent' ? 'text-indigo-600 dark:text-indigo-400' : 'text-linear-text-muted'}`}>
-                       {agentLogs.filter(l => l.agent === 'Creative Agent').pop()?.text || "Awaiting Blueprint..."}
-                    </div>
-                 </div>
-
-                 {/* Connector */}
-                 <div className="w-0.5 h-6 mx-auto bg-linear-border relative overflow-hidden shrink-0 transition-colors">
-                    {loading && <motion.div animate={{y: ["-100%", "200%"]}} transition={{repeat: Infinity, duration: 1.5, delay: 0.5}} className="w-full h-full bg-gradient-to-b from-transparent via-indigo-500 to-transparent absolute" />}
-                 </div>
-
-                 {/* Copywriter Agent Node */}
-                 <div className={`p-4 rounded-xl border relative overflow-hidden transition-all duration-500 z-10 ${activeAgent === 'Copywriter Agent' ? 'border-amber-500/50 bg-amber-500/5 dark:bg-amber-500/10 shadow-[0_0_20px_rgba(245,158,11,0.15)] scale-105' : 'border-linear-border bg-linear-surface/80'}`}>
-                    <div className="flex items-center justify-between mb-2">
-                       <div className="flex items-center">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 transition-colors ${activeAgent === 'Copywriter Agent' ? 'bg-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.5)]' : 'bg-linear-surface text-linear-text-muted border border-linear-border'}`}>
-                             <PenTool className="w-4 h-4" />
-                          </div>
-                          <span className={`font-bold text-sm tracking-wide ${activeAgent === 'Copywriter Agent' ? 'text-amber-700 dark:text-amber-300' : 'text-foreground/80'}`}>Copywriter Agent</span>
-                       </div>
-                       {activeAgent === 'Copywriter Agent' && <Type className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-pulse" />}
-                    </div>
-                    <div className={`pl-11 text-[11px] font-mono line-clamp-1 h-4 ${activeAgent === 'Copywriter Agent' ? 'text-amber-600 dark:text-amber-400' : 'text-linear-text-muted'}`}>
-                       {agentLogs.filter(l => l.agent === 'Copywriter Agent').pop()?.text || "Analyzing Tone..."}
-                    </div>
-                 </div>
-
-                 {/* Tiny Terminal Footer for "Hacker feel" */}
-                 <div className="mt-auto pt-4 border-t border-linear-border transition-colors">
-                    <div className="text-[9px] text-linear-text-muted mb-1 flex items-center font-bold">
-                       <TerminalSquare className="w-3 h-3 mr-1" /> {t('design_studio.raw_log')}
-                    </div>
-                    <div className="h-16 overflow-y-hidden flex flex-col justify-end text-[10px] font-mono text-foreground font-medium leading-tight">
-                       {agentLogs.slice(-3).map(log => (
-                          <div key={log.id} className="truncate">
-                             <span className="opacity-50 text-emerald-600 dark:text-emerald-400">[{log.time}]</span> <span className={log.type === 'warn' ? 'text-amber-500 font-bold' : log.type === 'success' ? 'text-blue-600 dark:text-blue-400' : 'text-inherit'}>{log.text}</span>
-                          </div>
-                       ))}
-                    </div>
-                 </div>
-
-              </div>
-              
-              {/* Neon Line decorative */}
-              <div className="absolute bottom-0 left-0 h-0.5 w-full bg-linear-border overflow-hidden">
-                 <motion.div 
-                   animate={{ x: ["-100%", "200%"] }}
-                   transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                   className="h-full w-1/3 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"
-                 />
-              </div>
-           </div>
-
-           {/* Metrics mini box */}
-           <div className="flex gap-4 h-24">
-              <div className="flex-1 bento-card p-3 flex flex-col justify-center items-center relative overflow-hidden group">
-                 <div className="text-[10px] text-linear-text-muted font-bold uppercase tracking-widest z-10">{t('design_studio.time_saved')}</div>
-                 <div className="text-xl font-bold text-foreground mt-1 z-10">34 <span className="text-xs text-linear-text-muted font-medium ml-1">hrs</span></div>
-                 <Hash className="absolute -bottom-4 -right-2 w-16 h-16 text-linear-surface/50 group-hover:text-linear-border transition-colors -rotate-12" />
-              </div>
-              <div className="flex-1 bento-card p-3 flex flex-col justify-center items-center relative overflow-hidden group">
-                 <div className="text-[10px] text-linear-text-muted font-bold uppercase tracking-widest z-10">{t('design_studio.cost_roi')}</div>
-                 <div className="text-xl font-bold text-emerald-400 mt-1 z-10">+480<span className="text-xs text-emerald-500 font-medium">%</span></div>
-                 <Activity className="absolute -bottom-4 -right-2 w-16 h-16 text-emerald-500/5 group-hover:text-emerald-500/10 transition-colors" />
               </div>
            </div>
         </div>

@@ -47,3 +47,35 @@ async def revise_design_assets(request: DesignReviseRequest):
         raise HTTPException(status_code=500, detail=result.get("message"))
         
     return result
+
+# =========================================================================
+# BEHANCE CASE STUDY ENGINE (BLOCK-LEVEL RAG & REVISION)
+# =========================================================================
+
+from app.schemas.schemas import ReviseBlockRequest
+
+@router.post("/generate-case-study")
+async def generate_case_study(request: DesignGenerateRequest):
+    """
+    API biên dịch Brand DNA thành danh sách các Block JSON theo cấu trúc Behance Layout.
+    """
+    designer = BrandDesigner()
+    result = designer.generate_behance_layout(request)
+    
+    if result.get("status") == "error":
+        raise HTTPException(status_code=500, detail=result.get("message"))
+        
+    return result
+
+@router.post("/revise-block")
+async def revise_block(request: ReviseBlockRequest):
+    """
+    API nhận feedback cục bộ cho một block và cập nhật lại thông số của block đó.
+    """
+    designer = BrandDesigner()
+    result = designer.revise_block(request)
+    
+    if result.get("status") == "error":
+        raise HTTPException(status_code=500, detail=result.get("message"))
+        
+    return result

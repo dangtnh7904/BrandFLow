@@ -117,6 +117,7 @@ Trả về chuẩn JSON.
 def run_cmo_phase2_situation_audit(phase1_data: dict, target_audience: str) -> dict:
     from langchain_groq import ChatGroq
     api_key = os.getenv("GROQ_API_KEY")
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
     structured_llm = llm.with_structured_output(SituationAuditPhase2)
     
     # Ép LLM viết ngắn gọn
@@ -151,6 +152,7 @@ Trả về JSON chứa giải thích chi tiết chiến lược (ansoff_strategy
 def run_cmo_phase3_strategy_formulation(gap_analysis: dict, segments_data: dict) -> dict:
     from langchain_groq import ChatGroq
     api_key = os.getenv("GROQ_API_KEY")
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
     structured_llm = llm.with_structured_output(StrategyPhase3)
     
     prompt = PHASE3_PROMPT.format(
@@ -184,6 +186,7 @@ Trả về định dạng chuẩn JSON Schema.
 def run_cmo_phase4_tactical_allocator(strategy_data: dict, budget: int) -> dict:
     from langchain_groq import ChatGroq
     api_key = os.getenv("GROQ_API_KEY")
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
     structured_llm = llm.with_structured_output(TacticsPhase4)
     
     prompt = PHASE4_PROMPT.format(strategy=json.dumps(strategy_data, ensure_ascii=False), budget=budget)

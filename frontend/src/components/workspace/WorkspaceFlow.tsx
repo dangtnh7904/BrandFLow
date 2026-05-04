@@ -42,11 +42,11 @@ export default function WorkspaceFlow() {
 
           <button 
             onClick={() => window.location.href = '/onboarding'}
-            className="ml-2 px-3 py-1.5 rounded-lg border border-linear-border bg-linear-surface/80 hover:bg-linear-surface hover:text-cyan-500 transition-all text-xs font-bold text-linear-text-muted flex items-center"
+            className="ml-2 px-2 md:px-3 py-1.5 rounded-lg border border-linear-border bg-linear-surface/80 hover:bg-linear-surface hover:text-cyan-500 transition-all text-xs font-bold text-linear-text-muted flex items-center justify-center"
             title="Sửa đổi thông tin đầu vào (Brand DNA)"
           >
-            <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-            Edit Input
+            <svg className="w-4 h-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+            <span className="hidden md:inline">Edit Input</span>
           </button>
         </div>
 
@@ -55,7 +55,7 @@ export default function WorkspaceFlow() {
           {[1, 2, 3].map((s) => (
             <div 
               key={s} 
-              className={`flex items-center text-[11px] md:text-xs font-semibold uppercase tracking-widest transition-all duration-300 group ${
+              className={`flex items-center text-[10px] sm:text-[11px] md:text-xs font-semibold uppercase tracking-widest transition-all duration-300 group shrink-0 ${
                 currentStage === s 
                 ? 'text-blue-600 dark:text-blue-400 scale-[1.02]' 
                 : currentStage > s 

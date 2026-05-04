@@ -16,7 +16,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-transparent">
+    <div className="absolute inset-0 flex overflow-hidden bg-transparent">
       <Phase1_Ingestion onGoToHub={handleGoToHub} onGoToWorkspace={handleGoToWorkspace} />
     </div>
   );

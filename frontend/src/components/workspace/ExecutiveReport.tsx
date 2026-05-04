@@ -147,11 +147,11 @@ export default function ExecutiveReport() {
   // Dùng Demo Data nếu tacticsPlan trống (chưa chạy backend)
   const planData = (tacticsPlan && Object.keys(tacticsPlan).length > 0) ? tacticsPlan : DEMO_EXPERT_DATA;
   
-  const goal = planData.goal_setting;
-  const audit = planData.situation_audit;
-  const strategy = planData.strategy;
-  const tactics = planData.tactics;
-  const cfo = planData.cfo_risk;
+  const goal = planData.goal_setting || DEMO_EXPERT_DATA.goal_setting;
+  const audit = planData.situation_audit || DEMO_EXPERT_DATA.situation_audit;
+  const strategy = planData.strategy || DEMO_EXPERT_DATA.strategy;
+  const tactics = planData.tactics || DEMO_EXPERT_DATA.tactics;
+  const cfo = planData.cfo_risk || DEMO_EXPERT_DATA.cfo_risk;
 
   const dynamicTasks = React.useMemo(() => {
     if (!tactics || !tactics.tactics_7ps) return [];
@@ -162,7 +162,7 @@ export default function ExecutiveReport() {
     }));
   }, [tactics]);
 
-  const pageClass = "w-[210mm] h-[297mm] mx-auto bg-white text-slate-900 shadow-2xl print:shadow-none print:m-0 relative overflow-hidden font-sans report-container print:break-after-page mb-8 print:mb-0";
+  const pageClass = "w-full sm:w-[210mm] min-h-[100vh] sm:min-h-[297mm] mx-auto bg-white text-slate-900 shadow-2xl print:shadow-none print:m-0 relative overflow-hidden font-sans report-container print:break-after-page mb-8 print:mb-0";
 
   return (
     <div className="flex flex-col items-center pb-8 print:pb-0 bg-slate-100 dark:bg-[#0B1120] py-8">
@@ -180,10 +180,10 @@ export default function ExecutiveReport() {
           </div>
         </div>
         
-        <div className="absolute bottom-0 left-0 w-full h-[40%] bg-white p-[20mm] flex flex-col justify-end">
+        <div className="absolute bottom-0 left-0 w-full h-[40%] bg-white p-6 sm:p-[20mm] flex flex-col justify-end">
           <div className="w-20 h-1.5 bg-gradient-to-r from-blue-600 to-cyan-400 mb-8 rounded-full"></div>
           <h2 className="text-slate-400 font-bold uppercase tracking-widest text-sm mb-3">Tài liệu Tuyệt mật / Internal Use Only</h2>
-          <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-6 uppercase">
+          <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-6 uppercase">
             Báo cáo Kế hoạch <br/><span className="text-blue-600">Chiến lược Toàn diện</span>
           </h1>
           
@@ -203,7 +203,7 @@ export default function ExecutiveReport() {
       {/* =======================
           PAGE 2: STRATEGIC OVERVIEW (Kotler Framework)
           ======================= */}
-      <div className={`${pageClass} p-[15mm] flex flex-col`}>
+      <div className={`${pageClass} p-4 sm:p-[15mm] flex flex-col`}>
         <header className="border-b-2 border-slate-900 pb-3 mb-6 flex justify-between items-end shrink-0">
           <div className="text-xl font-black text-slate-900 uppercase">BrandFlow</div>
           <div className="text-slate-500 font-medium text-xs tracking-widest uppercase">01 / Định vị & Mục tiêu (Strategic Planning)</div>
@@ -227,7 +227,7 @@ export default function ExecutiveReport() {
           </section>
 
           {/* Objectives & Red lines */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div className="border border-blue-200 rounded-lg p-4 bg-blue-50/50">
               <h3 className="font-bold text-slate-900 mb-2 text-sm uppercase flex items-center"><TrendingUp className="w-4 h-4 mr-1 text-blue-600"/> Mục tiêu tài chính</h3>
               <ul className="list-disc pl-4 text-sm text-slate-700 space-y-1">
@@ -249,7 +249,7 @@ export default function ExecutiveReport() {
               <div key={i} className="mb-4">
                 <div className="bg-slate-900 text-white p-3 rounded-t-lg font-bold text-sm">Segment: {seg.segment_name}</div>
                 <div className="border border-t-0 border-slate-200 rounded-b-lg p-4 bg-white">
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     {seg.dmu_profiles.map((dmu: any, j: number) => (
                       <div key={j} className="bg-slate-50 p-3 rounded border border-slate-100">
                         <div className="font-bold text-blue-600 text-xs uppercase tracking-wider mb-2">Vai trò: {dmu.role}</div>
@@ -273,7 +273,7 @@ export default function ExecutiveReport() {
       {/* =======================
           PAGE 3: TACTICS & CFO RISK
           ======================= */}
-      <div className={`${pageClass} p-[15mm] flex flex-col`}>
+      <div className={`${pageClass} p-4 sm:p-[15mm] flex flex-col`}>
         <header className="border-b-2 border-slate-900 pb-3 mb-6 flex justify-between items-end shrink-0">
           <div className="text-xl font-black text-slate-900 uppercase">BrandFlow</div>
           <div className="text-slate-500 font-medium text-xs tracking-widest uppercase">02 / Thực thi & Quản trị Rủi ro (Tactics & Risk)</div>
@@ -299,7 +299,7 @@ export default function ExecutiveReport() {
               <span className="text-2xl font-black text-blue-600">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tactics.total_budget_used)}</span>
             </div>
 
-            <table className="w-full text-sm text-left border-collapse">
+            <div className="w-full overflow-x-auto"><table className="w-full min-w-[500px] text-sm text-left border-collapse">
               <thead>
                 <tr className="border-b-2 border-slate-800 text-slate-800 uppercase text-xs bg-slate-50">
                   <th className="py-2 px-2 font-black">Chữ P</th>
@@ -320,7 +320,7 @@ export default function ExecutiveReport() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </section>
 
           {/* CFO Risk & Trigger Points */}

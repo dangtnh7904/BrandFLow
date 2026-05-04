@@ -136,7 +136,7 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
 
  return (
  <div className="w-full h-full overflow-y-auto relative">
- <div className="flex flex-col p-8 max-w-6xl mx-auto w-full min-h-full">
+ <div className="flex flex-col p-4 md:p-8 max-w-6xl mx-auto w-full min-h-full">
  {/* Screen Flash Overlay */}
  {flash && (
  <motion.div 
@@ -147,8 +147,8 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
  />
  )}
 
- <button onClick={onBack} className="absolute left-8 top-8 text-linear-text-muted hover:text-foreground transition-colors flex items-center text-sm bg-linear-surface px-3 py-1.5 rounded-lg border border-linear-border shadow-sm z-10">
- <ArrowLeft className="w-4 h-4 mr-1" /> Back
+ <button onClick={onBack} className="absolute left-4 md:left-8 top-4 md:top-8 text-linear-text-muted hover:text-foreground transition-colors flex items-center text-sm bg-linear-surface px-3 py-1.5 rounded-lg border border-linear-border shadow-sm z-10">
+ <ArrowLeft className="w-4 h-4 mr-1" /> <span className="hidden sm:inline">Back</span>
  </button>
 
  <div className="mb-8 text-center mt-8">
@@ -158,11 +158,12 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
 
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
  {/* Gantt Chart UI */}
- <div className="bento-card bg-linear-surface shadow-sm border border-linear-border">
+ <div className="bento-card bg-linear-surface shadow-sm border border-linear-border overflow-hidden">
  <h3 className="text-lg font-bold text-foreground mb-6">{t('workspace_phase3.touchpoints' as any) as string}</h3>
  
- <div className="w-full">
- <div className="grid grid-cols-4 text-xs font-bold text-foreground uppercase tracking-wider mb-4 border-b border-linear-border pb-2">
+ <div className="w-full overflow-x-auto pb-4">
+ <div className="min-w-[500px]">
+ <div className="grid grid-cols-4 text-[10px] md:text-xs font-bold text-foreground uppercase tracking-wider mb-4 border-b border-linear-border pb-2">
  <div className="col-span-1">{t('workspace_phase3.task' as any) as string}</div>
  <div className="text-center">{t('workspace_phase3.m1' as any) as string}</div>
  <div className="text-center">{t('workspace_phase3.m2' as any) as string}</div>
@@ -196,6 +197,7 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
  </div>
  </div>
  </div>
+ </div>
 
  {/* Budgeting Grid Math Hook */}
  <div className="bento-card flex flex-col bg-linear-surface shadow-sm border border-linear-border relative overflow-hidden">
@@ -208,13 +210,13 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
  />
  )}
 
- <div className="mb-6 flex justify-between items-center">
+ <div className="mb-4 md:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
  <h3 className="text-lg font-bold text-foreground">{t('workspace_phase3.alloc' as any) as string}</h3>
- <span className="text-xs bg-background border border-linear-border px-2 py-1 rounded-md text-foreground font-bold">{t('workspace_phase3.total' as any) as string} {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(budgetNum)}</span>
+ <span className="text-xs bg-background border border-linear-border px-2 py-1 rounded-md text-foreground font-bold whitespace-nowrap self-start sm:self-auto">{t('workspace_phase3.total' as any) as string} {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(budgetNum)}</span>
  </div>
 
- <div className="flex-1 overflow-x-auto">
- <table className="w-full text-sm text-left">
+ <div className="flex-1 overflow-x-auto w-full">
+ <table className="w-full min-w-[500px] text-sm text-left">
  <thead className="text-xs text-foreground font-bold uppercase border-b border-linear-border">
  <tr>
  <th className="py-3 px-2 font-medium">{t('workspace_phase3.task' as any) as string}</th>

@@ -8,7 +8,6 @@ import { ThemeToggle } from "./ThemeToggle";
 import AmbientParticles from "./AmbientParticles";
 import NodeNetworkCanvas from "./landing/NodeNetworkCanvas";
 import SystemIntro from "./landing/SystemIntro";
-import GlobalMarqueeAnnotator from "./GlobalMarqueeAnnotator";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
  const pathname = usePathname();
@@ -132,9 +131,6 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     <main className="flex-1 overflow-y-auto overflow-x-hidden w-full relative z-10 flex flex-col">
       {children}
     </main>
-
-    {/* GLOBAL MARQUEE TOOL */}
-    <GlobalMarqueeAnnotator />
   </div>
   );
 }

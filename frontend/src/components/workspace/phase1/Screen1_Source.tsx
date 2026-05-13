@@ -15,6 +15,7 @@ function cn(...inputs: ClassValue[]) {
 export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | 'dashboard') => void }) {
   const { t, language } = useLanguage();
   const setExtractedAnswers = useFormStore(state => state.setExtractedAnswers);
+  const appendRawIngestedContent = useFormStore(state => state.appendRawIngestedContent);
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
 
   // UI States for dynamic fields
@@ -117,9 +118,18 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
         throw new Error(err.detail || `Lỗi ${res.status}`);
       }
       const data = await res.json();
-      // Backend hiện trả về {status, message} — hiển thị thành công
       const results = Array.isArray(data.results) ? data.results : urls.map(u => ({ url: u, status: 'success' }));
       setCrawlResults(results);
+
+      // Lưu nội dung raw vào store để Master Planner kết hợp
+      if (Array.isArray(data.results)) {
+        data.results.forEach((r: any) => {
+          if (r.status === 'success' && r.raw_text_for_ai) {
+            appendRawIngestedContent(`\n--- NGUỒN URL: ${r.url} ---\n${r.raw_text_for_ai}`);
+          }
+        });
+      }
+
       const ok = results.filter((r: any) => r.status === 'success').length;
       const fail = results.length - ok;
       if (fail === 0) {
@@ -222,7 +232,7 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
         setExtractedAnswers(data.extracted_answers);
       }
 
-      // Tạo message chi tiết từng file
+      // Tạo message chi tiết từng file và lưu raw text
       if (Array.isArray(data.results) && data.results.length > 0) {
         const lines: string[] = [data.message || ''];
         data.results.forEach((r: any) => {
@@ -231,6 +241,10 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
             const pages = r.pages ? ` · ${r.pages} trang` : '';
             const sheets = r.sheets ? ` · ${r.sheets} sheet` : '';
             lines.push(`✅ ${r.filename}${chars}${pages}${sheets} [${r.method}]`);
+            
+            if (r.raw_text_for_ai) {
+              appendRawIngestedContent(`\n--- TÀI LIỆU UPLOAD: ${r.filename} ---\n${r.raw_text_for_ai}`);
+            }
           } else {
             lines.push(`❌ ${r.filename}: ${r.error}`);
           }

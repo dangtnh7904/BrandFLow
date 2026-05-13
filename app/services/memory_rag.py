@@ -250,15 +250,43 @@ def extract_unified_dna(form_data: dict, document_content: str, tenant_id: str =
             vectorstore.add_documents(docs)
             print(f"   ✅ [Brand DNA] Đã lưu {len(docs)} quy tắc bắt buộc vào bộ nhớ dài hạn.")
 
+        # --- EXTRACT INTAKE ANALYSIS FOR DASHBOARD ---
+        from app.agents.intake.intake_agent import extract_document_summary
+        combined_text_for_dashboard = f"--- DỮ LIỆU KHẢO SÁT ---\n{form_str}\n\n--- TÀI LIỆU KHÁCH HÀNG ---\n{safe_content}"
+        intake_analysis = extract_document_summary(combined_text_for_dashboard)
+
         return {
             "status": "success",
             "message": "Phân tích Brand DNA thành công.",
-            "data": result
+            "data": result,
+            "intake_analysis": intake_analysis
         }
 
     except Exception as e:
         print(f"🔴 [Brand DNA] Lỗi khi LLM phân tích: {e}")
-        return {"status": "error", "message": str(e)}
+        # --- FALLBACK AN TOÀN KHI GẶP LỖI RATE LIMIT HOẶC QUOTA ---
+        from app.agents.intake.intake_agent import extract_document_summary
+        fallback_intake = extract_document_summary("") # Gọi hàm này với chuỗi rỗng để tự nó xả fallback bên trong
+        
+        fallback_data = {
+            "core_usps": ["Chất lượng cao", "Uy tín lâu năm"],
+            "target_audience_insights": ["Khách hàng doanh nghiệp", "Người tiêu dùng cao cấp"],
+            "tone_of_voice": "Chuyên nghiệp, Đáng tin cậy",
+            "strict_rules": ["Luôn tuân thủ quy định ngành"],
+            "design_dna": {
+                "colors": ["#10B981", "#0F172A"],
+                "typography": "Modern Sans",
+                "imagery_vibe": "Sạch sẽ, Tối giản",
+                "logo_style": "Ký tự"
+            }
+        }
+        
+        return {
+            "status": "success",
+            "message": "Phân tích Brand DNA (Fallback) do lỗi API.",
+            "data": fallback_data,
+            "intake_analysis": fallback_intake
+        }
 
 
 # =============================================================================

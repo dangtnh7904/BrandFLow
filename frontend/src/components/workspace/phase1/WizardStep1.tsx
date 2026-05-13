@@ -22,8 +22,13 @@ const INDUSTRIES = [
 
 export default function WizardStep1({ onNext }: { onNext?: () => void }) {
  const { t } = useLanguage();
- const { runMarketResearch, marketResearchStatus, marketResearchData, extractedAnswers, wizardAnswers, setWizardAnswer, setWizardAnswers } = useFormStore();
- 
+ const runMarketResearch = useFormStore(state => state.runMarketResearch);
+ const marketResearchStatus = useFormStore(state => state.marketResearchStatus);
+ const marketResearchData = useFormStore(state => state.marketResearchData);
+ const extractedAnswers = useFormStore(state => state.extractedAnswers);
+ const wizardAnswers = useFormStore(state => state.wizardAnswers);
+ const setWizardAnswer = useFormStore(state => state.setWizardAnswer);
+ const setWizardAnswers = useFormStore(state => state.setWizardAnswers); 
  const selectedIndustry = wizardAnswers['selectedIndustry'] || null;
  const setSelectedIndustry = (ind: string) => setWizardAnswer('selectedIndustry', ind);
 

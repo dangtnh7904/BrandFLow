@@ -10,7 +10,8 @@ import { MessageSquareText } from 'lucide-react';
 export default function WizardStep3() {
  const { t } = useLanguage();
 
- const { wizardAnswers, setWizardAnswer } = useFormStore();
+ const wizardAnswers = useFormStore(state => state.wizardAnswers);
+ const setWizardAnswer = useFormStore(state => state.setWizardAnswer);
  const selectedIndustry = wizardAnswers['selectedIndustry'] || null;
 
  const getQuestions = () => {

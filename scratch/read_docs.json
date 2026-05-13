@@ -1,0 +1,1607 @@
+{
+  "excel_sheets": [
+    "MASTER PLAN",
+    "Sheet1",
+    "PA Q4.2021",
+    "BUDGET",
+    "KPI& CRT%",
+    "KSF MKT",
+    "Ngân sách dự phòng",
+    "Phân loại điểm bán GT",
+    "Phân loại điểm bán MT",
+    "Đặc tính outlet GT & MT",
+    "5W1H PLAN",
+    "Direct MKT (cust-shop)",
+    "Consumer Image & behavior (end)",
+    "PROF  & SOLUTION",
+    "Định hướng IMC",
+    "CL tích hợp",
+    "Trade MKT",
+    "Brand Mkt",
+    "PR Plan",
+    "Product Plan",
+    "COMBINE PLAN"
+  ],
+  "excel_MASTER PLAN_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "MARKETING PLAN",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "13194250298.823532",
+    "15585761099.272861",
+    "16706908811.338135",
+    "Unnamed: 10",
+    "Unnamed: 11",
+    "Unnamed: 12",
+    "Unnamed: 13",
+    "Unnamed: 14",
+    "Unnamed: 15",
+    "Unnamed: 16",
+    "Unnamed: 17",
+    "Gold Project",
+    "Unnamed: 19",
+    "Unnamed: 20",
+    "Unnamed: 21",
+    "Unnamed: 22",
+    "Unnamed: 23",
+    "Unnamed: 24"
+  ],
+  "excel_MASTER PLAN_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": "2025-10-02 00:00:00",
+      "1": NaN,
+      "2": NaN
+    },
+    "MARKETING PLAN": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": NaN,
+      "2": "345200"
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "13194250298.823532": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "15585761099.272861": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "16706908811.338135": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 10": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 11": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 12": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 13": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 14": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 15": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 16": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 17": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Gold Project": {
+      "0": "Silver Project",
+      "1": "Bronze Project",
+      "2": NaN
+    },
+    "Unnamed: 19": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 20": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 21": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 22": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 23": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 24": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    }
+  },
+  "excel_Sheet1_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8",
+    "Unnamed: 9",
+    "Unnamed: 10",
+    "Unnamed: 11",
+    "Unnamed: 12",
+    "Unnamed: 13",
+    "Unnamed: 14",
+    "Unnamed: 15",
+    "Unnamed: 16",
+    "Unnamed: 17",
+    "Unnamed: 18",
+    "Unnamed: 19",
+    "Unnamed: 20",
+    "Unnamed: 21",
+    "Unnamed: 22",
+    "Unnamed: 23",
+    "Unnamed: 24"
+  ],
+  "excel_Sheet1_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 9": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 10": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 11": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 12": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 13": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 14": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 15": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 16": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 17": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 18": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 19": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 20": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 21": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 22": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 23": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 24": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    }
+  },
+  "excel_PA Q4.2021_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7"
+  ],
+  "excel_PA Q4.2021_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": NaN,
+      "1": "Doanh số",
+      "2": "TT"
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": NaN,
+      "2": "Ngành"
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": NaN,
+      "2": "Target"
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": NaN,
+      "2": "INCOME"
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": NaN,
+      "2": "% BUDGET"
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": NaN,
+      "2": "BUDGET"
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": NaN,
+      "2": "Ghi chú"
+    }
+  },
+  "excel_BUDGET_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8"
+  ],
+  "excel_BUDGET_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": "Doanh số",
+      "1": "TT",
+      "2": "1"
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": "Ngành",
+      "2": "Bánh tươi truyền thống"
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": "Target",
+      "2": "40000000000"
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": "INCOME",
+      "2": "37676000000"
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": "% BUDGET",
+      "2": "0.06"
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": "BUDGET",
+      "2": "2256570776.470588"
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": "Ghi chú",
+      "2": "theo tháng"
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    }
+  },
+  "excel_KPI& CRT%_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8",
+    "Unnamed: 9",
+    "Unnamed: 10",
+    "Unnamed: 11",
+    "Unnamed: 12",
+    "Unnamed: 13",
+    "Unnamed: 14",
+    "Unnamed: 15"
+  ],
+  "excel_KPI& CRT%_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": "NO",
+      "1": NaN,
+      "2": "1"
+    },
+    "Unnamed: 2": {
+      "0": "KÊNH TRUYỀN THÔNG",
+      "1": NaN,
+      "2": "VISIBILITY PLAN"
+    },
+    "Unnamed: 3": {
+      "0": "ĐVT",
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 4": {
+      "0": "BUDGET",
+      "1": NaN,
+      "2": "925000000"
+    },
+    "Unnamed: 5": {
+      "0": "OTS",
+      "1": NaN,
+      "2": "54000000"
+    },
+    "Unnamed: 6": {
+      "0": "ATTENTION",
+      "1": "%",
+      "2": NaN
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": "Số lượng",
+      "2": NaN
+    },
+    "Unnamed: 8": {
+      "0": "INTERESTING",
+      "1": "%",
+      "2": NaN
+    },
+    "Unnamed: 9": {
+      "0": NaN,
+      "1": "Số lượng",
+      "2": NaN
+    },
+    "Unnamed: 10": {
+      "0": "DESIRE",
+      "1": "%",
+      "2": NaN
+    },
+    "Unnamed: 11": {
+      "0": NaN,
+      "1": "Số lượng",
+      "2": NaN
+    },
+    "Unnamed: 12": {
+      "0": "SEARCH",
+      "1": "%",
+      "2": NaN
+    },
+    "Unnamed: 13": {
+      "0": NaN,
+      "1": "Số lượng",
+      "2": NaN
+    },
+    "Unnamed: 14": {
+      "0": "ACTION",
+      "1": "%",
+      "2": NaN
+    },
+    "Unnamed: 15": {
+      "0": NaN,
+      "1": "Số lượng",
+      "2": NaN
+    }
+  },
+  "excel_KSF MKT_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "15425725000",
+    "230000",
+    "67068.36956521739",
+    "Unnamed: 7",
+    "Unnamed: 8",
+    "Unnamed: 9",
+    "Unnamed: 10",
+    "Unnamed: 11",
+    "Unnamed: 12",
+    "Unnamed: 13",
+    "Unnamed: 14",
+    "Unnamed: 15",
+    "Unnamed: 16",
+    "Unnamed: 17",
+    "Unnamed: 18",
+    "Unnamed: 19",
+    "Unnamed: 20"
+  ],
+  "excel_KSF MKT_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "15425725000": {
+      "0": "11626813600",
+      "1": "11626813600",
+      "2": "37676000000"
+    },
+    "230000": {
+      "0": "282000",
+      "1": "461800",
+      "2": "0.1"
+    },
+    "67068.36956521739": {
+      "0": "282000",
+      "1": "25177.16240796882",
+      "2": "3767600000"
+    },
+    "Unnamed: 7": {
+      "0": "41229.83546099291",
+      "1": NaN,
+      "2": "0.05"
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 9": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 10": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 11": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 12": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 13": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 14": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 15": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 16": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 17": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 18": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 19": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 20": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    }
+  },
+  "excel_Ngân sách dự phòng_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8"
+  ],
+  "excel_Ngân sách dự phòng_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": "Budget dự phòng",
+      "1": "Nhóm khô Tràng An",
+      "2": "Bánh SW + Waffle"
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": "405536950",
+      "2": "146497849.68"
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    }
+  },
+  "excel_Phân loại điểm bán GT_columns": [
+    "Phân loại điểm bán",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8",
+    "Unnamed: 9",
+    "Unnamed: 10",
+    "Unnamed: 11",
+    "Unnamed: 12",
+    "Unnamed: 13",
+    "Unnamed: 14",
+    "Unnamed: 15",
+    "Unnamed: 16",
+    "Unnamed: 17",
+    "Unnamed: 18",
+    "Unnamed: 19",
+    "Unnamed: 20",
+    "Unnamed: 21",
+    "Unnamed: 22",
+    "Unnamed: 23",
+    "Unnamed: 24",
+    "Unnamed: 25",
+    "Unnamed: 26",
+    "Unnamed: 27"
+  ],
+  "excel_Phân loại điểm bán GT_head": {
+    "Phân loại điểm bán": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 9": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 10": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 11": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 12": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 13": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 14": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 15": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 16": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 17": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 18": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 19": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 20": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 21": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 22": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 23": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 24": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 25": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 26": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 27": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    }
+  },
+  "excel_Phân loại điểm bán MT_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8",
+    "Unnamed: 9",
+    "Unnamed: 10",
+    "Unnamed: 11",
+    "Unnamed: 12",
+    "Unnamed: 13",
+    "Unnamed: 14",
+    "Unnamed: 15"
+  ],
+  "excel_Phân loại điểm bán MT_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": "HYPER + SUPERMARKET",
+      "1": "STT",
+      "2": "1"
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": "Tên hệ thống",
+      "2": "COOP"
+    },
+    "Unnamed: 3": {
+      "0": "331",
+      "1": "Số lượng ST",
+      "2": "122"
+    },
+    "Unnamed: 4": {
+      "0": "92",
+      "1": "Số lượng HCM",
+      "2": "46"
+    },
+    "Unnamed: 5": {
+      "0": "52",
+      "1": "MTAY",
+      "2": "30"
+    },
+    "Unnamed: 6": {
+      "0": "39",
+      "1": "MDONG",
+      "2": "20"
+    },
+    "Unnamed: 7": {
+      "0": "50",
+      "1": "MTRUNG",
+      "2": "22"
+    },
+    "Unnamed: 8": {
+      "0": "99",
+      "1": "Miền Bắc",
+      "2": "4"
+    },
+    "Unnamed: 9": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 10": {
+      "0": NaN,
+      "1": "Tên hệ thống",
+      "2": "COOP"
+    },
+    "Unnamed: 11": {
+      "0": NaN,
+      "1": "Số lượng HCM",
+      "2": "46"
+    },
+    "Unnamed: 12": {
+      "0": NaN,
+      "1": "MTAY",
+      "2": "30"
+    },
+    "Unnamed: 13": {
+      "0": NaN,
+      "1": "MDONG",
+      "2": "20"
+    },
+    "Unnamed: 14": {
+      "0": NaN,
+      "1": "MTRUNG",
+      "2": "22"
+    },
+    "Unnamed: 15": {
+      "0": NaN,
+      "1": "Miền Bắc",
+      "2": "4"
+    }
+  },
+  "excel_Đặc tính outlet GT & MT_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8"
+  ],
+  "excel_Đặc tính outlet GT & MT_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": "ĐẶC ĐIỂM SHOP TRONG HỆ THỐNG PHÂN PHỐI",
+      "1": "Điểm bán",
+      "2": "Đặc thù"
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": "Tạp Hóa",
+      "2": "Mua hàng theo volume nhỏ - trung bình, cửa hàng vị trí tại hẽm, ngỏ,mặt tiền tại các khu dân cư/ diện tích nhỏ => trung bình ( 3- 4 mặt tiền)/ chủ yếu hàng tại nhà ,không kho bãi."
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": "SỈ",
+      "2": "Mua hàng khối lượng trung bình - lớn. Có hệ thống cấp 1,2 để đi hàng. Yếu tố về giá bán sát để chạy hàng nhanh, lợi nhuận/ sku thấp nhưng volume cao Có hệ thống xe tải, vận chuyển kho bãi."
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": "CH trọng điểm",
+      "2": "Mua hàng volume trung bình lớn, visit đông/ Chiên lược đa dạng hàng hóa với giá mức giá tố => chiến địa của các ngành hàng. Bán chủ yếu thương hiệu quen./ xác nhận độc quyền thì sẽ ôm hàng mới"
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": "KA",
+      "2": "Frequency đều và duy trì , tùy vào bữa ăn và thực đơn đối tác. Volume mua từ trung bình => lớn. Đàm phán khá lâu"
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": "CH chuyên doanh",
+      "2": "VPO trung bình => cao/ tập trung đa dạng sản phẩm cùng ngành do đó việc chiếm lĩnh space share khá căng thẳng. Chuyên doanh có hàng chũ lực tập trung"
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": "HORECA",
+      "2": "Giá phù hợp/ chất lượng đáp ứng nhu cầu của khách hàng"
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": "Cửa hàng siêu nhỏ",
+      "2": "VPO thấp chủ yếu là độ phủ rộng, đơn hàng lắc nhắc nhưng có tác dụng làm hình ảnh và visibility sp tại thị trường"
+    }
+  },
+  "excel_5W1H PLAN_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8",
+    "Unnamed: 9",
+    "Unnamed: 10",
+    "Unnamed: 11",
+    "Unnamed: 12",
+    "Unnamed: 13",
+    "Unnamed: 14",
+    "Unnamed: 15",
+    "Unnamed: 16",
+    "Unnamed: 17",
+    "Unnamed: 18",
+    "Unnamed: 19",
+    "Unnamed: 20",
+    "Unnamed: 21",
+    "Unnamed: 22",
+    "Unnamed: 23",
+    "Unnamed: 24"
+  ],
+  "excel_5W1H PLAN_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": "WHY",
+      "2": NaN
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": "WHAT",
+      "2": NaN
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 9": {
+      "0": NaN,
+      "1": "WHERE",
+      "2": NaN
+    },
+    "Unnamed: 10": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 11": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 12": {
+      "0": NaN,
+      "1": "WHEN",
+      "2": NaN
+    },
+    "Unnamed: 13": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 14": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 15": {
+      "0": NaN,
+      "1": "WHO",
+      "2": NaN
+    },
+    "Unnamed: 16": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 17": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 18": {
+      "0": NaN,
+      "1": "HOW",
+      "2": NaN
+    },
+    "Unnamed: 19": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 20": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 21": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 22": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 23": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 24": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    }
+  },
+  "excel_Direct MKT (cust-shop)_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6"
+  ],
+  "excel_Direct MKT (cust-shop)_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": NaN,
+      "1": "Kênh GT",
+      "2": "Tạp Hóa"
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": "Volume",
+      "2": "15272"
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": "Tỉ trọng",
+      "2": "0.44953345303623465"
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": "Sales strategy",
+      "2": "Volume thấp => trung bình, vừa đủ bán với các nhóm tạp hóa trong ngõ, hẻm - nhóm tạp hóa trong hẻm, ngõ, volume cao- tại nhóm tạp hóa trọng điểm mặt tiền ( cần có sku của riêng họ/ chia line)."
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": "Trade strategy (CUSTOMER)",
+      "2": "- Visibilty in shelf/OOH in Outlet \n- POSM (Kệ)\n- KM theo sản lượng hoặc ký tích lũy./ CASHBACK"
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": "Brand Strategy (SHOPER)",
+      "2": "- Shopper image, dặc tính ( hành vi người mua)\n - End user/ audience ( hành vi người dùng).\n - ATL Campaign - brand act"
+    }
+  },
+  "excel_Consumer Image & behavior (end)_columns": [
+    "Unnamed: 0",
+    "Chân dung shopper & Consumer & Enduser",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8"
+  ],
+  "excel_Consumer Image & behavior (end)_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Chân dung shopper & Consumer & Enduser": {
+      "0": "Nữ giới, tập trung vào nhóm có thu nhập, phân khúc tiêu dùng TB --> cao",
+      "1": "Phân khúc",
+      "2": "Thế hệ Z"
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": "Độ tuổi",
+      "2": "10 - 25 "
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": "Nghề nghiệp",
+      "2": "Sinh viên - Vừa đi làm"
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": "Hành vi mua",
+      "2": "Mua SP ngon, tốt, nhận diện quen thuộc"
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": "Giá tiếp cận",
+      "2": "Giá phù hợp với lượng tiền còn / có trong túi nhất là nhóm trẻ từ 10 - 15 tuổi, độ tuổi từ 18 - 25 theo thu nhập chi nhưng không quá 15k/ skus offtake"
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": "Kênh ",
+      "2": "CVs, MT, Online, tạp hóa gần nhà"
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": "Nhu cầu",
+      "2": "Ăn dặm, picnic, tâp luyện Gym"
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": "Touch point",
+      "2": "Mạng XH, Youtube, Tiktok, OOH, TV ads, Activition Brand, điểm bán, kệ siêu thị, hình ảnh trên line kệ đẹp bắt mắt liên quan đến hoạt hình, liên quan đến KOL"
+    }
+  },
+  "excel_PROF  & SOLUTION_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4"
+  ],
+  "excel_PROF  & SOLUTION_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": "TT",
+      "1": "1",
+      "2": "2"
+    },
+    "Unnamed: 2": {
+      "0": "PROBLEM",
+      "1": "Nhận diện trong miền Nam với nhóm SP Bảo Ngọc còn thấp TOM ENDUSER chưa có",
+      "2": "Các dòng bánh được biết đến chưa đa dạng, chủ yếu là dòng bánh tươi, ít đại lý, npp biết đến Bảo ngọc có bánh nhập khẩu"
+    },
+    "Unnamed: 3": {
+      "0": "Bằng chứng",
+      "1": "Biết đến bảo ngọc , TOM hỏi bảo ngọc theo khảo sát (bổ sung…)",
+      "2": "Bánh tươi là chủ lực (95% doanh thu) 5% bánh khô & ODM.\nVolume so với thị trường vẫn còn khá thấp. Thị phần chưa đạt 1% tổng ngành hàng"
+    },
+    "Unnamed: 4": {
+      "0": "Giải pháp góc độ MKT",
+      "1": "- Brand trên điểm bán ( shopper mkt) thay vì dùng chiến lược truyền thông thiên hướng Marcom.\n - Dùng nhận diện OOH ( hông tường) để quảng bá + xây dựng hình ảnh sp thương hiệu.\n- DIGITAL là kênh truyền thông chính yếu.",
+      "2": "- Brand các nhãn - triển khai CIP đồng nhất trưng bày layout tại POSM của Bảo Ngọc ( mượn khay).\n'- Gia tăng nhận diện tại thông qua VMD của nhãn hàng ( KISSHU WAFFLES, FERETTI)"
+    }
+  },
+  "excel_Định hướng IMC_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8",
+    "Unnamed: 9",
+    "Unnamed: 10",
+    "Unnamed: 11",
+    "Unnamed: 12",
+    "Unnamed: 13",
+    "Unnamed: 14",
+    "Unnamed: 15",
+    "Unnamed: 16",
+    "Unnamed: 17",
+    "Unnamed: 18",
+    "Unnamed: 19",
+    "Unnamed: 20",
+    "Unnamed: 21",
+    "Unnamed: 22",
+    "Unnamed: 23",
+    "Unnamed: 24",
+    "Unnamed: 25",
+    "Unnamed: 26"
+  ],
+  "excel_Định hướng IMC_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": "Khung kế hoạch IMC và các chỉ tiêu mong muốn",
+      "1": NaN,
+      "2": "Phân tích tình huống"
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 9": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 10": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 11": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 12": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 13": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 14": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 15": {
+      "0": "Total tar",
+      "1": "OTS",
+      "2": "Budget"
+    },
+    "Unnamed: 16": {
+      "0": "96632199700.0",
+      "1": "250000000.0",
+      "2": "6638620963.091177"
+    },
+    "Unnamed: 17": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 18": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 19": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 20": {
+      "0": NaN,
+      "1": NaN,
+      "2": "Doanh số"
+    },
+    "Unnamed: 21": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 22": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 23": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 24": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 25": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 26": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    }
+  },
+  "excel_CL tích hợp_columns": [
+    "Unnamed: 0",
+    "Unnamed: 1",
+    "Unnamed: 2",
+    "Unnamed: 3",
+    "Unnamed: 4",
+    "Unnamed: 5",
+    "Unnamed: 6",
+    "Unnamed: 7",
+    "Unnamed: 8",
+    "Unnamed: 9",
+    "Unnamed: 10",
+    "Unnamed: 11"
+  ],
+  "excel_CL tích hợp_head": {
+    "Unnamed: 0": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 1": {
+      "0": "Ma trận tích hợp ý tưởng của chiến dịch",
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 2": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 3": {
+      "0": NaN,
+      "1": NaN,
+      "2": "PR"
+    },
+    "Unnamed: 4": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 5": {
+      "0": NaN,
+      "1": NaN,
+      "2": "MARCOM"
+    },
+    "Unnamed: 6": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 7": {
+      "0": NaN,
+      "1": NaN,
+      "2": "TRADE"
+    },
+    "Unnamed: 8": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 9": {
+      "0": NaN,
+      "1": NaN,
+      "2": "SALES"
+    },
+    "Unnamed: 10": {
+      "0": NaN,
+      "1": NaN,
+      "2": NaN
+    },
+    "Unnamed: 11": {
+      "0": NaN,
+      "1": NaN,
+      "2": "PRODUCT"
+    }
+  },
+  "excel_Trade MKT_columns": [],
+  "excel_Trade MKT_head": {},
+  "excel_Brand Mkt_columns": [],
+  "excel_Brand Mkt_head": {},
+  "excel_PR Plan_columns": [],
+  "excel_PR Plan_head": {},
+  "excel_Product Plan_columns": [],
+  "excel_Product Plan_head": {},
+  "excel_COMBINE PLAN_columns": [],
+  "excel_COMBINE PLAN_head": {},
+  "pdf_hado_error": "No module named 'PyPDF2'",
+  "pdf_template_error": "No module named 'PyPDF2'"
+}

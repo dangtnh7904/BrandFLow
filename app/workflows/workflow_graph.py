@@ -29,6 +29,7 @@ from app.agents.planner.agents_core import (
     python_interceptor,
     run_cfo_defense_review,
     run_persona_validator,
+    run_customer_reviewer_agent,
     run_refine_planner
 )
 from app.services.math_engine import MathEngine
@@ -1017,6 +1018,78 @@ def run_week1_orchestration_contract(
         }
 
 
+def export_final_plan_to_disk(
+    run_id: str,
+    goal: str,
+    budget: int,
+    rounds: int,
+    customer_feedback: list,
+    cfo_comment: str,
+    rule_score: int,
+    client_self_score: int,
+    final_score: int,
+    actual_total_cost: int,
+    final_plan: dict
+):
+    import os
+    import json
+    from datetime import datetime
+    
+    os.makedirs("outputs/final", exist_ok=True)
+    
+    json_payload = {
+        "meta": {
+            "run_id": run_id,
+            "goal": goal,
+            "budget": budget,
+            "approved": final_score >= 70,
+            "rounds": rounds,
+            "timestamp": datetime.now().isoformat()
+        },
+        "plan": final_plan,
+        "scores": {
+            "rule_score": rule_score,
+            "client_self_score": client_self_score,
+            "final_score": final_score
+        },
+        "customer_feedback": customer_feedback,
+        "cfo_decision": cfo_comment
+    }
+    
+    json_path = f"outputs/final/final-{run_id}.json"
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(json_payload, f, ensure_ascii=False, indent=2)
+        
+    txt_lines = [
+        f"BrandFlow Executive Summary (Run: {run_id})",
+        f"Goal: {goal} | Budget: {budget:,} VND",
+        f"Final Cost: {actual_total_cost:,} VND",
+        f"Status: {'APPROVED' if final_score >= 70 else 'REJECTED'} (Score: {final_score}/100, Rounds: {rounds})",
+        "---",
+        "CFO Risk Comment:",
+        f"> {cfo_comment}",
+        "Customer Feedback:",
+        *[f"- {fb}" for fb in customer_feedback],
+        "---",
+        "Key Tactics & KPIs:"
+    ]
+    
+    tactics = final_plan.get("tactics_7ps", [])
+    if tactics:
+        for act in tactics:
+            p_name = act.get("p_name", "Tactic")
+            action = act.get("action_bullet", "")
+            cost = act.get("budget_vnd", 0)
+            kpi = act.get("kpi", "")
+            txt_lines.append(f"[{p_name}] {action} | Cost: {cost:,} | KPI: {kpi}")
+            
+    txt_path = f"outputs/final/final-{run_id}.txt"
+    with open(txt_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(txt_lines))
+        
+    return json_path, txt_path
+
+
 def run_pipeline(
     goal: str,
     industry: str,
@@ -1076,50 +1149,113 @@ def run_pipeline(
     )
     agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Hoàn thành Giai đoạn 4: Lập Bảng tiến độ & Ngân sách."})
 
-    # ── GIAI ĐOẠN 4.5: PYTHON INTERCEPTOR ──
-    interceptor_result = python_interceptor(raw_plan, budget)
-    final_plan_tactics = interceptor_result["final_activities"]
-    overflow_amount = interceptor_result["overflow_amount"]
-    cut_items = interceptor_result["cut_items"]
-    actual_cost = interceptor_result["final_total"]
+    # ── GIAI ĐOẠN 4.5 & 5: CROSS-FUNCTIONAL REVIEW (BOUNDED DAG LOOP) ──
+    max_rounds = 3
+    current_round = 1
+    satisfaction_threshold = 70
     
-    agent_logs.append({"agent": "SYSTEM", "role": "Hệ thống Kiểm toán", "message": f"Đã ép giá {len(cut_items)} hạng mục. Tổng ngân sách sau điều chỉnh: {actual_cost:,} VND."})
-
-    # ── GIAI ĐOẠN 5: CROSS-FUNCTIONAL REVIEW ──
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        cfo_future = executor.submit(
-            run_cfo_defense_review, interceptor_result, budget
-        )
-        persona_future = executor.submit(
-            run_persona_validator, json.dumps(final_plan_tactics, ensure_ascii=False), target_audience
-        )
-        try:
-            cfo_res = cfo_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
-            cfo_comment = cfo_res.get("cfo_comment", "")
-            risk_assessment = cfo_res.get("risk_assessment", [])
-            persona_comment = persona_future.result(timeout=PARALLEL_AGENT_TIMEOUT_SECONDS)
-        except FuturesTimeoutError as exc:
-            cfo_future.cancel()
-            persona_future.cancel()
-            raise TimeoutError(f"CFO/PERSONA timeout sau {PARALLEL_AGENT_TIMEOUT_SECONDS} giay.") from exc
+    current_plan = raw_plan
+    final_plan_tactics = None
+    interceptor_result = None
+    cfo_comment = ""
+    persona_comment = ""
+    risk_assessment = []
+    actual_cost = 0
+    cut_items = []
+    
+    while current_round <= max_rounds:
+        # 4.5 Python Interceptor
+        interceptor_result = python_interceptor(current_plan, budget)
+        final_plan_tactics = interceptor_result["final_activities"]
+        overflow_amount = interceptor_result["overflow_amount"]
+        cut_items = interceptor_result["cut_items"]
+        actual_cost = interceptor_result["final_total"]
+        
+        # 5. CFO Review
+        cfo_res = run_cfo_defense_review(interceptor_result, budget)
+        cfo_comment = cfo_res.get("cfo_comment", "")
+        risk_assessment = cfo_res.get("risk_assessment", [])
+        
+        # 6. Customer Review
+        plan_summary = {
+            "strategy": phase3_data,
+            "tactics": final_plan_tactics,
+            "cfo_risk": risk_assessment
+        }
+        
+        customer_res = run_customer_reviewer_agent(plan_summary, target_audience)
+        client_self_score = customer_res.get("client_self_score", 50)
+        feedback = customer_res.get("feedback", [])
+        persona_comment = customer_res.get("reasoning_summary", "")
+        
+        # Tính rule score
+        rule_score_data = math_engine.calculate_customer_rule_score(final_plan_tactics)
+        rule_score = rule_score_data["rule_score"]
+        final_score = (client_self_score * 0.5) + (rule_score * 0.5)
+        
+        agent_logs.append({
+            "agent": "SYSTEM", 
+            "role": "Loop Controller", 
+            "message": f"Vòng {current_round}/{max_rounds}: Customer Score={client_self_score}, Rule Score={rule_score} -> Final={final_score}"
+        })
+        
+        if final_score >= satisfaction_threshold:
+            agent_logs.append({"agent": "SYSTEM", "role": "Loop Controller", "message": f"Kế hoạch ĐẠT CHUẨN ({final_score} >= {satisfaction_threshold})."})
+            break
+            
+        if current_round == max_rounds:
+            agent_logs.append({"agent": "SYSTEM", "role": "Loop Controller", "message": f"Đạt giới hạn vòng lặp. Dừng và xuất kế hoạch hiện tại."})
+            break
+            
+        # Refine kế hoạch nếu chưa đạt
+        refine_feedback = f"CFO cảnh báo: {cfo_comment}. Khách hàng phản hồi: {', '.join(feedback)}. Hãy điều chỉnh lại chiến thuật cho hiệu quả hơn."
+        agent_logs.append({"agent": "SYSTEM", "role": "Loop Controller", "message": "Chuyển feedback về cho Master Planner để sửa đổi..."})
+        current_plan = run_refine_planner(current_plan, refine_feedback, budget)
+        current_round += 1
 
     agent_logs.append({"agent": "CFO", "role": "Giám đốc Tài chính", "message": cfo_comment})
     agent_logs.append({"agent": "PERSONA", "role": "Đại diện Khách hàng", "message": persona_comment})
+
+    # Lấy các trường mới từ schema TacticsPhase4 nếu có
+    plan_5w1h = final_plan_tactics.get("plan_5w1h", {})
+    distribution_channels = final_plan_tactics.get("distribution_channels", {})
+    integrated_matrix = final_plan_tactics.get("integrated_matrix", {})
+    omnichannel_crm_plan = final_plan_tactics.get("omnichannel_crm_plan", [])
+    campaign_phasing = phase3_data.get("campaign_phasing", [])
 
     # Hợp nhất data thành MasterPlanPhase4Output format
     final_plan = {
         "goal_setting": phase1_data,
         "target_segments": phase2_data.get("target_segments", []),
-        "csf_analysis": phase2_data.get("csf_analysis", []),
+        "benchmarks": phase2_data.get("benchmarks", []),
         "gap_analysis_result": json.dumps(gap_result, ensure_ascii=False),
-        "ansoff_strategy": phase3_data.get("ansoff_strategy", ""),
-        "phased_execution": final_plan_tactics.get("phased_execution", []),
-        "activity_and_financial_breakdown": final_plan_tactics.get("activity_and_financial_breakdown", []),
+        "ansoff_strategy": phase3_data.get("ansoff_matrix_choice", ""),
+        "campaign_phasing": campaign_phasing,
+        "tactics_7ps": final_plan_tactics.get("tactics_7ps", []),
+        "plan_5w1h": plan_5w1h,
+        "distribution_channels": distribution_channels,
+        "integrated_matrix": integrated_matrix,
+        "omnichannel_crm_plan": omnichannel_crm_plan,
         "risk_assessment": risk_assessment
     }
+    
+    run_id = str(uuid.uuid4())
+    export_final_plan_to_disk(
+        run_id=run_id,
+        goal=goal,
+        budget=budget,
+        rounds=current_round if current_round <= max_rounds else max_rounds,
+        customer_feedback=feedback,
+        cfo_comment=cfo_comment,
+        rule_score=rule_score,
+        client_self_score=client_self_score,
+        final_score=final_score,
+        actual_total_cost=actual_cost,
+        final_plan=final_plan
+    )
 
     print(f"\n{'═' * 70}")
-    print(f"✅ [PIPELINE COMPLETE] Kết quả cuối cùng:")
+    print(f"✅ [PIPELINE COMPLETE] Kế hoạch đã lưu ra: outputs/final/final-{run_id}.json")
     print(f"   📊 Tổng chi phí: {actual_cost:,} VND")
     print(f"   ✂️ Hạng mục thao tác: {len(cut_items)}")
     for log in agent_logs:
@@ -1130,6 +1266,7 @@ def run_pipeline(
         "final_plan": final_plan,
         "agent_logs": agent_logs,
         "actual_total_cost": actual_cost,
+        "run_id": run_id
     }
 
 def run_refinement_pipeline(

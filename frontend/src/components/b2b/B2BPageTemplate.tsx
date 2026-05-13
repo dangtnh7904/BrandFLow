@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import SaveIndicator from './SaveIndicator';
 import ExecutiveReport from '../workspace/ExecutiveReport';
+import GlobalMarqueeAnnotator from '../GlobalMarqueeAnnotator';
 
 interface PageTemplateProps {
   title: string;
@@ -363,6 +364,9 @@ export default function B2BPageTemplate({ title, description, children, saveStat
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* AI MARQUEE TOOL (Only visible during export preview) */}
+      {previewMode !== null && <GlobalMarqueeAnnotator />}
     </div>
   );
 }

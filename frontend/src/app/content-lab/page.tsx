@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFormStore } from '@/store/useFormStore';
 import { Loader2, Plus, PlaySquare, Globe, MessageSquare, PieChart, Send, Sparkles, BrainCircuit, Search, ChevronRight } from 'lucide-react';
 
 export default function ContentLabPage() {
   const { t } = useLanguage();
+  const { wizardAnswers } = useFormStore();
   
   const [urlInput, setUrlInput] = useState('');
   const [isIngesting, setIsIngesting] = useState(false);
@@ -52,7 +54,10 @@ export default function ContentLabPage() {
       const res = await fetch('http://localhost:8000/api/content-lab/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scraped_data: targetSource }),
+        body: JSON.stringify({ 
+          scraped_data: targetSource,
+          business_context: wizardAnswers
+        }),
       });
       const data = await res.json();
       if (data.status === 'success') {

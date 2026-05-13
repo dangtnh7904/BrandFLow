@@ -44,7 +44,7 @@ export default function HubPage() {
       color: 'from-blue-600 to-cyan-500',
       shadow: 'hover:shadow-[0_0_40px_rgba(6,182,212,0.3)]',
       border: 'hover:border-cyan-500/50',
-      href: '/workspace'
+      href: '/onboarding'
     }
   ];
 

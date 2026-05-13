@@ -6,11 +6,12 @@ from pydantic import BaseModel, Field
 # =============================================================================
 # PYDANTIC SCHEMAS CHO GIAI ĐOẠN INTAKE (AGENT 0)
 # =============================================================================
-class ExecutiveBrandAudit(BaseModel):
-    company_status: str = Field(description="Đánh giá tổng quan về vị thế hiện tại của doanh nghiệp lấy từ tài liệu.")
-    market_opportunities: List[str] = Field(description="2-3 cơ hội lớn nhất trên thị trường.")
-    critical_weaknesses: List[str] = Field(description="1-2 Điểm mù hoặc rủi ro (dùng từ ngữ tinh tế, mang tính 'khu vực cần cải thiện' thay vì chê bai).")
-    trust_score: int = Field(description="Điểm sức mạnh thương hiệu (0-100) theo cảm quan từ dữ liệu.")
+class StrategicMarketingAudit2024(BaseModel):
+    macro_environment_pestle: List[str] = Field(description="Phân tích PESTLE: Các lực lượng vĩ mô (Political, Economic, Social, Tech...) đang tác động đến doanh nghiệp.")
+    competitive_positioning: str = Field(description="Đánh giá chi tiết vị thế cạnh tranh của doanh nghiệp (Leader, Challenger, Follower, hay Nicher).")
+    core_competences: List[str] = Field(description="Phân tích VRIO: 2-3 năng lực lõi/lợi thế cạnh tranh độc nhất của doanh nghiệp.")
+    marketing_objectives: List[str] = Field(description="Đề xuất các mục tiêu chiến lược Marketing định hướng theo Ma trận Ansoff.")
+    trust_score: int = Field(description="Điểm sức mạnh thương hiệu (0-100) theo đánh giá chuyên gia.")
 
 class VisualBrandDNA(BaseModel):
     primary_colors: List[str] = Field(description="2-3 mã màu HEX phù hợp nhất với tính cách ngành (VD: #FF0000).")
@@ -19,7 +20,7 @@ class VisualBrandDNA(BaseModel):
     moodboard_keywords: List[str] = Field(description="3-5 từ khóa thẩm mỹ (VD: Luxury, Fast, Trust).")
 
 class IntakeAnalysisResult(BaseModel):
-    executive_brand_audit: ExecutiveBrandAudit
+    strategic_marketing_audit: StrategicMarketingAudit2024
     visual_brand_dna: VisualBrandDNA
     company_name: str = Field(description="Tên công ty / thương hiệu.")
     industry: str = Field(description="Phân loại ngành nghề chung.")
@@ -144,47 +145,47 @@ def check_required_info(parsed_data: dict) -> dict:
 
 def extract_document_summary(raw_text: str) -> dict:
     """
-    Dùng Agent 0 (Llama-3.3-70b) để Audit tài liệu doanh nghiệp.
+    Dùng Agent 0 (Gemini 2.5 Flash) để Audit tài liệu doanh nghiệp theo chuẩn 2024 Marketing Plans.
     """
-    from langchain_groq import ChatGroq
+    from langchain_google_genai import ChatGoogleGenerativeAI
     
     print(f"\n{'═' * 70}")
-    print(f"👑 [AGENT 0 — EXECUTIVE AUDITOR] Đang thẩm định dữ liệu doanh nghiệp...")
+    print(f"👑 [AGENT 0 — STRATEGIC AUDITOR] Đang thẩm định dữ liệu doanh nghiệp theo chuẩn 2024 Mkt Plan...")
     print(f"{'═' * 70}")
     
-    prompt = f"""Bạn là Cố vấn Thương hiệu Cấp cao (Executive Auditor).
-Nhiệm vụ của bạn là đọc tài liệu nội bộ sau để Đánh giá Mức độ Trưởng thành của Doanh nghiệp bằng lăng kính chuyên gia (PESTLE & Porter's Five Forces).
+    prompt = f"""Bạn là Malcolm McDonald, tác giả cuốn sách kinh điển "2024 Marketing Plans".
+Nhiệm vụ của bạn là đọc tài liệu nội bộ sau của doanh nghiệp và tiến hành một cuộc Kiểm toán Chiến lược Marketing (Strategic Marketing Audit) chuyên sâu.
 
 QUY TẮC QUAN TRỌNG:
-1. Ở phần 'critical_weaknesses', NGHIÊM CẤM dùng từ ngữ hạ thấp. PHẢI dùng ngôn ngữ ngoại giao, tinh tế (VD: "Chưa tối ưu hóa độ phủ", "Còn dư địa để mở rộng").
+1. Bạn phải phân tích dựa trên khung PESTLE, VRIO, và Đề xuất mục tiêu theo Ma trận Ansoff một cách chi tiết, có cơ sở dữ liệu.
 2. Dựa vào mô tả, hãy tự suy luận ra một bộ Visual Brand DNA (mã màu HEX, kiểu chữ) để làm định hướng thiết kế UI/UX sau này.
-3. NO FLUFF: Trả về các phân tích siêu ngắn gọn, đi thẳng vào trọng tâm, tuyệt đối không viết dài dòng.
+3. DEEP DIVE: Các phân tích phải mạch lạc, logic, học thuật nhưng thực tiễn. Tuyệt đối KHÔNG viết hời hợt.
 
 Tài liệu:
-"{raw_text[:20000]}"
+"{raw_text}"
 """
     
     try:
-        api_key = os.getenv("GROQ_API_KEY")
-        # Sử dụng model mạnh để tư duy Audit
-        llm_orchestrator = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2, api_key=api_key, max_retries=2)
+        # Sử dụng Gemini 2.5 Flash để có Context Window khổng lồ, đọc hết file mà không bị cắt xén
+        llm_orchestrator = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1)
         # Khóa Output bằng Pydantic Struct để không bao giờ lỗi JSON
         structured_llm = llm_orchestrator.with_structured_output(IntakeAnalysisResult)
         
         result_obj = structured_llm.invoke(prompt)
-        print(f"   ✅ Agent 0 đã trích xuất DNA cho: {result_obj.company_name}")
+        print(f"   ✅ Agent 0 đã trích xuất Strategic Audit cho: {result_obj.company_name}")
         
         # Format trả về tương thích với Client
         return result_obj.model_dump()
         
     except Exception as e:
         print(f"🔴 [DOCUMENT AUDIT] Lỗi trích xuất qua Agent 0: {e}")
-        # Fallback an toàn nếu model sập
+        # Fallback an toàn nếu model thực sự gặp lỗi (ít xảy ra với Gemini)
         return {
-            "executive_brand_audit": {
-                "company_status": "Dữ liệu đang được cập nhật...",
-                "market_opportunities": ["Đang phân tích"],
-                "critical_weaknesses": ["Cần tối ưu hóa quy trình"],
+            "strategic_marketing_audit": {
+                "macro_environment_pestle": ["Chưa đủ dữ liệu để phân tích PESTLE."],
+                "competitive_positioning": "Đang phân tích vị thế...",
+                "core_competences": ["Cần thêm tài liệu để đánh giá VRIO."],
+                "marketing_objectives": ["Mục tiêu sẽ được cập nhật sau."],
                 "trust_score": 50
             },
             "visual_brand_dna": {

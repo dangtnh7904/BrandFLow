@@ -93,7 +93,30 @@ class ContentScraper:
                     if avatars:
                         data["thumbnail_url"] = avatars[-1].get('url', '') # Get highest res
                     
-                    data["content"] = f"Đây là Kênh YouTube (YouTube Channel). Tên kênh: {data['title']}.\n\nMô tả kênh:\n{data['description']}\n\n(Hệ thống sẽ phân tích Vibe và định vị thương hiệu của kênh dựa trên Mô tả và Avatar)."
+                    base_content = f"Đây là Kênh YouTube (YouTube Channel). Tên kênh: {data['title']}.\n\nMô tả kênh:\n{data['description']}\n\n"
+                    
+                    # Trích xuất tối đa 5 Video ID gần nhất để lấy transcript (Deep Scrape)
+                    video_ids = re.findall(r'{"videoId":"([a-zA-Z0-9_-]{11})"', resp.text)
+                    unique_ids = list(dict.fromkeys(video_ids))[:5]
+                    
+                    if unique_ids:
+                        base_content += "--- NỘI DUNG/KỊCH BẢN CỦA CÁC VIDEO GẦN ĐÂY NHẤT (DÙNG ĐỂ DEEP DIVE PHÂN TÍCH NHƯ NOTEBOOKLM) ---\n"
+                        for vid in unique_ids:
+                            try:
+                                t_list = YouTubeTranscriptApi.list_transcripts(vid)
+                                try:
+                                    t = t_list.find_transcript(['vi', 'en'])
+                                except:
+                                    t = t_list.find_transcript(['vi']) if 'vi' in [x.language_code for x in t_list] else t_list.find_generated_transcript(['en'])
+                                t_data = t.fetch()
+                                full_text = " ".join([item['text'] for item in t_data])
+                                base_content += f"\n[Nội dung Video ID: {vid}]:\n{full_text}\n"
+                            except Exception as e:
+                                base_content += f"\n[Video ID: {vid}]: (Không lấy được phụ đề)\n"
+                    else:
+                        base_content += "(Hệ thống không tìm thấy video nào để lấy kịch bản, chỉ có thể phân tích dựa trên Mô tả kênh)."
+                        
+                    data["content"] = base_content
                 else:
                     data["content"] = "(Không thể trích xuất metadata từ kênh này, có thể cấu trúc trang đã thay đổi.)"
         except Exception as e:

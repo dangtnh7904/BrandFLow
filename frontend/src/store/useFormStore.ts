@@ -36,6 +36,10 @@ interface FormStore {
 
   brandDNA: any;
   setBrandDNA: (dna: any) => void;
+  intakeAnalysis: any;
+  setIntakeAnalysis: (data: any) => void;
+  rawIngestedContent: string;
+  appendRawIngestedContent: (text: string) => void;
   generateAndSaveDNA: (documentContent?: string) => Promise<void>;
 }
 
@@ -52,11 +56,15 @@ export const useFormStore = create<FormStore>((set, get) => ({
   debateLogs: [],
   tacticsPlan: null,
   brandDNA: null,
+  intakeAnalysis: null,
+  rawIngestedContent: "",
 
   setExtractedAnswers: (answers) => set({ extractedAnswers: answers }),
   setWizardAnswer: (key, value) => set((state) => ({ wizardAnswers: { ...state.wizardAnswers, [key]: value } })),
   setWizardAnswers: (answers) => set((state) => ({ wizardAnswers: { ...state.wizardAnswers, ...answers } })),
   setBrandDNA: (dna) => set({ brandDNA: dna }),
+  setIntakeAnalysis: (data) => set({ intakeAnalysis: data }),
+  appendRawIngestedContent: (text) => set((state) => ({ rawIngestedContent: state.rawIngestedContent + "\n" + text })),
 
   initializeProject: async () => {
     if (get().initialized) return;
@@ -286,11 +294,16 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
   generateAndSaveDNA: async (documentContent: string = "") => {
     try {
-      const { wizardAnswers } = get();
+      const { wizardAnswers, rawIngestedContent, extractedAnswers } = get();
       
+      let combinedContent = documentContent + "\n" + rawIngestedContent;
+      if (extractedAnswers?.strategic_marketing_audit) {
+         combinedContent += "\n\n--- HỆ THỐNG ĐÃ PHÂN TÍCH FILE THÀNH CÔNG VÀ RÚT RA CÁC INSIGHT SAU ---\n" + JSON.stringify(extractedAnswers.strategic_marketing_audit, null, 2);
+      }
+
       const payload = {
         form_data: wizardAnswers,
-        document_content: documentContent,
+        document_content: combinedContent,
         tenant_id: getUserId() || "anonymous"
       };
 
@@ -303,7 +316,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
       if (res.ok) {
         const result = await res.json();
         if (result.status === 'success' && result.data) {
-          set({ brandDNA: result.data });
+          set({ brandDNA: result.data, intakeAnalysis: result.intake_analysis });
           // Optional: persist to Supabase or update form
           await get().updateForm('brand_dna', result.data);
           console.log("✅ [Store] Brand DNA extracted and saved:", result.data);

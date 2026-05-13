@@ -851,6 +851,7 @@ def onboarding_upload_url(request: UrlRequestCustom):
                 "url": url,
                 "status": "success",
                 "char_count": len(cleaned),
+                "raw_text_for_ai": cleaned[:10000] # Tra ve cho frontend tong hop
             })
             ok_count += 1
         except Exception as e:
@@ -956,7 +957,7 @@ async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str 
                 # Tìm result tương ứng
                 res = next((r for r in results if r["filename"] == fname and r["status"] == "success"), None)
                 if res and "raw_text_for_ai" in res:
-                    all_text += f"\\n--- TÀI LIỆU: {fname} ---\\n" + res.pop("raw_text_for_ai")
+                    all_text += f"\\n--- TÀI LIỆU: {fname} ---\\n" + res.get("raw_text_for_ai", "")
             
             if all_text:
                 analyzer = UploadAnalyzer()

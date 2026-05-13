@@ -23,8 +23,14 @@ const FOUR_P_DATA = [
   { p: 'Xúc tiến (Promo)', content: 'TVC hoạt hình giáo dục lợi khuẩn; Tài trợ sự kiện gia đình.', cost: '8.0 tỷ VNĐ' },
 ];
 
+const MOCK_PHASING = [
+  { phase: 'Giai đoạn 1: Teasing (Tạo sóng)', description: 'Tạo sự tò mò trong cộng đồng B2B/BĐS, seeding trên các diễn đàn chuyên ngành và tổ chức các sự kiện kín (Private Event) cho giới thượng lưu/đối tác chiến lược.', time: 'Tháng 1 - Tháng 2' },
+  { phase: 'Giai đoạn 2: Launching (Dậy sóng)', description: 'Bùng nổ truyền thông PR, ra mắt chính thức với Mega Event, phủ sóng Omnichannel và chốt sales với các chính sách chiết khấu khủng.', time: 'Tháng 3' },
+  { phase: 'Giai đoạn 3: Sustaining (Giữ sóng)', description: 'Duy trì nhiệt bằng các chiến dịch CRM, chương trình thẻ thành viên VIP, và Content Marketing dài hạn để giữ chân khách hàng (Retention).', time: 'Tháng 4 - Tháng 12' },
+];
+
 export default function PageA8Strategies() {
-  const { localData, saveStatus } = useAutoSaveForm('a8-strategies', { items: [] });
+  const { localData, saveStatus } = useAutoSaveForm<any>('a8-strategies', { items: [] });
   const MATRIX_COLS = [
     { key: 'level', header: 'Cấp độ Mục tiêu', className: 'bg-linear-surface font-medium text-linear-text-muted' },
     { key: 'past', header: 'Năm ngoái (t-1)', align: 'center' as const, className: 'bg-slate-50 dark:bg-slate-800/50 text-linear-text-muted' },
@@ -51,9 +57,59 @@ export default function PageA8Strategies() {
           Phần này bao gồm Form 8, 9, 10 (Gộp Mục tiêu) và Form 11 (Chiến lược 4Ps).
         </InstructionAlert>
         
+        <div className="bento-card p-8 border-cyan-500/20 shadow-sm shadow-cyan-500/5 bg-gradient-to-b from-linear-background to-linear-surface/30">
+           <h3 className="text-base font-bold text-cyan-500 dark:text-cyan-400 mb-8 uppercase tracking-widest text-center">
+             Biểu Đồ Nhịp Độ Chiến Dịch (Campaign Phasing Wave)
+           </h3>
+           
+           <div className="relative flex flex-col md:flex-row items-end justify-between gap-4 md:gap-2 h-auto md:h-64 mt-12 mb-8">
+              {(localData.campaign_phasing || MOCK_PHASING).map((step: any, idx: number) => {
+                const isTeasing = idx === 0;
+                const isLaunching = idx === 1;
+                const isSustaining = idx === 2;
+                
+                // Cấu hình Wave theo Giai đoạn
+                const heightClass = isLaunching ? "h-48 md:h-full" : (isSustaining ? "h-32 md:h-4/5" : "h-24 md:h-3/5");
+                const colorClass = isLaunching ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/30 scale-105 z-10" : 
+                                   (isSustaining ? "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border-2 border-sky-500/30" : 
+                                   "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-2 border-slate-300 dark:border-slate-700");
+                
+                const title = step.phase || (typeof step === 'string' ? step : `Phase ${idx+1}`);
+                const desc = step.description || step;
+
+                return (
+                  <div key={idx} className={`relative flex-1 rounded-t-2xl p-4 md:p-6 transition-all duration-500 hover:brightness-110 flex flex-col justify-between ${heightClass} ${colorClass}`}>
+                    {/* Header */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isLaunching ? 'bg-white/20 text-white' : 'bg-slate-200/50 dark:bg-slate-700/50'}`}>
+                          {step.time || `T${idx+1}`}
+                        </span>
+                        {isLaunching && <span className="animate-pulse w-2 h-2 rounded-full bg-white"></span>}
+                      </div>
+                      <h4 className={`font-bold ${isLaunching ? 'text-lg md:text-xl' : 'text-base'} mb-2 line-clamp-2`}>{title}</h4>
+                    </div>
+                    
+                    {/* Tooltip-like description on hover or fixed text */}
+                    <p className={`text-xs md:text-sm leading-relaxed ${isLaunching ? 'text-cyan-50' : 'text-slate-600 dark:text-slate-400'} line-clamp-3 md:line-clamp-none`}>
+                      {desc}
+                    </p>
+                  </div>
+                );
+              })}
+           </div>
+           
+           {/* Trục X thời gian */}
+           <div className="flex justify-between items-center px-4 py-2 border-t-2 border-dashed border-slate-200 dark:border-slate-800 text-xs font-bold text-linear-text-muted uppercase">
+             <span>Khởi động (Tạo sóng)</span>
+             <span className="text-cyan-500">Bùng nổ (Dậy sóng)</span>
+             <span>Duy trì (Giữ sóng)</span>
+           </div>
+        </div>
+
         <div className="bento-card p-6">
            <h3 className="text-sm font-semibold text-linear-text-muted mb-4 uppercase tracking-widest">Ma trận Mục tiêu (Khối lượng, Phân khúc, Sản phẩm)</h3>
-           <PastelTable columns={MATRIX_COLS} data={localData.items} />
+           <PastelTable columns={MATRIX_COLS} data={localData.items || MATRIX_DATA} />
         </div>
 
         <div className="bento-card p-6">

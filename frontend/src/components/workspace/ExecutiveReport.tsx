@@ -242,6 +242,16 @@ export default function ExecutiveReport() {
             </div>
           </div>
 
+          {/* Directional Policy Matrix */}
+          <div className="mb-6 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+            <h2 className="text-sm font-bold text-indigo-900 uppercase mb-2">Directional Policy Matrix (GE-McKinsey)</h2>
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              <div><span className="text-slate-500 block">Market Attractiveness</span><span className="font-bold">{audit.directional_policy?.market_attractiveness}</span></div>
+              <div><span className="text-slate-500 block">Business Strength</span><span className="font-bold">{audit.directional_policy?.business_strength}</span></div>
+              <div><span className="text-slate-500 block">Investment Decision</span><span className="font-bold text-indigo-700">{audit.directional_policy?.investment_decision}</span></div>
+            </div>
+          </div>
+          
           {/* DMU & Value Proposition */}
           <section>
             <h2 className="text-xl font-bold text-slate-900 flex items-center mb-3"><Briefcase className="w-5 h-5 mr-2 text-blue-600"/> Decision-Making Unit (DMU) & Value Proposition</h2>

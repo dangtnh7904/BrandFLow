@@ -2,39 +2,40 @@ import os
 import json
 import httpx
 import base64
+import asyncio
 from typing import Dict, Any
 from langchain_core.messages import HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-SYSTEM_PROMPT = """Bạn là một Chuyên gia Phân tích Marketing (Marketing Vibe Analyst). 
-Nhiệm vụ của bạn là mổ xẻ nội dung được cung cấp (bao gồm Text/Transcript và Hình ảnh Thumbnail/Cover) để trích xuất các insight sâu sắc về cách thức marketing của nội dung này.
+SYSTEM_PROMPT = """Bạn là một Hệ thống Deep Analysis Engine (tương tự NotebookLM) chuyên về Marketing và Truyền thông. 
+Nhiệm vụ của bạn là đọc và 'thấu hiểu' khối lượng dữ liệu khổng lồ (bao gồm mô tả kênh, kịch bản/transcript của rất nhiều video/bài viết) để trích xuất các insight sâu sắc về chiến lược làm nội dung của kênh này.
 
-LUÔN PHÂN TÍCH DỰA TRÊN 2 KHÍA CẠNH QUAN TRỌNG:
-1. Nội dung (Text): Câu chữ, thông điệp, cách kể chuyện (storytelling).
-2. Cách xây dựng hình ảnh & Đăng bài (Visuals & Delivery): Dựa vào hình ảnh đại diện (thumbnail) hoặc cách trình bày, tiêu đề, mô tả.
+LUÔN PHÂN TÍCH CHUYÊN SÂU (DEEP DIVE) DỰA TRÊN 2 KHÍA CẠNH QUAN TRỌNG:
+1. Nội dung (Text & Transcript): Mạch truyện lặp lại (storylines), cách giữ chân khán giả (retention hooks), văn phong, và công thức kịch bản đặc trưng rút ra từ các video.
+2. Cách xây dựng hình ảnh & Đăng bài: Ý đồ định vị thương hiệu qua tiêu đề, mô tả và phong cách tổng thể.
 
 HÃY TRẢ VỀ ĐỊNH DẠNG JSON VỚI CẤU TRÚC SAU:
 {
-    "vibe_summary": "1 câu tóm tắt cốt lõi nội dung làm về gì",
+    "vibe_summary": "1-2 câu tóm tắt cốt lõi chiến lược nội dung của kênh",
     "vibe_keywords": ["Từ khóa 1", "Từ khóa 2", "Từ khóa 3"],
-    "vibe_analysis": "Phân tích nhịp điệu, cảm xúc, định vị phong cách",
+    "vibe_analysis": "Phân tích sâu về nhịp điệu, cảm xúc, định vị phong cách và tâm lý khán giả dựa trên kịch bản video",
     
     "visual_colors": ["Màu 1", "Màu 2"],
-    "visual_style": "Phong cách thiết kế (ví dụ: Minimalist, Đậm đà, Điện ảnh...)",
+    "visual_style": "Phong cách hình ảnh tổng quan",
     "visual_analysis": "Ý đồ xây dựng thương hiệu đằng sau hình ảnh/thumbnail",
     
     "copywriting_hooks": [
-        "Kỹ thuật giật tít 1",
-        "Cách viết mô tả 2"
+        "Kỹ thuật giật tít hoặc mở đầu video đặc trưng 1",
+        "Cách giữ chân khán giả đặc trưng 2"
     ],
     "target_audience": [
         "Tệp khán giả 1",
         "Tệp khán giả 2"
     ],
     "learning_actions": [
-        "Hành động 1 cần làm để học hỏi kênh/bài viết này",
-        "Hành động 2...",
-        "Hành động 3..."
+        "Hành động 1: Đề xuất cách áp dụng bài học này trực tiếp vào THỰC TIỄN DOANH NGHIỆP CỦA USER dựa trên thông tin ngành nghề, khách hàng mục tiêu.",
+        "Hành động 2: ...",
+        "Hành động 3: ..."
     ]
 }
 
@@ -51,8 +52,7 @@ class ContentLabAgent:
             self.llm = ChatGoogleGenerativeAI(
                 model="gemini-2.5-flash",
                 temperature=0.3,
-                google_api_key=api_key,
-                max_output_tokens=8192
+                api_key=api_key
             )
 
     async def get_base64_image(self, image_url: str) -> str:
@@ -67,7 +67,7 @@ class ContentLabAgent:
             print(f"Error fetching image for LLM: {e}")
             return ""
 
-    async def analyze_vibe(self, scraped_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def analyze_vibe(self, scraped_data: Dict[str, Any], business_context: Dict[str, Any] = None) -> Dict[str, Any]:
         if not self.llm:
             # Mock mode if no API key
             return {
@@ -85,43 +85,45 @@ class ContentLabAgent:
         thumbnail_url = scraped_data.get("thumbnail_url", "")
         platform = scraped_data.get("platform", "website")
 
-        text_payload = f"Platform: {platform}\nTitle: {title}\nDescription: {desc}\n\nMain Content / Transcript:\n{content[:5000]}"
+        text_payload = f"Platform: {platform}\nTitle: {title}\nDescription: {desc}\n\nMain Content / Transcript:\n{content}"
+        
+        if business_context:
+            text_payload += f"\n\n--- THÔNG TIN DOANH NGHIỆP CỦA NGƯỜI DÙNG ---\n"
+            text_payload += f"Hãy đóng vai là cố vấn chiến lược. Khi đưa ra phần 'learning_actions', BẮT BUỘC phải dựa trên thông tin sau để biến đổi bài học thành chiến thuật trực tiếp áp dụng cho họ:\n"
+            text_payload += json.dumps(business_context, ensure_ascii=False, indent=2)
 
         messages = [
             HumanMessage(content=SYSTEM_PROMPT)
         ]
 
-        # Prepare Multimodal Message
-        user_content = []
-        user_content.append({"type": "text", "text": text_payload})
-
-        if thumbnail_url:
-            b64_image = await self.get_base64_image(thumbnail_url)
-            if b64_image:
-                user_content.append({
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{b64_image}"}
-                })
-
-        messages.append(HumanMessage(content=user_content))
+        # Prepare Message
+        # We pass full text to gemini-2.5-flash since it has massive context window
+        messages.append(HumanMessage(content=text_payload))
 
         print(f"[ContentLab] Analyzing Vibe for {platform} content...")
-        try:
-            response = await self.llm.ainvoke(messages)
-            raw_text = response.content.strip()
-            # Clean up markdown if any
-            if raw_text.startswith("```json"):
-                raw_text = raw_text.split("```json")[1].rsplit("```", 1)[0].strip()
-            elif raw_text.startswith("```"):
-                raw_text = raw_text.split("```")[1].rsplit("```", 1)[0].strip()
-            return json.loads(raw_text, strict=False)
-        except Exception as e:
-            print(f"Error in ContentLabAgent: {e}")
-            return {
-                "error": str(e),
-                "vibe_and_tone": f"Không thể phân tích. Chi tiết lỗi từ AI: {str(e)}",
-                "visual_analysis": "Không thể phân tích.",
-                "copywriting_hooks": "Không thể phân tích.",
-                "target_audience": "Không thể phân tích.",
-                "actionable_marketing_ideas": []
-            }
+        
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = await self.llm.ainvoke(messages)
+                raw_text = response.content.strip()
+                # Clean up markdown if any
+                if raw_text.startswith("```json"):
+                    raw_text = raw_text.split("```json")[1].rsplit("```", 1)[0].strip()
+                elif raw_text.startswith("```"):
+                    raw_text = raw_text.split("```")[1].rsplit("```", 1)[0].strip()
+                return json.loads(raw_text, strict=False)
+            except Exception as e:
+                error_msg = str(e)
+                print(f"Error in ContentLabAgent (Attempt {attempt+1}/{max_retries}): {error_msg}")
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(2 * (attempt + 1))  # Exponential backoff
+                else:
+                    return {
+                        "error": error_msg,
+                        "vibe_and_tone": f"Không thể phân tích. Chi tiết lỗi từ AI: {error_msg}",
+                        "visual_analysis": "Không thể phân tích.",
+                        "copywriting_hooks": "Không thể phân tích.",
+                        "target_audience": "Không thể phân tích.",
+                        "actionable_marketing_ideas": []
+                    }

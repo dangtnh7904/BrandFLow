@@ -11,8 +11,11 @@ function cn(...inputs: ClassValue[]) {
  return twMerge(clsx(inputs));
 }
 
+import { useFormStore } from '@/store/useFormStore';
+
 export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGoToHub: () => void, onGoToWorkspace: () => void }) {
  const { t, language } = useLanguage();
+ const intakeAnalysis = useFormStore(state => state.intakeAnalysis);
  const [loading, setLoading] = useState(true);
  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
 
@@ -24,18 +27,35 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  ];
 
  useEffect(() => {
- let interval: NodeJS.Timeout;
- if (loading) {
- interval = setInterval(() => {
- setLoadingTextIndex((prev) => (prev + 1) % loadingTexts.length);
- }, 800);
+   let minTimePassed = false;
+   const timer = setTimeout(() => { minTimePassed = true; }, 3500);
 
- setTimeout(() => {
- setLoading(false);
- }, 3500);
- }
- return () => clearInterval(interval);
- }, [loading]);
+   const interval = setInterval(() => {
+     setLoadingTextIndex((prev) => (prev + 1) % loadingTexts.length);
+   }, 800);
+
+   const checkInterval = setInterval(() => {
+     if (minTimePassed && intakeAnalysis) {
+       setLoading(false);
+       clearInterval(checkInterval);
+       clearInterval(interval);
+     }
+   }, 500);
+
+   // Tự động thoát loading nếu quá 60s
+   const timeoutFallback = setTimeout(() => {
+     setLoading(false);
+     clearInterval(checkInterval);
+     clearInterval(interval);
+   }, 60000);
+
+   return () => {
+     clearInterval(interval);
+     clearInterval(checkInterval);
+     clearTimeout(timer);
+     clearTimeout(timeoutFallback);
+   };
+ }, [intakeAnalysis]);
 
  if (loading) {
  return (
@@ -64,6 +84,28 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  </div>
  );
  }
+
+ const audit = intakeAnalysis?.strategic_marketing_audit || {};
+ const visualDNA = intakeAnalysis?.visual_brand_dna || {};
+ 
+ const trustScore = audit.trust_score || 85;
+ const competitivePositioning = audit.competitive_positioning || (language === 'vi' ? 'Thương hiệu lâu đời, có nền tảng tốt nhưng đang có dấu hiệu già hóa tệp khách hàng. Cần xây dựng hình ảnh năng động hơn.' : 'Established brand with good foundation but signs of aging customer base. Needs dynamic facelift.');
+
+ const visualArchetype = visualDNA.visual_archetype || (language === 'vi' ? 'Tối giản, Chuyên nghiệp' : 'Minimal, Pro');
+ const primaryColors = visualDNA.primary_colors || ["#0F172A", "#06b6d4", "#3b82f6"];
+ const moodboardKeywords = visualDNA.moodboard_keywords || ["Corporate", "Trust", "Innovation"];
+
+ const weaknesses = audit.macro_environment_pestle?.slice(0, 2) || [
+     language === 'vi' ? 'Chưa tối ưu hóa trải nghiệm mượt mà trên môi trường Digital' : 'Digital UX requires further seamless integration',
+     language === 'vi' ? 'Cần đồng bộ lại thông điệp tại hệ thống điểm bán lẻ' : 'POS messaging consistency can be unified'
+ ];
+
+ const radar2 = audit.core_competences?.slice(0, 2) || [
+     language === 'vi' ? 'Giải quyết nỗi đau giá cao của khách hàng' : 'Solve high-price customer pain point',
+     language === 'vi' ? 'Mở rộng danh sách cơ sở dữ liệu CRM' : 'Expand CRM database targeting'
+ ];
+
+ const focusObjective = audit.marketing_objectives?.[0] || t('dashboard.focus_2');
 
  return (
  <div className="w-full h-full overflow-y-auto bg-slate-50 dark:bg-[#0B1120] relative">
@@ -114,14 +156,14 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  />
  </svg>
  <div className="text-center absolute">
- <span className="block text-4xl font-black text-foreground">85</span>
+ <span className="block text-4xl font-black text-foreground">{trustScore}</span>
  <span className="text-[10px] uppercase font-bold text-blue-600 tracking-widest">{t('dashboard.score')}</span>
  </div>
  </div>
  <div>
  <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-2">{language === 'vi' ? 'Đánh giá Vị thế (Executive Audit)' : 'Executive Status'}</h3>
  <p className="text-lg text-foreground leading-relaxed font-medium">
- {language === 'vi' ? 'Thương hiệu lâu đời, có nền tảng tốt nhưng đang có dấu hiệu già hóa tệp khách hàng. Cần xây dựng hình ảnh năng động hơn.' : 'Established brand with good foundation but signs of aging customer base. Needs dynamic facelift.'}
+ {competitivePositioning}
  </p>
  </div>
  </motion.div>
@@ -139,7 +181,7 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  <Shield className="w-6 h-6 text-orange-600" />
  </div>
  <div>
- <p className="text-lg font-bold text-foreground">{language === 'vi' ? 'Tối giản, Chuyên nghiệp' : 'Minimal, Pro'}</p>
+ <p className="text-lg font-bold text-foreground">{visualArchetype}</p>
  <p className="text-xs text-linear-text-muted">{language === 'vi' ? 'Khung thiết kế (Archetype)' : 'Archetype'}</p>
  </div>
  </div>
@@ -147,16 +189,18 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  <div className="mb-4">
  <p className="text-[10px] text-linear-text-muted font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Bảng màu đề xuất' : 'Suggested Palette'}</p>
  <div className="flex space-x-2">
- <div className="w-6 h-6 rounded-full border border-linear-border shadow-sm" style={{ backgroundColor: "#0F172A" }}></div>
- <div className="w-6 h-6 rounded-full border border-linear-border shadow-sm" style={{ backgroundColor: "#06b6d4" }}></div>
- <div className="w-6 h-6 rounded-full border border-linear-border shadow-sm" style={{ backgroundColor: "#3b82f6" }}></div>
+ {primaryColors.map((color: string, idx: number) => (
+   <div key={idx} className="w-6 h-6 rounded-full border border-linear-border shadow-sm flex items-center justify-center" style={{ backgroundColor: color }}>
+     <span className="opacity-0 hover:opacity-100 text-[8px] bg-white/80 px-1 rounded absolute -mt-8">{color}</span>
+   </div>
+ ))}
  </div>
  </div>
  
- <div className="space-y-2">
- <span className="inline-block px-3 py-1 bg-linear-surface border border-linear-border rounded-full text-xs font-medium text-linear-text-muted mr-2 mb-2 shadow-sm">Corporate</span>
- <span className="inline-block px-3 py-1 bg-linear-surface border border-linear-border rounded-full text-xs font-medium text-linear-text-muted mr-2 mb-2 shadow-sm">Trust</span>
- <span className="inline-block px-3 py-1 bg-linear-surface border border-linear-border rounded-full text-xs font-medium text-linear-text-muted mr-2 mb-2 shadow-sm">Innovation</span>
+ <div className="space-y-2 flex flex-wrap gap-2">
+ {moodboardKeywords.map((kw: string, idx: number) => (
+   <span key={idx} className="inline-block px-3 py-1 bg-linear-surface border border-linear-border rounded-full text-xs font-medium text-linear-text-muted shadow-sm">{kw}</span>
+ ))}
  </div>
  </motion.div>
 
@@ -172,16 +216,18 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  <div className="mb-4">
  <h4 className="text-[10px] text-amber-500 font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Điểm chưa hoàn thiện (Weaknesses)' : 'Areas for Refinement'}</h4>
  <ul className="space-y-2">
- <li className="flex items-start text-sm text-foreground"><div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Chưa tối ưu hóa trải nghiệm mượt mà trên môi trường Digital' : 'Digital UX requires further seamless integration'}</li>
- <li className="flex items-start text-sm text-foreground"><div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Cần đồng bộ lại thông điệp tại hệ thống điểm bán lẻ' : 'POS messaging consistency can be unified'}</li>
+ {weaknesses.map((w: string, idx: number) => (
+   <li key={idx} className="flex items-start text-sm text-foreground"><div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 mr-2 shrink-0"></div> {w}</li>
+ ))}
  </ul>
  </div>
  
  <div>
  <h4 className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-2">{t('dashboard.radar_2')}</h4>
  <ul className="space-y-2">
- <li className="flex items-start text-sm text-foreground"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Giải quyết nỗi đau giá cao của khách hàng' : 'Solve high-price customer pain point'}</li>
- <li className="flex items-start text-sm text-foreground"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 mr-2 shrink-0"></div> {language === 'vi' ? 'Mở rộng danh sách cơ sở dữ liệu CRM' : 'Expand CRM database targeting'}</li>
+ {radar2.map((r: string, idx: number) => (
+   <li key={idx} className="flex items-start text-sm text-foreground"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 mr-2 shrink-0"></div> {r}</li>
+ ))}
  </ul>
  </div>
  </motion.div>
@@ -195,12 +241,12 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  >
  <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-4">{t('dashboard.focus')}</h3>
  
- <div className="flex items-end mb-4">
- <div>
+ <div className="flex items-end mb-4 relative z-10">
+ <div className="max-w-full">
  <p className="text-sm font-bold text-foreground mb-1">{t('dashboard.focus_1')}</p>
- <p className="text-2xl font-black text-blue-600">{t('dashboard.focus_2')}</p>
+ <p className="text-[1.3rem] font-black text-blue-600 leading-snug line-clamp-2" title={focusObjective}>{focusObjective}</p>
  </div>
- <Activity className="w-6 h-6 text-blue-600 opacity-50 ml-auto" />
+ <Activity className="w-6 h-6 text-blue-600 opacity-50 ml-auto shrink-0 mb-1" />
  </div>
 
  {/* Pure SVG Sparkline */}

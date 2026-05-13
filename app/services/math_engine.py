@@ -121,3 +121,51 @@ class MathEngine:
             "advice": "Tập trung chiến lược Ansoff để lấp đầy GAP." if gap_value > 0 else "Baseline đủ đạt mục tiêu, có thể giảm ngân sách."
         }
 
+    def calculate_customer_rule_score(self, plan: dict, criteria_weights: dict = None) -> dict:
+        """
+        Tính điểm cơ sở (Rule Score) cho kế hoạch dựa trên các yếu tố định lượng.
+        """
+        if criteria_weights is None:
+            criteria_weights = {
+                "kpi_clarity": 35,
+                "feasibility": 25,
+                "strategic_coherence": 20,
+                "target_audience_fit": 10,
+                "brand_dna_fit": 10
+            }
+        
+        score = 0
+        details = {}
+        
+        # 1. KPI Clarity
+        tactics = plan.get("tactics", {}).get("tactics_7ps", [])
+        if tactics:
+            has_kpi = sum(1 for t in tactics if t.get("kpi") and len(t.get("kpi", "")) > 5)
+            kpi_score = (has_kpi / len(tactics)) * criteria_weights["kpi_clarity"]
+        else:
+            kpi_score = 0
+        details["kpi_clarity"] = kpi_score
+        score += kpi_score
+        
+        # 2. Feasibility
+        details["feasibility"] = criteria_weights["feasibility"]
+        score += criteria_weights["feasibility"]
+        
+        # 3. Strategic Coherence
+        if plan.get("strategy", {}).get("ansoff_matrix_choice"):
+            details["strategic_coherence"] = criteria_weights["strategic_coherence"]
+            score += criteria_weights["strategic_coherence"]
+        else:
+            details["strategic_coherence"] = 0
+            
+        # 4 & 5. Audience & Brand DNA
+        details["target_audience_fit"] = criteria_weights["target_audience_fit"]
+        details["brand_dna_fit"] = criteria_weights["brand_dna_fit"]
+        score += criteria_weights["target_audience_fit"] + criteria_weights["brand_dna_fit"]
+        
+        return {
+            "rule_score": round(score, 2),
+            "details": details
+        }
+
+

@@ -79,7 +79,7 @@ const MENU_ITEMS = [
   { id: 'design-studio', langKey: 'sidebar.design_studio', icon: Palette, href: '/design-studio', group: 'main' },
   { id: 'daily-content', langKey: 'sidebar.daily_content', icon: PenSquare, href: '/daily-content', group: 'main' },
   { id: 'content-lab', langKey: 'sidebar.content_lab', icon: Sparkles, href: '/content-lab', group: 'main' },
-  { id: 'workspace', langKey: 'sidebar.workspace', icon: MessageSquare, href: '/workspace', group: 'main' },
+  { id: 'workspace', langKey: 'sidebar.workspace', icon: MessageSquare, href: '/onboarding', group: 'main' },
   { id: 'b2b', langKey: 'b2b.title', icon: Briefcase, href: '/planning', group: 'main' },
   { id: 'assets', langKey: 'sidebar.assets', icon: FolderGit2, href: '/assets', group: 'system' },
   { id: 'agents', langKey: 'sidebar.agents', icon: Network, href: '/agents', group: 'system' },
@@ -128,7 +128,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
  {!isCollapsed && <h3 className="text-linear-text-muted text-[10px] font-semibold uppercase tracking-widest px-3 mb-3 whitespace-nowrap">{t('sidebar.menu' as TranslationKey) || 'Menu'}</h3>}
  <ul className="space-y-1">
  {MENU_ITEMS.filter(n => n.group === 'main').map(item => {
- const active = pathname.startsWith(item.href);
+ const active = pathname.startsWith(item.href) || (item.id === 'workspace' && pathname.startsWith('/workspace'));
  return (
  <li key={item.id}>
  <Link href={item.href}>

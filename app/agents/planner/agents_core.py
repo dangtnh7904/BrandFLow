@@ -24,7 +24,8 @@ from app.schemas.schemas import (
     StrategyPhase3,
     TacticsPhase4,
     CFODefenseOutput,
-    MasterPlanPhase4Output
+    MasterPlanPhase4Output,
+    CustomerReviewerOutput
 )
 
 def _resolve_groq_timeout_seconds() -> float:
@@ -67,13 +68,13 @@ BRAND DNA:
 {brand_dna}
 
 Nhiệm vụ: Thiết lập Giai đoạn 1 (Goal Setting) với tư duy C-Level:
-1. Xây dựng Sứ mệnh (Mission): Thể hiện tầm nhìn dài hạn, giá trị cốt lõi và định hướng phát triển rõ ràng.
+1. Xây dựng Sứ mệnh (Mission): Thể hiện tầm nhìn dài hạn, giá trị cốt lõi và định hướng phát triển rõ ràng. Đưa ra lập luận chiến lược (Strategic Rationale) vì sao chọn Sứ mệnh này dựa trên Brand DNA.
 2. Thiết lập Mục tiêu Doanh nghiệp (Corporate Objectives) theo chuẩn OKRs / Balanced Scorecard:
-   - Financial Objectives: Tăng trưởng doanh thu, biên lợi nhuận (Margin), ROI mục tiêu, Tỷ lệ chi phí/doanh thu (CAC/LTV target).
-   - Non-Financial Objectives: Thị phần (Market Share), Brand Equity, NPS (Net Promoter Score), tỷ lệ giữ chân khách hàng (Retention Rate).
-3. Thiết lập Ranh giới (Red lines): Không chỉ là việc cấm kị, mà phải là các ranh giới rủi ro pháp lý, rủi ro tài chính, và đạo đức kinh doanh đặc thù của ngành {industry}.
+   - Financial Objectives: Tăng trưởng doanh thu, biên lợi nhuận (Margin), ROI mục tiêu, Tỷ lệ chi phí/doanh thu (CAC/LTV target). Giải thích rõ căn cứ của các con số này.
+   - Marketing Goals: Bắt buộc phân tích sâu Market Funnel: Ước tính cụ thể quy mô thị trường TAM, SAM, SOM và CAGR của ngành hàng dựa trên bối cảnh thị trường thực tế.
+3. Thiết lập Ranh giới (Red lines): Không chỉ là việc cấm kị, mà phải là các ranh giới rủi ro pháp lý, rủi ro tài chính, và đạo đức kinh doanh đặc thù của ngành {industry}. Phân tích sâu hệ quả nếu vi phạm.
 
-Yêu cầu xuất sắc: Không dùng từ ngữ sáo rỗng. Mọi mục tiêu phải cụ thể, đo lường được (SMART) và mang tính thách thức (Stretch goals).
+Yêu cầu xuất sắc: Không dùng từ ngữ sáo rỗng. Mọi mục tiêu phải cụ thể, đo lường được (SMART) và mang tính thách thức (Stretch goals). Văn phong sắc bén, lập luận chi tiết và thuyết phục.
 Trả về đúng định dạng JSON Schema.
 """
 
@@ -87,7 +88,7 @@ def run_cmo_phase1_goal_setting(goal: str, industry: str, budget: int, brand_dna
     
     dna_str = json.dumps(brand_dna, ensure_ascii=False, indent=2) if brand_dna else "Không có dữ liệu Brand DNA."
     prompt = PHASE1_PROMPT.format(goal=goal, industry=industry, budget=budget, brand_dna=dna_str)
-    prompt += "\n\nNO FLUFF: Trả về cực kỳ ngắn gọn, không giải thích vòng vo, tập trung vào bullet points. Tiết kiệm tối đa token."
+    prompt += "\n\nDEEP DIVE: Trình bày một cách chi tiết, mạch lạc. Yêu cầu lập luận sâu sắc cho từng quyết định thay vì chỉ gạch đầu dòng hời hợt. Đừng lo lắng về độ dài, hãy ưu tiên chất lượng phân tích."
     print(f"\n{'═' * 70}")
     print(f"👑 [CMO] Đang thiết lập Mục tiêu & Ranh giới (Phase 1)...")
     res = structured_llm.invoke(prompt)
@@ -102,15 +103,19 @@ PHASE2_PROMPT = """Bạn là Chuyên gia Tư vấn Chiến lược Cấp cao. D�
 {phase1_data}
 
 Nhiệm vụ (Giai đoạn 2 - Situation Audit & Competitive Benchmarking):
-1. Needs-Based Segmentation & Value Proposition: 
-   - Chia tệp khách hàng "{target_audience}" thành các cụm Pain-points (đau điểm) phức tạp của tổ chức B2B. 
-   - Ứng dụng Value Proposition Canvas: Lập bản đồ Pain Relievers (Thuốc giảm đau) và Gain Creators (Giá trị gia tăng) cụ thể.
-   - Xây dựng Tuyên bố giá trị lượng hóa (Benefit - Sacrifice) rõ ràng (VD: Giảm 30% thời gian vận hành).
-2. Critical Success Factors (CSFs) & Benchmarking: 
-   - Xây dựng bộ CSF cốt lõi của ngành, có so sánh với điểm chuẩn ngành (Industry Benchmarks).
-   - Tổng trọng số (weight_percentage) PHẢI BẰNG 100. Điểm số (1-10) đánh giá thực lực hiện tại một cách khắt khe (không tự chấm điểm quá cao nếu không có cơ sở). KHÔNG tự nhân trọng số với điểm.
+1. Needs-Based Segmentation & Buying Center (Kotler): 
+   - Chia tệp khách hàng "{target_audience}" thành các cụm Pain-points phức tạp. Phân tích sâu hành vi và tâm lý học của từng nhóm.
+   - Xác định rõ DMU Dynamics (Initiator, Influencer, Decider, Buyer, User) và Opportunism Risk trong bối cảnh B2B/B2C phức tạp.
+2. Phân tích Vĩ mô & Năng lực lõi (PESTLE & VRIO):
+   - Tích hợp nhanh PESTLE để đánh giá tác động môi trường. Đánh giá VRIO để xác định lợi thế cạnh tranh bền vững của doanh nghiệp.
+3. Consumer Decision Journey (Hành trình quyết định):
+   - Phân tích chi tiết từng điểm chạm (Touchpoints) qua Trigger, Information Search, Alternative Evaluation và Purchase Decision.
+4. Directional Policy Matrix (DPM - McDonald):
+   - Chấm điểm Market Attractiveness và Business Strength. BẮT BUỘC đưa ra lý giải dữ liệu (Data-driven reasoning) cực kỳ chi tiết cho số điểm này.
+5. Critical Success Factors (CSFs) & Benchmarking: 
+   - Xây dựng bộ CSF cốt lõi, so sánh với điểm chuẩn ngành. Đưa ra phân tích tại sao đây là yếu tố sống còn.
 
-Yêu cầu xuất sắc: Phân tích khách hàng B2B phải tính đến Decision-Making Unit (DMU - Ai là người quyết định, ai là người sử dụng, ai là người chi tiền).
+Yêu cầu xuất sắc: Thể hiện tư duy phân tích toàn diện, kết hợp Holistic Marketing (Kotler), PESTLE và VRIO. Càng chi tiết, sâu sắc và học thuật càng tốt.
 Trả về chuẩn JSON.
 """
 
@@ -120,9 +125,9 @@ def run_cmo_phase2_situation_audit(phase1_data: dict, target_audience: str) -> d
     llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
     structured_llm = llm.with_structured_output(SituationAuditPhase2)
     
-    # Ép LLM viết ngắn gọn
+    # Yêu cầu LLM phân tích sâu
     prompt = PHASE2_PROMPT.format(phase1_data=json.dumps(phase1_data, ensure_ascii=False), target_audience=target_audience)
-    prompt += "\n\nNO FLUFF: Output cực kỳ ngắn gọn, dùng bullet points, tuyệt đối không chém gió giải thích dài dòng để tiết kiệm token."
+    prompt += "\n\nDEEP DIVE: Output phải thể hiện tầm nhìn của một chuyên gia McKinsey. Khuyến khích giải thích cặn kẽ, luận điểm bén và dựa trên dữ liệu. KHÔNG viết quá ngắn."
     
     print(f"👑 [CMO] Đang phân tích Thị trường & Chọn CSFs (Phase 2)...")
     res = structured_llm.invoke(prompt)
@@ -140,13 +145,12 @@ Dữ liệu khách hàng trọng tâm:
 {segments_data}
 
 Nhiệm vụ (Giai đoạn 3 - Strategy Formulation):
-1. Xây dựng Chiến lược cốt lõi: Kết hợp Ma trận Ansoff (Thâm nhập, Phát triển sản phẩm/thị trường, Đa dạng hóa) với STP (Segmentation, Targeting, Positioning).
-2. Biện luận chiến lược: 
-   - Giải thích tại sao chiến lược này là phương án tối ưu nhất về mặt tài chính (Feasibility & Expected ROI) để lấp đầy Khoảng trống Doanh thu.
-   - Phác thảo chiến lược Định vị cạnh tranh (Competitive Positioning - 4Ps/7Ps cấp độ cao).
+1. Xây dựng Chiến lược cốt lõi Ansoff (Thâm nhập, Phát triển sản phẩm/thị trường, Đa dạng hóa) và Product Lifecycle Stage. Phác thảo Roadmap chi tiết để triển khai.
+2. Competitor Defense Strategy (Kotler): Dựa trên vị thế, chọn 1 chiến lược phòng thủ/tấn công và vạch rõ TẠI SAO nó hiệu quả hơn các chiến lược khác.
+3. Biện luận chiến lược: Giải thích tính khả thi tài chính (Financial Viability) một cách học thuật và thực tiễn để lấp đầy Khoảng trống Doanh thu. Phân tích Định vị (POP/POD) rõ nét.
 
 Yêu cầu xuất sắc: Văn phong phân tích chuyên sâu, sắc sảo. Chiến lược không được là lý thuyết suông mà phải gắn chặt với con số Khoảng trống Doanh thu và tính chất khốc liệt của ngành.
-Trả về JSON chứa giải thích chi tiết chiến lược (ansoff_strategy).
+Trả về JSON chứa giải thích chi tiết, đầy đủ ngữ cảnh chiến lược.
 """
 
 def run_cmo_phase3_strategy_formulation(gap_analysis: dict, segments_data: dict) -> dict:
@@ -159,7 +163,7 @@ def run_cmo_phase3_strategy_formulation(gap_analysis: dict, segments_data: dict)
         gap_analysis_result=json.dumps(gap_analysis, ensure_ascii=False),
         segments_data=json.dumps(segments_data, ensure_ascii=False)
     )
-    prompt += "\n\nNO FLUFF: Trả về cực kỳ ngắn gọn, đi thẳng vào vấn đề. Các luận điểm giải thích chỉ tối đa 2 câu."
+    prompt += "\n\nDEEP DIVE: Yêu cầu giải thích cặn kẽ TẠI SAO chọn chiến lược đó. Hãy cung cấp luận điểm mạnh mẽ, không bị giới hạn độ dài."
     
     print(f"👑 [CMO] Đang hoạch định Chiến lược Ansoff (Phase 3)...")
     res = structured_llm.invoke(prompt)
@@ -170,16 +174,18 @@ def run_cmo_phase3_strategy_formulation(gap_analysis: dict, segments_data: dict)
 # GIAI ĐOẠN 4: TACTICAL ALLOCATOR (CMO)
 # =============================================================================
 
-PHASE4_PROMPT = """Bạn là Giám đốc Tăng trưởng (Growth Director / CMO). Dựa vào Chiến lược cốt lõi đã chốt: 
+PHASE4_PROMPT = """Bạn là Giám đốc Tăng trưởng (Growth Director / CMO) tại Việt Nam. Dựa vào Chiến lược cốt lõi đã chốt: 
 {strategy}
 Ngân sách tổng (VND): {budget}
 
-Nhiệm vụ (Giai đoạn 4 - Tactical Execution & ZBB): Lập kế hoạch thực thi chiến thuật chi tiết bằng tư duy Zero-Based Budgeting (ZBB) và Account-Based Marketing (ABM) (nếu là B2B).
+Nhiệm vụ (Giai đoạn 4 - Thực thi IMC & Phân bổ Ngân sách): Lập kế hoạch theo mô hình IMC thực chiến một cách chi tiết (Actionable Plan).
 Quy tắc:
-1. Mỗi hạng mục (Activity) KHÔNG ĐƯỢC MƠ HỒ. Phải có mô tả cụ thể về kênh, công nghệ, và tệp khách hàng.
-2. Gắn KPI định lượng và cam kết cho TỪNG hạng mục (VD: CPL < 500k, CPA < 2M, 50 MQLs, Conversion Rate > 5%).
-3. Gắn nhãn MoSCoW (MUST_HAVE, SHOULD_HAVE, COULD_HAVE) để xác định mức độ ưu tiên giải ngân.
-4. Chiến thuật tâm lý: CỐ TÌNH phân bổ quá tay khoảng 10-15% tổng ngân sách, và nhét các khoản vượt này vào loại 'COULD_HAVE' để tạo không gian thương lượng với CFO.
+1. Ma trận IMC Phasing (Tease, Launch, Sustain, Amplify): Chia giai đoạn chiến dịch truyền thông rõ ràng và mô tả key action từng giai đoạn.
+2. Push & Pull Strategy: Tách bạch rõ chiến thuật Đẩy (đại lý) và Kéo (người dùng cuối). Nêu rõ Context và Action.
+3. Phân phối GT & MT. Phác thảo Omnichannel & CRM Plan cụ thể, sâu sắc.
+4. Chọn các chữ P quan trọng nhất để dồn tiền. Gắn KPI cực kỳ chi tiết và phương pháp đo lường.
+5. Gắn nhãn MoSCoW để xác định ưu tiên cắt giảm rủi ro.
+6. CỐ TÌNH phân bổ quá tay khoảng 10-15% tổng ngân sách, và nhét các khoản vượt này vào loại 'COULD_HAVE' để tạo không gian thương lượng với CFO.
 Trả về định dạng chuẩn JSON Schema.
 """
 
@@ -190,7 +196,7 @@ def run_cmo_phase4_tactical_allocator(strategy_data: dict, budget: int) -> dict:
     structured_llm = llm.with_structured_output(TacticsPhase4)
     
     prompt = PHASE4_PROMPT.format(strategy=json.dumps(strategy_data, ensure_ascii=False), budget=budget)
-    prompt += "\n\nNO FLUFF: Mô tả chiến thuật ngắn nhất có thể, tối đa 1 câu mỗi Tactic. Dồn token vào việc nghĩ ra KPI chất lượng."
+    prompt += "\n\nDEEP DIVE: Mỗi chiến thuật phải mô tả rõ bối cảnh (Context), Hành động cụ thể (Actionable steps) và Cách đo lường. Không giới hạn độ dài, cần sự chi tiết tuyệt đối để thực thi."
     print(f"👑 [CMO] Đang triển khai Bảng Khối lượng công việc & Ngân sách (Phase 4)...")
     res = structured_llm.invoke(prompt)
     return res.model_dump()
@@ -245,11 +251,11 @@ Ngân sách chốt hạ (Zero-based): {final_total} VND. Hạng mục bị ép g
 Danh sách Chiến thuật CMO đề xuất: {activities}
 
 Nhiệm vụ: 
-1. Bình luận tài chính (cfo_comment): Vứt cho CMO 1 câu nhận xét gai góc, xoáy sâu vào chỉ số LTV:CAC ratio, Thời gian thu hồi vốn (Payback Period), hoặc rủi ro đốt tiền (Cash burn rate).
-2. Lập 2-3 kịch bản rủi ro nảy sinh từ chiến thuật này (Downside Risk Assessment). 
-3. Thiết lập Mốc Kích Hoạt Kế hoạch B (Trigger Points) dựa trên con số thực tế tuyệt đối (VD: "Nếu CPL vượt 1.5 triệu VND trong 2 tuần liên tiếp", "Nếu Conversion Rate MQL to SQL < 2% trong tháng đầu"). 
+1. Bình luận tài chính (cfo_comment): Vứt cho CMO một nhận xét gai góc, xoáy sâu vào các chỉ số phức tạp như LTV:CAC ratio, Payback Period, Cash burn rate, NPV.
+2. Lập 2 kịch bản rủi ro chi tiết (Downside Risk Assessment). Đánh giá Probability (Xác suất 1-5) và Impact (Mức độ ảnh hưởng 1-5).
+3. Thiết lập Mốc Kích Hoạt Kế hoạch B (Trigger Points) và viết Kế hoạch Dự phòng (Contingency Plan) chi tiết theo dạng IF-THEN (Nếu vi phạm mốc thì hành động sửa sai là gì).
 
-Trả về định dạng JSON chuyên nghiệp.
+Trả về định dạng JSON chuyên nghiệp, thể hiện tư duy quản trị tài chính sắc bén.
 """
 
 def run_cfo_defense_review(budget_data: dict, budget: int) -> dict:
@@ -261,40 +267,52 @@ def run_cfo_defense_review(budget_data: dict, budget: int) -> dict:
     cut_items_str = ", ".join(budget_data.get("cut_items", [])) if budget_data.get("cut_items") else "Đã an toàn."
     act_str = json.dumps(budget_data.get("final_activities"), ensure_ascii=False)
     
-    prompt = CFO_RISK_PROMPT.format(cut_items=cut_items_str, final_total=budget_data.get('final_total', 0), activities=act_str[:1500])
-    prompt += "\n\nNO FLUFF: Đừng rườm rà. Risk Scenario và Contingency Plan chỉ được viết tối đa 15 chữ mỗi mục."
+    prompt = CFO_RISK_PROMPT.format(cut_items=cut_items_str, final_total=budget_data.get('final_total', 0), activities=act_str[:3000])
+    prompt += "\n\nDEEP DIVE: Yêu cầu Risk Scenario và Contingency Plan phải thực sự chi tiết, có logic tài chính rõ ràng thay vì chỉ vài chữ hời hợt."
     print(f"💼 [CFO] Đang ban hành Trigger point Quản trị rủi ro & Review Ngân sách (Phase 5)...")
     res = structured_llm.invoke(prompt)
     return res.model_dump()
 
 
-PERSONA_PROMPT = """Bạn là Đại diện Mua hàng B2B (Decision-Making Unit - DMU, VD: Giám đốc Thu mua, CEO, hoặc Giám đốc IT) thuộc tệp: "{target_audience}".
-Đọc Kế hoạch tiếp cận và các Giá trị Đề xuất (Strategy + Tactics) dưới đây:
+CUSTOMER_REVIEWER_PROMPT = """Bạn là Đại diện Mua hàng B2B (Decision-Making Unit - DMU, VD: Giám đốc Thu mua, CEO, hoặc Giám đốc IT) thuộc tệp: "{target_audience}".
+Đọc Kế hoạch tiếp cận và các Giá trị Đề xuất (Strategy + Tactics + CFO Risk) dưới đây:
 {plan_summary}
 
 Nhiệm vụ: Đánh giá cực kỳ khắt khe theo góc nhìn của một doanh nghiệp đang tìm kiếm giải pháp mang lại ROI thực sự, chứ không mua bằng cảm xúc.
 1. Các thông điệp và chiến thuật này có đánh trúng Pain-points và mang lại Gain Creators rõ ràng cho công ty bạn không?
 2. Phê phán thẳng thắn nếu kế hoạch sáo rỗng, thiếu tính thực tế, hoặc không chứng minh được ROI.
-3. Xưng "Tôi" hoặc "Công ty chúng tôi" một cách tự nhiên, chuyên nghiệp và có tính cảnh giác cao.
-CHỈ TRẢ VỀ MỘT ĐOẠN TEXT NGẮN (MAX 3-4 CÂU).
+3. Chấm điểm mức độ hài lòng (client_self_score) từ 1-100.
+4. Đưa ra các gạch đầu dòng feedback (bắt buộc sửa) nếu điểm dưới 70.
+Trả về chuẩn JSON Schema CustomerReviewerOutput.
 """
 
-def run_persona_validator(plan_summary: str, target_audience: str) -> str:
-    print(f"\n🎭 [CUSTOMER] Đang nhập vai phản biện Needs & Tactics...")
-    client = _create_groq_client()
-    prompt = PERSONA_PROMPT.format(target_audience=target_audience, plan_summary=plan_summary[:2000])
+def run_customer_reviewer_agent(plan_summary: dict, target_audience: str) -> dict:
+    from langchain_groq import ChatGroq
+    api_key = os.getenv("GROQ_API_KEY")
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.4, api_key=api_key)
+    structured_llm = llm.with_structured_output(CustomerReviewerOutput)
+    
+    print(f"\n🎭 [CUSTOMER] Đang nhập vai phản biện và chấm điểm Kế hoạch...")
+    prompt = CUSTOMER_REVIEWER_PROMPT.format(
+        target_audience=target_audience,
+        plan_summary=json.dumps(plan_summary, ensure_ascii=False)[:3000]
+    )
     
     try:
-        response = _chat_completion_with_timeout(
-            client,
-            model="llama-3.1-8b-instant",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.6,
-            max_tokens=200,
-        )
-        return response.choices[0].message.content.strip()
+        res = structured_llm.invoke(prompt)
+        return res.model_dump()
     except Exception as e:
-        return "Rủi ro: Các hoạt động này chưa đánh trúng Pain-points của tôi."
+        return {
+            "client_self_score": 50,
+            "feedback": ["Kế hoạch chưa rõ ràng, cần chứng minh ROI chi tiết hơn."],
+            "reasoning_summary": "Lỗi parse AI, trả về mức trung bình để chạy tiếp."
+        }
+
+def run_persona_validator(plan_summary: str, target_audience: str) -> str:
+    # Giữ lại để tương thích ngược nếu workflow cũ vẫn gọi
+    res = run_customer_reviewer_agent({"summary": plan_summary}, target_audience)
+    return res.get("reasoning_summary", "Rủi ro: Các hoạt động này chưa đánh trúng Pain-points của tôi.")
+
 
 # Refiner agent is kept for iterative feedback loop in workspace
 def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:

@@ -195,11 +195,24 @@ class DMU_Profile(BaseModel):
     role: Literal["Initiator", "Influencer", "Decider", "Buyer", "User"]
     pain_points: list[str] = Field(..., max_length=2)
     decision_drivers: list[str] = Field(..., max_length=2)
+    opportunism_risk: str = Field(..., description="Rủi ro chuộc lợi/cảm tính (Kotler B2B)")
+
+class ConsumerDecisionJourney(BaseModel):
+    problem_recognition: str = Field(..., description="Trigger khiến họ nhận ra nhu cầu")
+    information_search: str = Field(..., description="Nơi họ tìm kiếm thông tin")
+    alternative_evaluation: str = Field(..., description="Tiêu chí đánh giá các lựa chọn")
+    purchase_decision: str = Field(..., description="Động lực chốt sale cuối cùng")
 
 class NeedsBasedAudience(BaseModel):
     segment_name: str
     dmu_profiles: list[DMU_Profile] = Field(..., max_length=2, description="2 roles chính trong DMU")
+    decision_journey: ConsumerDecisionJourney
     value_proposition: str = Field(..., description="Benefit vs Sacrifice statement")
+
+class DirectionalPolicyMatrix(BaseModel):
+    market_attractiveness: Literal["High", "Medium", "Low"] = Field(..., description="Độ hấp dẫn của thị trường")
+    business_strength: Literal["Strong", "Average", "Weak"] = Field(..., description="Sức mạnh cạnh tranh của DN")
+    investment_decision: str = Field(..., description="Quyết định đầu tư (VD: Invest to grow, Manage for earnings, Divest)")
 
 class CompetitiveBenchmark(BaseModel):
     factor_name: str = Field(..., description="CSF")
@@ -207,18 +220,16 @@ class CompetitiveBenchmark(BaseModel):
     industry_benchmark_score: int = Field(..., ge=1, le=10)
     weight_percentage: float
 
-class DownsideRiskAssessment(BaseModel):
-    risk_scenario: str
-    trigger_point_metric: str = Field(..., description="VD: CPL > 500k")
-    contingency_plan_b: str
-
 class SituationAuditPhase2(BaseModel):
     target_segments: list[NeedsBasedAudience] = Field(..., max_length=2)
+    directional_policy: DirectionalPolicyMatrix
     benchmarks: list[CompetitiveBenchmark] = Field(..., max_length=3)
     tows_strategic_options: list[str] = Field(..., max_length=2, description="2 chiến lược TOWS rút ra từ Audit")
 
 class StrategyPhase3(BaseModel):
-    ansoff_matrix_choice: str = Field(..., description="Chiến lược cốt lõi")
+    ansoff_matrix_choice: str = Field(..., description="Chiến lược cốt lõi Ansoff")
+    competitor_defense_strategy: Literal["Position Defense", "Flank Defense", "Preemptive", "Counteroffensive", "Mobile", "Contraction"] = Field(..., description="Chiến lược phòng thủ/tấn công Kotler")
+    product_lifecycle_stage: Literal["Introduction", "Growth", "Maturity", "Decline"] = Field(..., description="Vòng đời sản phẩm (PLC)")
     positioning_statement: str = Field(..., description="Tuyên bố định vị với POP và POD")
     expected_roi_justification: str = Field(..., description="Biện luận tính khả thi ROI ngắn gọn")
 
@@ -229,9 +240,43 @@ class Tactic7P(BaseModel):
     budget_vnd: int
     moscow_tag: Literal["MUST_HAVE", "SHOULD_HAVE", "COULD_HAVE"] = Field(..., description="Mức độ ưu tiên")
 
+class Plan5W1H(BaseModel):
+    why: str = Field(..., description="Tại sao thực hiện chiến lược này?")
+    what: str = Field(..., description="Sản phẩm/dịch vụ cốt lõi là gì?")
+    where: str = Field(..., description="Triển khai ở đâu (Kênh/Địa điểm)?")
+    when: str = Field(..., description="Thời gian diễn ra?")
+    who: str = Field(..., description="Ai là đối tượng mục tiêu/Người phụ trách?")
+    how: str = Field(..., description="Phương pháp thực thi chính?")
+
+class DistributionChannelStrategy(BaseModel):
+    gt_strategy: str = Field(..., description="Chiến lược Kênh Truyền thống (Tạp hóa, Sỉ) - Volume và Visibility")
+    mt_strategy: str = Field(..., description="Chiến lược Kênh Hiện đại (Siêu thị, CVS) - Coverage và Promotion")
+
+class IMCPhasing(BaseModel):
+    tease: str = Field(..., description="Giai đoạn gây tò mò / nhận diện")
+    launch: str = Field(..., description="Giai đoạn bùng nổ / ra mắt")
+    sustain: str = Field(..., description="Giai đoạn duy trì nhiệt / chuyển đổi")
+    amplify: str = Field(..., description="Giai đoạn khuếch đại / tối ưu LTV")
+
+class PushPullStrategy(BaseModel):
+    push_tactics: str = Field(..., description="Trade marketing, chiết khấu đẩy hàng cho đại lý")
+    pull_tactics: str = Field(..., description="Branding, quảng cáo kéo nhu cầu từ end-user")
+
 class TacticsPhase4(BaseModel):
     tactics_7ps: list[Tactic7P] = Field(..., max_length=4, description="Chọn 4 chữ P quan trọng nhất để dồn ngân sách")
+    imc_phasing: IMCPhasing
+    push_pull_strategy: PushPullStrategy
+    plan_5w1h: Plan5W1H
+    distribution_channels: DistributionChannelStrategy
+    omnichannel_crm_plan: list[str] = Field(..., max_length=2, description="2 chiến thuật Đa kênh & CRM")
     total_budget_used: int
+
+class DownsideRiskAssessment(BaseModel):
+    risk_scenario: str
+    probability: int = Field(..., ge=1, le=5, description="Xác suất xảy ra (1-5)")
+    impact: int = Field(..., ge=1, le=5, description="Mức độ ảnh hưởng (1-5)")
+    trigger_point_metric: str = Field(..., description="VD: CPL > 500k")
+    contingency_plan_b: str
 
 class CFODefenseOutput(BaseModel):
     cfo_comment: str
@@ -243,6 +288,11 @@ class MasterPlanPhase4Output(BaseModel):
     strategy: StrategyPhase3
     tactics: TacticsPhase4
     cfo_risk: CFODefenseOutput
+
+class CustomerReviewerOutput(BaseModel):
+    client_self_score: int = Field(..., ge=1, le=100, description="Điểm đánh giá cảm tính từ 1-100")
+    feedback: list[str] = Field(..., description="Danh sách các điểm cần sửa đổi hoặc ép giá xuống")
+    reasoning_summary: str = Field(..., description="Giải thích ngắn gọn lý do cho điểm số và feedback")
 
 
 # ============================================================================

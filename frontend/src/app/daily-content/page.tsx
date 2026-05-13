@@ -22,7 +22,8 @@ export default function DailyContentPage() {
     const fetchTrends = async () => {
       setIsLoadingTrends(true);
       try {
-        const res = await fetch(`http://localhost:8000/api/content-lab/trends?platform=${platform}`);
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${API_URL}/api/content-lab/trends?platform=${platform}`);
         const data = await res.json();
         if (isMounted && data.status === 'success') {
           setTrends(data.data);

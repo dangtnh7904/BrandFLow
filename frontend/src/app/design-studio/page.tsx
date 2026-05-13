@@ -81,11 +81,12 @@ export default function DesignStudioPage() {
       addLog("Creative Agent", "Đang xử lý song song DALL-E Visuals & Behance Layout...", "info");
 
       // Chạy song song 2 luồng: Generate Assets (Old) và Generate Case Study (New)
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const [assetsRes, caseStudyRes] = await Promise.all([
-        fetch("http://localhost:8000/api/v1/design/generate-assets", {
+        fetch(`${API_URL}/api/v1/design/generate-assets`, {
           method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
         }).then(res => res.json()),
-        fetch("http://localhost:8000/api/v1/design/generate-case-study", {
+        fetch(`${API_URL}/api/v1/design/generate-case-study`, {
           method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
         }).then(res => res.json())
       ]);

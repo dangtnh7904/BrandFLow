@@ -108,7 +108,8 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
     setCrawlMessage('');
     setCrawlResults([]);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/onboarding/upload-url', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_URL}/api/v1/onboarding/upload-url`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ urls }),
@@ -205,7 +206,8 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
       selectedFiles.forEach(f => formData.append('files', f));
       formData.append('tenant_id', 'default');
 
-      const res = await fetch('http://localhost:8000/api/v1/onboarding/upload', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_URL}/api/v1/onboarding/upload`, {
         method: 'POST',
         body: formData,
       });

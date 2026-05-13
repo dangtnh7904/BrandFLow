@@ -45,7 +45,8 @@ export default function MarketingPlanReport() {
       } catch (_) {}
       // Try FastAPI backend
       try {
-        const res = await fetch('http://localhost:8000/api/marketing-plan/sample');
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${API_URL}/api/marketing-plan/sample`);
         if (res.ok) { setData(await res.json()); setLoading(false); return; }
       } catch (_) {}
       setLoading(false);

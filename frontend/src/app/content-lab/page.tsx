@@ -24,7 +24,8 @@ export default function ContentLabPage() {
 
     setIsIngesting(true);
     try {
-      const res = await fetch('http://localhost:8000/api/content-lab/ingest', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_URL}/api/content-lab/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: urlInput }),
@@ -51,7 +52,8 @@ export default function ContentLabPage() {
     const targetSource = sources[sources.length - 1];
     
     try {
-      const res = await fetch('http://localhost:8000/api/content-lab/analyze', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_URL}/api/content-lab/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

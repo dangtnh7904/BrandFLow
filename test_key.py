@@ -1,6 +1,7 @@
-﻿import google.generativeai as genai
+import google.generativeai as genai
+import os
 try:
-    genai.configure(api_key='AIzaSyC1-yfTQ1syFW1xMmLyh22hzzHv82KvCk4')
+    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
     print('- Calling generate_content with gemini-2.0-flash...')
     model2 = genai.GenerativeModel('gemini-2.0-flash')
     res2 = model2.generate_content('Hello')

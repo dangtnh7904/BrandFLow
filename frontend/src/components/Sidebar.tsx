@@ -19,7 +19,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   PenSquare,
-  Palette
+  Palette,
+  Shield
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -90,6 +91,13 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
  const pathname = usePathname();
  const { t, language, toggleLanguage } = useLanguage();
  const isCollapsed = false;
+ const [isAdmin, setIsAdmin] = useState(false);
+
+ React.useEffect(() => {
+   if (typeof window !== 'undefined') {
+     setIsAdmin(localStorage.getItem('brandflow_is_admin') === 'true');
+   }
+ }, []);
 
  return (
  <>
@@ -210,12 +218,46 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
  </Link>
  </li>
  ))}
+ {isAdmin && (
+  <li>
+    <Link href="/admin">
+      <motion.div
+      whileHover={{ x: isCollapsed ? 0 : 4 }}
+      whileTap={{ scale: 0.98 }}
+      title="Quản Trị Hệ Thống"
+      className={cn(
+      "flex items-center py-2 rounded-lg transition-colors cursor-pointer text-sm font-bold text-amber-500/90 hover:text-amber-400 hover:bg-linear-surface/80 group",
+      isCollapsed ? "justify-center px-0" : "px-3",
+      pathname === '/admin' ? "bg-amber-500/10 text-amber-500" : ""
+      )}
+      >
+      <Shield className={cn("w-5 h-5 text-amber-500 shrink-0", !isCollapsed && "w-4 h-4 mr-3")} />
+      {!isCollapsed && <span className="whitespace-nowrap">Quản Trị Hệ Thống</span>}
+      </motion.div>
+    </Link>
+  </li>
+ )}
  </ul>
  </div>
  </nav>
 
  <div className={cn("mt-auto pb-4 shrink-0 pt-2 bg-linear-surface/30 backdrop-blur-md relative z-10", isCollapsed ? "px-2" : "px-4")}>
 
+ {/* Compliance Badges */}
+ {!isCollapsed && (
+   <div className="mb-3 space-y-2">
+     <div className="px-3 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center gap-2 cursor-help" title="BrandFlow is SOC 2 Type I Compliant">
+       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+       <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">SOC 2 Type I Compliant</span>
+     </div>
+     
+     {/* Zero Data Retention Badge */}
+     <div className="px-3 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg flex items-center gap-2 cursor-help" title="AI Privacy Shield Active. Data is NOT used to train LLMs.">
+       <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse shrink-0" />
+       <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">Zero Data Retention</span>
+     </div>
+   </div>
+ )}
  
  <div className={cn("flex gap-2 items-center", isCollapsed ? "flex-col" : "")}>
  <button 

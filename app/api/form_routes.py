@@ -16,15 +16,9 @@ from app.schemas.form_schemas import (
     ProjectCreate, ProjectUpdate, ProjectOut, ProjectWithForms,
     FormDataSave, FormDataOut, FormDataBulkSave, AllFormsOut,
 )
+from app.api.auth_routes import get_current_user
 
 router = APIRouter(prefix="/api/v1/forms", tags=["Form Data"])
-
-
-# ── User Resolution ───────────────────────────────────────────────
-# Hiện tại dùng header X-User-Id (đơn giản cho dev).
-# Khi scale lên auth, thay bằng JWT decode → user_id.
-def _resolve_user_id(x_user_id: str = Header("anonymous", alias="X-User-Id")) -> str:
-    return (x_user_id or "anonymous").strip() or "anonymous"
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -34,7 +28,7 @@ def _resolve_user_id(x_user_id: str = Header("anonymous", alias="X-User-Id")) ->
 @router.post("/users", response_model=UserOut, summary="Tạo hoặc lấy user")
 def upsert_user(
     body: UserCreate,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     user = form_crud.get_or_create_user(
@@ -47,8 +41,8 @@ def upsert_user(
 
 
 @router.get("/users/me", response_model=UserOut, summary="Lấy thông tin user hiện tại")
-def get_current_user(
-    user_id: str = Depends(_resolve_user_id),
+def read_current_user(
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     user = form_crud.get_user(db, user_id)
@@ -64,7 +58,7 @@ def get_current_user(
 @router.post("/projects", response_model=ProjectOut, summary="Tạo project mới")
 def create_project(
     body: ProjectCreate,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     # Auto-create user nếu chưa có
@@ -81,7 +75,7 @@ def create_project(
 @router.get("/projects", response_model=list[ProjectOut], summary="Danh sách project của user")
 def list_projects(
     include_archived: bool = False,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     return form_crud.list_projects(db, user_id=user_id, include_archived=include_archived)
@@ -90,7 +84,7 @@ def list_projects(
 @router.get("/projects/{project_id}", response_model=ProjectWithForms, summary="Chi tiết project + progress")
 def get_project(
     project_id: str,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     project = form_crud.get_project(db, project_id, user_id)
@@ -115,7 +109,7 @@ def get_project(
 def update_project(
     project_id: str,
     body: ProjectUpdate,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     project = form_crud.update_project(
@@ -133,7 +127,7 @@ def update_project(
 @router.delete("/projects/{project_id}", summary="Xóa project và tất cả form data")
 def delete_project(
     project_id: str,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     ok = form_crud.delete_project(db, project_id, user_id)
@@ -155,7 +149,7 @@ def save_form(
     project_id: str,
     form_key: str,
     body: FormDataSave,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     # Kiểm tra ownership
@@ -182,7 +176,7 @@ def save_form(
 def get_form(
     project_id: str,
     form_key: str,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     # Kiểm tra ownership
@@ -203,7 +197,7 @@ def get_form(
 )
 def get_all_forms(
     project_id: str,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     project = form_crud.get_project(db, project_id, user_id)
@@ -230,7 +224,7 @@ def get_all_forms(
 def bulk_save_forms(
     project_id: str,
     body: FormDataBulkSave,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     project = form_crud.get_project(db, project_id, user_id)
@@ -248,7 +242,7 @@ def bulk_save_forms(
 def delete_form(
     project_id: str,
     form_key: str,
-    user_id: str = Depends(_resolve_user_id),
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     project = form_crud.get_project(db, project_id, user_id)

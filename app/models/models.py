@@ -34,6 +34,17 @@ class User(Base):
     password_hash = Column(String(255), nullable=True) # Mật khẩu mã hoá (NẾU ĐĂNG KÝ BẰNG EMAIL)
     avatar_url = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
+    
+    # SOC 2 Requirement: Multi-Factor Authentication
+    is_2fa_enabled = Column(Boolean, default=False, nullable=False)
+    two_factor_secret = Column(String(255), nullable=True)
+    
+    # AI Privacy Shield (Data Masking)
+    privacy_mode = Column(Boolean, default=False, nullable=False)
+    
+    # System Admin Role
+    is_admin = Column(Boolean, default=False, nullable=False)
+    
     created_at = Column(DateTime, default=_now, nullable=False)
     updated_at = Column(DateTime, default=_now, onupdate=_now, nullable=False)
 
@@ -62,9 +73,34 @@ class Project(Base):
     # Relationships
     owner = relationship("User", back_populates="projects")
     form_entries = relationship("FormData", back_populates="project", cascade="all, delete-orphan")
+    members = relationship("ProjectMember", back_populates="project", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Project {self.name}>"
+
+
+# ═══════════════════════════════════════════════════════════════════
+# PROJECT MEMBER — ISO 27001 RBAC (Role-Based Access Control)
+# ═══════════════════════════════════════════════════════════════════
+class ProjectMember(Base):
+    __tablename__ = "project_members"
+
+    id = Column(String(36), primary_key=True, default=_uuid)
+    project_id = Column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    role = Column(String(20), default="VIEWER", nullable=False)  # OWNER / EDITOR / VIEWER
+    created_at = Column(DateTime, default=_now, nullable=False)
+
+    # Relationships
+    project = relationship("Project", back_populates="members")
+
+    # Constraints
+    __table_args__ = (
+        UniqueConstraint("project_id", "user_id", name="uq_project_member"),
+    )
+
+    def __repr__(self):
+        return f"<ProjectMember {self.project_id} - {self.user_id} ({self.role})>"
 
 
 # ═══════════════════════════════════════════════════════════════════

@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.schemas.schemas import DesignGenerateRequest, DesignReviseRequest
 from app.agents.design.design_agent import BrandDesigner
+from app.api.auth_routes import get_current_user
 
 router = APIRouter(
     prefix="/api/v1/design",
@@ -8,7 +9,7 @@ router = APIRouter(
 )
 
 @router.post("/generate-prompts")
-async def generate_design_prompts(request: DesignGenerateRequest):
+async def generate_design_prompts(request: DesignGenerateRequest, user_id: str = Depends(get_current_user)):
     """
     API biên dịch Brand DNA thành hệ quy chiếu thiết kế và sinh Prompt vẽ ảnh.
     Trọng tâm: Sử dụng LLM để giải mã yêu cầu, kết hợp các quy tắc loại trừ (Guardrails).
@@ -23,7 +24,7 @@ async def generate_design_prompts(request: DesignGenerateRequest):
     return result
 
 @router.post("/generate-assets")
-async def generate_design_assets(request: DesignGenerateRequest):
+async def generate_design_assets(request: DesignGenerateRequest, user_id: str = Depends(get_current_user)):
     """
     API gọi DALL-E 3 để sinh ảnh Logo, Banner, Fanpage Avatar từ Brand DNA.
     """
@@ -36,7 +37,7 @@ async def generate_design_assets(request: DesignGenerateRequest):
     return result
 
 @router.post("/revise-assets")
-async def revise_design_assets(request: DesignReviseRequest):
+async def revise_design_assets(request: DesignReviseRequest, user_id: str = Depends(get_current_user)):
     """
     API nhận feedback của khách hàng và gọi DALL-E sửa đổi thiết kế.
     """
@@ -55,7 +56,7 @@ async def revise_design_assets(request: DesignReviseRequest):
 from app.schemas.schemas import ReviseBlockRequest
 
 @router.post("/generate-case-study")
-async def generate_case_study(request: DesignGenerateRequest):
+async def generate_case_study(request: DesignGenerateRequest, user_id: str = Depends(get_current_user)):
     """
     API biên dịch Brand DNA thành danh sách các Block JSON theo cấu trúc Behance Layout.
     """
@@ -68,7 +69,7 @@ async def generate_case_study(request: DesignGenerateRequest):
     return result
 
 @router.post("/revise-block")
-async def revise_block(request: ReviseBlockRequest):
+async def revise_block(request: ReviseBlockRequest, user_id: str = Depends(get_current_user)):
     """
     API nhận feedback cục bộ cho một block và cập nhật lại thông số của block đó.
     """

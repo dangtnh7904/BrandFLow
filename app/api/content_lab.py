@@ -4,6 +4,7 @@ from typing import Dict, Any, List
 
 from app.services.scraper import ContentScraper
 from app.agents.content_lab.agent import ContentLabAgent
+from app.api.auth_routes import get_current_user
 
 router = APIRouter()
 
@@ -19,7 +20,7 @@ class AnalyzeRequest(BaseModel):
 session_storage = {}
 
 @router.post("/ingest")
-async def ingest_content(req: IngestRequest):
+async def ingest_content(req: IngestRequest, user_id: str = Depends(get_current_user)):
     try:
         data = await ContentScraper.scrape_url(req.url)
         # Store in session if needed, but for MVP we can just return it to frontend
@@ -28,7 +29,7 @@ async def ingest_content(req: IngestRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/analyze")
-async def analyze_vibe(req: AnalyzeRequest):
+async def analyze_vibe(req: AnalyzeRequest, user_id: str = Depends(get_current_user)):
     try:
         agent = ContentLabAgent()
         report = await agent.analyze_vibe(req.scraped_data, req.business_context)
@@ -41,7 +42,7 @@ class ChatRequest(BaseModel):
     message: str
 
 @router.post("/chat")
-async def chat_with_content(req: ChatRequest):
+async def chat_with_content(req: ChatRequest, user_id: str = Depends(get_current_user)):
     try:
         agent = ContentLabAgent()
         if not agent.llm:
@@ -61,7 +62,7 @@ async def chat_with_content(req: ChatRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/trends")
-async def get_platform_trends(platform: str = "Tất cả"):
+async def get_platform_trends(platform: str = "Tất cả", user_id: str = Depends(get_current_user)):
     import urllib.request
     import xml.etree.ElementTree as ET
     try:

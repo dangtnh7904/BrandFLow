@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 const PROJECT_NAME = "BrandFlow Strategy Plan";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 // Hàm lấy User ID an toàn từ LocalStorage
 const getUserId = () => {
@@ -8,6 +9,15 @@ const getUserId = () => {
     return localStorage.getItem('brandflow_user_id') || "";
   }
   return "";
+};
+
+// Hàm lấy Auth Headers (JWT Token)
+const getAuthHeaders = () => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('brandflow_token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  }
+  return {};
 };
 
 interface FormStore {
@@ -70,7 +80,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
     if (get().initialized) return;
     
     const tokenUserId = getUserId();
-    if (!tokenUserId) {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('brandflow_token') : null;
+    
+    if (!tokenUserId || !token) {
       if (typeof window !== 'undefined') window.location.href = '/login';
       return;
     }
@@ -79,8 +91,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
     try {
       // List projects của user, tìm project đã có
-      const listRes = await fetch('/api/v1/forms/projects', {
-        headers: { 'X-User-Id': tokenUserId }
+      const listRes = await fetch(`${API_URL}/api/v1/forms/projects`, {
+        headers: { ...getAuthHeaders() }
       });
       
       let projectId: string | null = null;
@@ -94,11 +106,11 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
       // 3. Nếu chưa có project nào, tạo mới
       if (!projectId) {
-        const createRes = await fetch('/api/v1/forms/projects', {
+        const createRes = await fetch(`${API_URL}/api/v1/forms/projects`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-User-Id': tokenUserId,
+            ...getAuthHeaders()
           },
           body: JSON.stringify({
             name: PROJECT_NAME,
@@ -139,8 +151,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
     set({ isLoading: true });
     try {
-      const res = await fetch(`/api/v1/forms/projects/${projectId}/forms`, {
-        headers: { 'X-User-Id': getUserId() }
+      const res = await fetch(`${API_URL}/api/v1/forms/projects/${projectId}/forms`, {
+        headers: { ...getAuthHeaders() }
       });
       if (res.ok) {
         const json = await res.json();
@@ -172,11 +184,11 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
     // 2. Persist to Supabase via FastAPI
     try {
-      const res = await fetch(`/api/v1/forms/projects/${projectId}/forms/${formKey}`, {
+      const res = await fetch(`${API_URL}/api/v1/forms/projects/${projectId}/forms/${formKey}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-User-Id': getUserId()
+          ...getAuthHeaders()
         },
         body: JSON.stringify({ data: newData })
       });
@@ -203,9 +215,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
       const { brandDNA } = get();
 
       // Gọi API thật (chuyển sang POST để gửi brand_dna)
-      const apiCall = fetch(`/api/v1/research/market`, {
+      const apiCall = fetch(`${API_URL}/api/v1/research/market`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ industry, brand_dna: brandDNA })
       });
       
@@ -255,9 +267,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
         brand_dna: brandDNA
       };
 
-      const res = await fetch('/api/v1/planning/intake', {
+      const res = await fetch(`${API_URL}/api/v1/planning/intake`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(payload)
       });
 
@@ -307,9 +319,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
         tenant_id: getUserId() || "anonymous"
       };
 
-      const res = await fetch('/api/v1/research/extract-dna', {
+      const res = await fetch(`${API_URL}/api/v1/research/extract-dna`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(payload)
       });
 

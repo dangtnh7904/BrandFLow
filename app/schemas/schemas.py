@@ -183,7 +183,8 @@ class VRIO_Competency(BaseModel):
 
 class CorporateObjective(BaseModel):
     financial_goals: list[str] = Field(..., max_length=2, description="2 mục tiêu tài chính (ROI, Margin)")
-    marketing_goals: list[str] = Field(..., max_length=2, description="2 mục tiêu Marketing (Market Share, CAC/LTV)")
+    marketing_goals: list[str] = Field(..., max_length=2, description="2 mục tiêu Marketing (Market Share, Brand Awareness)")
+    cac_ltv_analysis: str = Field(..., description="Phân tích chi phí CAC và giá trị LTV dựa trên AOV (Average Order Value)")
 
 class GoalSettingPhase1(BaseModel):
     mission_statement: str = Field(..., description="Tuyên bố sứ mệnh ngắn gọn")
@@ -208,6 +209,7 @@ class NeedsBasedAudience(BaseModel):
     dmu_profiles: list[DMU_Profile] = Field(..., max_length=2, description="2 roles chính trong DMU")
     decision_journey: ConsumerDecisionJourney
     value_proposition: str = Field(..., description="Benefit vs Sacrifice statement")
+    data_sources: list[str] = Field(..., description="Trích dẫn nguồn dữ liệu đã dùng để phân tích Pain-points")
 
 class DirectionalPolicyMatrix(BaseModel):
     market_attractiveness: Literal["High", "Medium", "Low"] = Field(..., description="Độ hấp dẫn của thị trường")
@@ -225,6 +227,7 @@ class SituationAuditPhase2(BaseModel):
     directional_policy: DirectionalPolicyMatrix
     benchmarks: list[CompetitiveBenchmark] = Field(..., max_length=3)
     tows_strategic_options: list[str] = Field(..., max_length=2, description="2 chiến lược TOWS rút ra từ Audit")
+    data_sources: list[str] = Field(..., description="Trích dẫn nguồn dữ liệu thực tế / mô phỏng sử dụng trong Audit")
 
 class StrategyPhase3(BaseModel):
     ansoff_matrix_choice: str = Field(..., description="Chiến lược cốt lõi Ansoff")
@@ -236,8 +239,9 @@ class StrategyPhase3(BaseModel):
 class Tactic7P(BaseModel):
     p_name: Literal["Product", "Price", "Place", "Promotion", "People", "Process", "Physical Evidence"]
     action_bullet: str = Field(..., description="1 hành động cốt lõi")
-    kpi: str = Field(..., description="1 KPI định lượng")
+    kpi: str = Field(..., description="1 KPI định lượng theo nguyên tắc SMART")
     budget_vnd: int
+    budget_allocation_percent: float = Field(..., description="Phần trăm ngân sách phân bổ cho kênh này (0.0 - 100.0)")
     moscow_tag: Literal["MUST_HAVE", "SHOULD_HAVE", "COULD_HAVE"] = Field(..., description="Mức độ ưu tiên")
 
 class Plan5W1H(BaseModel):
@@ -270,6 +274,7 @@ class TacticsPhase4(BaseModel):
     distribution_channels: DistributionChannelStrategy
     omnichannel_crm_plan: list[str] = Field(..., max_length=2, description="2 chiến thuật Đa kênh & CRM")
     total_budget_used: int
+    task_ready_checklist: list[str] = Field(..., description="Danh sách các công việc cụ thể (Checklist) để chuyển giao cho nhân sự thực thi")
 
 class DownsideRiskAssessment(BaseModel):
     risk_scenario: str

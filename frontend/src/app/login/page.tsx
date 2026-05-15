@@ -37,6 +37,7 @@ function LoginForm() {
       localStorage.setItem('brandflow_token', data.access_token);
       localStorage.setItem('brandflow_user_id', data.user_id);
       localStorage.setItem('brandflow_email', data.email);
+      localStorage.setItem('brandflow_is_admin', data.is_admin);
       localStorage.removeItem('bf_ws_stage');
       
       window.location.href = '/planning';
@@ -93,6 +94,7 @@ function LoginForm() {
       localStorage.setItem('brandflow_token', data.access_token);
       localStorage.setItem('brandflow_user_id', data.user_id);
       localStorage.setItem('brandflow_email', data.email);
+      localStorage.setItem('brandflow_is_admin', data.is_admin);
 
       // Xóa cache rác
       localStorage.removeItem('bf_ws_stage');

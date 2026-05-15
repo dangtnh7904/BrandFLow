@@ -15,6 +15,14 @@ DATABASE_URL = os.environ.get(
     "sqlite:///./brandflow.db"
 )
 
+# SOC 2 Requirement: Bắt buộc kết nối Database qua SSL/TLS trên Production
+if DATABASE_URL.startswith("postgres"):
+    if "?" in DATABASE_URL:
+        if "sslmode=" not in DATABASE_URL:
+            DATABASE_URL += "&sslmode=require"
+    else:
+        DATABASE_URL += "?sslmode=require"
+
 # ── Engine ─────────────────────────────────────────────────────────
 _is_sqlite = DATABASE_URL.startswith("sqlite")
 
@@ -22,7 +30,10 @@ engine = create_engine(
     DATABASE_URL,
     # SQLite cần check_same_thread=False cho FastAPI multi-thread
     connect_args={"check_same_thread": False} if _is_sqlite else {},
-    # PostgreSQL pool config (tự động bỏ qua nếu SQLite)
+    # PostgreSQL pool config cho high concurrency
+    pool_size=20 if not _is_sqlite else 5,
+    max_overflow=10 if not _is_sqlite else 10,
+    pool_timeout=30,
     pool_pre_ping=True,
     echo=False,
 )

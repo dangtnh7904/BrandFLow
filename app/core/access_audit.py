@@ -145,8 +145,9 @@ class VisitorAuditStore:
         status_code: int,
         trace_id: str | None = None,
         tier_hint: str | None = None,
+        override_time: str | None = None,
     ) -> None:
-        visited_at = _now_iso()
+        visited_at = override_time if override_time else _now_iso()
         ip_address = self._resolve_ip(headers, client_host)
         user_agent = self._resolve_user_agent(headers)
         user_id = self._resolve_user_id(headers)
@@ -325,6 +326,23 @@ class VisitorAuditStore:
                         (safe_limit,),
                     ).fetchall()
 
+                return [dict(row) for row in rows]
+            finally:
+                conn.close()
+
+    def get_funnel_stats(self) -> list[dict[str, Any]]:
+        with self._lock:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            try:
+                rows = conn.execute(
+                    """
+                    SELECT path, COUNT(*) as usage_count
+                    FROM visit_events
+                    GROUP BY path
+                    ORDER BY usage_count DESC
+                    """
+                ).fetchall()
                 return [dict(row) for row in rows]
             finally:
                 conn.close()

@@ -14,7 +14,8 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
  const { language, toggleLanguage } = useLanguage();
  const isLandingPage = pathname === "/";
  const isLoginPage = pathname === "/login";
- const isPublicRoute = isLandingPage || isLoginPage;
+  const isOnePager = pathname === "/onepager";
+  const isPublicRoute = isLandingPage || isLoginPage || isOnePager;
 
   const CommonBackground = (
     <div className="print-hide">
@@ -63,6 +64,15 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
           <p className="text-slate-500 text-sm">Đang kiểm tra phiên đăng nhập...</p>
         </div>
       </div>
+    );
+  }
+
+  // OnePager page → bypass completely
+  if (isOnePager) {
+    return (
+      <main className="w-full min-h-screen bg-white">
+        {children}
+      </main>
     );
   }
 

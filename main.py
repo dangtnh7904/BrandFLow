@@ -759,6 +759,17 @@ def list_audit_visits(limit: int = 200, visitor_key: str | None = None, _: str =
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi lấy lịch sử truy cập: {str(e)}")
 
+@app.get("/api/v1/audit/funnel-stats")
+def get_audit_funnel_stats(_: str = Depends(get_admin_user)):
+    """Thống kê các tính năng được dùng nhiều nhất (phễu)."""
+    try:
+        return {
+            "status": "success",
+            "data": VISITOR_AUDIT_STORE.get_funnel_stats(),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi lấy thống kê phễu: {str(e)}")
+
 @app.post("/api/v1/onboarding/interview")
 async def onboarding_interview(request: InterviewRequest):
     """

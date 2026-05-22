@@ -1,0 +1,33 @@
+{
+  "columns": [
+    "Dấu thời gian",
+    "Email của Anh/Chị:",
+    "1. Vai trò hiện tại của Anh/Chị trong tổ chức là gì?",
+    "2. Anh/Chị có trực tiếp tham gia vào hoạt động marketing hoặc ra quyết định liên quan đến marketing của doanh nghiệp không?\nNếu chọn “Không”, có thể kết thúc khảo sát. Cảm ơn bạn đã dành thời gian tham gia cuộc khảo sát này.",
+    "3. Doanh nghiệp hiện đang hoạt động chủ yếu trong lĩnh vực nào?",
+    "4. Quy mô doanh nghiệp theo doanh thu bình quân năm phù hợp nhất với nhóm nào sau đây?",
+    "5. Quy mô doanh nghiệp theo số lượng nhân sự hiện nay là?",
+    "6. Hiện nay, hoạt động marketing của doanh nghiệp đang được tổ chức theo mô hình nào?",
+    "7. Kênh truyền thông hiện đang mang lại hiệu quả tốt nhất cho doanh nghiệp là kênh nào?",
+    "8. Tổng ngân sách marketing trung bình mỗi tháng của doanh nghiệp hiện nay là bao nhiêu? \n(Bao gồm chi phí quảng cáo, nhân sự và công cụ nếu có)",
+    "9. Ai là người ra quyết định chính đối với ngân sách marketing?",
+    "10. Doanh nghiệp của Anh/Chị thường xác định ngân sách marketing dựa trên cơ sở nào?",
+    "11. Doanh nghiệp hiện đang sử dụng bao nhiêu công cụ hoặc phần mềm để hỗ trợ quản lý và triển khai marketing? \n(Ví dụ: Canva, ChatGPT, Excel, CapCut, công cụ quản lý công việc...)",
+    "12. Theo ước tính của Anh/Chị, tỷ lệ ngân sách marketing chưa được sử dụng hiệu quả hiện nay là khoảng bao nhiêu?",
+    "13. Tỷ lệ nội dung cũ (bài viết, hình ảnh đã dùng) được tái sử dụng hoặc biến tấu lại cho các kênh khác là bao nhiêu?",
+    "14. Khảo sát mức độ đồng tình: Bạn hãy nêu mức độ đồng ý của mình với các nhận định sau. [Doanh nghiệp của tôi thiếu người có khả năng xây dựng kế hoạch marketing tổng thể.]",
+    "14. Khảo sát mức độ đồng tình: Bạn hãy nêu mức độ đồng ý của mình với các nhận định sau. [Việc lập kế hoạch marketing hiện nay còn phụ thuộc nhiều vào kinh nghiệm cá nhân.]",
+    "14. Khảo sát mức độ đồng tình: Bạn hãy nêu mức độ đồng ý của mình với các nhận định sau. [Doanh nghiệp gặp khó khăn trong việc phân bổ ngân sách marketing hợp lý.]",
+    "14. Khảo sát mức độ đồng tình: Bạn hãy nêu mức độ đồng ý của mình với các nhận định sau. [Chúng tôi chưa kiểm soát tốt phần ngân sách marketing chưa mang lại hiệu quả.]",
+    "14. Khảo sát mức độ đồng tình: Bạn hãy nêu mức độ đồng ý của mình với các nhận định sau. [Nội dung marketing hiện tại còn rời rạc, thiếu định hướng thống nhất.]",
+    "14. Khảo sát mức độ đồng tình: Bạn hãy nêu mức độ đồng ý của mình với các nhận định sau. [Khi thay đổi nhân sự, hoạt động marketing dễ bị gián đoạn.]",
+    "15. Mức độ sử dụng AI trong công việc marketing của doanh nghiệp hiện nay là:",
+    "16. Doanh nghiệp của Anh/Chị hiện thường sử dụng AI cho những công việc nào sau đây? \n(có thể chọn nhiều đáp án)",
+    "17. Hạn chế lớn nhất khiến Anh/Chị chưa thực sự hài lòng khi sử dụng AI hiện nay là gì?",
+    "18. Rào cản lớn nhất khiến doanh nghiệp chưa áp dụng hoặc đã ngừng áp dụng AI trong hoạt động marketing là gì?",
+    "19. Nếu tồn tại công cụ giải quyết được các vấn đề như trên và phù hợp với nhu cầu của doanh nghiệp, mức chi phí hàng tháng nào Anh/Chị cảm thấy hợp lý để cân nhắc sử dụng?",
+    "20. Theo Anh/Chị, một công cụ marketing ứng dụng AI thực sự hữu ích cần giải quyết tốt nhất vấn đề gì cho doanh nghiệp?"
+  ],
+  "sample": [
+    {
+      "Dấu thời gian": 

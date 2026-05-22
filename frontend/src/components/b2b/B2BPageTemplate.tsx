@@ -54,7 +54,7 @@ export default function B2BPageTemplate({ title, description, children, saveStat
   }, [previewMode]);
 
   return (
-    <div className={previewMode === 'section' ? "fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex p-4 lg:p-8 print:p-0 print:bg-white print:block" : "flex flex-col h-full w-full"}>
+    <div className={previewMode === 'section' ? "fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex p-4 lg:p-8 print:p-0 print:bg-transparent print:backdrop-blur-none print:block" : "flex flex-col h-full w-full"}>
       
       {/* NORMAL TOP HEADER (Hidden in preview mode) */}
       <div className={`print-hide sticky top-0 z-10 bg-linear-surface/90 backdrop-blur-md border-b border-linear-border px-8 py-5 flex items-center justify-between shadow-sm ${previewMode === 'section' ? 'hidden' : ''}`}>
@@ -261,7 +261,7 @@ export default function B2BPageTemplate({ title, description, children, saveStat
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex p-4 lg:p-8 print:p-0 print:bg-white print:block"
+            className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex p-4 lg:p-8 print:p-0 print:bg-transparent print:backdrop-blur-none print:block"
           >
             <div className="bg-slate-100 w-full h-full rounded-2xl shadow-2xl flex overflow-hidden print:shadow-none print:rounded-none">
               

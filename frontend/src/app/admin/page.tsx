@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 export default function AdminDashboard() {
   const [summary, setSummary] = useState<any>(null);
   const [visitors, setVisitors] = useState<any[]>([]);
+  const [funnelStats, setFunnelStats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -28,20 +29,23 @@ export default function AdminDashboard() {
         'Authorization': `Bearer ${token}`
       };
 
-      const [summaryRes, visitorsRes] = await Promise.all([
+      const [summaryRes, visitorsRes, funnelRes] = await Promise.all([
         fetch('/api/v1/audit/visitors/summary', { headers }),
-        fetch('/api/v1/audit/visitors?limit=50', { headers })
+        fetch('/api/v1/audit/visitors?limit=50', { headers }),
+        fetch('/api/v1/audit/funnel-stats', { headers })
       ]);
 
-      if (!summaryRes.ok || !visitorsRes.ok) {
+      if (!summaryRes.ok || !visitorsRes.ok || !funnelRes.ok) {
         throw new Error('Bạn không có quyền truy cập hoặc phiên đăng nhập đã hết hạn.');
       }
 
       const summaryData = await summaryRes.json();
       const visitorsData = await visitorsRes.json();
+      const funnelData = await funnelRes.json();
 
       setSummary(summaryData.data);
       setVisitors(visitorsData.data);
+      setFunnelStats(funnelData.data || []);
     } catch (err: any) {
       setError(err.message || 'Lỗi kết nối máy chủ');
     } finally {
@@ -154,6 +158,42 @@ export default function AdminDashboard() {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          <div className="bg-linear-surface border border-linear-border rounded-2xl shadow-sm overflow-hidden mt-8">
+            <div className="p-6 border-b border-linear-border flex items-center justify-between bg-black/10">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Activity className="w-5 h-5 text-amber-500" />
+                Thống Kê Phễu Chức Năng (Funnel Stats)
+              </h2>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                {funnelStats.map((stat, idx) => {
+                  const maxUsage = Math.max(...funnelStats.map((s) => s.usage_count));
+                  const percentage = Math.round((stat.usage_count / maxUsage) * 100);
+                  return (
+                    <div key={idx} className="space-y-2">
+                      <div className="flex justify-between text-sm font-semibold">
+                        <span className="font-mono text-blue-400">{stat.path}</span>
+                        <span>{stat.usage_count} lượt</span>
+                      </div>
+                      <div className="w-full bg-black/20 rounded-full h-3 overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${percentage}%` }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                          className="bg-gradient-to-r from-amber-500 to-orange-400 h-3 rounded-full"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+                {funnelStats.length === 0 && (
+                  <div className="text-center py-6 text-linear-text-muted">Chưa có dữ liệu thống kê phễu</div>
+                )}
+              </div>
             </div>
           </div>
         </>

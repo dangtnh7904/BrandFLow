@@ -15,7 +15,7 @@ class BrandDesigner:
     
     def __init__(self):
         # Sử dụng cấu hình LLM giống với hệ thống hiện tại
-        self.llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.3, max_retries=1, timeout=30.0)
+        self.llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3, max_retries=1, timeout=120.0)
         self.output_parser = JsonOutputParser(pydantic_object=DesignOutput)
         
         self.prompt_template = ChatPromptTemplate.from_messages([

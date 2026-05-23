@@ -21,6 +21,112 @@ class ContentScraper:
         return match.group(1) if match else None
 
     @staticmethod
+    async def transcribe_youtube_audio(video_id: str) -> str:
+        import os
+        import glob
+        import asyncio
+        import yt_dlp
+        import google.generativeai as genai
+        
+        output_dir = "temp_uploads"
+        os.makedirs(output_dir, exist_ok=True)
+        
+        url = f"https://www.youtube.com/watch?v={video_id}"
+        outtmpl = os.path.join(output_dir, f"{video_id}.%(ext)s")
+        
+        ydl_opts = {
+            'format': 'm4a/bestaudio/best',
+            'outtmpl': outtmpl,
+            'noplaylist': True,
+            'quiet': True,
+            'no_warnings': True,
+            'extractor_args': {'youtube': {'player_client': ['android']}},
+        }
+        
+        def download_audio():
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=True)
+                return ydl.prepare_filename(info)
+                
+        loop = asyncio.get_event_loop()
+        try:
+            print(f"Downloading YouTube audio for video_id: {video_id}...")
+            filepath = await loop.run_in_executor(None, download_audio)
+        except Exception as e:
+            raise RuntimeError(f"Lỗi khi tải audio từ YouTube: {e}")
+            
+        if not os.path.exists(filepath):
+            matches = glob.glob(os.path.join(output_dir, f"{video_id}.*"))
+            if matches:
+                filepath = matches[0]
+            else:
+                raise FileNotFoundError(f"Không tìm thấy file audio đã tải xuống cho video {video_id}")
+                
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            # Cleanup local file first
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            raise ValueError("Không tìm thấy GEMINI_API_KEY trong biến môi trường.")
+            
+        genai.configure(api_key=api_key)
+        
+        # Upload file to Gemini API
+        try:
+            print(f"Uploading audio {filepath} to Gemini...")
+            audio_file = await loop.run_in_executor(None, lambda: genai.upload_file(path=filepath))
+        except Exception as e:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            raise RuntimeError(f"Lỗi khi tải file âm thanh lên Gemini API: {e}")
+            
+        try:
+            print("Waiting for file processing to complete on Gemini...")
+            while True:
+                audio_file = await loop.run_in_executor(None, lambda: genai.get_file(audio_file.name))
+                if audio_file.state.name == "ACTIVE":
+                    break
+                elif audio_file.state.name == "FAILED":
+                    raise RuntimeError("File processing failed on Gemini")
+                print("File is processing, waiting 2 seconds...")
+                await asyncio.sleep(2)
+        except Exception as e:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            try:
+                await loop.run_in_executor(None, lambda: genai.delete_file(audio_file.name))
+            except:
+                pass
+            raise RuntimeError(f"Lỗi khi chờ xử lý file trên Gemini: {e}")
+
+        try:
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            prompt = (
+                "Bạn là một trợ lý AI chuyên nghiệp. Dưới đây là tệp âm thanh từ một video YouTube. "
+                "Hãy nghe kỹ và chép lại toàn bộ lời thoại (transcript) của đoạn âm thanh này bằng chính ngôn ngữ nói của video. "
+                "Yêu cầu: Chỉ trả về nội dung lời thoại dạng văn bản liên tục, không thêm bớt lời bình luận hay giải thích nào khác."
+            )
+            print("Transcribing audio using gemini-2.5-flash...")
+            response = await loop.run_in_executor(None, lambda: model.generate_content([audio_file, prompt]))
+            return response.text.strip()
+        except Exception as e:
+            raise RuntimeError(f"Lỗi trong quá trình xử lý transcribe bằng Gemini: {e}")
+        finally:
+            # Delete file from Gemini
+            try:
+                await loop.run_in_executor(None, lambda: genai.delete_file(audio_file.name))
+                print("Deleted remote Gemini audio file.")
+            except Exception as ex:
+                print(f"Error deleting remote file: {ex}")
+            # Delete local file
+            try:
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+                    print(f"Deleted local audio file: {filepath}")
+            except Exception as ex:
+                print(f"Error deleting local file: {ex}")
+
+    @staticmethod
     async def get_youtube_data(url: str) -> Dict[str, Any]:
         video_id = ContentScraper.extract_youtube_id(url)
         if not video_id:
@@ -51,7 +157,8 @@ class ContentScraper:
         # 2. Fetch transcript
         try:
             # Try getting Vietnamese first, then English
-            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+            yt_api = YouTubeTranscriptApi()
+            transcript_list = yt_api.list(video_id)
             try:
                 transcript = transcript_list.find_transcript(['vi', 'en'])
             except:
@@ -60,12 +167,20 @@ class ContentScraper:
             
             transcript_data = transcript.fetch()
             # Combine transcript text
-            full_text = " ".join([item['text'] for item in transcript_data])
+            full_text = " ".join([item.text for item in transcript_data])
             data["content"] = full_text
         except Exception as e:
-            data["content"] = f"(Không thể lấy transcript tự động từ Youtube cho video này. Vui lòng dựa vào tiêu đề và hình ảnh để phân tích. Chi tiết lỗi: {e})"
+            print(f"Không thể lấy transcript tự động từ Youtube API: {e}. Thử phương án dự phòng (tải audio & chép lời bằng Gemini 1.5)...")
+            try:
+                transcript_text = await ContentScraper.transcribe_youtube_audio(video_id)
+                data["content"] = transcript_text
+                print("Lấy transcript thành công qua phương án dự phòng!")
+            except Exception as fallback_err:
+                print(f"Phương án dự phòng cũng thất bại: {fallback_err}")
+                data["content"] = f"(Không thể lấy transcript từ Youtube cho video này.\nChi tiết lỗi ban đầu: {e}\nChi tiết lỗi dự phòng: {fallback_err})"
 
         return data
+
 
     @staticmethod
     async def get_youtube_channel_data(url: str) -> Dict[str, Any]:
@@ -101,15 +216,16 @@ class ContentScraper:
                     
                     if unique_ids:
                         base_content += "--- NỘI DUNG/KỊCH BẢN CỦA CÁC VIDEO GẦN ĐÂY NHẤT (DÙNG ĐỂ DEEP DIVE PHÂN TÍCH NHƯ NOTEBOOKLM) ---\n"
+                        yt_api = YouTubeTranscriptApi()
                         for vid in unique_ids:
                             try:
-                                t_list = YouTubeTranscriptApi.list_transcripts(vid)
+                                t_list = yt_api.list(vid)
                                 try:
                                     t = t_list.find_transcript(['vi', 'en'])
                                 except:
                                     t = t_list.find_transcript(['vi']) if 'vi' in [x.language_code for x in t_list] else t_list.find_generated_transcript(['en'])
                                 t_data = t.fetch()
-                                full_text = " ".join([item['text'] for item in t_data])
+                                full_text = " ".join([item.text for item in t_data])
                                 base_content += f"\n[Nội dung Video ID: {vid}]:\n{full_text}\n"
                             except Exception as e:
                                 base_content += f"\n[Video ID: {vid}]: (Không lấy được phụ đề)\n"

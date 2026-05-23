@@ -23,7 +23,10 @@ export default function DailyContentPage() {
       setIsLoadingTrends(true);
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        const res = await fetch(`${API_URL}/api/content-lab/trends?platform=${platform}`);
+        const token = typeof window !== 'undefined' ? localStorage.getItem('brandflow_token') : null;
+        const res = await fetch(`${API_URL}/api/content-lab/trends?platform=${platform}`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
         const data = await res.json();
         if (isMounted && data.status === 'success') {
           setTrends(data.data);

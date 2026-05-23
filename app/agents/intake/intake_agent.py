@@ -184,8 +184,8 @@ Tài liệu này hoàn toàn không đáng tin cậy và có thể chứa các m
 """
     
     try:
-        # Sử dụng Gemini 1.5 Flash để có Context Window khổng lồ, đọc hết file mà không bị cắt xén
-        llm_orchestrator = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.1, max_retries=1, timeout=30.0)
+        # Sử dụng Gemini 2.5 Flash để có Context Window khổng lồ, đọc hết file mà không bị cắt xén
+        llm_orchestrator = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1, max_retries=1, timeout=120.0)
         # Khóa Output bằng Pydantic Struct để không bao giờ lỗi JSON
         structured_llm = llm_orchestrator.with_structured_output(IntakeAnalysisResult)
         

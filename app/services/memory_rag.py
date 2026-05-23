@@ -26,6 +26,12 @@ import pdfplumber
 import docx
 from fastapi import UploadFile
 
+from dotenv import load_dotenv
+load_dotenv()
+import os
+if "GOOGLE_API_KEY" not in os.environ and "GEMINI_API_KEY" in os.environ:
+    os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
+
 # ---- LangChain imports ----
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
@@ -109,7 +115,7 @@ def extract_and_save_rule(human_feedback: str, rejected_plan: str, tenant_id: st
         rule_summary (str) đã lưu thành công, hoặc chuỗi lỗi.
     """
     try:
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.0, max_retries=1, timeout=30.0)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.0, max_retries=1, timeout=120.0)
         chain = (
             learner_prompt.partial(
                 format_instructions=learner_parser.get_format_instructions()
@@ -240,7 +246,7 @@ def extract_unified_dna(form_data: dict, document_content: str, tenant_id: str =
     form_str = json.dumps(form_data, ensure_ascii=False, indent=2) if form_data else "Không có dữ liệu form."
 
     try:
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.1, max_retries=1, timeout=30.0)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1, max_retries=1, timeout=120.0)
         chain = (
             dna_prompt.partial(
                 format_instructions=dna_parser.get_format_instructions()
@@ -357,7 +363,7 @@ def generate_guideline_from_qa(qa_pairs: dict, tenant_id: str = "default") -> di
     ])
     
     try:
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2, max_retries=1, timeout=30.0)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2, max_retries=1, timeout=120.0)
         chain = prompt | llm
         
         response = chain.invoke({"qa_text": qa_text})

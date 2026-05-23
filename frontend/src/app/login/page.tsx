@@ -12,7 +12,7 @@ const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "YOUR_FACEBOO
 
 function LoginForm() {
   const [email, setEmail] = useState('admin@brandflow.ai');
-  const [password, setPassword] = useState('admin');
+  const [password, setPassword] = useState('dinhmanhcvp2005');
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);

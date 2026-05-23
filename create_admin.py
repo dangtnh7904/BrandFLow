@@ -18,19 +18,19 @@ def create_admin():
         if existing_admin:
             print(f"Admin {admin_email} already exists.")
             # Update password just in case
-            existing_admin.password_hash = get_password_hash("admin")
+            existing_admin.password_hash = get_password_hash("dinhmanhcvp2005")
             db.commit()
-            print("Password reset to 'admin'.")
+            print("Password reset to 'dinhmanhcvp2005'.")
             return
 
         new_admin = User(
             email=admin_email,
-            password_hash=get_password_hash("admin"),
+            password_hash=get_password_hash("dinhmanhcvp2005"),
             display_name="Admin BrandFlow"
         )
         db.add(new_admin)
         db.commit()
-        print(f"Successfully created admin account: {admin_email} / admin")
+        print(f"Successfully created admin account: {admin_email} / dinhmanhcvp2005")
     except Exception as e:
         print(f"Error: {e}")
     finally:

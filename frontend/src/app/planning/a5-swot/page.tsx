@@ -10,10 +10,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { TranslationKey } from '@/i18n/translations';
 
 const KSF_DATA = [
-  { ksf: 'Hàm lượng dinh dưỡng', weight: '35%', our_score: 9, comp_score: 7, issue: 'Cần truyền thông mạnh về lợi khuẩn' },
-  { ksf: 'Bao bì/Hình thức', weight: '25%', our_score: 8, comp_score: 8, issue: 'Duy trì phong cách thiết kế tối giản' },
-  { ksf: 'Hương vị, độ tơi xốp', weight: '25%', our_score: 9, comp_score: 7, issue: 'Điểm mạnh cốt lõi cần giữ vững' },
-  { ksf: 'Mức giá hợp lý', weight: '15%', our_score: 6, comp_score: 9, issue: 'Cần ra mắt túi zip dung tích nhỏ (15g)' },
+  { ksf: 'Không gian tĩnh lặng & Concept', weight: '35%', our_score: 9, comp_score: 6, issue: 'Điểm khác biệt cốt lõi (VRIO) cần duy trì' },
+  { ksf: 'Chất lượng nguyên liệu (Organic)', weight: '25%', our_score: 8, comp_score: 7, issue: 'Truyền thông mạnh về Farm-to-Table' },
+  { ksf: 'Hương vị món ăn truyền thống', weight: '25%', our_score: 8, comp_score: 8, issue: 'Giữ vững chuẩn vị cơm nhà' },
+  { ksf: 'Chi phí tiếp cận (Pricing)', weight: '15%', our_score: 6, comp_score: 8, issue: 'Cần ra mắt gói Combo Trưa (Business Lunch)' },
 ];
 
 export default function PageA5Swot() {
@@ -40,16 +40,16 @@ export default function PageA5Swot() {
         </InstructionAlert>
 
         <div className="bento-card p-6">
-           <h3 className="text-sm font-semibold text-linear-text-muted mb-4 uppercase tracking-widest">Phân khúc: Mẹ bỉm sữa & Trẻ em</h3>
+           <h3 className="text-sm font-semibold text-linear-text-muted mb-4 uppercase tracking-widest">Phân khúc: Gen Z & Dân văn phòng Burnout</h3>
            <PastelTable 
              columns={COLUMNS} 
-             data={localData.items}
+             data={localData.items && localData.items.length > 0 ? localData.items : KSF_DATA}
              footerContent={
                <tr>
                  <td className="px-4 py-3 text-right">Tổng cộng:</td>
                  <td className="px-4 py-3 text-center text-linear-text-muted">100%</td>
-                 <td className="px-4 py-3 text-center text-purple-200">8.30</td>
-                 <td className="px-4 py-3 text-center text-orange-200">7.65</td>
+                 <td className="px-4 py-3 text-center text-purple-200">8.05</td>
+                 <td className="px-4 py-3 text-center text-orange-200">7.05</td>
                  <td className="px-4 py-3"></td>
                </tr>
              }

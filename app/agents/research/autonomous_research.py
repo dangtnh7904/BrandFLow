@@ -7,10 +7,10 @@ from typing import List
 # PYDANTIC SCHEMA CHO BÁO CÁO THỊ TRƯỜNG TỰ ĐỘNG
 # =============================================================================
 class MarketContextResult(BaseModel):
-    pestle_factors: str = Field(description="Các yếu tố Vĩ mô (Kinh tế, Xã hội, Pháp lý) đang tác động đến ngành này lúc này.")
-    competitor_trends: str = Field(description="Xu hướng các đối thủ trong ngành đang làm gì gần đây.")
-    consumer_behavior: str = Field(description="Đặc điểm hành vi của tệp khách hàng mục tiêu tại thời điểm hiện tại.")
-    data_sources: List[str] = Field(description="Danh sách 2-3 links hoặc nguồn dữ liệu đã thu thập được từ Web.")
+    pestle_factors: str = Field(description="Các yếu tố Vĩ mô đang tác động. BẮT BUỘC chứa trích dẫn [1], [2]... nếu có dữ kiện từ Web.")
+    competitor_trends: str = Field(description="Xu hướng đối thủ. BẮT BUỘC chứa trích dẫn [1], [2]... nếu có dữ kiện từ Web.")
+    consumer_behavior: str = Field(description="Đặc điểm hành vi khách hàng. BẮT BUỘC chứa trích dẫn [1], [2]... nếu có dữ kiện từ Web.")
+    data_sources: List[str] = Field(description="Danh sách CHÍNH XÁC các URLs nguồn theo thứ tự [1], [2]... để người dùng Fact-check. Ví dụ: ['[1] https://...', '[2] https://...']")
 
 def _resolve_groq_timeout_seconds() -> float:
     return max(1.0, float(os.getenv("BRANDFLOW_GROQ_TIMEOUT_SECONDS", "60")))
@@ -20,16 +20,16 @@ GROQ_TIMEOUT_SECONDS = _resolve_groq_timeout_seconds()
 
 def run_autonomous_market_research(industry: str, audience: str, custom_workflow_rules: str = "") -> dict:
     """
-    Quy trình Thám tử AI:
-    Sử dụng DuckDuckGo Search API để tìm tin tức Real-time về Ngành và Khách hàng trên mạng.
-    Nén thông tin lại thành Bản tin Thị trường (Market Context) cho Agent 1 lập kế hoạch.
+    Quy trình Thám tử AI Fact-checker:
+    Sử dụng DuckDuckGo Search API để tìm tin tức Real-time.
+    Bắt buộc xuất nguồn rõ ràng (Citation) để chống ảo giác (Hallucination).
     """
     from langchain_groq import ChatGroq
     from langchain_community.tools import DuckDuckGoSearchResults
     from langchain_core.messages import HumanMessage, SystemMessage
     
     print(f"\n{'═' * 70}")
-    print(f"🕵️ [WEB RESEARCHER AGENT] Đang thu thập tin tức thời gian thực...")
+    print(f"🕵️ [WEB RESEARCHER AGENT] Đang thu thập tin tức thời gian thực & Fact-check...")
     print(f"   Ngành: {industry} | Khách mục tiêu: {audience}")
     print(f"{'═' * 70}")
 
@@ -49,14 +49,16 @@ def run_autonomous_market_research(industry: str, audience: str, custom_workflow
             system_prompt += f"\nQUY TRÌNH KÉO DỮ LIỆU ĐƯỢC CHỈ ĐỊNH TỪ TEAM BUSINESS:\n{custom_workflow_rules}\n"
             
         research_prompt = f"""
-        Nhiệm vụ của bạn là dựa vào tri thức nội bộ và công cụ Tìm kiếm Web để lập "Tóm tắt Báo cáo Thị trường Hiện tại" tại Việt Nam.
+        Nhiệm vụ của bạn là dựa vào tri thức nội bộ và công cụ Tìm kiếm Web để lập "Tóm tắt Báo cáo Thị trường Hiện tại".
         
         Ngành hàng: {industry}
         Tệp khách hàng mục tiêu: {audience}
         
-        Quy tắc:
-        - Đừng đoán bừa. Nếu thiếu thông tin, hãy ưu tiên các xu hướng chung về thói quen mua sắm.
-        - Tìm kiếm ít nhất 2 tin tức mới nhất về ngành này.
+        Quy tắc TỐI THƯỢNG (FACT-CHECKING):
+        - BẠN TUYỆT ĐỐI KHÔNG ĐƯỢC BỊA ĐẶT DỮ LIỆU HOẶC CON SỐ (NO HALLUCINATION).
+        - Khi đề cập đến bất kỳ xu hướng, con số, hay thông tin nào lấy từ Web, BẠN PHẢI đánh dấu trích dẫn [1], [2] ngay sau câu đó.
+        - Ở trường `data_sources`, BẠN PHẢI liệt kê chính xác URL tương ứng với [1], [2].
+        - Nếu kết quả Web không có thông tin hữu ích, hãy thành thật nói "Không tìm thấy dữ liệu hiện thời" thay vì bịa ra.
         """
         
         print("   🔍 Đang lướt Web tra cứu (DuckDuckGo Search)...")

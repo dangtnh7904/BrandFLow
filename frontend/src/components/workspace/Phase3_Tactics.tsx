@@ -84,7 +84,8 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
          month: (pIdx % 3) + 1,
          duration: 1 + (index % 2),
          type: ['setup', 'content', 'ads', 'seo', 'contingency'][index % 5],
-         pct: pct
+         pct: pct,
+         exact_cost: cost
        });
        index++;
      });
@@ -107,7 +108,7 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
  const newCosts: Record<string, string> = {};
  
  TASKS.forEach(t => {
- const cost = (budgetNum * (t.pct / 100));
+ const cost = t.exact_cost !== undefined ? t.exact_cost : (budgetNum * (t.pct / 100));
  newCosts[t.id] = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(cost);
  });
  

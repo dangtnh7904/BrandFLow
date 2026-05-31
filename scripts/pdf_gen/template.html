@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Ebook Template</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafaf9; /* Nền Off-white (Trắng ngà) sang trọng */
+            color: #1e293b;
+            line-height: 2.2;
+            letter-spacing: 0.015em;
+            font-size: 1.05rem;
+            width: 210mm;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            color: #0f172a;
+        }
+
+        /* H1: Bìa sách / Tiêu đề chính */
+        h1 { 
+            font-size: 3.5rem; 
+            font-weight: 800; 
+            margin-top: 2rem;
+            margin-bottom: 4rem; 
+            line-height: 1.2; 
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #0f172a;
+            page-break-after: always; /* Luôn ngắt trang sau tiêu đề sách */
+        }
+        
+        /* H2: Slide Divider (Cắt cảnh Chương) - Đứng độc lập 1 trang */
+        h2 { 
+            page-break-before: always; /* Ngắt trang trước khi bắt đầu H2 */
+            page-break-after: always; /* Ngắt trang sau H2 để chữ thân bài sang trang mới */
+            height: 60vh; /* Chiếm 60% chiều cao giấy */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 2.8rem; 
+            font-weight: 800; 
+            margin-top: 10vh; /* Đẩy xuống giữa trang */
+            margin-bottom: 0; 
+            color: #d4af37; /* Chữ Vàng Gold */
+            background-color: #0f172a; /* Nền xanh đen */
+            padding: 4rem;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 2px solid #334155;
+        }
+
+        /* H3: Tiêu đề Slide (Slide Title) */
+        h3 { 
+            font-size: 1.8rem; 
+            font-weight: 700; 
+            margin-top: 3.5rem; 
+            margin-bottom: 2rem; 
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #d4af37; /* Gạch dưới vàng gold */
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            page-break-after: avoid; 
+        }
+        
+        /* Paragraph Styling */
+        p { 
+            margin-bottom: 1.5rem; 
+            text-align: justify; 
+            hyphens: auto; 
+            page-break-inside: avoid; 
+        }
+
+        /* Data Highlighting: Inline Code */
+        code {
+            background-color: #0f172a; 
+            color: #d4af37; 
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        /* Blockquotes: Glassmorphism Card Style */
+        blockquote {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-left: 8px solid #d4af37;
+            border-radius: 16px;
+            padding: 2rem 2.5rem;
+            margin: 3.5rem 0;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.35rem;
+            line-height: 1.9;
+            color: #1e293b;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.01);
+            page-break-inside: avoid;
+            position: relative;
+        }
+        
+        /* Dấu ngoặc kép mờ sau lưng */
+        blockquote::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 6rem;
+            color: rgba(212, 175, 55, 0.1); /* Vàng mờ */
+            font-family: serif;
+        }
+
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Sửa lỗi Mindmap */
+        .custom-diagram {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            margin: 4rem 0 !important;
+            zoom: 0.85; 
+            background: white !important; /* Làm nổi sơ đồ trên nền Off-white */
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05) !important;
+        }
+
+        /* Table Styling - Financial Report Grade */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 3.5rem 0;
+            background-color: #fff;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            page-break-inside: avoid;
+            zoom: 0.9;
+        }
+        th {
+            background-color: #0f172a;
+            color: #d4af37; /* Gold accent */
+            text-align: left;
+            padding: 1.5rem 1.25rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        td {
+            padding: 1.25rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: top;
+            font-size: 1.05rem;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+        /* Nhấn mạnh cột đầu tiên */
+        td:first-child {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        hr {
+            margin: 3rem 0;
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #d4af37, transparent);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Page break utilities */
+        .page-break-before { page-break-before: always; }
+        .page-break-after { page-break-after: always; }
+        
+        /* Markdown generated images */
+        .content-page img {
+            max-width: 100%;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div class="cover-page">
+        <img src="{{COVER_IMAGE}}" alt="Cover" class="cover-image" />
+    </div>
+
+    <div class="content-page">
+        <!-- Content will be injected here -->
+        {{CONTENT}}
+    </div>
+
+</body>
+</html>

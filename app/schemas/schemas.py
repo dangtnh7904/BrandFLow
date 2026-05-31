@@ -10,6 +10,9 @@ class InterviewRequest(BaseModel):
 class RawInputRequest(BaseModel):
     raw_text: str = Field(..., description="Ngôn ngữ tự nhiên từ người dùng")
     budget: Optional[int] = Field(None, description="Ngân sách cố định do người dùng nhập (VND)")
+    scenario_type: Literal["budget_driven", "idea_driven"] = Field("budget_driven", description="Kịch bản yêu cầu")
+    target_profit: Optional[int] = Field(None, description="Lợi nhuận mục tiêu (VND)")
+    idea_description: Optional[str] = Field(None, description="Mô tả ý tưởng (nếu có)")
     comprehensive_form: Optional[Dict[str, Any]] = Field(None, description="Dữ liệu form trắc nghiệm")
     brand_dna: Optional[Dict[str, Any]] = Field(None, description="Brand DNA đã trích xuất")
     tenant_id: str = Field("default", description="Mã định danh phiên làm việc của người dùng")
@@ -40,6 +43,9 @@ class OrchestrationMockRequest(BaseModel):
     goal: str = Field(..., description="Mục tiêu chiến dịch")
     industry: str = Field("General", description="Ngành nghề")
     budget: int = Field(0, ge=0, description="Ngân sách kỳ vọng (VND)")
+    scenario_type: str = Field("budget_driven", description="Kịch bản yêu cầu")
+    target_profit: int = Field(0, ge=0, description="Lợi nhuận mục tiêu (VND)")
+    idea_description: str = Field("", description="Mô tả ý tưởng (nếu có)")
     target_audience: str = Field("", description="Tệp khách hàng mục tiêu")
     constraints: str = Field("", description="Ràng buộc đặc biệt")
 
@@ -60,6 +66,9 @@ class PlanWizardRequest(BaseModel):
     goal: str = Field(..., min_length=3, description="Mục tiêu chiến dịch")
     industry: str = Field("General", description="Ngành nghề")
     budget: int = Field(0, ge=0, description="Ngân sách kỳ vọng (VND)")
+    scenario_type: str = Field("budget_driven", description="Kịch bản yêu cầu")
+    target_profit: int = Field(0, ge=0, description="Lợi nhuận mục tiêu (VND)")
+    idea_description: str = Field("", description="Mô tả ý tưởng (nếu có)")
     target_audience: str = Field("", description="Tệp khách hàng mục tiêu")
     constraints: str = Field("", description="Ràng buộc đặc biệt")
 
@@ -89,6 +98,9 @@ class PlanIntent(BaseModel):
     goal: str = Field(..., description="Mục tiêu chiến dịch")
     industry: str = Field("General", description="Ngành nghề")
     budget: int = Field(0, ge=0, description="Ngân sách")
+    scenario_type: str = Field("budget_driven", description="Kịch bản yêu cầu")
+    target_profit: int = Field(0, ge=0, description="Lợi nhuận mục tiêu (VND)")
+    idea_description: str = Field("", description="Mô tả ý tưởng (nếu có)")
     target_audience: str = Field("", description="Tệp khách hàng mục tiêu")
     constraints: str = Field("", description="Ràng buộc đặc biệt")
 
@@ -146,6 +158,9 @@ class ModuleInputData(BaseModel):
     industry: str = Field(..., description="Ngành hàng (F&B, Tech, Cosmetics, Edu, General)")
     goal: str = Field(..., description="Mục tiêu cốt lõi")
     budget: int = Field(0, description="Ngân sách thực tế (VNĐ)")
+    scenario_type: str = Field("budget_driven", description="Kịch bản yêu cầu")
+    target_profit: int = Field(0, description="Lợi nhuận mục tiêu (VND)")
+    idea_description: str = Field("", description="Mô tả ý tưởng (nếu có)")
     csfs: list[str] = Field(default_factory=list, description="Yếu tố thành công then chốt (CSFs)")
     resources: str = Field("", description="Nguồn lực sẵn có")
 

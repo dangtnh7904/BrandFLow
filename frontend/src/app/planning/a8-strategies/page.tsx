@@ -8,19 +8,19 @@ import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
 
 const MATRIX_DATA = [
-  { level: 'Tổng Khối lượng', past: '150 tấn', now: '200 tấn', target: '400 tấn', note: 'Động lực chính cho tăng trưởng' },
-  { level: 'Thị phần Tổng', past: '12%', now: '15%', target: '25%', note: 'Khai thác thị trường tỉnh' },
-  { level: 'Tỷ trọng: Mẹ & Bé', past: '60%', now: '65%', target: '70%', note: 'Phân khúc lõi' },
-  { level: 'Tỷ trọng: Văn phòng', past: '40%', now: '35%', target: '30%', note: 'Duy trì doanh thu ổn định' },
-  { level: 'SP: Vị Nguyên bản', past: '100%', now: '80%', target: '60%', note: 'Sản phẩm nền tảng' },
-  { level: 'SP: Vị Trái cây', past: '0%', now: '20%', target: '40%', note: 'Sản phẩm mở rộng biên LN' },
+  { level: 'Tổng Doanh Thu', past: '1.2 tỷ', now: '1.8 tỷ', target: '3 tỷ', note: 'Mục tiêu sau 90 ngày Launching' },
+  { level: 'Khách quay lại (Retention)', past: '15%', now: '35%', target: '50%', note: 'Hệ sinh thái Mini App' },
+  { level: 'Tỷ trọng: Gen Z', past: '30%', now: '50%', target: '60%', note: 'Khách hàng mục tiêu chính' },
+  { level: 'Tỷ trọng: Khách văn phòng', past: '50%', now: '40%', target: '35%', note: 'Business Lunch' },
+  { level: 'SP: Cơm niêu gia đình', past: '80%', now: '70%', target: '60%', note: 'Món lõi truyền thống' },
+  { level: 'SP: Combo Trưa bã mía', past: '0%', now: '15%', target: '25%', note: 'Thêm dòng SP mới thân thiện' },
 ];
 
 const FOUR_P_DATA = [
-  { p: 'Sản phẩm (Product)', content: 'Phát triển bao bì mini 15g; Thiết kế nhận diện tối giản, hiện đại.', cost: '2.5 tỷ VNĐ (R&D + Design)' },
-  { p: 'Giá (Price)', content: 'Giữ giá niêm yết Premium; Chiết khấu sâu cho nhà phân phối.', cost: 'N/A (Điều chỉnh biên LN)' },
-  { p: 'Phân phối (Place)', content: 'Mở rộng lên 80% độ phủ tại các chuỗi hệ thống Mẹ & Bé.', cost: '4.5 tỷ VNĐ (Trade Mkt)' },
-  { p: 'Xúc tiến (Promo)', content: 'TVC hoạt hình giáo dục lợi khuẩn; Tài trợ sự kiện gia đình.', cost: '8.0 tỷ VNĐ' },
+  { p: 'Sản phẩm (Product)', content: 'Phát triển gói Business Lunch hộp bã mía thân thiện môi trường; Tặng kèm thẻ chánh niệm.', cost: '30 triệu VNĐ (R&D)' },
+  { p: 'Giá (Price)', content: 'Premium Pricing (250k-400k/người); Không giảm giá sâu, áp dụng Scarcity Marketing.', cost: 'N/A' },
+  { p: 'Phân phối (Place)', content: 'Booking qua Zalo Mini App; Phân phối trực tiếp tại cửa hàng.', cost: '20 triệu VNĐ' },
+  { p: 'Xúc tiến (Promo)', content: 'Brand Film Cinematic "Về Nhà Ăn Cơm"; Tương tác Influencer đa kênh TikTok/Facebook.', cost: '90 triệu VNĐ' },
 ];
 
 const MOCK_PHASING = [

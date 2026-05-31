@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Screen1_Source from './phase1/Screen1_Source';
 import Screen2_Wizard from './phase1/Screen2_Wizard';
 import Screen3_Dashboard from './phase1/Screen3_Dashboard';
+import Screen4_ObjectiveSetting from './phase1/Screen4_ObjectiveSetting';
 import { useFormStore } from '@/store/useFormStore';
 import AmbientParticles from '@/components/AmbientParticles';
 
 export default function Phase1_Ingestion({ onGoToHub, onGoToWorkspace }: { onGoToHub: () => void, onGoToWorkspace: () => void }) {
-  // 1 = Selection, 2 = Wizard Form, 3 = Analysis Dashboard
-  const [currentScreen, setCurrentScreen] = useState<1 | 2 | 3>(1);
+  // 1 = Selection, 2 = Wizard Form, 3 = Analysis Dashboard, 4 = Objective Setting
+  const [currentScreen, setCurrentScreen] = useState<1 | 2 | 3 | 4>(1);
   const generateAndSaveDNA = useFormStore(state => state.generateAndSaveDNA);
 
   const goToDashboard = async () => {
@@ -60,7 +61,20 @@ export default function Phase1_Ingestion({ onGoToHub, onGoToWorkspace }: { onGoT
  transition={{ duration: 0.4 }}
  className="absolute inset-0 z-50 bg-black/50 backdrop-blur-md"
  >
- <Screen3_Dashboard onGoToHub={onGoToHub} onGoToWorkspace={onGoToWorkspace} />
+ <Screen3_Dashboard onGoToHub={onGoToHub} onGoToNext={() => setCurrentScreen(4)} />
+ </motion.div>
+ )}
+
+ {currentScreen === 4 && (
+ <motion.div 
+ key="screen4"
+ initial={{ opacity: 0, x: 50 }}
+ animate={{ opacity: 1, x: 0 }}
+ exit={{ opacity: 0, x: -50 }}
+ transition={{ duration: 0.4 }}
+ className="absolute inset-0 z-50 bg-black/50 backdrop-blur-md"
+ >
+ <Screen4_ObjectiveSetting onBack={() => setCurrentScreen(3)} onGoToWorkspace={onGoToWorkspace} />
  </motion.div>
  )}
  </AnimatePresence>

@@ -13,12 +13,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
   const [isLocked, setIsLocked] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
 
-  // Khởi động fetch dữ liệu nếu chưa có
-  const initRef = React.useRef(false);
   useEffect(() => {
-    if (initRef.current) return;
-    initRef.current = true;
-    
     let isMounted = true;
     const initDebate = async () => {
       setIsFetching(true);
@@ -30,9 +25,13 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
         setIsFetching(false);
       }
     };
+    
     initDebate();
-    return () => { isMounted = false; };
-  }, [runDebateAndPlanning]); // Removed debateLogs from dependencies to prevent infinite loop
+    
+    return () => { 
+      isMounted = false; 
+    };
+  }, [runDebateAndPlanning, debateLogs?.length]); 
 
   // Hiệu ứng "gõ chữ" / replay từ API logs
   useEffect(() => {
@@ -47,7 +46,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
         // Ánh xạ `role` từ backend hoặc dùng default
         const log = debateLogs[i];
         // Đôi khi backend gửi role = 'warning' / 'rejected' ở thuộc tính khác, ta map tay
-        const type = log.message?.toLowerCase().includes("cảnh báo") ? 'warning' : 'proposal';
+        const type = (log.message || '').toLowerCase().includes("cảnh báo") ? 'warning' : 'proposal';
         
         setMessages(prev => [...prev, {
           agent: log.agent || 'SYSTEM',
@@ -149,7 +148,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
                       </div>
                       <span className="text-[10px] text-linear-text-muted font-mono">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}</span>
                     </div>
-                    <p className="text-foreground text-[15px] leading-relaxed font-medium">{msg.text}</p>
+                    <p className="text-foreground text-[15px] leading-relaxed font-medium whitespace-pre-wrap">{msg.text}</p>
                     {isWarning && (
                        <div className="absolute inset-0 border border-orange-500/50 rounded-2xl animate-pulse pointer-events-none"></div>
                     )}

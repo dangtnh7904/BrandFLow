@@ -3,153 +3,138 @@ import { useFormStore } from '@/store/useFormStore';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import { CheckCircle2, AlertTriangle, Target, Briefcase, Zap, TrendingUp, ShieldAlert } from 'lucide-react';
+import { EducationTooltip } from '@/components/ui/EducationTooltip';
 
 const COLORS = ['#0f172a', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#64748b'];
 
 // Dữ liệu DEMO chuẩn chuyên gia được dán cứng để in luôn
 const DEMO_EXPERT_DATA = {
   "goal_setting": {
-    "mission_statement": "To empower B2B tech companies with AI-driven marketing automation.",
+    "mission_statement": "Kiến tạo Bếp Nhà Mộc thành 'Thánh địa Mindful Dining' tiên phong tại Sài Gòn – Nơi chữa lành tâm hồn thị dân thông qua nghệ thuật Ẩm thực Việt di sản, không gian kiến trúc mộc mạc nguyên bản và chuỗi cung ứng Farm-to-Table 100% hữu cơ.",
     "core_competencies": [
       {
-        "competency": "Động cơ AI tự động hóa workflow 5 bước (Bản quyền thuật toán Llama)",
+        "competency": "Lợi thế Độc quyền (VRIO): Không gian kiến trúc nhà gỗ cổ truyền mang âm hưởng hoài niệm, tạo ra 'Therapeutic Environment' (Môi trường trị liệu tâm lý) không thể sao chép giữa lòng thành phố.",
         "is_vrio": true
       },
       {
-        "competency": "Data pipeline realtime độc quyền từ 100+ nguồn SaaS",
+        "competency": "Lợi thế Cạnh tranh: Hệ sinh thái nguyên liệu 100% Organic khép kín từ nông trại địa phương, đảm bảo tính nguyên bản và độ tươi ngon tuyệt đối cho thực đơn.",
         "is_vrio": false
       }
     ],
     "objectives": {
       "financial_goals": [
-        "Đạt mốc MRR $50,000 với biên lợi nhuận ròng 35% trong 12 tháng",
-        "Giảm thời gian hoàn vốn (Payback Period) xuống dưới 4 tháng"
+        "Vượt điểm hòa vốn (Break-even), tăng trưởng doanh thu từ 1.2 tỷ lên mốc 1.8 tỷ VNĐ/tháng (+50%) trong 90 ngày đầu tiên triển khai.",
+        "Tối ưu hóa phễu khách hàng trung thành, đẩy tỷ lệ Retention Rate (Quay lại) từ 15% lên mức tiêu chuẩn vàng 35% thông qua hệ sinh thái Mini App."
       ],
       "marketing_goals": [
-        "Giảm Customer Acquisition Cost (CAC) xuống dưới $200",
-        "Tăng tỷ lệ LTV:CAC lên mức chuẩn 3:1"
+        "Thống lĩnh Share of Voice (SOV) ngách ẩm thực chữa lành, đạt 5 triệu lượt Organic Reach trên đa nền tảng (TikTok, Instagram).",
+        "Định vị Top 5 điểm đến F&B 'Must-visit' về concept Aesthetic & Mindful Dining tại khu vực Quận 1/Quận 3."
       ],
-      "cac_ltv_analysis": "Dựa trên AOV $1,200/năm, LTV dự kiến đạt $3,600 (với tỷ lệ churn 5%). Mục tiêu CAC tối đa $400 để duy trì tỷ lệ LTV/CAC > 8:1, đảm bảo dòng tiền an toàn."
+      "cac_ltv_analysis": "Mục tiêu chiến lược: Khống chế Customer Acquisition Cost (CAC) < 40,000 VNĐ/khách. Thông qua Zalo Loyalty, dự kiến đẩy Life-Time Value (LTV) lên mức 2,500,000 VNĐ/khách/năm. Tỷ lệ LTV:CAC đạt ngưỡng 62:1, đảm bảo biên lợi nhuận ròng và dòng tiền siêu dương."
     },
     "red_lines": [
-      "Không bao giờ sử dụng scraping dữ liệu trái phép (vi phạm GDPR/PDPA)",
-      "Không tham gia vào cuộc chiến phá giá dưới mức Gross Margin 60%"
+      "Nguyên tắc Vàng: Tuyệt đối không chạy đua 'Deep Discounting' (Giảm giá sâu) làm phá vỡ Định vị Thương hiệu (Brand Equity) cao cấp.",
+      "Lằn ranh Dịch vụ: Không bao giờ nhồi nhét khách vượt quá công suất thiết kế (Tối đa 100 pax/buổi) để bảo vệ trọn vẹn trải nghiệm 'Chữa Lành'."
     ]
   },
   "situation_audit": {
     "target_segments": [
       {
-        "segment_name": "SME B2B Tech Startups",
+        "segment_name": "Urban Healers (Gen Z) & Mindful Professionals (Gen Y)",
         "dmu_profiles": [
           {
-            "role": "Decider",
+            "role": "Decider (Người ra quyết định chốt địa điểm)",
             "pain_points": [
-              "Ngân sách marketing hạn hẹp (<$5k/tháng), không đủ thuê senior CMO",
-              "Burn rate cao do chạy quảng cáo sai tệp B2B"
+              "Chịu hội chứng Burnout (Cạn kiệt sức lực) từ văn hóa 'Toxic Productivity' chốn công sở, khao khát một chốn ẩn náu an tĩnh.",
+              "Mất niềm tin vào thực phẩm đại trà, ám ảnh với 'Clean Eating' nhưng lại chán ngán với các thực đơn Healthy nhạt nhẽo."
             ],
             "decision_drivers": [
-              "Thời gian triển khai (Time-to-value) cực ngắn",
-              "Chứng minh được ROI ngay trong quý đầu"
-            ]
-          },
-          {
-            "role": "User",
-            "pain_points": [
-              "Phải dùng quá nhiều tool rời rạc (Hubspot, Canva, GPT)",
-              "Quy trình duyệt content quá chậm"
-            ],
-            "decision_drivers": [
-              "Giao diện All-in-one tối giản",
-              "AI viết đúng văn phong B2B chuyên ngành"
+              "Không gian Aesthetic giàu tính kể chuyện (Storytelling), nhiều góc check-in đậm chất Cinematic hoài niệm.",
+              "Trải nghiệm cá nhân hóa tinh tế, âm nhạc ASMR tần số thấp giúp xoa dịu hệ thần kinh."
             ]
           }
         ],
-        "value_proposition": "Thay vì nuôi team Marketing 5 người tốn $10k/tháng, BrandFlow cung cấp AI Agency tự động hóa với chi phí 10%, ra chiến lược trong 30 phút.",
+        "value_proposition": "Bếp Nhà Mộc không bán một bữa ăn vật lý. Chúng tôi trao cho khách hàng một 'Liệu pháp Chữa Lành' (Food Therapy) – một tấm vé quay về góc bếp tuổi thơ bình yên với mâm cơm nhà chuẩn vị, rũ bỏ hoàn toàn áp lực phố thị ngoài kia.",
         "data_sources": [
-          "Báo cáo B2B SaaS Benchmark 2025 từ Forrester",
-          "Dữ liệu khảo sát 500 CEO Tech Startup tại Đông Nam Á"
+          "Báo cáo Insight F&B 2025: Sự bùng nổ của xu hướng Mindful Dining sau khủng hoảng kinh tế.",
+          "Phân tích Dữ liệu CRM nội bộ Bếp Nhà Mộc (Q4/2024 - Q1/2025)."
         ]
       }
     ],
-    "benchmarks": [
-      {
-        "factor_name": "Tự động hóa lập kế hoạch",
-        "our_score": 9,
-        "industry_benchmark_score": 4,
-        "weight_percentage": 40.0
-      },
-      {
-        "factor_name": "Cá nhân hóa nội dung B2B",
-        "our_score": 7,
-        "industry_benchmark_score": 8,
-        "weight_percentage": 30.0
-      }
-    ],
-    "tows_strategic_options": [
-      "SO: Tận dụng thuật toán AI lõi để đánh bại tốc độ của Agency truyền thống trong phân khúc SME.",
-      "ST: Tập trung định vị Niche B2B để né các ông lớn AI Content chung chung như Jasper."
-    ]
+    "directional_policy": {
+      "market_attractiveness": "Rất Cao (High) - Nhu cầu 'Chữa lành tâm lý' (Mental Healing) đang trở thành xu hướng chi tiêu không thể thiếu của tệp khách hàng trung và thượng lưu.",
+      "business_strength": "Khá (Medium-High) - Concept mộc mạc sở hữu lõi văn hóa mạnh, nhưng điểm nghẽn nằm ở nút thắt vận hành và hệ thống CSKH số hóa.",
+      "investment_decision": "Invest & Grow (Chiến lược Tấn công) - Bơm vốn mạnh tay vào Rebranding đa kênh và Chuyển đổi số toàn diện."
+    }
   },
   "strategy": {
-    "ansoff_matrix_choice": "Market Penetration (Thâm nhập thị trường): Dành giật tập SME Tech từ Agency truyền thống bằng lợi thế giá và tốc độ.",
-    "positioning_statement": "Với SME Tech B2B, BrandFlow là nền tảng AI Marketing duy nhất (POP: tính năng tự động hóa) sở hữu lõi tư duy McKinsey (POD: Quản trị chiến lược & Rủi ro ROI).",
-    "expected_roi_justification": "Với LTV dự kiến đạt $2400 và khống chế CAC ở mức $200 qua kênh Webinar, hệ số LTV:CAC = 12, dòng tiền siêu dương."
+    "ansoff_matrix_choice": "Market Penetration (Thâm nhập thị trường sâu): Tận dụng lợi thế Tiên phong để đánh chiếm toàn bộ tệp khách hàng Gen Y/Z đang săn lùng không gian Mindful Dining tại lõi trung tâm thành phố.",
+    "positioning_statement": "Bỏ lại sau lưng thị trường 'Quán ăn gia đình' truyền thống đang Đỏ lửa (Red Ocean), Bếp Nhà Mộc tự thiết lập một Đại dương Xanh (Blue Ocean): Là chốn về duy nhất trao đi trải nghiệm 'Ẩm thực Việt Chữa Lành' (POD) dành riêng cho thị dân mệt mỏi.",
+    "expected_roi_justification": "Luận điểm đầu tư: Khoản ngân sách 350 triệu VNĐ không phải chi phí, mà là Đòn bẩy Tăng trưởng. Dự kiến mang về 600 triệu VNĐ doanh thu bù đắp ngay trong tháng 2 (ROI > 70%), đồng thời xây đắp tệp Data Khách hàng khổng lồ qua Zalo Loyalty làm tài sản sinh lời dài hạn."
   },
   "tactics": {
     "tactics_7ps": [
       {
-        "p_name": "Product",
-        "action_bullet": "Ra mắt Workspace với quy trình 5 bước AI tự động chốt ngân sách",
-        "kpi": "20% user trial hoàn thành 1 bản kế hoạch",
-        "budget_vnd": 50000000,
-        "budget_allocation_percent": 50.0,
-        "moscow_tag": "MUST_HAVE"
-      },
-      {
-        "p_name": "Promotion",
-        "action_bullet": "Tổ chức chuỗi Webinar B2B 'Growth Hacking cho SaaS'",
-        "kpi": "Thu hút 500 MQLs, tỷ lệ chuyển SQL 10%",
+        "p_name": "Product (Sản phẩm)",
+        "action_bullet": "R&D và tung ra 'Thực Đơn Ký Ức' & Gói Business Lunch Combo đóng hộp bã mía Eco-friendly cao cấp.",
+        "kpi": "Tăng 25% doanh thu khung giờ thấp điểm (11h-14h), tối ưu hóa công suất bếp.",
         "budget_vnd": 30000000,
-        "budget_allocation_percent": 30.0,
+        "budget_allocation_percent": 8.6,
         "moscow_tag": "MUST_HAVE"
       },
       {
-        "p_name": "Physical Evidence",
-        "action_bullet": "Public Case Study chứng minh ROI từ startup đã dùng BrandFlow",
-        "kpi": "Đạt 1,000 lượt tải whitepaper tháng 1",
-        "budget_vnd": 10000000,
-        "budget_allocation_percent": 10.0,
+        "p_name": "Promotion (Truyền thông)",
+        "action_bullet": "Bùng nổ truyền thông với Cinematic Brand Film 'Hương Vị Chữa Lành' & Chiến dịch KOLs/Micro-Influencers đa nền tảng.",
+        "kpi": "Tạo ra 3M+ lượt xem tự nhiên, 50+ UGC chất lượng cao, mang về 2000+ Bookings mới.",
+        "budget_vnd": 150000000,
+        "budget_allocation_percent": 42.8,
+        "moscow_tag": "MUST_HAVE"
+      },
+      {
+        "p_name": "Place (Phân phối)",
+        "action_bullet": "Bơm ngân sách Performance Ads (Facebook/Tiktok Ads) tập trung chuyển đổi trực tiếp về Zalo Mini App Booking.",
+        "kpi": "Tối ưu CAC < 40k VNĐ. Mang về doanh thu trực tiếp 600 triệu VNĐ.",
+        "budget_vnd": 90000000,
+        "budget_allocation_percent": 25.7,
+        "moscow_tag": "MUST_HAVE"
+      },
+      {
+        "p_name": "Physical Evidence (Giao diện Không gian)",
+        "action_bullet": "Nâng cấp toàn diện Nhận diện Thị giác (Menu gỗ, Bao bì Kraft nguyên bản, Đồng phục Linen, Art Concept Fanpage).",
+        "kpi": "Thăng hạng Perceived Value (Giá trị cảm nhận), tạo cơ sở thiết lập Premium Pricing (+15% giá menu).",
+        "budget_vnd": 45000000,
+        "budget_allocation_percent": 12.9,
         "moscow_tag": "SHOULD_HAVE"
       },
       {
-        "p_name": "Price",
-        "action_bullet": "Gói Early Bird Lifetime Deal thu hồi vốn lưu động",
-        "kpi": "Bán 100 gói $299 trong 2 tuần",
-        "budget_vnd": 10000000,
+        "p_name": "Process (Quy trình Vận hành)",
+        "action_bullet": "Phát triển Zalo Mini App Loyalty - Số hóa trải nghiệm khách hàng (Tích điểm 'Hạt Gạo', Automation Marketing, Khảo sát tự động).",
+        "kpi": "Bứt phá Tỷ lệ Retention Rate từ 15% lên 35%, giảm phụ thuộc vào Ads.",
+        "budget_vnd": 35000000,
         "budget_allocation_percent": 10.0,
         "moscow_tag": "COULD_HAVE"
       }
     ],
-    "total_budget_used": 100000000,
+    "total_budget_used": 350000000,
     "task_ready_checklist": [
-      "Lên outline và chốt Guest Speaker cho Webinar",
-      "Thiết kế Landing Page B2B cho gói Early Bird",
-      "Draft Case Study framework và phỏng vấn khách hàng",
-      "Set up tracking MQL/SQL trên Hubspot"
+      "Duyệt kịch bản phân cảnh (Storyboard) và chốt Casting diễn viên cho Cinematic Brand Film.",
+      "Ký NDA và hợp đồng với 30 Micro-Influencer thuộc hệ sinh thái Lifestyle/Food Reviewer.",
+      "Chốt thiết kế UI/UX luồng Booking và nghiệm thu mã nguồn Zalo Mini App Loyalty.",
+      "Ký duyệt bản in Test (Proofing) bộ bao bì bã mía thân thiện môi trường."
     ]
   },
   "cfo_risk": {
-    "cfo_comment": "Kế hoạch rất tham vọng nhưng tôi lo về phễu chốt sale từ Webinar. Nếu CAC vượt $200, dòng tiền sẽ âm ngay quý 2.",
+    "cfo_comment": "Từ góc độ Quản trị Tài chính (CFO), khoản đầu tư 350 triệu là một nước cờ táo bạo nhưng có kiểm soát. Việc tôi kiên quyết ép giảm chi phí Brand Film từ 80 triệu xuống 50 triệu và tái phân bổ 30 triệu sang phễu Performance Ads là để chốt chặn rủi ro Sunk-cost (Chi phí chìm). Kế hoạch này đạt độ an toàn dòng tiền cao, nhưng yêu cầu Giám đốc Vận hành (COO) phải giám sát chặt chẽ năng lực chịu tải của nhà bếp.",
     "risk_assessment": [
       {
-        "risk_scenario": "Webinar thu hút sai tệp rác thay vì B2B",
-        "trigger_point_metric": "Tỷ lệ MQL to SQL < 2% sau 2 Webinar",
-        "contingency_plan_b": "Cắt $30M Promo, đập vào Account-Based Marketing (ABM) trực tiếp qua LinkedIn."
+        "risk_scenario": "Rủi ro Truyền thông: Brand Film rơi vào 'vùng chết' thuật toán, không tạo ra chuyển đổi Booking như kỳ vọng.",
+        "trigger_point_metric": "Tín hiệu cảnh báo: Số lượng Booking qua Zalo < 50 lượt sau 72 giờ lên sóng video Hero.",
+        "contingency_plan_b": "Kế hoạch Ứng phó (Plan B): Dừng lập tức ngân sách Boost Video. Xoay trục (Pivot) dồn toàn lực sang Performance Ads chạy thẳng offer 'Tặng Chè Khúc Bạch Mộc' để kéo dòng tiền nóng."
       },
       {
-        "risk_scenario": "User Trial bỏ cuộc vì giao diện phức tạp",
-        "trigger_point_metric": "Tỷ lệ Churn trong 7 ngày trial > 60%",
-        "contingency_plan_b": "Điều động ngay team Customer Success gọi điện 1-1 hỗ trợ onboard."
+        "risk_scenario": "Rủi ro Vận hành: Hiện tượng 'Vỡ trận' do bùng nổ traffic vào các ngày cao điểm (Cuối tuần), gây sụp đổ trải nghiệm khách hàng.",
+        "trigger_point_metric": "Tín hiệu cảnh báo: Tỷ lệ khiếu nại dịch vụ (Service Complaint Rate) vượt mốc 5% tổng số bàn/ngày.",
+        "contingency_plan_b": "Kế hoạch Ứng phó (Plan B): Kích hoạt ngay chiến thuật Scarcity Marketing (Marketing Khan hiếm). Đóng cổng Walk-in, cấu hình Zalo Booking chỉ nhận tối đa 100 khách/buổi để bảo vệ tuyệt đối định vị 'Không gian Chữa Lành'."
       }
     ]
   }
@@ -227,7 +212,18 @@ export default function ExecutiveReport() {
         <div className="flex-1 overflow-hidden">
           {/* Mission & VRIO */}
           <section className="mb-6">
-            <h2 className="text-xl font-bold text-slate-900 flex items-center mb-3"><Target className="w-5 h-5 mr-2 text-blue-600"/> Sứ mệnh & Năng lực lõi (VRIO)</h2>
+            <h2 className="text-xl font-bold text-slate-900 flex items-center mb-3">
+              <Target className="w-5 h-5 mr-2 text-blue-600"/> 
+              Sứ mệnh & Năng lực lõi 
+              <EducationTooltip 
+                title="Mô hình VRIO" 
+                concept="Strategic Management Tool"
+                explanation="VRIO (Value, Rarity, Inimitability, Organization) là mô hình phân tích năng lực lõi của doanh nghiệp. Một lợi thế cạnh tranh được gọi là VRIO khi nó mang lại Giá trị (V), Hiếm có (R), Khó sao chép (I), và Doanh nghiệp có Đủ năng lực tổ chức để khai thác (O)."
+                example="Công thức pha chế độc quyền của Coca-Cola là một lợi thế VRIO vì nó tạo ra giá trị lớn, hiếm, không thể sao chép hợp pháp và Coca-Cola có hệ thống phân phối toàn cầu để khai thác nó."
+              >
+                <span>(VRIO)</span>
+              </EducationTooltip>
+            </h2>
             <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
               <p className="text-slate-700 italic mb-4 font-medium">"{goal.mission_statement}"</p>
               <div className="space-y-2">
@@ -250,7 +246,17 @@ export default function ExecutiveReport() {
               </ul>
               {goal.objectives.cac_ltv_analysis && (
                 <div className="text-xs bg-blue-100 text-blue-900 p-2 rounded mt-2 border border-blue-200">
-                  <span className="font-bold block uppercase mb-1 text-[10px] tracking-wider">CAC/LTV Analysis</span>
+                  <span className="font-bold uppercase mb-1 text-[10px] tracking-wider flex items-center">
+                    CAC/LTV Analysis
+                    <EducationTooltip 
+                      title="Chỉ số CAC & LTV" 
+                      concept="Unit Economics"
+                      explanation="CAC (Customer Acquisition Cost) là chi phí để có được 1 khách hàng mới. LTV (Life-Time Value) là tổng doanh thu mà khách hàng đó mang lại trong suốt vòng đời. Tỷ lệ LTV:CAC lý tưởng để một doanh nghiệp Scale-up là từ 3:1 trở lên."
+                      example="Nếu bạn bỏ ra 50k chạy Ads để có 1 khách (CAC=50k), và khách đó ăn ở quán bạn 5 lần, mỗi lần 100k (LTV=500k). Tỷ lệ LTV:CAC là 10:1 (Rất khỏe mạnh)."
+                    >
+                      <span className="sr-only">Help</span>
+                    </EducationTooltip>
+                  </span>
                   {goal.objectives.cac_ltv_analysis}
                 </div>
               )}
@@ -265,7 +271,16 @@ export default function ExecutiveReport() {
 
           {/* Directional Policy Matrix */}
           <div className="mb-6 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
-            <h2 className="text-sm font-bold text-indigo-900 uppercase mb-2">Directional Policy Matrix (GE-McKinsey)</h2>
+            <h2 className="text-sm font-bold text-indigo-900 uppercase mb-2 flex items-center">
+              Directional Policy Matrix (GE-McKinsey)
+              <EducationTooltip 
+                title="Ma trận GE-McKinsey" 
+                concept="Portfolio Analysis"
+                explanation="Ma trận 9 ô đánh giá danh mục đầu tư dựa trên 2 trục: Sức hấp dẫn của thị trường (Market Attractiveness) và Sức mạnh cạnh tranh của doanh nghiệp (Business Strength). Giúp quyết định nên Đầu tư thêm (Invest), Giữ nguyên (Hold) hay Loại bỏ (Divest)."
+              >
+                <span className="sr-only">Help</span>
+              </EducationTooltip>
+            </h2>
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div><span className="text-slate-500 block">Market Attractiveness</span><span className="font-bold">{audit.directional_policy?.market_attractiveness}</span></div>
               <div><span className="text-slate-500 block">Business Strength</span><span className="font-bold">{audit.directional_policy?.business_strength}</span></div>
@@ -275,7 +290,18 @@ export default function ExecutiveReport() {
           
           {/* DMU & Value Proposition */}
           <section>
-            <h2 className="text-xl font-bold text-slate-900 flex items-center mb-3"><Briefcase className="w-5 h-5 mr-2 text-blue-600"/> Decision-Making Unit (DMU) & Value Proposition</h2>
+            <h2 className="text-xl font-bold text-slate-900 flex items-center mb-3">
+              <Briefcase className="w-5 h-5 mr-2 text-blue-600"/> 
+              Decision-Making Unit (DMU)
+              <EducationTooltip 
+                title="Đơn vị Ra quyết định (DMU)" 
+                concept="B2B & Complex B2C Sales"
+                explanation="Trong mua hàng phức tạp, một quyết định mua không chỉ do 1 người. DMU bao gồm: Người khởi xướng (Initiator), Người ảnh hưởng (Influencer), Người quyết định (Decider), Người mua (Buyer) và Người sử dụng (User)."
+              >
+                <span className="sr-only">Help</span>
+              </EducationTooltip>
+               & Value Proposition
+            </h2>
             {audit.target_segments.map((seg: any, i: number) => (
               <div key={i} className="mb-4">
                 <div className="bg-slate-900 text-white p-3 rounded-t-lg font-bold text-sm">Segment: {seg.segment_name}</div>
@@ -321,7 +347,16 @@ export default function ExecutiveReport() {
         <div className="flex-1 overflow-hidden">
           {/* Strategy Statement */}
           <section className="mb-6">
-            <h2 className="text-xl font-bold text-slate-900 mb-3">Tuyên bố Định vị (STP & Ansoff)</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-3 flex items-center">
+              Tuyên bố Định vị (STP & Ansoff)
+              <EducationTooltip 
+                title="Ma trận Ansoff" 
+                concept="Growth Strategy"
+                explanation="Mô hình xác định chiến lược tăng trưởng gồm 4 hướng: Thâm nhập thị trường (Bán sản phẩm cũ cho TT cũ), Phát triển thị trường (Bán SP cũ cho TT mới), Phát triển sản phẩm (Bán SP mới cho TT cũ), và Đa dạng hóa (Bán SP mới cho TT mới)."
+              >
+                <span className="sr-only">Help</span>
+              </EducationTooltip>
+            </h2>
             <div className="bg-slate-900 p-4 rounded-lg text-white text-sm space-y-3">
               <p><span className="text-cyan-400 font-bold uppercase text-[11px] block">Chiến lược cốt lõi:</span> {strategy.ansoff_matrix_choice}</p>
               <p><span className="text-cyan-400 font-bold uppercase text-[11px] block">Tuyên bố định vị:</span> {strategy.positioning_statement}</p>
@@ -331,7 +366,16 @@ export default function ExecutiveReport() {
 
           {/* 7Ps Tactics */}
           <section className="mb-6">
-            <h2 className="text-xl font-bold text-slate-900 mb-3">Ngân sách & Chiến thuật (Zero-Based Budgeting)</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-3 flex items-center">
+              Ngân sách & Chiến thuật (Zero-Based Budgeting)
+              <EducationTooltip 
+                title="Lập Ngân sách Từ Con Số Không (ZBB)" 
+                concept="Financial Management"
+                explanation="Zero-Based Budgeting là phương pháp quản trị tài chính mà mọi chi phí cho kỳ mới phải được giải trình lại từ số 0, thay vì dựa vào ngân sách kỳ trước. Nó bắt buộc Marketer phải chứng minh được ROI của từng chiến thuật."
+              >
+                <span className="sr-only">Help</span>
+              </EducationTooltip>
+            </h2>
             
             <div className="flex justify-between items-center mb-4 bg-slate-50 p-3 rounded-lg border border-slate-200">
               <span className="text-sm font-bold text-slate-500 uppercase">Tổng ngân sách duyệt</span>

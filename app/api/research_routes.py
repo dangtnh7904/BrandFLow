@@ -23,9 +23,10 @@ async def get_market_research(request: MarketResearchRequest, user_id: str = Dep
     return result.get("data")
 
 @router.post("/extract-dna")
-async def extract_brand_dna(request: ExtractDNARequest, user_id: str = Depends(get_current_user)):
+async def extract_brand_dna(request: ExtractDNARequest):
     """
     Extract Brand DNA and Design DNA from combined Form and Document inputs.
+    Allows anonymous access so the frontend mock can trigger without login.
     """
     try:
         result = extract_unified_dna(

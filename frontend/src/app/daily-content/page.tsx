@@ -23,13 +23,24 @@ export default function DailyContentPage() {
       setIsLoadingTrends(true);
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        const res = await fetch(`${API_URL}/api/content-lab/trends?platform=${platform}`);
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1500);
+
+        const res = await fetch(`${API_URL}/api/content-lab/trends?platform=${platform}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         const data = await res.json();
-        if (isMounted && data.status === 'success') {
+        if (isMounted && data.status === 'success' && data.data?.length > 0) {
           setTrends(data.data);
+        } else {
+          if (isMounted) setTrends(["Tối ưu dòng tiền", "Thoát cảnh 'Khổ Chủ'", "Xây dựng đội ngũ", "AI cho SME"]);
         }
       } catch (err) {
         console.error("Failed to fetch trends", err);
+        if (isMounted) setTrends(["Tối ưu dòng tiền", "Thoát cảnh 'Khổ Chủ'", "Xây dựng đội ngũ", "AI cho SME"]);
       } finally {
         if (isMounted) setIsLoadingTrends(false);
       }
@@ -40,11 +51,11 @@ export default function DailyContentPage() {
 
   const handleGenerate = () => {
     setIsGenerating(true);
-    // Mock API call
+    // Mock API call tailored for SME
     setTimeout(() => {
-      setGeneratedContent(`🚀 Khám phá sức mạnh của việc tối ưu hóa quy trình với AI!\n\nBạn có biết rằng 70% doanh nghiệp vừa và nhỏ đang lãng phí hàng giờ mỗi tuần cho các tác vụ thủ công không? Đã đến lúc chuyển đổi số! \n\n🔹 Giảm thiểu sai sót\n🔹 Tiết kiệm 30% ngân sách vận hành\n🔹 Thúc đẩy năng suất đội ngũ\n\nBạn đã sẵn sàng để ứng dụng AI vào doanh nghiệp của mình chưa?\n\n#DigitalTransformation #AI #SME #BusinessGrowth`);
+      setGeneratedContent(`🔥 LÀM SAO ĐỂ THOÁT CẢNH LÀM "KHỔ CHỦ" MÀ THỰC SỰ LÀM CHỦ? 🔥\n\nNhiều Founder/CEO của các doanh nghiệp SME đang rơi vào một cái bẫy vô hình: Khởi nghiệp để được tự do, nhưng cuối cùng lại làm việc 14 tiếng/ngày, kiêm luôn cả Sales, Marketing và... HR! 🤦‍♂️\n\nSự thật tàn nhẫn là: Doanh nghiệp của bạn sẽ KHÔNG THỂ 'Scale-up' nếu mọi quyết định nhỏ nhất đều phải chờ bạn duyệt.\n\n💡 3 BƯỚC ĐỂ "GIẢI PHÓNG" LÃNH ĐẠO:\n1️⃣ Quy trình hóa (SOP) mọi tác vụ lặp lại.\n2️⃣ Phân quyền rõ ràng (Trao quyền đi kèm trách nhiệm).\n3️⃣ Ứng dụng AI & Automation vào vận hành để giảm phụ thuộc vào con người.\n\n👇 Đừng để công ty trở thành "nhà tù" vô hình của chính bạn. Hãy bắt đầu xây dựng hệ thống tự vận hành ngay hôm nay!\n\nBạn đang mắc kẹt ở khâu nào nhất? Comment bên dưới để cùng thảo luận nhé! 👇\n\n#SME #QuanTriDoanhNghiep #FounderStory #Automation #ScaleUp`);
       setIsGenerating(false);
-    }, 2000);
+    }, 1500);
   };
 
   return (
@@ -210,9 +221,9 @@ export default function DailyContentPage() {
                            <span className="text-white font-bold text-sm">BF</span>
                         </div>
                         <div>
-                           <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">BrandFlow Brand</h4>
+                           <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">CEO & Founder Community</h4>
                            <span className="text-[10px] text-slate-500 flex items-center">
-                             Vừa xong • {platform}
+                             Vừa xong • {platform} • <Users className="w-3 h-3 ml-1" />
                            </span>
                         </div>
                      </div>

@@ -21,6 +21,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import os
+if "GOOGLE_API_KEY" not in os.environ and "GEMINI_API_KEY" in os.environ:
+    os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
+
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings

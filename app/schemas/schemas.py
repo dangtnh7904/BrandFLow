@@ -374,35 +374,35 @@ class ReviseBlockRequest(BaseModel):
 # ============================================================================
 
 class MarketFunnelMetrics(BaseModel):
-    tam: float | None = Field(None, description="Tổng nhu cầu thị trường (Total Addressable Market)")
-    sam: float | None = Field(None, description="Thị trường có thể phục vụ (Serviceable Addressable Market)")
-    som: float | None = Field(None, description="Thị phần thực tế có thể nắm giữ (Serviceable Obtainable Market)")
-    cagr: float | None = Field(None, description="Tỷ lệ tăng trưởng kép hàng năm (%)")
+    tam: Optional[float] = Field(None, description="Tổng nhu cầu thị trường (Total Addressable Market)")
+    sam: Optional[float] = Field(None, description="Thị trường có thể phục vụ (Serviceable Addressable Market)")
+    som: Optional[float] = Field(None, description="Thị phần thực tế có thể nắm giữ (Serviceable Obtainable Market)")
+    cagr: Optional[float] = Field(None, description="Tỷ lệ tăng trưởng kép hàng năm (%)")
 
 class FinancialHealthMetrics(BaseModel):
-    cac: float | None = Field(None, description="Chi phí để có được một khách hàng mới")
-    ltv: float | None = Field(None, description="Giá trị trọn đời của một khách hàng")
-    ltv_cac_ratio: float | None = Field(None, description="Tỷ lệ LTV/CAC")
-    roi: float | None = Field(None, description="Tỷ lệ lợi nhuận trên tổng vốn đầu tư (%)")
+    cac: Optional[float] = Field(None, description="Chi phí để có được một khách hàng mới")
+    ltv: Optional[float] = Field(None, description="Giá trị trọn đời của một khách hàng")
+    ltv_cac_ratio: Optional[float] = Field(None, description="Tỷ lệ LTV/CAC")
+    roi: Optional[float] = Field(None, description="Tỷ lệ lợi nhuận trên tổng vốn đầu tư (%)")
 
 class MarketPositionMetrics(BaseModel):
-    market_share: float | None = Field(None, description="Thị phần của doanh nghiệp (%)")
-    retention_rate: float | None = Field(None, description="Tỷ lệ khách hàng cũ quay lại (%)")
-    proxy_nps: float | None = Field(None, description="Net Promoter Score giả lập từ đối thủ")
+    market_share: Optional[float] = Field(None, description="Thị phần của doanh nghiệp (%)")
+    retention_rate: Optional[float] = Field(None, description="Tỷ lệ khách hàng cũ quay lại (%)")
+    proxy_nps: Optional[float] = Field(None, description="Net Promoter Score giả lập từ đối thủ")
 
 class AITelemetryMetrics(BaseModel):
-    model_accuracy: float | None = Field(None, description="Độ chính xác của dự đoán mô hình")
-    loss_function_trend: float | None = Field(None, description="Xu hướng giảm sai số")
-    inference_latency: float | None = Field(None, description="Thời gian phản hồi thực tế (ms)")
-    training_cost_per_run: float | None = Field(None, description="Chi phí tài nguyên cho mỗi lần training")
-    data_acquisition_cost: float | None = Field(None, description="Chi phí thu thập dữ liệu (DAC)")
-    resource_utilization: float | None = Field(None, description="Tỷ lệ sử dụng phần cứng (%)")
-    retention_rate_improvement: float | None = Field(None, description="Tỷ lệ giữ chân tăng sau model update (%)")
-    ltv_estimation: float | None = Field(None, description="Dự báo LTV từ AI")
-    nps_correlation: float | None = Field(None, description="Tương quan độ chính xác AI và NPS")
+    model_accuracy: Optional[float] = Field(None, description="Độ chính xác của dự đoán mô hình")
+    loss_function_trend: Optional[float] = Field(None, description="Xu hướng giảm sai số")
+    inference_latency: Optional[float] = Field(None, description="Thời gian phản hồi thực tế (ms)")
+    training_cost_per_run: Optional[float] = Field(None, description="Chi phí tài nguyên cho mỗi lần training")
+    data_acquisition_cost: Optional[float] = Field(None, description="Chi phí thu thập dữ liệu (DAC)")
+    resource_utilization: Optional[float] = Field(None, description="Tỷ lệ sử dụng phần cứng (%)")
+    retention_rate_improvement: Optional[float] = Field(None, description="Tỷ lệ giữ chân tăng sau model update (%)")
+    ltv_estimation: Optional[float] = Field(None, description="Dự báo LTV từ AI")
+    nps_correlation: Optional[float] = Field(None, description="Tương quan độ chính xác AI và NPS")
 
 class CombinedBusinessMetrics(BaseModel):
     market_funnel: MarketFunnelMetrics
     financial_health: FinancialHealthMetrics
     market_position: MarketPositionMetrics
-    ai_telemetry: AITelemetryMetrics | None = None
+    ai_telemetry: Optional[AITelemetryMetrics] = None

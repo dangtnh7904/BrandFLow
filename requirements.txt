@@ -23,3 +23,9 @@ youtube-transcript-api
 httpx
 slowapi
 loguru
+yt-dlp
+google-generativeai
+langchain-google-genai
+PyJWT
+email-validator
+openai

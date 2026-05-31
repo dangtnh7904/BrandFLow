@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFormStore } from '@/store/useFormStore';
-import { Loader2, Plus, PlaySquare, Globe, MessageSquare, PieChart, Send, Sparkles, BrainCircuit, Search, ChevronRight } from 'lucide-react';
+import { Loader2, Plus, PlaySquare, Globe, MessageSquare, PieChart, Send, Sparkles, BrainCircuit, Search, ChevronRight, Trash2, RefreshCw } from 'lucide-react';
 
 export default function ContentLabPage() {
   const { t } = useLanguage();
@@ -14,9 +14,8 @@ export default function ContentLabPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
   const [sources, setSources] = useState<any[]>([]);
+  const [selectedSourceIdx, setSelectedSourceIdx] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'report' | 'chat'>('report');
-  
-  const [report, setReport] = useState<any>(null);
 
   const handleIngest = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,14 +24,23 @@ export default function ContentLabPage() {
     setIsIngesting(true);
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = typeof window !== 'undefined' ? localStorage.getItem('brandflow_token') : null;
       const res = await fetch(`${API_URL}/api/content-lab/ingest`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ url: urlInput }),
       });
       const data = await res.json();
       if (data.status === 'success') {
-        setSources((prev) => [...prev, data.data]);
+        const newSrc = data.data;
+        setSources((prev) => {
+          const next = [...prev, newSrc];
+          setSelectedSourceIdx(next.length - 1);
+          return next;
+        });
         setUrlInput('');
       } else {
         alert("Lỗi: " + data.detail);
@@ -44,18 +52,22 @@ export default function ContentLabPage() {
     }
   };
 
-  const handleAnalyzeVibe = async () => {
-    if (sources.length === 0) return;
-    setIsAnalyzing(true);
+  const handleAnalyzeVibe = async (targetIdx: number | null = selectedSourceIdx) => {
+    const idx = targetIdx !== null ? targetIdx : (selectedSourceIdx !== null ? selectedSourceIdx : (sources.length > 0 ? 0 : null));
+    if (idx === null || sources.length === 0) return;
     
-    // For MVP, analyze the most recently added source
-    const targetSource = sources[sources.length - 1];
+    setIsAnalyzing(true);
+    const targetSource = sources[idx];
     
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = typeof window !== 'undefined' ? localStorage.getItem('brandflow_token') : null;
       const res = await fetch(`${API_URL}/api/content-lab/analyze`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ 
           scraped_data: targetSource,
           business_context: wizardAnswers
@@ -63,7 +75,14 @@ export default function ContentLabPage() {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        setReport(data.report);
+        setSources((prev) => {
+          const next = [...prev];
+          next[idx] = {
+            ...next[idx],
+            report: data.report
+          };
+          return next;
+        });
       } else {
         alert("Lỗi: " + data.detail);
       }
@@ -73,6 +92,22 @@ export default function ContentLabPage() {
       setIsAnalyzing(false);
     }
   };
+
+  const handleDeleteSource = (idxToDelete: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSources((prev) => {
+      const next = prev.filter((_, idx) => idx !== idxToDelete);
+      if (selectedSourceIdx === idxToDelete) {
+        setSelectedSourceIdx(next.length > 0 ? Math.max(0, idxToDelete - 1) : null);
+      } else if (selectedSourceIdx !== null && selectedSourceIdx > idxToDelete) {
+        setSelectedSourceIdx(selectedSourceIdx - 1);
+      }
+      return next;
+    });
+  };
+
+  const activeSource = selectedSourceIdx !== null && sources[selectedSourceIdx] ? sources[selectedSourceIdx] : null;
+  const currentReport = activeSource ? activeSource.report : null;
 
   return (
     <div className="h-[calc(100vh-64px)] w-full flex p-2 md:p-6 gap-4 bg-transparent overflow-hidden">
@@ -122,8 +157,28 @@ export default function ContentLabPage() {
             </div>
           ) : (
             sources.map((src, idx) => (
-              <div key={idx} className="group p-3 bg-background/40 hover:bg-background/80 border border-linear-border/50 hover:border-cyan-500/30 rounded-xl shadow-sm backdrop-blur-md transition-all duration-300 cursor-pointer relative overflow-hidden">
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div 
+                key={idx} 
+                onClick={() => setSelectedSourceIdx(idx)}
+                className={`group p-3 border rounded-xl shadow-sm backdrop-blur-md transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                  selectedSourceIdx === idx 
+                    ? 'bg-background/90 border-cyan-500/50 shadow-cyan-500/5' 
+                    : 'bg-background/40 hover:bg-background/80 border-linear-border/50 hover:border-cyan-500/30'
+                }`}
+              >
+                <div className={`absolute left-0 top-0 bottom-0 w-1 bg-cyan-500 transition-opacity ${
+                  selectedSourceIdx === idx ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                }`}></div>
+                
+                {/* Delete Button */}
+                <button 
+                  onClick={(e) => handleDeleteSource(idx, e)}
+                  className="absolute right-2 top-2 p-1.5 rounded-lg text-linear-text-muted hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all z-20"
+                  title="Xóa Source"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+
                 <div className="flex items-start gap-3 pl-1">
                   {src.thumbnail_url && (
                     <img src={src.thumbnail_url} alt="thumbnail" className="w-16 h-16 object-cover rounded-lg shadow-sm border border-linear-border/30" />
@@ -133,7 +188,7 @@ export default function ContentLabPage() {
                       {src.platform === 'youtube' ? <PlaySquare className="w-3.5 h-3.5 text-red-500" /> : <Globe className="w-3.5 h-3.5 text-blue-500" />}
                       <span>{src.platform}</span>
                     </div>
-                    <h4 className="text-sm font-semibold text-foreground truncate group-hover:text-cyan-400 transition-colors">{src.title || "Untitled Document"}</h4>
+                    <h4 className="text-sm font-semibold text-foreground truncate group-hover:text-cyan-400 transition-colors pr-6">{src.title || "Untitled Document"}</h4>
                     <p className="text-xs text-linear-text-muted line-clamp-1 mt-1">{src.description || src.content?.substring(0, 80) + "..."}</p>
                   </div>
                 </div>
@@ -182,17 +237,19 @@ export default function ContentLabPage() {
             </div>
           ) : activeTab === 'report' ? (
             <div className="max-w-5xl mx-auto w-full relative z-10">
-              {!report ? (
+              {!currentReport ? (
                 <div className="flex flex-col items-center justify-center py-32 animate-in fade-in duration-700">
                   <div className="w-20 h-20 mb-8 rounded-full bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 flex items-center justify-center border border-cyan-500/30">
                     <Sparkles className="w-8 h-8 text-cyan-400" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground mb-4">Dữ liệu đã sẵn sàng</h2>
-                  <p className="text-linear-text-muted mb-8 text-center max-w-lg">Hệ thống Multi-Agent sẽ sử dụng LLM Vision để phân tích hình ảnh và LLM Text để mổ xẻ thông điệp.</p>
+                  <p className="text-linear-text-muted mb-8 text-center max-w-lg">
+                    {activeSource ? `Sẵn sàng phân tích nguồn: "${activeSource.title}"` : "Hệ thống Multi-Agent đã sẵn sàng đọc hiểu và phân tích chiến lược."}
+                  </p>
                   <button 
-                    onClick={handleAnalyzeVibe}
+                    onClick={() => handleAnalyzeVibe(selectedSourceIdx)}
                     disabled={isAnalyzing}
-                    className="px-8 py-3.5 bg-foreground text-background rounded-full font-bold shadow-lg shadow-foreground/10 hover:scale-105 transition-all flex items-center disabled:opacity-50 disabled:hover:scale-100"
+                    className="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-bold shadow-lg shadow-cyan-500/20 hover:scale-105 transition-all flex items-center disabled:opacity-50 disabled:hover:scale-100"
                   >
                     {isAnalyzing ? (
                       <><Loader2 className="w-5 h-5 mr-3 animate-spin" /> Đang dùng AI phân tích Vibe...</>
@@ -203,9 +260,24 @@ export default function ContentLabPage() {
                 </div>
               ) : (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                  <div>
-                    <h1 className="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">Báo cáo Phân tích Vibe Marketing</h1>
-                    <p className="text-sm text-linear-text-muted">Trích xuất tự động từ Hệ thống Multi-Agent AI (Vision + Text).</p>
+                  <div className="flex justify-between items-center border-b border-linear-border/20 pb-4">
+                    <div>
+                      <h1 className="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">Báo cáo Phân tích Vibe Marketing</h1>
+                      <p className="text-xs text-linear-text-muted flex items-center gap-1">
+                        <span>Nguồn: </span>
+                        <span className="font-semibold text-foreground/80 truncate max-w-md">"{activeSource?.title}"</span>
+                      </p>
+                    </div>
+                    {/* Re-analyze Button */}
+                    <button
+                      onClick={() => handleAnalyzeVibe(selectedSourceIdx)}
+                      disabled={isAnalyzing}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl transition-all disabled:opacity-50 shadow-sm"
+                      title="Phân tích lại nguồn này"
+                    >
+                      {isAnalyzing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                      Phân tích lại
+                    </button>
                   </div>
                   
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -215,44 +287,44 @@ export default function ContentLabPage() {
                       <h3 className="text-xs uppercase tracking-widest text-linear-text-muted font-bold mb-4 flex items-center">
                         <span className="w-2 h-2 rounded-full bg-cyan-400 mr-2 shadow-[0_0_8px_rgba(34,211,238,0.8)]"></span> Vibe & Tone Định Vị
                       </h3>
-                      {report.vibe_summary ? (
+                      {currentReport.vibe_summary ? (
                         <div className="relative z-10 flex-1 flex flex-col gap-3">
-                          <p className="text-sm font-semibold text-cyan-400 leading-relaxed">"{report.vibe_summary}"</p>
+                          <p className="text-sm font-semibold text-cyan-400 leading-relaxed">"{currentReport.vibe_summary}"</p>
                           <div className="flex flex-wrap gap-2">
-                            {report.vibe_keywords?.map((kw: string, i: number) => (
+                            {currentReport.vibe_keywords?.map((kw: string, i: number) => (
                               <span key={i} className="px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-[11px] text-cyan-300 font-semibold uppercase tracking-wider">{kw}</span>
                             ))}
                           </div>
                           <div className="h-px w-full bg-linear-border/30 my-1"></div>
-                          <p className="text-sm text-foreground/90 leading-relaxed">{report.vibe_analysis}</p>
+                          <p className="text-sm text-foreground/90 leading-relaxed">{currentReport.vibe_analysis}</p>
                         </div>
                       ) : (
-                        <p className="text-sm text-foreground leading-relaxed relative z-10">{report.vibe_and_tone}</p>
+                        <p className="text-sm text-foreground leading-relaxed relative z-10">{currentReport.vibe_and_tone}</p>
                       )}
                     </div>
-
+ 
                     {/* Visuals */}
                     <div className="group relative p-6 bg-background/50 backdrop-blur-xl border border-linear-border/60 rounded-2xl shadow-lg hover:border-pink-500/30 hover:shadow-pink-500/5 transition-all duration-300 flex flex-col">
                       <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><Sparkles className="w-20 h-20" /></div>
                       <h3 className="text-xs uppercase tracking-widest text-linear-text-muted font-bold mb-4 flex items-center">
                         <span className="w-2 h-2 rounded-full bg-pink-500 mr-2 shadow-[0_0_8px_rgba(236,72,153,0.8)]"></span> Phân Tích Hình Ảnh (Visuals)
                       </h3>
-                      {report.visual_style ? (
+                      {currentReport.visual_style ? (
                         <div className="relative z-10 flex-1 flex flex-col gap-3">
-                          <p className="text-sm font-semibold text-pink-400 flex items-center"><Sparkles className="w-3.5 h-3.5 mr-1.5" /> Style: {report.visual_style}</p>
+                          <p className="text-sm font-semibold text-pink-400 flex items-center"><Sparkles className="w-3.5 h-3.5 mr-1.5" /> Style: {currentReport.visual_style}</p>
                           <div className="flex flex-wrap gap-2">
-                            {report.visual_colors?.map((color: string, i: number) => (
+                            {currentReport.visual_colors?.map((color: string, i: number) => (
                               <span key={i} className="px-2.5 py-1 rounded-md bg-pink-500/10 border border-pink-500/30 text-[11px] text-pink-300 font-semibold uppercase tracking-wider">{color}</span>
                             ))}
                           </div>
                           <div className="h-px w-full bg-linear-border/30 my-1"></div>
-                          <p className="text-sm text-foreground/90 leading-relaxed">{report.visual_analysis}</p>
+                          <p className="text-sm text-foreground/90 leading-relaxed">{currentReport.visual_analysis}</p>
                         </div>
                       ) : (
-                        <p className="text-sm text-foreground leading-relaxed relative z-10">{report.visual_analysis}</p>
+                        <p className="text-sm text-foreground leading-relaxed relative z-10">{currentReport.visual_analysis}</p>
                       )}
                     </div>
-
+ 
                     {/* Copywriting */}
                     <div className="group relative p-6 bg-background/50 backdrop-blur-xl border border-linear-border/60 rounded-2xl shadow-lg hover:border-orange-500/30 hover:shadow-orange-500/5 transition-all duration-300 flex flex-col">
                       <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><MessageSquare className="w-20 h-20" /></div>
@@ -260,18 +332,18 @@ export default function ContentLabPage() {
                         <span className="w-2 h-2 rounded-full bg-orange-400 mr-2 shadow-[0_0_8px_rgba(251,146,60,0.8)]"></span> Kỹ Thuật Copywriting & Hooks
                       </h3>
                       <div className="relative z-10 flex-1">
-                        {Array.isArray(report.copywriting_hooks) ? (
+                        {Array.isArray(currentReport.copywriting_hooks) ? (
                           <ul className="space-y-3">
-                            {report.copywriting_hooks.map((hook: string, i: number) => (
+                            {currentReport.copywriting_hooks.map((hook: string, i: number) => (
                               <li key={i} className="flex items-start text-sm text-foreground/90 bg-linear-surface/40 p-2.5 rounded-lg border border-linear-border/30"><span className="text-orange-400 mr-2.5 mt-0.5">✦</span> <span className="leading-relaxed">{hook}</span></li>
                             ))}
                           </ul>
                         ) : (
-                          <p className="text-sm text-foreground leading-relaxed">{report.copywriting_hooks}</p>
+                          <p className="text-sm text-foreground leading-relaxed">{currentReport.copywriting_hooks}</p>
                         )}
                       </div>
                     </div>
-
+ 
                     {/* Audience */}
                     <div className="group relative p-6 bg-background/50 backdrop-blur-xl border border-linear-border/60 rounded-2xl shadow-lg hover:border-blue-500/30 hover:shadow-blue-500/5 transition-all duration-300 flex flex-col">
                       <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><Globe className="w-20 h-20" /></div>
@@ -279,26 +351,26 @@ export default function ContentLabPage() {
                         <span className="w-2 h-2 rounded-full bg-blue-500 mr-2 shadow-[0_0_8px_rgba(59,130,246,0.8)]"></span> Chân Dung Khách Hàng
                       </h3>
                       <div className="relative z-10 flex-1">
-                        {Array.isArray(report.target_audience) ? (
+                        {Array.isArray(currentReport.target_audience) ? (
                           <ul className="space-y-3">
-                            {report.target_audience.map((aud: string, i: number) => (
+                            {currentReport.target_audience.map((aud: string, i: number) => (
                               <li key={i} className="flex items-center text-sm text-foreground/90 bg-linear-surface/40 p-2.5 rounded-lg border border-linear-border/30"><span className="text-blue-400 mr-2.5">👤</span> <span className="leading-relaxed font-medium">{aud}</span></li>
                             ))}
                           </ul>
                         ) : (
-                          <p className="text-sm text-foreground leading-relaxed">{report.target_audience}</p>
+                          <p className="text-sm text-foreground leading-relaxed">{currentReport.target_audience}</p>
                         )}
                       </div>
                     </div>
                   </div>
-
+ 
                   <div className="relative p-8 bg-gradient-to-br from-linear-surface to-background border border-linear-border/60 rounded-2xl shadow-xl mt-8 overflow-hidden group">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-[80px] group-hover:bg-cyan-500/10 transition-colors"></div>
                     <h3 className="text-sm uppercase tracking-widest text-cyan-400 font-bold mb-6 flex items-center relative z-10">
-                      <BrainCircuit className="w-5 h-5 mr-2" /> Bài Học & Đề Xuất Thực Thi (Learning Actions)
+                       <BrainCircuit className="w-5 h-5 mr-2" /> Bài Học & Đề Xuất Thực Thi (Learning Actions)
                     </h3>
                     <ul className="space-y-4 relative z-10">
-                      {(report.learning_actions || report.actionable_marketing_ideas || []).map((idea: string, i: number) => (
+                      {(currentReport.learning_actions || currentReport.actionable_marketing_ideas || []).map((idea: string, i: number) => (
                         <li key={i} className="flex items-start text-sm text-foreground/90 group/item bg-background/40 p-4 rounded-xl border border-linear-border/40 hover:border-cyan-500/30 transition-colors shadow-sm">
                           <span className="flex-shrink-0 w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mr-4 text-cyan-400 font-bold group-hover/item:bg-cyan-500 group-hover/item:text-white group-hover/item:shadow-[0_0_10px_rgba(34,211,238,0.5)] transition-all">{i+1}</span>
                           <span className="mt-1.5 leading-relaxed">{idea}</span>
@@ -307,7 +379,8 @@ export default function ContentLabPage() {
                     </ul>
                   </div>
                 </div>
-              )}
+              )
+            }
             </div>
           ) : (
             <div className="h-full flex flex-col justify-between max-w-4xl mx-auto w-full relative z-10">

@@ -14,7 +14,7 @@ import os
 import sqlite3
 from datetime import datetime, timezone
 from threading import Lock
-from typing import Any
+from typing import Any, Optional, Union
 
 
 def _now_iso() -> str:
@@ -32,7 +32,7 @@ def _sanitize_limit(limit: int, min_value: int, max_value: int) -> int:
 class VisitorAuditStore:
     """SQLite storage for visitor proof and access history."""
 
-    def __init__(self, db_path: str | None = None):
+    def __init__(self, db_path: Optional[str] = None):
         resolved = db_path or os.environ.get("BRANDFLOW_AUDIT_DB_PATH", "./audit/visitor_audit.db")
         self.db_path = resolved
         self._lock = Lock()
@@ -94,7 +94,7 @@ class VisitorAuditStore:
                 conn.close()
 
     @staticmethod
-    def _resolve_ip(headers: dict[str, str], client_host: str | None) -> str:
+    def _resolve_ip(headers: dict[str, str], client_host: Optional[str]) -> str:
         forwarded = headers.get("x-forwarded-for", "").strip()
         if forwarded:
             first_hop = forwarded.split(",")[0].strip()
@@ -110,7 +110,7 @@ class VisitorAuditStore:
         return (headers.get("user-agent", "") or "unknown").strip() or "unknown"
 
     @staticmethod
-    def _resolve_user_id(headers: dict[str, str]) -> str | None:
+    def _resolve_user_id(headers: dict[str, str]) -> Optional[str]:
         for key in ("x-user-id", "x-user", "x-account-id"):
             value = (headers.get(key, "") or "").strip()
             if value:
@@ -118,7 +118,7 @@ class VisitorAuditStore:
         return None
 
     @staticmethod
-    def _resolve_tier(headers: dict[str, str], tier_hint: str | None) -> str | None:
+    def _resolve_tier(headers: dict[str, str], tier_hint: Optional[str]) -> Optional[str]:
         if tier_hint and tier_hint.strip():
             return tier_hint.strip().upper()
         for key in ("x-tier", "x-user-tier"):
@@ -128,7 +128,7 @@ class VisitorAuditStore:
         return None
 
     @staticmethod
-    def _build_visitor_key(user_id: str | None, ip_address: str, user_agent: str) -> str:
+    def _build_visitor_key(user_id: Optional[str], ip_address: str, user_agent: str) -> str:
         if user_id:
             return f"uid:{user_id}"
         raw = f"{ip_address}|{user_agent}"
@@ -139,13 +139,13 @@ class VisitorAuditStore:
         self,
         *,
         headers: dict[str, str],
-        client_host: str | None,
+        client_host: Optional[str],
         method: str,
         path: str,
         status_code: int,
-        trace_id: str | None = None,
-        tier_hint: str | None = None,
-        override_time: str | None = None,
+        trace_id: Optional[str] = None,
+        tier_hint: Optional[str] = None,
+        override_time: Optional[str] = None,
     ) -> None:
         visited_at = override_time if override_time else _now_iso()
         ip_address = self._resolve_ip(headers, client_host)
@@ -276,7 +276,7 @@ class VisitorAuditStore:
             finally:
                 conn.close()
 
-    def list_visit_events(self, limit: int = 200, visitor_key: str | None = None) -> list[dict[str, Any]]:
+    def list_visit_events(self, limit: int = 200, visitor_key: Optional[str] = None) -> list[dict[str, Any]]:
         safe_limit = _sanitize_limit(limit, 1, 2000)
         with self._lock:
             conn = sqlite3.connect(self.db_path)

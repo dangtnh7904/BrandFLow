@@ -75,10 +75,10 @@ class ContentLabAgent:
             self.llm = None
         else:
             self.llm = ChatGoogleGenerativeAI(
-                model="gemini-1.5-flash",
+                model="gemini-2.5-flash",
                 temperature=0.4,
                 max_retries=1,
-                timeout=30.0,
+                timeout=120.0,
                 api_key=api_key
             )
 

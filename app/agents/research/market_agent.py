@@ -14,7 +14,7 @@ class MarketResearchOutput(BaseModel):
 
 class MarketAgent:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2, max_retries=1, timeout=30.0)
+        self.llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2, max_retries=1, timeout=120.0)
         self.output_parser = JsonOutputParser(pydantic_object=MarketResearchOutput)
         self.search_tool = DuckDuckGoSearchRun()
         

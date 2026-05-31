@@ -9,10 +9,14 @@ import os
 if "GEMINI_API_KEY" in os.environ and "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
 
+import os
+if "GOOGLE_API_KEY" not in os.environ and "GEMINI_API_KEY" in os.environ:
+    os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
+
 from datetime import date
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request, Response, Depends
 from fastapi.responses import HTMLResponse
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from fastapi.middleware.cors import CORSMiddleware
 from app.schemas.schemas import (
     PresetRequest,
@@ -767,7 +771,7 @@ def list_audit_visitors(limit: int = 100, _: str = Depends(get_admin_user)):
 
 
 @app.get("/api/v1/audit/visits")
-def list_audit_visits(limit: int = 200, visitor_key: str | None = None, _: str = Depends(get_admin_user)):
+def list_audit_visits(limit: int = 200, visitor_key: Optional[str] = None, _: str = Depends(get_admin_user)):
     """Lịch sử truy cập theo event để làm minh chứng."""
     try:
         return {

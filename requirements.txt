@@ -30,3 +30,9 @@ PyJWT
 email-validator
 openai
 langchain-experimental
+langgraph
+langchain-core
+bcrypt
+requests
+gunicorn
+uvicorn[standard]

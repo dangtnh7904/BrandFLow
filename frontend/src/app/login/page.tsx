@@ -9,6 +9,10 @@ import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
 const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID";
+const LINKEDIN_CLIENT_ID = process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID || "YOUR_LINKEDIN_CLIENT_ID";
+const LINKEDIN_REDIRECT_URI = typeof window !== 'undefined' 
+  ? `${window.location.origin}/login` 
+  : 'http://localhost:3000/login';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -16,10 +20,23 @@ function LoginForm() {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<'google' | 'facebook' | null>(null);
+  const [socialLoading, setSocialLoading] = useState<'google' | 'facebook' | 'linkedin' | null>(null);
   const router = useRouter();
 
-  const handleSocialBackendAuth = async (token: string, provider: 'google' | 'facebook') => {
+  // ── Handle LinkedIn OAuth callback ──
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const state = params.get('state');
+    if (code && state === 'linkedin_oauth') {
+      setSocialLoading('linkedin');
+      handleSocialBackendAuth(code, 'linkedin');
+      // Clean URL
+      window.history.replaceState({}, '', '/login');
+    }
+  }, []);
+
+  const handleSocialBackendAuth = async (token: string, provider: 'google' | 'facebook' | 'linkedin') => {
     try {
       const res = await fetch('/api/v1/auth/social', {
         method: 'POST',
@@ -40,7 +57,7 @@ function LoginForm() {
       localStorage.setItem('brandflow_is_admin', data.is_admin);
       localStorage.removeItem('bf_ws_stage');
       
-      window.location.href = '/planning';
+      window.location.href = '/onboarding';
     } catch (err) {
       setError(`Lỗi kết nối máy chủ khi đăng nhập ${provider}`);
       setSocialLoading(null);
@@ -66,6 +83,12 @@ function LoginForm() {
        setError('Đăng nhập Facebook thất bại');
        setSocialLoading(null);
     }
+  };
+
+  const loginWithLinkedIn = () => {
+    const scope = 'openid%20profile%20email';
+    const url = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${encodeURIComponent(LINKEDIN_REDIRECT_URI)}&state=linkedin_oauth&scope=${scope}`;
+    window.location.href = url;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,7 +124,7 @@ function LoginForm() {
       localStorage.removeItem('bf_phase1_screen');
       localStorage.removeItem('bf_doc_text');
 
-      window.location.href = '/planning';
+      window.location.href = '/onboarding';
     } catch (err) {
       setError('Lỗi kết nối máy chủ');
       setLoading(false);
@@ -143,6 +166,7 @@ function LoginForm() {
           
           {/* Social Logins */}
           <div className="space-y-3 mb-8">
+            {/* Google */}
             <button
               type="button"
               onClick={() => {
@@ -169,6 +193,7 @@ function LoginForm() {
               Tiếp tục với Google
             </button>
             
+            {/* Facebook */}
             <FacebookLogin
               appId={FACEBOOK_APP_ID}
               callback={responseFacebook}
@@ -196,6 +221,21 @@ function LoginForm() {
                 </button>
               )}
             />
+
+            {/* LinkedIn */}
+            <button
+              type="button"
+              onClick={loginWithLinkedIn}
+              disabled={socialLoading !== null}
+              className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-[#1f2937] border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 transition-all focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700 disabled:opacity-70"
+            >
+              {socialLoading === 'linkedin' ? <Loader2 className="w-5 h-5 animate-spin text-slate-500" /> : (
+                <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="#0A66C2" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              )}
+              Tiếp tục với LinkedIn
+            </button>
           </div>
 
           <div className="relative mb-8">

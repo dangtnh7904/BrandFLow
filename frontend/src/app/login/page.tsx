@@ -145,7 +145,14 @@ function LoginForm() {
           <div className="space-y-3 mb-8">
             <button
               type="button"
-              onClick={() => loginWithGoogle()}
+              onClick={() => {
+                if (GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID") {
+                  setSocialLoading('google');
+                  handleSocialBackendAuth('mock_google_token', 'google');
+                } else {
+                  loginWithGoogle();
+                }
+              }}
               disabled={socialLoading !== null}
               className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-[#1f2937] border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 transition-all focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700 disabled:opacity-70"
             >
@@ -169,7 +176,14 @@ function LoginForm() {
               render={(renderProps: any) => (
                 <button
                   type="button"
-                  onClick={renderProps.onClick}
+                  onClick={() => {
+                    if (FACEBOOK_APP_ID === "YOUR_FACEBOOK_APP_ID") {
+                      setSocialLoading('facebook');
+                      handleSocialBackendAuth('mock_facebook_token', 'facebook');
+                    } else {
+                      renderProps.onClick();
+                    }
+                  }}
                   disabled={socialLoading !== null}
                   className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-[#1f2937] border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 transition-all focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700 disabled:opacity-70"
                 >

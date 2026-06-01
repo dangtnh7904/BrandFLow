@@ -80,15 +80,33 @@ export default function DesignStudioPage() {
       setActiveAgent('Creative Agent');
       addLog("Creative Agent", "Đang xử lý song song DALL-E Visuals & Behance Layout...", "info");
 
+      const token = typeof window !== 'undefined' ? localStorage.getItem('brandflow_token') : null;
+      const headers = {
+        "Content-Type": "application/json",
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      };
+
       // Chạy song song 2 luồng: Generate Assets (Old) và Generate Case Study (New)
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const [assetsRes, caseStudyRes] = await Promise.all([
         fetch(`${API_URL}/api/v1/design/generate-assets`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
-        }).then(res => res.json()),
+          method: "POST", headers, body: JSON.stringify(payload)
+        }).then(async res => {
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.detail || `Lỗi HTTP ${res.status} từ API generate-assets`);
+          }
+          return res.json();
+        }),
         fetch(`${API_URL}/api/v1/design/generate-case-study`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
-        }).then(res => res.json())
+          method: "POST", headers, body: JSON.stringify(payload)
+        }).then(async res => {
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.detail || `Lỗi HTTP ${res.status} từ API generate-case-study`);
+          }
+          return res.json();
+        })
       ]);
 
       if (assetsRes.status === "error") throw new Error("Lỗi sinh Visual Assets: " + assetsRes.message);
@@ -98,8 +116,8 @@ export default function DesignStudioPage() {
       addLog("System", "Render thành công 2 luồng.", "success");
       setActiveAgent('Done');
       
-      setResult(assetsRes.data);
-      setBlocks(caseStudyRes.data.blocks);
+      setResult(assetsRes?.data || null);
+      setBlocks(caseStudyRes?.data?.blocks || []);
     } catch (err: any) {
       setError(err.message || "Failed to generate");
       addLog("System", `Lỗi: ${err.message}`, "warn");
@@ -341,7 +359,7 @@ export default function DesignStudioPage() {
 
         {/* ================= COLUMN 2: CANVAS (Old DALL-E or New Behance) ================= */}
         <div className="lg:col-span-6 flex flex-col overflow-y-auto no-scrollbar pb-6 relative rounded-xl border-x border-linear-border/30 px-2 select-none">
-           {!loading && !result && blocks.length === 0 && (
+           {!loading && !result && (blocks || []).length === 0 && (
               <div className="w-full h-full p-10 flex flex-col items-center justify-center min-h-[500px]">
                  <ImageIcon className="w-12 h-12 text-linear-text-muted opacity-50 mb-4" />
                  <h3 className="text-xl font-bold text-foreground mb-2">
@@ -393,18 +411,18 @@ export default function DesignStudioPage() {
                         <img src={result.banner_url} alt="Cover" className="absolute inset-0 w-full h-[60%] object-cover opacity-60 dark:opacity-40" />
                         <div className="absolute left-6 bottom-4 flex items-end">
                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-background overflow-hidden relative shadow-lg z-10">
-                              <img src={result.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                              <img src={result?.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                            </div>
                            <div className="ml-4 mb-2 z-10 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-linear-border">
-                              <div className="text-sm font-bold text-foreground">{masterDNA.brand_name}</div>
-                              <div className="text-[10px] text-linear-text-muted">{masterDNA.industry || 'Category'}</div>
+                              <div className="text-sm font-bold text-foreground">{masterDNA?.brand_name}</div>
+                              <div className="text-[10px] text-linear-text-muted">{masterDNA?.industry || 'Category'}</div>
                            </div>
                         </div>
                      </div>
                   </div>
 
                   {/* Brand Guidelines (Text) */}
-                  {result.guidelines && (
+                  {result?.guidelines && (
                      <div className="bento-card p-6 relative overflow-hidden group">
                         <div className="flex items-center font-bold text-sm text-foreground mb-4 border-b border-linear-border/50 pb-3">
                            <Type className="w-4 h-4 text-cyan-500 mr-2" /> Brand Identity Guidelines
@@ -420,12 +438,12 @@ export default function DesignStudioPage() {
            )}
 
            {/* TAB: CASE STUDY (NEW) */}
-           {!loading && blocks.length > 0 && activeTab === 'case-study' && (
+           {!loading && (blocks || []).length > 0 && activeTab === 'case-study' && (
               <div className="flex flex-col gap-6 w-full">
                   
                   {/* SEAMLESS BEHANCE CANVAS WRAPPER */}
                   <div id="behance-export-canvas" className="w-full bg-slate-50 shadow-2xl flex flex-col overflow-hidden max-w-[1400px] mx-auto rounded-none relative">
-                    {blocks.map((block) => (
+                    {(blocks || []).map((block) => (
                          <div key={block.id} className="relative transition-all duration-300 w-full group">
                             {/* Hover Outline specifically for HITL inside the canvas */}
                             <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyan-400/30 z-50 pointer-events-none transition-colors"></div>

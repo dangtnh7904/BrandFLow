@@ -174,35 +174,45 @@ def social_login(request: SocialLoginRequest, db: Session = Depends(get_db)):
     name = "BrandFlow User"
 
     if request.provider == 'google':
-        try:
-            # Xác thực Access Token của Google (phù hợp với useGoogleLogin React hook)
-            gg_url = f"https://www.googleapis.com/oauth2/v3/userinfo?access_token={request.token}"
-            response = requests.get(gg_url)
-            if response.status_code != 200:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Google access token")
-            
-            gg_data = response.json()
-            email = gg_data.get('email')
-            name = gg_data.get('name', "Google User")
-        except Exception:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Error connecting to Google")
+        if request.token == "mock_google_token":
+            email = "mock_google_user@brandflow.ai"
+            name = "Mock Google User"
+        else:
+            try:
+                # Xác thực Access Token của Google (phù hợp với useGoogleLogin React hook)
+                gg_url = f"https://www.googleapis.com/oauth2/v3/userinfo?access_token={request.token}"
+                response = requests.get(gg_url)
+                if response.status_code != 200:
+                    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Google access token")
+                
+                gg_data = response.json()
+                email = gg_data.get('email')
+                name = gg_data.get('name', "Google User")
+            except HTTPException:
+                raise
+            except Exception:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Error connecting to Google")
 
     elif request.provider == 'facebook':
-        # Xác thực Access token của Facebook qua Graph API
-        app_id = FACEBOOK_APP_ID
-        fb_url = f"https://graph.facebook.com/me?fields=id,name,email&access_token={request.token}"
-        response = requests.get(fb_url)
-        if response.status_code != 200:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Facebook token")
-        
-        fb_data = response.json()
-        if 'email' not in fb_data:
-            # Facebook không trả về email (do user không cấp quyền hoặc đăng ký bằng SĐT)
-            email = f"{fb_data['id']}@facebook.mock.com"
+        if request.token == "mock_facebook_token":
+            email = "mock_facebook_user@brandflow.ai"
+            name = "Mock Facebook User"
         else:
-            email = fb_data['email']
+            # Xác thực Access token của Facebook qua Graph API
+            app_id = FACEBOOK_APP_ID
+            fb_url = f"https://graph.facebook.com/me?fields=id,name,email&access_token={request.token}"
+            response = requests.get(fb_url)
+            if response.status_code != 200:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Facebook token")
             
-        name = fb_data.get('name', "Facebook User")
+            fb_data = response.json()
+            if 'email' not in fb_data:
+                # Facebook không trả về email (do user không cấp quyền hoặc đăng ký bằng SĐT)
+                email = f"{fb_data['id']}@facebook.mock.com"
+            else:
+                email = fb_data['email']
+                
+            name = fb_data.get('name', "Facebook User")
 
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported provider")

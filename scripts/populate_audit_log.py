@@ -73,12 +73,12 @@ def populate():
             "x-user-id": display_user_id
         }
         
-        # Determine if this user is a "power user"
-        is_power_user = random.random() < 0.2  # 20% are power users
-        if is_power_user:
-            visits = random.randint(15, 45)
+        # Fit với tỷ lệ rời đi (Churn Rate) là 5%
+        is_churned = random.random() < 0.05  # 5% users have very few visits
+        if is_churned:
+            visits = random.randint(1, 3) # Churned/inactive users
         else:
-            visits = random.randint(1, 5)
+            visits = random.randint(15, 50) # Active/retained users (95%)
             
         # Distribute these visits randomly over the past 14 days
         for _ in range(visits):

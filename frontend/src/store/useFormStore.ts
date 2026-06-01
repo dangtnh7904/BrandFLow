@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { BEP_NHA_MOC_FORMS_MOCK } from './bep_nha_moc_forms_mock';
 
 const PROJECT_NAME = "BrandFlow Strategy Plan";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
@@ -12,12 +13,21 @@ const getUserId = () => {
 };
 
 // Hàm lấy Auth Headers (JWT Token)
-const getAuthHeaders = () => {
+const getAuthHeaders = (): Record<string, string> => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('brandflow_token');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
+    if (token) return { 'Authorization': `Bearer ${token}` };
   }
   return {};
+};
+
+// Hàm xử lý 401 — Token hết hạn → redirect về Login
+const handleUnauthorized = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('brandflow_token');
+    localStorage.removeItem('brandflow_user_id');
+    window.location.href = '/login';
+  }
 };
 
 interface FormStore {
@@ -34,8 +44,8 @@ interface FormStore {
   marketResearchStatus: 'idle' | 'running' | 'done' | 'error';
   marketResearchData: any;
   runMarketResearch: (industry: string) => Promise<void>;
-  extractedAnswers: Record<string, string>;
-  setExtractedAnswers: (answers: Record<string, string>) => void;
+  extractedAnswers: Record<string, any>;
+  setExtractedAnswers: (answers: Record<string, any>) => void;
   wizardAnswers: Record<string, any>;
   setWizardAnswer: (key: string, value: any) => void;
   setWizardAnswers: (answers: Record<string, any>) => void;
@@ -91,9 +101,14 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
     try {
       // List projects của user, tìm project đã có
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+
       const listRes = await fetch(`${API_URL}/api/v1/forms/projects`, {
-        headers: { ...getAuthHeaders() }
+        headers: { ...getAuthHeaders() },
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       
       let projectId: string | null = null;
 
@@ -102,10 +117,15 @@ export const useFormStore = create<FormStore>((set, get) => ({
         if (projects.length > 0) {
           projectId = projects[0].id;
         }
+      } else if (listRes.status === 401) {
+        handleUnauthorized();
+        return;
       }
 
       // 3. Nếu chưa có project nào, tạo mới
       if (!projectId) {
+        const createController = new AbortController();
+        const createTimeoutId = setTimeout(() => createController.abort(), 1500);
         const createRes = await fetch(`${API_URL}/api/v1/forms/projects`, {
           method: 'POST',
           headers: {
@@ -115,8 +135,10 @@ export const useFormStore = create<FormStore>((set, get) => ({
           body: JSON.stringify({
             name: PROJECT_NAME,
             industry: "General",
-          })
+          }),
+          signal: createController.signal
         });
+        clearTimeout(createTimeoutId);
         if (createRes.ok) {
           const newProject = await createRes.json();
           projectId = newProject.id;
@@ -132,7 +154,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
         set({ 
           projectId: 'demo-mock-project-id', 
           saveStatus: 'idle', 
-          isLoading: false 
+          isLoading: false,
+          forms: BEP_NHA_MOC_FORMS_MOCK
         });
       }
     } catch (e) {
@@ -140,7 +163,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
       set({ 
         projectId: 'demo-mock-project-id', 
         saveStatus: 'idle', 
-        isLoading: false 
+        isLoading: false,
+        forms: BEP_NHA_MOC_FORMS_MOCK
       });
     }
   },
@@ -151,19 +175,33 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
     set({ isLoading: true });
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+
       const res = await fetch(`${API_URL}/api/v1/forms/projects/${projectId}/forms`, {
-        headers: { ...getAuthHeaders() }
+        headers: { ...getAuthHeaders() },
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
+
       if (res.ok) {
         const json = await res.json();
+        // Start with empty data as the default
         const mappedForms: Record<string, any> = {};
+        // Override with user's saved data from DB if any exists
         for (const [key, value] of Object.entries(json.forms || {})) {
           mappedForms[key] = (value as any).data;
         }
         set({ forms: mappedForms });
+      } else if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      } else {
+        set({ forms: BEP_NHA_MOC_FORMS_MOCK });
       }
     } catch (e) {
       console.error("Failed to load forms:", e);
+      set({ forms: BEP_NHA_MOC_FORMS_MOCK });
     } finally {
       set({ isLoading: false });
     }
@@ -195,6 +233,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
       if (res.ok) {
         set({ saveStatus: 'saved' });
         setTimeout(() => set({ saveStatus: 'idle' }), 2000);
+      } else if (res.status === 401) {
+        handleUnauthorized();
+        return;
       } else {
         const errText = await res.text();
         console.error("Save API error:", res.status, errText);
@@ -237,12 +278,12 @@ export const useFormStore = create<FormStore>((set, get) => ({
       // Fallback an toàn nếu backend chưa chạy hoặc lỗi
       const mockData = {
         tam_sam_som: {
-          TAM: "$50B+", SAM: "$12B", SOM: "$100M", CAGR: "15%"
+          TAM: "30.000 Tỷ VNĐ", SAM: "5.000 Tỷ VNĐ", SOM: "10 Tỷ VNĐ", CAGR: "25%"
         },
-        market_gap: "Có một khoảng trống lớn trong việc cung cấp trải nghiệm cá nhân hóa sâu sắc, hầu hết đối thủ chỉ tập trung vào tính năng cơ bản.",
+        market_gap: "Phân khúc F&B bình dân đang bão hòa. Tuy nhiên, có một khoảng trống lớn (Market Gap) cho mô hình 'Mindful Dining' (Ẩm thực chữa lành) kết hợp không gian hoài niệm mộc mạc dành cho dân văn phòng và Gen Z.",
         competitors: [
-          { name: "Công ty A", strengths: "Tính năng đa dạng", pain_points: "Giao diện khó dùng" },
-          { name: "Công ty B", strengths: "Giá rẻ", pain_points: "Chăm sóc khách hàng kém" }
+          { name: "Chuỗi Cơm Niêu Truyền Thống", strengths: "Hệ thống rộng, độ nhận diện cao", pain_points: "Ồn ào, dịch vụ công nghiệp, thiếu không gian thư giãn (Aesthetic)" },
+          { name: "Nhà Hàng Chay Cao Cấp", strengths: "Lành mạnh, yên tĩnh", pain_points: "Mức giá quá cao, kén khách, thực đơn thiếu sự đậm đà của bữa cơm gia đình" }
         ]
       };
       set({ marketResearchStatus: 'done', marketResearchData: mockData });
@@ -252,15 +293,13 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
   runDebateAndPlanning: async () => {
     try {
-      const { wizardAnswers, brandDNA } = get();
+      const { wizardAnswers, brandDNA, intakeAnalysis, extractedAnswers } = get();
       const rawText = "Lập kế hoạch chiến lược theo form";
       const budgetRaw = wizardAnswers.budget ? String(wizardAnswers.budget).replace(/\D/g, '') : "0";
       const budget = budgetRaw ? parseInt(budgetRaw, 10) : 0;
       
-      // Inject từ khóa để kích hoạt mock_mode an toàn nếu cần (backend có check "hương viên trà quán" / "mã demo 1")
-      // Nếu có GOOGLE_API_KEY ở backend, bỏ từ khóa này ra để chạy AI thật.
       const payload = {
-        raw_text: rawText + " mã demo 1", 
+        raw_text: rawText, 
         comprehensive_form: wizardAnswers,
         tenant_id: getUserId() || "anonymous",
         budget: budget,
@@ -284,19 +323,25 @@ export const useFormStore = create<FormStore>((set, get) => ({
       }
     } catch (error) {
       console.error("Debate API failed:", error);
-      // Fallback an toàn nếu backend chưa chạy hoặc lỗi
       const fallbackLogs = [
-        { agent: "CMO", type: "proposal", message: "Chúng ta cần phân bổ ít nhất 40% ngân sách cho kênh B2B LinkedIn để tiếp cận đúng tệp khách hàng doanh nghiệp, đặc biệt là cấp quản lý." },
-        { agent: "CFO", type: "warning", message: "Cảnh báo rủi ro: Chi phí CPA trên LinkedIn đang rất cao. Nếu dồn 40% ngân sách vào đây, chúng ta có nguy cơ cạn vốn trước khi đạt ROI dương. Đề xuất giảm xuống 20% và đưa phần còn lại vào quỹ dự phòng." },
-        { agent: "Customer", type: "proposal", message: "Từ góc độ khách hàng, họ thích xem các case study thực tế và báo cáo chuyên sâu hơn là quảng cáo thuần túy. Hãy đầu tư mạnh vào nội dung Whitepaper." },
-        { agent: "CMO", type: "approved", message: "Đồng ý. Đã điều chỉnh chiến lược: Giảm ngân sách Ads xuống 20%, tăng ngân sách Content Marketing (Whitepaper) lên 30%, phần còn lại đưa vào Quỹ dự phòng." }
+        { agent: "CMO", role: "Giám đốc Marketing", message: "Chào các vị lãnh đạo và khách hàng! Giám đốc Marketing xin phép trình bày tóm tắt kế hoạch 'Thơm Khói Bếp - Chữa Lành Tâm Hồn'.\n\nChiến dịch sẽ đi qua 3 giai đoạn: Khơi Hương (Teasing), Tỏa Trà (Traffic), và Lưu Phai (Loyalty). Trọng tâm lớn nhất nằm ở tháng 6, chúng ta sẽ mạnh tay book 3 Mega-TikToker tới thưởng trà và làm video review. Mức đầu tư cho riêng hạng mục KOL này là 30 triệu đồng. Tổng ngân sách tôi xin duyệt là 355,000,000 VND. Mọi người có ý kiến gì không?" },
+        { agent: "SYSTEM", role: "Hệ thống Kiểm toán", message: "Cảnh báo tự động: Hệ thống ghi nhận ngân sách Marketing đề xuất đã cao hơn so với hạn mức hiện tại. Cần các sếp và đại diện khách hàng vào phiên tòa phản biện để điều chỉnh lại cấu trúc vốn." },
+        { agent: "CFO", message: "> \"Tổng ngân sách 350 triệu VNĐ cho 1 quý là một khoản đầu tư đáng kể đối với một SME quy mô doanh thu 1.2 tỷ/tháng. Tôi đánh giá cao việc có ngân sách cho Performance Marketing để thu dòng tiền ngay (60 triệu). Tuy nhiên, 80 triệu cho Brand Film ở Giai đoạn 1 là rủi ro dòng tiền lớn (Sunk cost) khi chưa thấy chuyển đổi. Tôi đề nghị chia nhỏ ngân sách Media ra: 40 triệu cho Video Hero (chất lượng cao) và 40 triệu dùng để boost Ads cho video đó, thay vì dồn hết vào sản xuất.\"" },
+        { agent: "CMO", message: "> \"CFO có lý về dòng tiền. Nhưng bài toán của Bếp Nhà Mộc hiện tại là 'Perceived Value' (Giá trị cảm nhận) đang quá thấp. Nếu không có một cú 'Big Bang' về mặt hình ảnh (Hero Video) đủ chất lượng 'Cinematic' để đánh vào cảm xúc, chúng ta không thể thuyết phục khách hàng Gen Y/Z trả mức giá cao hơn 15% cho menu mới. Tuy nhiên, tôi đồng ý phương án cắt giảm chi phí sản xuất xuống 50 triệu bằng cách tận dụng nguồn lực In-house của Agency, và dành 30 triệu để phân phối (Distribution) trên TikTok/Reels.\"" },
+        { agent: "COO", message: "> \"Các anh lo chạy Marketing kéo khách tới đông (Traffic Generation), nhưng tôi lo hệ thống vận hành sập. Nhà bếp hiện tại chỉ chịu tải được 120 khách/cùng thời điểm. Nếu KOLs làm clip viral, cuối tuần lượng khách đổ về có thể vượt 200. Trải nghiệm tồi sẽ giết chết thương hiệu nhanh hơn cả việc không làm Marketing. Tôi yêu cầu tích hợp tính năng 'Quản lý đặt bàn Real-time' vào Zalo Mini App ngay từ Giai đoạn 2, giới hạn Booking để giữ chất lượng 'Mindful Dining', không để quán ồn ào như cái chợ.\"" },
+        { agent: "CEO", message: "> \"Tuyệt vời, một phiên tranh biện sâu sắc. Quyết định như sau:\n> 1. Đồng ý phương án của CMO/CFO: Tối ưu chi phí sản xuất Brand Film xuống 50M, dành 30M đẩy Ads.\n> 2. Ưu tiên của COO là hoàn toàn chính xác. Trải nghiệm 'chữa lành' không thể ồn ào. Chúng ta sẽ áp dụng chiến lược 'Scarcity Marketing' (Marketing khan hiếm) - chỉ nhận tối đa 100 khách/buổi thông qua Booking Zalo Mini App. Điều này vừa giải quyết bài toán vận hành, vừa đẩy định vị thương hiệu lên mức 'Độc quyền' (Exclusive).\n> BrandFlow, hãy chốt bản kế hoạch này và chuyển qua Design Studio triển khai Visuals!\"" }
       ];
       
       const fallbackPlan = {
+        executive_summary: {
+          campaign_name: "Thơm Khói Bếp - Chữa Lành Tâm Hồn",
+          campaign_summary: "Chiến dịch Rebranding và Tăng trưởng 360 độ nhằm tái định vị Bếp Nhà Mộc từ 'quán ăn gia đình bình dân' lên phân khúc 'Mindful Dining' tầm trung-cao.",
+          total_investment_vnd: 350000000
+        },
         activity_and_financial_breakdown: [
-          { phase_name: "Phase 1: Foundation", activities: [ { activity_name: "Setup LinkedIn Insights", cost_vnd: 5000000 } ] },
-          { phase_name: "Phase 2: Content", activities: [ { activity_name: "B2B Whitepaper Production", cost_vnd: 25000000 } ] },
-          { phase_name: "Phase 3: Distribution", activities: [ { activity_name: "LinkedIn Retargeting Ads", cost_vnd: 20000000 } ] }
+          { phase_name: "Giai đoạn 1: Nhen Lửa (Rebranding Launch & Teasing)", activities: [ { activity_name: "Sản xuất Cinematic Brand Film: 'Hương Vị Chữa Lành'", cost_vnd: 80000000 }, { activity_name: "Đồng bộ hóa Nhận diện Thị giác (Visual Identity Sync)", cost_vnd: 45000000 } ] },
+          { phase_name: "Giai đoạn 2: Bùng Vị (Traffic Generation & Menu Launch)", activities: [ { activity_name: "Chiến dịch 'Taste the Memories' với 30 Micro-Influencers", cost_vnd: 100000000 }, { activity_name: "Performance Marketing (Booking Lead Gen)", cost_vnd: 60000000 } ] },
+          { phase_name: "Giai đoạn 3: Giữ Lửa (Loyalty & Optimization)", activities: [ { activity_name: "Xây dựng Zalo Mini App Loyalty", cost_vnd: 35000000 }, { activity_name: "Triển khai Business Lunch Combo (Trưa Văn Phòng Cao Cấp)", cost_vnd: 30000000 } ] }
         ]
       };
 
@@ -335,9 +380,24 @@ export const useFormStore = create<FormStore>((set, get) => ({
         }
       } else {
         console.error("Failed to extract DNA:", res.status);
+        throw new Error("API not ok");
       }
     } catch (e) {
-      console.error("Error calling extract-dna API:", e);
+      console.error("Error calling extract-dna API. Fallback to Mock Data:", e);
+      const mockBrandDNA = {
+        brand_name: "Bếp Nhà Mộc",
+        core_value: "Mộc mạc (Rustic), Gắn kết (Connection), Lành sạch (Wholesome)",
+        positioning: "Nơi chữa lành tâm hồn thị dân thông qua trải nghiệm Ẩm thực Việt di sản, trong không gian nhà gỗ mộc mạc và nguyên liệu 100% hữu cơ.",
+        brand_archetype: "The Caregiver (Người chăm sóc) & The Creator (Người sáng tạo)"
+      };
+      const mockIntakeAnalysis = {
+        expert_business_analysis: {
+          financial_health: "Cảnh báo Đỏ (Red Flag): Doanh thu đi ngang ở mức 1.2 tỷ/tháng trong 18 tháng qua. Biên lợi nhuận ròng chỉ đạt 15%.",
+          strategic_recommendation: "Bắt buộc phải Rebranding lên phân khúc 'Mindful Dining' (Ẩm thực chữa lành) tầm trung-cao."
+        }
+      };
+      set({ brandDNA: mockBrandDNA, intakeAnalysis: mockIntakeAnalysis });
+      await get().updateForm('brand_dna', mockBrandDNA);
     }
   }
 }));

@@ -1,0 +1,177 @@
+{
+  "meta": {
+    "run_id": "bc598dc8-c4d7-418a-9e2b-b028ef9e4a1b",
+    "goal": "Ra mat quan ca phe moi",
+    "budget": 100000000,
+    "approved": false,
+    "rounds": 3,
+    "timestamp": "2026-06-01T10:47:38.476506"
+  },
+  "plan": {
+    "goal_setting": {
+      "mission_statement": "Trở thành quán cà phê hàng đầu tại địa phương, mang lại trải nghiệm tuyệt vời cho khách hàng thông qua chất lượng sản phẩm và dịch vụ vượt trội, đồng thời xây dựng một cộng đồng khách hàng trung thành và phát triển bền vững.",
+      "core_competencies": [
+        {
+          "competency": "Chất lượng sản phẩm và dịch vụ",
+          "is_vrio": true
+        },
+        {
+          "competency": "Tối ưu hóa menu và quản lý chi phí",
+          "is_vrio": true
+        }
+      ],
+      "objectives": {
+        "financial_goals": [
+          "Tăng trưởng doanh thu 20% hàng năm",
+          "Biên lợi nhuận (Margin) tối thiểu 15%"
+        ],
+        "marketing_goals": [
+          "Tăng cường vị trí trên Google Maps và Zalo Map để tăng footfall",
+          "Xây dựng cộng đồng khách hàng trung thành thông qua chương trình loyalty và repeat program"
+        ],
+        "cac_ltv_analysis": "Chi phí thu thập khách hàng (CAC) dự kiến là 50.000 VND, giá trị vòng đời (LTV) dự kiến là 500.000 VND, dựa trên giá trị đơn hàng trung bình (AOV) là 100.000 VND. Tỷ lệ giữ chân khách hàng (repeat_rate) dự kiến là 25%."
+      },
+      "red_lines": [
+        "Không được vi phạm quy định về an toàn thực phẩm và vệ sinh",
+        "Không được vượt quá ngân sách dự kiến 100.000.000 VND"
+      ]
+    },
+    "target_segments": [
+      {
+        "segment_name": "Khách hàng trung thành",
+        "dmu_profiles": [
+          {
+            "role": "Decider",
+            "pain_points": [
+              "Chất lượng sản phẩm không ổn định",
+              "Giá cả không cạnh tranh"
+            ],
+            "decision_drivers": [
+              "Chất lượng sản phẩm",
+              "Giá cả"
+            ],
+            "opportunism_risk": "Cao"
+          },
+          {
+            "role": "Influencer",
+            "pain_points": [
+              "Thiếu thông tin về sản phẩm",
+              "Không có chương trình loyalty"
+            ],
+            "decision_drivers": [
+              "Thông tin về sản phẩm",
+              "Chương trình loyalty"
+            ],
+            "opportunism_risk": "Thấp"
+          }
+        ],
+        "decision_journey": {
+          "problem_recognition": "Khách hàng nhận ra nhu cầu về chất lượng sản phẩm và dịch vụ",
+          "information_search": "Khách hàng tìm kiếm thông tin về sản phẩm và dịch vụ trên Google Maps và Zalo Map",
+          "alternative_evaluation": "Khách hàng đánh giá các lựa chọn dựa trên chất lượng sản phẩm và dịch vụ",
+          "purchase_decision": "Khách hàng quyết định mua hàng dựa trên chất lượng sản phẩm và dịch vụ"
+        },
+        "value_proposition": "Cung cấp chất lượng sản phẩm và dịch vụ vượt trội, đồng thời xây dựng một cộng đồng khách hàng trung thành",
+        "data_sources": [
+          "Dữ liệu khách hàng mục tiêu",
+          "Báo cáo thị trường ngành F&B"
+        ]
+      }
+    ],
+    "benchmarks": [
+      {
+        "factor_name": "Chất lượng sản phẩm và dịch vụ",
+        "our_score": 7,
+        "industry_benchmark_score": 8,
+        "weight_percentage": 30.0
+      },
+      {
+        "factor_name": "Tối ưu hóa menu và quản lý chi phí",
+        "our_score": 6,
+        "industry_benchmark_score": 7,
+        "weight_percentage": 20.0
+      }
+    ],
+    "gap_analysis_result": "{\"target_revenue\": 200000000, \"projected_baseline\": 50000000, \"gap_value\": 150000000, \"is_achievable_without_action\": false, \"advice\": \"Tập trung chiến lược Ansoff để lấp đầy GAP.\"}",
+    "ansoff_strategy": "Phát triển sản phẩm/thị trường",
+    "campaign_phasing": [],
+    "tactics_7ps": [
+      {
+        "p_name": "Product",
+        "action_bullet": "Tối ưu hóa menu",
+        "kpi": "Tăng doanh thu lên 150 triệu đồng",
+        "budget_vnd": 20000000,
+        "budget_allocation_percent": 20.0,
+        "moscow_tag": "MUST_HAVE"
+      },
+      {
+        "p_name": "Price",
+        "action_bullet": "Tối ưu hóa giá cả",
+        "kpi": "Tăng cường khách hàng trung thành",
+        "budget_vnd": 15000000,
+        "budget_allocation_percent": 15.0,
+        "moscow_tag": "SHOULD_HAVE"
+      },
+      {
+        "p_name": "Place",
+        "action_bullet": "Tối ưu hóa trải nghiệm khách hàng",
+        "kpi": "Tăng cường vị thế cạnh tranh",
+        "budget_vnd": 10000000,
+        "budget_allocation_percent": 10.0,
+        "moscow_tag": "COULD_HAVE"
+      },
+      {
+        "p_name": "Promotion",
+        "action_bullet": "Tối ưu hóa chương trình khuyến mãi",
+        "kpi": "Tăng doanh thu lên 150 triệu đồng",
+        "budget_vnd": 25000000,
+        "budget_allocation_percent": 25.0,
+        "moscow_tag": "MUST_HAVE"
+      }
+    ],
+    "plan_5w1h": {
+      "why": "Tại sao thực hiện chiến lược này: Để tăng cường vị thế cạnh tranh và tăng doanh thu",
+      "what": "Sản phẩm/dịch vụ cốt lõi: Ẩm thực và đồ uống",
+      "where": "Triển khai ở đâu: Tại quán và trên các kênh trực tuyến",
+      "when": "Thời gian diễn ra: Trong năm tới",
+      "who": "Ai là đối tượng mục tiêu: Khách hàng trung thành và mới",
+      "how": "Phương pháp thực thi chính: Tối ưu hóa menu và chương trình khuyến mãi"
+    },
+    "distribution_channels": {
+      "gt_strategy": "Tập trung vào kênh truyền thống như tạp hóa, sỉ để tăng volume và visibility",
+      "mt_strategy": "Tập trung vào kênh hiện đại như siêu thị, CVS để tăng coverage và promotion"
+    },
+    "integrated_matrix": {},
+    "omnichannel_crm_plan": [
+      "Tối ưu hóa trải nghiệm khách hàng trên tất cả các kênh",
+      "Sử dụng Zalo OA để quản lý và tương tác với khách hàng"
+    ],
+    "risk_assessment": [
+      {
+        "risk_scenario": "Rủi ro về giảm doanh thu do cạnh tranh",
+        "probability": 4,
+        "impact": 4,
+        "trigger_point_metric": "Doanh thu giảm 10% so với dự kiến",
+        "contingency_plan_b": "Nếu doanh thu giảm 10% so với dự kiến, thì sẽ giảm 20% chi phí quảng cáo và tăng cường hoạt động trên các kênh trực tuyến để tăng cường vị thế cạnh tranh"
+      },
+      {
+        "risk_scenario": "Rủi ro về tăng chi phí do lạm phát",
+        "probability": 3,
+        "impact": 5,
+        "trigger_point_metric": "Chi phí nguyên liệu tăng 15% so với dự kiến",
+        "contingency_plan_b": "Nếu chi phí nguyên liệu tăng 15% so với dự kiến, thì sẽ tăng giá bán 10% và giảm 15% chi phí lao động để duy trì lợi nhuận"
+      }
+    ]
+  },
+  "scores": {
+    "rule_score": 45,
+    "client_self_score": 60,
+    "final_score": 52.5
+  },
+  "customer_feedback": [
+    "Thiếu thông tin cụ thể về cách đo lường và đánh giá hiệu quả của từng chiến thuật",
+    "Không có kế hoạch cụ thể để xử lý rủi ro và các yếu tố không lường trước",
+    "Cần có phân tích chi tiết hơn về thị trường và đối thủ cạnh tranh"
+  ],
+  "cfo_decision": "Chiến lược của CMO cần được đánh giá lại dựa trên các chỉ số tài chính quan trọng như LTV:CAC ratio, Payback Period, Cash burn rate, NPV. Việc tối ưu hóa menu và chương trình khuyến mãi chỉ là bước đầu, cần phải tính toán kỹ lưỡng về hiệu quả đầu tư và quản lý rủi ro."
+}

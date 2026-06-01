@@ -7,9 +7,10 @@ import { Loader2, Plus, PlaySquare, Globe, MessageSquare, PieChart, Send, Sparkl
 
 export default function ContentLabPage() {
   const { t } = useLanguage();
-  const { wizardAnswers } = useFormStore();
+  const { wizardAnswers, brandDNA, extractedAnswers } = useFormStore();
   
   const [urlInput, setUrlInput] = useState('');
+  const [chatInput, setChatInput] = useState('');
   const [isIngesting, setIsIngesting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
@@ -33,6 +34,12 @@ export default function ContentLabPage() {
         },
         body: JSON.stringify({ url: urlInput }),
       });
+      
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || `HTTP Error ${res.status}`);
+      }
+      
       const data = await res.json();
       if (data.status === 'success') {
         const newSrc = data.data;
@@ -43,10 +50,10 @@ export default function ContentLabPage() {
         });
         setUrlInput('');
       } else {
-        alert("Lỗi: " + data.detail);
+        alert("Lỗi: " + (data.detail || data.message));
       }
-    } catch (err) {
-      alert("Lỗi kết nối Server.");
+    } catch (err: any) {
+      alert(`Lỗi Ingest: ${err.message || 'Lỗi kết nối Server'}`);
     } finally {
       setIsIngesting(false);
     }
@@ -70,9 +77,17 @@ export default function ContentLabPage() {
         },
         body: JSON.stringify({ 
           scraped_data: targetSource,
-          business_context: wizardAnswers
+          business_context: wizardAnswers,
+          brand_dna: brandDNA,
+          extracted_answers: extractedAnswers
         }),
       });
+      
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || `HTTP Error ${res.status}`);
+      }
+      
       const data = await res.json();
       if (data.status === 'success') {
         setSources((prev) => {
@@ -84,10 +99,10 @@ export default function ContentLabPage() {
           return next;
         });
       } else {
-        alert("Lỗi: " + data.detail);
+        alert("Lỗi: " + (data.detail || data.message));
       }
-    } catch (err) {
-      alert("Lỗi kết nối Server.");
+    } catch (err: any) {
+      alert(`Lỗi Analyze: ${err.message || 'Lỗi kết nối Server'}`);
     } finally {
       setIsAnalyzing(false);
     }
@@ -403,9 +418,32 @@ export default function ContentLabPage() {
               </div>
               
               <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent">
+                <div className="max-w-3xl mx-auto mb-3 flex flex-wrap gap-2 justify-center">
+                   <button 
+                     onClick={() => setChatInput(`Hãy viết lại nội dung bài này theo phong cách ${brandDNA?.tone_of_voice || 'chuyên nghiệp'} của thương hiệu ${wizardAnswers?.company_name || 'chúng tôi'}.`)}
+                     className="text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 hover:border-cyan-500/40 transition-colors"
+                   >
+                     ✨ Viết lại theo Brand DNA
+                   </button>
+                   <button 
+                     onClick={() => setChatInput(`Trích xuất 3 ý tưởng nội dung từ đây phù hợp với USP: ${brandDNA?.core_usps?.join(', ') || wizardAnswers?.core_usps?.join(', ') || 'sản phẩm chất lượng'}.`)}
+                     className="text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 hover:border-blue-500/40 transition-colors"
+                   >
+                     💡 Ý tưởng phù hợp USP
+                   </button>
+                   <button 
+                     onClick={() => setChatInput(`Đánh giá xem bài này có phù hợp với tệp khách hàng: ${wizardAnswers?.target_audience || 'khách hàng mục tiêu'} hay không?`)}
+                     className="text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 hover:border-indigo-500/40 transition-colors"
+                   >
+                     🎯 Kiểm tra khớp Target Audience
+                   </button>
+                </div>
+                
                 <div className="relative max-w-3xl mx-auto shadow-2xl">
                   <input 
                     type="text" 
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
                     placeholder="Hỏi AI về chiến thuật của nội dung này..." 
                     className="w-full bg-linear-surface/80 backdrop-blur-xl border border-linear-border/80 rounded-full py-4 pl-6 pr-16 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder:text-linear-text-muted"
                   />

@@ -1,0 +1,17 @@
+BrandFlow Executive Summary (Run: bc598dc8-c4d7-418a-9e2b-b028ef9e4a1b)
+Goal: Ra mat quan ca phe moi | Budget: 100,000,000 VND
+Final Cost: 70,000,000 VND
+Status: REJECTED (Score: 52.5/100, Rounds: 3)
+---
+CFO Risk Comment:
+> Chiến lược của CMO cần được đánh giá lại dựa trên các chỉ số tài chính quan trọng như LTV:CAC ratio, Payback Period, Cash burn rate, NPV. Việc tối ưu hóa menu và chương trình khuyến mãi chỉ là bước đầu, cần phải tính toán kỹ lưỡng về hiệu quả đầu tư và quản lý rủi ro.
+Customer Feedback:
+- Thiếu thông tin cụ thể về cách đo lường và đánh giá hiệu quả của từng chiến thuật
+- Không có kế hoạch cụ thể để xử lý rủi ro và các yếu tố không lường trước
+- Cần có phân tích chi tiết hơn về thị trường và đối thủ cạnh tranh
+---
+Key Tactics & KPIs:
+[Product] Tối ưu hóa menu | Cost: 20,000,000 | KPI: Tăng doanh thu lên 150 triệu đồng
+[Price] Tối ưu hóa giá cả | Cost: 15,000,000 | KPI: Tăng cường khách hàng trung thành
+[Place] Tối ưu hóa trải nghiệm khách hàng | Cost: 10,000,000 | KPI: Tăng cường vị thế cạnh tranh
+[Promotion] Tối ưu hóa chương trình khuyến mãi | Cost: 25,000,000 | KPI: Tăng doanh thu lên 150 triệu đồng

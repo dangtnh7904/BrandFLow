@@ -177,3 +177,25 @@ class BusinessMetric(Base):
 
     def __repr__(self):
         return f"<BusinessMetric Project: {self.project_id}>"
+
+# ═══════════════════════════════════════════════════════════════════
+# CUSTOM_AGENT — Lưu cấu hình Dynamic Custom Agents của User
+# ═══════════════════════════════════════════════════════════════════
+class CustomAgent(Base):
+    __tablename__ = "custom_agents"
+
+    id = Column(String(36), primary_key=True, default=_uuid)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = Column(String(255), nullable=False)
+    role = Column(String(255), nullable=False)
+    system_prompt = Column(Text, nullable=False)
+    capabilities = Column(JSON, nullable=False, default=list) # Ví dụ: ["web_search", "data_analysis", "niche_knowledge"]
+    
+    created_at = Column(DateTime, default=_now, nullable=False)
+    updated_at = Column(DateTime, default=_now, onupdate=_now, nullable=False)
+
+    # Relationships
+    owner = relationship("User", backref="custom_agents")
+
+    def __repr__(self):
+        return f"<CustomAgent {self.name} ({self.role})>"

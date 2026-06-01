@@ -2,16 +2,22 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Copy, Send, CheckCircle2, Lock, ArrowRight, PenSquare, Image as ImageIcon, Flame, Users, Briefcase, Music, MoreHorizontal, Heart, MessageCircle, Share2 } from 'lucide-react';
+import { Sparkles, Copy, Send, CheckCircle2, Lock, ArrowRight, PenSquare, Image as ImageIcon, Flame, Users, Briefcase, Music, MoreHorizontal, Heart, MessageCircle, Share2, Compass } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFormStore } from '@/store/useFormStore';
 
 export default function DailyContentPage() {
   const { t } = useLanguage();
+  const { brandDNA, wizardAnswers, extractedAnswers } = useFormStore();
   const [topic, setTopic] = useState('');
   const [tone, setTone] = useState('Chuyên nghiệp');
   const [platform, setPlatform] = useState('Facebook');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string | null>(null);
+
+  // Derive masterDNA
+  const brandName = brandDNA?.brand_name || wizardAnswers?.company_name || extractedAnswers?.company_name || "Thương hiệu";
+  const coreUsps = brandDNA?.core_usps || wizardAnswers?.core_usps || extractedAnswers?.core_usps || ["Sản phẩm chất lượng"];
 
   // States for Google Trends
   const [trends, setTrends] = useState<string[]>([]);
@@ -23,16 +29,24 @@ export default function DailyContentPage() {
       setIsLoadingTrends(true);
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        const token = typeof window !== 'undefined' ? localStorage.getItem('brandflow_token') : null;
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1500);
+
         const res = await fetch(`${API_URL}/api/content-lab/trends?platform=${platform}`, {
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
+
         const data = await res.json();
-        if (isMounted && data.status === 'success') {
+        if (isMounted && data.status === 'success' && data.data?.length > 0) {
           setTrends(data.data);
+        } else {
+          if (isMounted) setTrends(["Tối ưu dòng tiền", "Thoát cảnh 'Khổ Chủ'", "Xây dựng đội ngũ", "AI cho SME"]);
         }
       } catch (err) {
         console.error("Failed to fetch trends", err);
+        if (isMounted) setTrends(["Tối ưu dòng tiền", "Thoát cảnh 'Khổ Chủ'", "Xây dựng đội ngũ", "AI cho SME"]);
       } finally {
         if (isMounted) setIsLoadingTrends(false);
       }
@@ -43,11 +57,11 @@ export default function DailyContentPage() {
 
   const handleGenerate = () => {
     setIsGenerating(true);
-    // Mock API call
+    // Mock API call tailored for SME
     setTimeout(() => {
-      setGeneratedContent(`🚀 Khám phá sức mạnh của việc tối ưu hóa quy trình với AI!\n\nBạn có biết rằng 70% doanh nghiệp vừa và nhỏ đang lãng phí hàng giờ mỗi tuần cho các tác vụ thủ công không? Đã đến lúc chuyển đổi số! \n\n🔹 Giảm thiểu sai sót\n🔹 Tiết kiệm 30% ngân sách vận hành\n🔹 Thúc đẩy năng suất đội ngũ\n\nBạn đã sẵn sàng để ứng dụng AI vào doanh nghiệp của mình chưa?\n\n#DigitalTransformation #AI #SME #BusinessGrowth`);
+      setGeneratedContent(`🔥 ${topic.toUpperCase()} 🔥\n\nNhiều Founder/CEO của các doanh nghiệp đang rơi vào một cái bẫy vô hình: Khởi nghiệp để được tự do, nhưng cuối cùng lại làm việc 14 tiếng/ngày.\n\nSự thật tàn nhẫn là: Doanh nghiệp của bạn sẽ KHÔNG THỂ 'Scale-up' nếu thiếu đi một hệ thống vững chắc.\n\nTại ${brandName}, chúng tôi tin rằng lợi thế: "${coreUsps[0]}" chính là chìa khóa để giải quyết vấn đề này.\n\n💡 3 BƯỚC ĐỂ BỨT PHÁ:\n1️⃣ Quy trình hóa (SOP) mọi tác vụ lặp lại.\n2️⃣ Tập trung vào giá trị cốt lõi thay vì chạy theo số lượng.\n3️⃣ Ứng dụng AI & Automation vào vận hành để giảm phụ thuộc vào con người.\n\n👇 Hãy bắt đầu xây dựng hệ thống tự vận hành ngay hôm nay cùng ${brandName}!\n\nBạn đang mắc kẹt ở khâu nào nhất? Comment bên dưới để cùng thảo luận nhé! 👇\n\n#${brandName.replace(/\s+/g, '')} #QuanTriDoanhNghiep #ScaleUp`);
       setIsGenerating(false);
-    }, 2000);
+    }, 1500);
   };
 
   return (
@@ -108,6 +122,25 @@ export default function DailyContentPage() {
                     placeholder={t('daily_content.topic_ph')}
                     className="relative w-full bg-background border border-linear-border rounded-xl p-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none h-28 text-foreground placeholder:text-slate-400 shadow-inner"
                   />
+                </div>
+              </div>
+
+              {/* DNA Suggestions */}
+              <div>
+                <label className="block text-xs font-bold text-cyan-500 mb-3 flex items-center uppercase tracking-wider">
+                  <Compass className="w-4 h-4 mr-1.5" />
+                  Gợi Ý Từ DNA Doanh Nghiệp
+                </label>
+                <div className="flex flex-wrap gap-2">
+                   {coreUsps.slice(0, 3).map((usp: string, idx: number) => (
+                     <button
+                        key={`dna-${idx}`}
+                        onClick={() => setTopic(`Làm nổi bật ưu điểm: ${usp} của ${brandName}`)}
+                        className="text-xs font-semibold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 px-3.5 py-1.5 rounded-full hover:shadow-md hover:scale-105 transition-all text-left line-clamp-1 flex items-center"
+                      >
+                        ✨ {usp.substring(0, 30)}{usp.length > 30 ? '...' : ''}
+                      </button>
+                   ))}
                 </div>
               </div>
 
@@ -199,41 +232,61 @@ export default function DailyContentPage() {
                 transition={{ duration: 0.5, type: 'spring' }}
                 className="w-full max-w-[400px] flex flex-col h-full"
               >
-                {/* Phone Frame */}
-                <div className="relative bg-white dark:bg-slate-900 rounded-[2.5rem] border-[8px] border-slate-800 dark:border-slate-950 shadow-2xl shadow-blue-500/20 overflow-hidden flex flex-col h-full">
-                  {/* Notch */}
-                  <div className="absolute top-0 inset-x-0 h-6 bg-slate-800 dark:bg-slate-950 rounded-b-2xl w-32 mx-auto z-20 flex justify-center items-end pb-1">
-                    <div className="w-12 h-1.5 bg-slate-900 dark:bg-black rounded-full opacity-50" />
-                  </div>
+                {/* Phone Frame - High-End Titanium Look */}
+                <div className="relative bg-black rounded-[3rem] p-[3px] shadow-[0_0_50px_rgba(59,130,246,0.3)] overflow-hidden flex flex-col h-full bg-gradient-to-br from-slate-400 via-slate-600 to-slate-800">
+                  <div className="bg-white dark:bg-[#0f172a] rounded-[2.8rem] overflow-hidden flex flex-col h-full relative">
+                    
+                    {/* Dynamic Island / Notch */}
+                    <div className="absolute top-2 inset-x-0 h-7 bg-black rounded-full w-32 mx-auto z-20 flex justify-center items-center shadow-md">
+                      <div className="w-1.5 h-1.5 bg-green-500/80 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="w-12 h-1 bg-slate-800 rounded-full" />
+                    </div>
 
-                  {/* App Header (Fake) */}
-                  <div className="px-4 pt-10 pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900 z-10 shrink-0">
-                     <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center shadow-sm">
-                           <span className="text-white font-bold text-sm">BF</span>
-                        </div>
-                        <div>
-                           <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">BrandFlow Brand</h4>
-                           <span className="text-[10px] text-slate-500 flex items-center">
-                             Vừa xong • {platform}
-                           </span>
-                        </div>
-                     </div>
-                     <MoreHorizontal className="w-5 h-5 text-slate-400" />
-                  </div>
+                    {/* Fake Status Bar */}
+                    <div className="px-6 pt-3 pb-2 flex justify-between items-center text-[10px] font-medium text-slate-800 dark:text-slate-300 z-10 relative bg-white dark:bg-[#0f172a]">
+                       <span>9:41</span>
+                       <div className="flex items-center space-x-1.5">
+                          <div className="w-4 h-3 flex items-end justify-between"><div className="w-0.5 h-1 bg-current"/><div className="w-0.5 h-1.5 bg-current"/><div className="w-0.5 h-2 bg-current"/><div className="w-0.5 h-2.5 bg-current"/></div>
+                          <div className="w-3 h-3 rounded-sm border border-current flex items-center justify-center"><div className="w-2 h-1.5 bg-current"/></div>
+                       </div>
+                    </div>
 
-                  {/* Content Area */}
-                  <div className="flex-1 overflow-y-auto no-scrollbar p-5 bg-white dark:bg-slate-900 relative">
-                     <div className="prose prose-slate dark:prose-invert max-w-none text-slate-800 dark:text-slate-200 text-sm leading-[1.6] whitespace-pre-wrap">
-                       {generatedContent}
-                     </div>
-                  </div>
+                    {/* App Header (Fake Social) */}
+                    <div className="px-5 pt-4 pb-3 border-b border-slate-100 dark:border-slate-800/50 flex items-center justify-between bg-white dark:bg-[#0f172a] z-10 shrink-0">
+                       <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-md p-[2px]">
+                             <div className="w-full h-full bg-white dark:bg-slate-900 rounded-full flex items-center justify-center">
+                                <span className="text-blue-600 dark:text-blue-400 font-bold text-xs uppercase">{brandName.substring(0,2)}</span>
+                             </div>
+                          </div>
+                          <div>
+                             <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">{brandName}</h4>
+                             <span className="text-[10px] text-slate-500 flex items-center mt-0.5">
+                               Ngay bây giờ • {platform} • <Users className="w-3 h-3 ml-1 text-slate-400" />
+                             </span>
+                          </div>
+                       </div>
+                       <MoreHorizontal className="w-5 h-5 text-slate-400" />
+                    </div>
 
-                  {/* Fake Actions */}
-                  <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center justify-around shrink-0 text-slate-500">
-                     <button className="flex items-center space-x-1.5 hover:text-rose-500 transition-colors"><Heart className="w-5 h-5" /><span className="text-xs font-medium">Thích</span></button>
-                     <button className="flex items-center space-x-1.5 hover:text-blue-500 transition-colors"><MessageCircle className="w-5 h-5" /><span className="text-xs font-medium">Bình luận</span></button>
-                     <button className="flex items-center space-x-1.5 hover:text-emerald-500 transition-colors"><Share2 className="w-5 h-5" /><span className="text-xs font-medium">Chia sẻ</span></button>
+                    {/* Content Area */}
+                    <div className="flex-1 overflow-y-auto no-scrollbar bg-white dark:bg-[#0f172a] relative">
+                       <div className="p-5 prose prose-sm prose-slate dark:prose-invert max-w-none text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap font-medium">
+                         {generatedContent}
+                       </div>
+                    </div>
+
+                    {/* Fake Actions */}
+                    <div className="px-5 py-4 border-t border-slate-100 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md flex items-center justify-between shrink-0 text-slate-500">
+                       <button className="flex items-center space-x-2 hover:text-rose-500 transition-colors group"><Heart className="w-5 h-5 group-hover:scale-110 transition-transform" /><span className="text-xs font-semibold">Thích</span></button>
+                       <button className="flex items-center space-x-2 hover:text-blue-500 transition-colors group"><MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" /><span className="text-xs font-semibold">Bình luận</span></button>
+                       <button className="flex items-center space-x-2 hover:text-emerald-500 transition-colors group"><Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" /><span className="text-xs font-semibold">Chia sẻ</span></button>
+                    </div>
+                    
+                    {/* Home Indicator */}
+                    <div className="w-full h-1 flex justify-center pb-2 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md">
+                       <div className="w-1/3 h-1 bg-slate-800 dark:bg-slate-200 rounded-full" />
+                    </div>
                   </div>
                 </div>
 
@@ -242,8 +295,8 @@ export default function DailyContentPage() {
                   <button className="flex-1 py-3 px-4 bg-linear-surface hover:bg-linear-surface/80 dark:hover:bg-slate-800 text-foreground font-semibold rounded-xl border border-linear-border transition-colors flex items-center justify-center shadow-sm group">
                     <Copy className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" /> {t('daily_content.btn_copy')}
                   </button>
-                  <button className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center justify-center group hover:-translate-y-0.5">
-                    <Send className="w-4 h-4 mr-2 group-hover:translate-x-1 transition-transform" /> {t('daily_content.btn_post')}
+                  <button className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center group hover:-translate-y-0.5">
+                    <Send className="w-4 h-4 mr-2 group-hover:translate-x-1 transition-transform" /> Duyệt & Đăng
                   </button>
                 </div>
               </motion.div>
@@ -256,17 +309,18 @@ export default function DailyContentPage() {
               >
                 <div className="relative mb-8">
                   <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full" />
-                  {/* Empty State Phone Wireframe */}
-                  <div className="w-48 h-80 border-4 border-dashed border-slate-300 dark:border-slate-700 rounded-[2rem] flex flex-col items-center justify-center relative bg-slate-50/50 dark:bg-slate-800/30">
-                     <ImageIcon className="w-10 h-10 text-slate-300 dark:text-slate-600 mb-4" />
-                     <div className="w-24 h-2 bg-slate-200 dark:bg-slate-700 rounded-full mb-2" />
-                     <div className="w-32 h-2 bg-slate-200 dark:bg-slate-700 rounded-full mb-2" />
-                     <div className="w-20 h-2 bg-slate-200 dark:bg-slate-700 rounded-full" />
+                  {/* Empty State Phone Wireframe - High End */}
+                  <div className="w-[260px] h-[520px] border-[4px] border-slate-200 dark:border-slate-800 rounded-[3rem] flex flex-col items-center justify-center relative bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-[#0f172a] shadow-2xl">
+                     <div className="absolute top-2 inset-x-0 h-6 bg-slate-200 dark:bg-slate-800 rounded-full w-28 mx-auto" />
+                     <ImageIcon className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-6 drop-shadow-md" />
+                     <div className="w-3/4 h-3 bg-slate-200 dark:bg-slate-700/50 rounded-full mb-3" />
+                     <div className="w-5/6 h-3 bg-slate-200 dark:bg-slate-700/50 rounded-full mb-3" />
+                     <div className="w-1/2 h-3 bg-slate-200 dark:bg-slate-700/50 rounded-full" />
                   </div>
                 </div>
-                <h3 className="text-foreground font-semibold mb-2 text-lg">Bản Xem Trước (Preview)</h3>
-                <p className="max-w-[300px] text-sm leading-relaxed">
-                  Viết chủ đề hoặc chọn một Trend nóng hổi bên trái. AI sẽ thiết kế nội dung và hiển thị ngay trên chiếc điện thoại này.
+                <h3 className="text-foreground font-bold mb-2 text-xl tracking-tight">Bản Xem Trước Trực Quan</h3>
+                <p className="max-w-[320px] text-sm leading-relaxed opacity-80">
+                  Chọn gợi ý từ DNA hoặc Trend để AI tạo nội dung siêu tốc. Trải nghiệm xem trước y hệt bài đăng thực tế.
                 </p>
               </motion.div>
             )}

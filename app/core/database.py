@@ -70,4 +70,4 @@ def init_db():
     """Tạo tất cả bảng nếu chưa có. Gọi 1 lần khi startup."""
     # Import models để đăng ký vào Base.metadata trước khi create_all
     import app.models.models  # noqa: F401
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine, checkfirst=True)

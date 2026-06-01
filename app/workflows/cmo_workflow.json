@@ -1,0 +1,164 @@
+{
+  "nodes": {
+    "init_vars": {
+      "type": "VariableNode",
+      "assignments": {
+        "current_round": 1,
+        "max_rounds": 3,
+        "satisfaction_threshold": 70
+      },
+      "next": "phase1_goal_setting"
+    },
+    "phase1_goal_setting": {
+      "type": "FunctionNode",
+      "function": "app.agents.planner.agents_core.run_cmo_phase1_goal_setting",
+      "inputs": {
+        "goal": "$goal",
+        "industry": "$industry",
+        "budget": "$budget",
+        "brand_dna": "$brand_dna",
+        "scenario_type": "$scenario_type",
+        "target_profit": "$target_profit",
+        "idea_description": "$idea_description"
+      },
+      "output_key": "phase1_data",
+      "next": "phase2_situation_audit"
+    },
+    "phase2_situation_audit": {
+      "type": "FunctionNode",
+      "function": "app.agents.planner.agents_core.run_cmo_phase2_situation_audit",
+      "inputs": {
+        "phase1_data": "$phase1_data",
+        "industry": "$industry",
+        "target_audience": "$target_audience"
+      },
+      "output_key": "phase2_data",
+      "next": "math_swot"
+    },
+    "math_swot": {
+      "type": "FunctionNode",
+      "function": "app.workflows.engine_adapters.calc_math_swot",
+      "inputs": {
+        "phase2_data": "$phase2_data"
+      },
+      "output_key": "swot_result",
+      "next": "math_gap"
+    },
+    "math_gap": {
+      "type": "FunctionNode",
+      "function": "app.workflows.engine_adapters.calc_market_gap",
+      "inputs": {
+        "target_profit": "$target_profit",
+        "budget": "$budget"
+      },
+      "output_key": "gap_result",
+      "next": "phase3_strategy_formulation"
+    },
+    "phase3_strategy_formulation": {
+      "type": "FunctionNode",
+      "function": "app.agents.planner.agents_core.run_cmo_phase3_strategy_formulation",
+      "inputs": {
+        "gap_analysis": "$gap_result",
+        "segments_data": "$phase2_data"
+      },
+      "output_key": "phase3_data",
+      "next": "phase4_tactical_allocator"
+    },
+    "phase4_tactical_allocator": {
+      "type": "FunctionNode",
+      "function": "app.agents.planner.agents_core.run_cmo_phase4_tactical_allocator",
+      "inputs": {
+        "strategy_data": "$phase3_data",
+        "budget": "$budget",
+        "scenario_type": "$scenario_type"
+      },
+      "output_key": "current_plan",
+      "next": "loop_python_interceptor"
+    },
+    "loop_python_interceptor": {
+      "type": "FunctionNode",
+      "function": "app.agents.planner.agents_core.python_interceptor",
+      "inputs": {
+        "raw_plan": "$current_plan",
+        "allowed_budget": "$budget",
+        "scenario_type": "$scenario_type"
+      },
+      "output_key": "interceptor_result",
+      "next": "loop_cfo_review"
+    },
+    "loop_cfo_review": {
+      "type": "FunctionNode",
+      "function": "app.agents.planner.agents_core.run_cfo_defense_review",
+      "inputs": {
+        "budget_data": "$interceptor_result",
+        "budget": "$budget"
+      },
+      "output_key": "cfo_res",
+      "next": "loop_persona_review"
+    },
+    "loop_persona_review": {
+      "type": "FunctionNode",
+      "function": "app.agents.planner.agents_core.run_customer_reviewer_agent",
+      "inputs": {
+        "plan_summary": "$interceptor_result.final_activities",
+        "target_audience": "$target_audience"
+      },
+      "output_key": "customer_res",
+      "next": "loop_extract_metrics"
+    },
+    "loop_extract_metrics": {
+      "type": "FunctionNode",
+      "function": "app.workflows.engine_adapters.extract_loop_metrics",
+      "inputs": {
+        "interceptor_result": "$interceptor_result",
+        "customer_res": "$customer_res",
+        "cfo_res": "$cfo_res"
+      },
+      "output_key": "loop_metrics",
+      "next": "loop_condition"
+    },
+    "loop_condition": {
+      "type": "ConditionNode",
+      "condition": "loop_metrics.get('final_score', 0) >= satisfaction_threshold or current_round >= max_rounds",
+      "on_true": "finalize_export",
+      "on_false": "loop_prepare_refine"
+    },
+    "loop_prepare_refine": {
+      "type": "FunctionNode",
+      "function": "app.workflows.engine_adapters.format_refine_feedback",
+      "inputs": {
+        "cfo_comment": "$loop_metrics.cfo_comment",
+        "customer_feedback": "$loop_metrics.customer_feedback"
+      },
+      "output_key": "refine_feedback",
+      "next": "loop_refine_planner"
+    },
+    "loop_refine_planner": {
+      "type": "FunctionNode",
+      "function": "app.agents.planner.agents_core.run_refine_planner",
+      "inputs": {
+        "previous_plan": "$current_plan",
+        "feedback": "$refine_feedback",
+        "budget": "$budget"
+      },
+      "output_key": "current_plan",
+      "next": "loop_increment_round"
+    },
+    "loop_increment_round": {
+      "type": "VariableNode",
+      "assignments": {
+        "current_round": "$current_round + 1"
+      },
+      "next": "loop_python_interceptor"
+    },
+    "finalize_export": {
+      "type": "FunctionNode",
+      "function": "app.workflows.engine_adapters.finalize_and_export",
+      "inputs": {
+        "state": "$"
+      },
+      "output_key": "final_export_result",
+      "next": null
+    }
+  }
+}

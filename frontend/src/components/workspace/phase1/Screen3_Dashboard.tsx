@@ -13,11 +13,12 @@ function cn(...inputs: ClassValue[]) {
 
 import { useFormStore } from '@/store/useFormStore';
 
-export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGoToHub: () => void, onGoToWorkspace: () => void }) {
+export default function Screen3_Dashboard({ onGoToHub, onGoToNext }: { onGoToHub: () => void, onGoToNext: () => void }) {
  const { t, language } = useLanguage();
  const intakeAnalysis = useFormStore(state => state.intakeAnalysis);
  const [loading, setLoading] = useState(true);
  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+ const [isFocusExpanded, setIsFocusExpanded] = useState(false);
 
  const loadingTexts = [
  t('dashboard.loading1'),
@@ -87,6 +88,7 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
 
  const audit = intakeAnalysis?.strategic_marketing_audit || {};
  const visualDNA = intakeAnalysis?.visual_brand_dna || {};
+ const expertAnalysis = intakeAnalysis?.expert_business_analysis;
  
  const trustScore = audit.trust_score || 85;
  const competitivePositioning = audit.competitive_positioning || (language === 'vi' ? 'Thương hiệu lâu đời, có nền tảng tốt nhưng đang có dấu hiệu già hóa tệp khách hàng. Cần xây dựng hình ảnh năng động hơn.' : 'Established brand with good foundation but signs of aging customer base. Needs dynamic facelift.');
@@ -106,6 +108,7 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  ];
 
  const focusObjective = audit.marketing_objectives?.[0] || t('dashboard.focus_2');
+ const allObjectives = audit.marketing_objectives || [focusObjective];
 
  return (
  <div className="w-full h-full overflow-y-auto bg-slate-50 dark:bg-[#0B1120] relative">
@@ -189,11 +192,14 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  <div className="mb-4">
  <p className="text-[10px] text-linear-text-muted font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Bảng màu đề xuất' : 'Suggested Palette'}</p>
  <div className="flex space-x-2">
- {primaryColors.map((color: string, idx: number) => (
-   <div key={idx} className="w-6 h-6 rounded-full border border-linear-border shadow-sm flex items-center justify-center" style={{ backgroundColor: color }}>
-     <span className="opacity-0 hover:opacity-100 text-[8px] bg-white/80 px-1 rounded absolute -mt-8">{color}</span>
-   </div>
- ))}
+ {primaryColors.map((color: string, idx: number) => {
+   const hexColor = color.split(' ')[0];
+   return (
+    <div key={idx} className="w-8 h-8 rounded-full border border-linear-border shadow-sm flex items-center justify-center relative group cursor-pointer" style={{ backgroundColor: hexColor }}>
+      <span className="opacity-0 group-hover:opacity-100 text-[10px] bg-slate-800 text-white font-medium px-2 py-1 rounded absolute -top-8 whitespace-nowrap shadow-md z-20 pointer-events-none transition-opacity">{color}</span>
+    </div>
+   );
+ })}
  </div>
  </div>
  
@@ -237,16 +243,31 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.4 }}
- className="bento-card p-6 border-linear-border relative overflow-hidden bg-background"
+ className="bento-card p-6 border-linear-border relative overflow-hidden bg-background cursor-pointer hover:border-blue-400 transition-colors"
+ onClick={() => setIsFocusExpanded(!isFocusExpanded)}
  >
- <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-4">{t('dashboard.focus')}</h3>
+ <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-4 flex justify-between items-center">
+   <span>{t('dashboard.focus')}</span>
+   <span className="text-[10px] text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">{isFocusExpanded ? (language === 'vi' ? 'Thu gọn' : 'Collapse') : (language === 'vi' ? 'Xem chi tiết' : 'Expand')}</span>
+ </h3>
  
- <div className="flex items-end mb-4 relative z-10">
- <div className="max-w-full">
- <p className="text-sm font-bold text-foreground mb-1">{t('dashboard.focus_1')}</p>
- <p className="text-[1.3rem] font-black text-blue-600 leading-snug line-clamp-2" title={focusObjective}>{focusObjective}</p>
- </div>
- <Activity className="w-6 h-6 text-blue-600 opacity-50 ml-auto shrink-0 mb-1" />
+ <div className="flex items-start mb-4 relative z-10 flex-col">
+ <p className="text-sm font-bold text-foreground mb-2">{t('dashboard.focus_1')}</p>
+ 
+ {!isFocusExpanded ? (
+   <p className="text-[1.3rem] font-black text-blue-600 leading-snug line-clamp-2" title={focusObjective}>{focusObjective}</p>
+ ) : (
+   <div className="space-y-3 mt-2 w-full pb-4">
+     {allObjectives.map((obj: string, i: number) => (
+       <div key={i} className="flex items-start p-3 bg-blue-50/50 rounded-lg border border-blue-100/50">
+         <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 mr-3">{i+1}</div>
+         <p className="text-sm font-bold text-blue-800">{obj}</p>
+       </div>
+     ))}
+   </div>
+ )}
+ 
+ {!isFocusExpanded && <Activity className="w-6 h-6 text-blue-600 opacity-50 absolute right-0 bottom-0 mb-1" />}
  </div>
 
  {/* Pure SVG Sparkline */}
@@ -274,6 +295,46 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  </svg>
  </div>
  </motion.div>
+ 
+ {expertAnalysis && (
+   <motion.div 
+     initial={{ opacity: 0, y: 20 }}
+     animate={{ opacity: 1, y: 0 }}
+     transition={{ delay: 0.45 }}
+     className="md:col-span-3 bento-card p-8 border-linear-border bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-900 dark:to-[#0B1120] text-white relative overflow-hidden shadow-lg mt-2"
+   >
+     <div className="absolute top-0 right-0 p-8 opacity-10">
+       <Activity className="w-40 h-40 text-cyan-400" />
+     </div>
+     <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-6 flex items-center">
+       <Zap className="w-4 h-4 mr-2" />
+       {language === 'vi' ? 'Đánh giá Chuyên gia (Expert Analysis)' : 'Expert Business Analysis'}
+     </h3>
+     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+       <div className="space-y-6">
+         <div>
+           <h4 className="text-[10px] text-cyan-300 font-bold uppercase tracking-wider mb-2 flex items-center"><span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mr-2"></span>{language === 'vi' ? 'Sức khỏe Tài chính' : 'Financial Health'}</h4>
+           <p className="text-sm text-slate-300 leading-relaxed">{expertAnalysis.financial_health}</p>
+         </div>
+         <div>
+           <h4 className="text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-2 flex items-center"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mr-2"></span>{language === 'vi' ? 'Nút thắt Vận hành' : 'Operational Bottlenecks'}</h4>
+           <p className="text-sm text-slate-300 leading-relaxed">{expertAnalysis.operational_bottlenecks}</p>
+         </div>
+       </div>
+       <div className="space-y-6">
+         <div>
+           <h4 className="text-[10px] text-purple-400 font-bold uppercase tracking-wider mb-2 flex items-center"><span className="w-1.5 h-1.5 rounded-full bg-purple-400 mr-2"></span>{language === 'vi' ? 'Định giá Thương hiệu' : 'Brand Equity'}</h4>
+           <p className="text-sm text-slate-300 leading-relaxed">{expertAnalysis.brand_equity_assessment}</p>
+         </div>
+         <div className="p-5 bg-blue-900/30 rounded-xl border border-blue-500/30 backdrop-blur-sm shadow-inner">
+           <h4 className="text-[10px] text-blue-300 font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Đề xuất Chiến lược' : 'Strategic Recommendation'}</h4>
+           <p className="text-sm text-blue-50 font-medium leading-relaxed">{expertAnalysis.strategic_recommendation}</p>
+         </div>
+       </div>
+     </div>
+   </motion.div>
+ )}
+
  </div>
 
  {/* Module 5: CTA */}
@@ -283,23 +344,16 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToWorkspace }: { onGo
  transition={{ delay: 0.5 }}
  className="flex flex-col sm:flex-row items-center justify-end gap-4 mt-8 pt-8 border-t border-linear-border/50"
  >
- <button 
- onClick={onGoToHub}
- className="px-8 py-4 rounded-xl font-bold transition-all shadow-sm flex items-center bg-linear-surface border border-linear-border text-foreground hover:bg-linear-surface/80 hover:text-cyan-500 w-full sm:w-auto justify-center"
- >
- {language === 'vi' ? 'Khám phá Tính năng khác' : 'Explore Other Features'}
- </button>
- 
- <button 
- onClick={onGoToWorkspace}
- className="group relative px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-1 w-full sm:w-auto justify-center overflow-hidden"
- >
- {/* Shine effect */}
- <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
- <span className="relative z-10 flex items-center">
- 🚀 {language === 'vi' ? 'Bắt đầu Lập Kế hoạch Chiến lược' : 'Start Strategic Planning'} <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
- </span>
- </button>
+  <button 
+  onClick={onGoToNext}
+  className="group relative px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-1 w-full sm:w-auto justify-center overflow-hidden"
+  >
+  {/* Shine effect */}
+  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+  <span className="relative z-10 flex items-center">
+  🚀 {language === 'vi' ? 'Tiếp tục — Chọn Tính Năng' : 'Continue — Select Feature'} <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+  </span>
+  </button>
  </motion.div>
  </div>
  </div>

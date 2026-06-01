@@ -46,6 +46,27 @@ HÃY TRẢ VỀ ĐỊNH DẠNG JSON VỚI CẤU TRÚC SAU:
 Tuyệt đối không trả lời ngoài định dạng JSON. Không thêm backticks markdown ```json ở đầu và cuối.
 """
 
+GENERATE_SYSTEM_PROMPT = """Bạn là một Chuyên gia Copywriter (ContentLab Agent).
+Nhiệm vụ của bạn là viết nội dung tiếp thị dựa trên yêu cầu của người dùng.
+
+LUÔN TUÂN THỦ NGHIÊM NGẶT 2 YẾU TỐ:
+1. Định dạng (Format): {format} (Ví dụ: Facebook Post, Blog SEO, Bài PR Báo chí).
+2. Văn phong (Tone of Voice): {tone_of_voice} (Ví dụ: Chuyên nghiệp, Hài hước, Cảm động, Chữa lành).
+
+Thông tin Doanh nghiệp:
+{business_context}
+
+HÃY TRẢ VỀ ĐỊNH DẠNG JSON VỚI CẤU TRÚC:
+{
+    "headline": "Tiêu đề hấp dẫn",
+    "content_body": "Nội dung chi tiết (Có thể dùng Markdown)",
+    "hashtags": ["#tag1", "#tag2"],
+    "call_to_action": "Câu kêu gọi hành động",
+    "estimated_reading_time": "Thời gian đọc ước tính"
+}
+Tuyệt đối không trả lời ngoài định dạng JSON. Không thêm backticks.
+"""
+
 class ContentLabAgent:
     def __init__(self):
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
@@ -73,7 +94,7 @@ class ContentLabAgent:
             print(f"Error fetching image for LLM: {e}")
             return ""
 
-    async def analyze_vibe(self, scraped_data: Dict[str, Any], business_context: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def analyze_vibe(self, scraped_data: Dict[str, Any], business_context: Dict[str, Any] = None, brand_dna: Dict[str, Any] = None, extracted_answers: Dict[str, Any] = None) -> Dict[str, Any]:
         if not self.llm:
             # Mock mode if no API key
             return {
@@ -93,10 +114,16 @@ class ContentLabAgent:
 
         text_payload = f"Platform: {platform}\nTitle: {title}\nDescription: {desc}\n\nMain Content / Transcript:\n<scraped_content>\n{content}\n</scraped_content>"
         
-        if business_context:
+        has_context = bool(business_context or brand_dna or extracted_answers)
+        if has_context:
             text_payload += f"\n\n--- THÔNG TIN DOANH NGHIỆP CỦA NGƯỜI DÙNG ---\n"
-            text_payload += f"Hãy đóng vai là cố vấn chiến lược. Khi đưa ra phần 'learning_actions', BẮT BUỘC phải dựa trên thông tin sau để biến đổi bài học thành chiến thuật trực tiếp áp dụng cho họ:\n"
-            text_payload += "<business_context>\n" + json.dumps(business_context, ensure_ascii=False, indent=2) + "\n</business_context>"
+            text_payload += f"Hãy đóng vai là cố vấn chiến lược. Khi đưa ra phần 'learning_actions', BẮT BUỘC phải dựa trên thông tin DNA thương hiệu sau để biến đổi bài học thành chiến thuật trực tiếp áp dụng cho họ:\n"
+            if brand_dna:
+                text_payload += "<brand_dna>\n" + json.dumps(brand_dna, ensure_ascii=False, indent=2) + "\n</brand_dna>\n"
+            if business_context:
+                text_payload += "<business_context>\n" + json.dumps(business_context, ensure_ascii=False, indent=2) + "\n</business_context>\n"
+            if extracted_answers:
+                text_payload += "<extracted_answers>\n" + json.dumps(extracted_answers, ensure_ascii=False, indent=2) + "\n</extracted_answers>\n"
 
         messages = [
             SystemMessage(content=SYSTEM_PROMPT)
@@ -133,3 +160,44 @@ class ContentLabAgent:
                         "target_audience": "Không thể phân tích.",
                         "actionable_marketing_ideas": []
                     }
+
+    async def generate_content(self, topic: str, format_type: str, tone_of_voice: str, business_context: Dict[str, Any] = None) -> Dict[str, Any]:
+        if not self.llm:
+            return {
+                "headline": f"Mock Headline cho {topic}",
+                "content_body": f"Nội dung được tạo tự động cho chủ đề {topic} với định dạng {format_type} và văn phong {tone_of_voice}.",
+                "hashtags": ["#brandflow", "#marketing"],
+                "call_to_action": "Liên hệ ngay hôm nay!",
+                "estimated_reading_time": "1 phút"
+            }
+
+        context_str = json.dumps(business_context, ensure_ascii=False) if business_context else "Không có thông tin thêm."
+        prompt = GENERATE_SYSTEM_PROMPT.format(
+            format=format_type,
+            tone_of_voice=tone_of_voice,
+            business_context=context_str
+        )
+
+        messages = [
+            SystemMessage(content=prompt),
+            HumanMessage(content=f"Hãy viết nội dung về chủ đề sau: {topic}")
+        ]
+
+        print(f"[ContentLab] Generating {format_type} content...")
+        try:
+            response = await self.llm.ainvoke(messages)
+            raw_text = response.content.strip()
+            if raw_text.startswith("```json"):
+                raw_text = raw_text.split("```json")[1].rsplit("```", 1)[0].strip()
+            elif raw_text.startswith("```"):
+                raw_text = raw_text.split("```")[1].rsplit("```", 1)[0].strip()
+            return json.loads(raw_text, strict=False)
+        except Exception as e:
+            return {
+                "error": str(e),
+                "headline": "Lỗi tạo nội dung",
+                "content_body": str(e),
+                "hashtags": [],
+                "call_to_action": "",
+                "estimated_reading_time": ""
+            }

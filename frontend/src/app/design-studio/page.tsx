@@ -11,22 +11,26 @@ import {
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+import { useFormStore } from '@/store/useFormStore';
+
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default function DesignStudioPage() {
   const { t } = useLanguage();
+  const { brandDNA, wizardAnswers, intakeAnalysis, extractedAnswers } = useFormStore();
   const [promptData, setPromptData] = useState({
     userPrompt: '',
     creativeMode: 'balanced'
   });
 
+  // Derive masterDNA from onboarding data (brandDNA + wizardAnswers + extractedAnswers)
   const masterDNA = {
-    brand_name: "TechNova",
-    goal: "Launch a new automated retail store",
-    industry: "Tech B2B",
-    core_usps: ["Đổi trả AI tự động", "Cửa hàng không người bán"],
-    target_audience: "Gen Z (18-24), yêu thích công nghệ.",
-    tone_of_voice: "Nhanh nhẹn, Đột phá."
+    brand_name: brandDNA?.brand_name || wizardAnswers?.company_name || extractedAnswers?.company_name || "Doanh nghiệp",
+    goal: brandDNA?.positioning || wizardAnswers?.goal || "Xây dựng thương hiệu mạnh",
+    industry: wizardAnswers?.industry || extractedAnswers?.industry || "General",
+    core_usps: brandDNA?.core_usps || wizardAnswers?.core_usps || extractedAnswers?.core_usps || [],
+    target_audience: wizardAnswers?.target_audience || extractedAnswers?.target_audience || "Khách hàng mục tiêu",
+    tone_of_voice: brandDNA?.tone_of_voice || wizardAnswers?.tone_of_voice || extractedAnswers?.tone_of_voice || "Chuyên nghiệp"
   };
 
   const [loading, setLoading] = useState(false);
@@ -111,6 +115,9 @@ export default function DesignStudioPage() {
 
       if (assetsRes.status === "error") throw new Error("Lỗi sinh Visual Assets: " + assetsRes.message);
       if (caseStudyRes.status === "error") throw new Error("Lỗi sinh Case Study: " + caseStudyRes.message);
+
+      if (!assetsRes.data) throw new Error("API Visual Assets không trả về dữ liệu (Missing data).");
+      if (!caseStudyRes.data || !caseStudyRes.data.blocks) throw new Error("API Case Study không trả về dữ liệu block (Missing data.blocks).");
 
       setActiveAgent('System');
       addLog("System", "Render thành công 2 luồng.", "success");
@@ -322,7 +329,18 @@ export default function DesignStudioPage() {
               </div>
 
               <div>
-                <div className="text-[10px] font-bold text-cyan-400 uppercase mb-1">Custom Prompt (Yêu cầu riêng)</div>
+                <div className="flex justify-between items-center mb-1">
+                  <div className="text-[10px] font-bold text-cyan-400 uppercase">Custom Prompt (Yêu cầu riêng)</div>
+                  <button 
+                    onClick={() => {
+                      const suggestion = `Thiết kế mang phong cách ${masterDNA.tone_of_voice || 'hiện đại'}, phù hợp với ngành ${masterDNA.industry || 'kinh doanh'}. Tập trung làm nổi bật đặc tính: ${masterDNA.core_usps?.join(', ') || 'sáng tạo, chuyên nghiệp'}. Hướng tới tệp khách hàng: ${masterDNA.target_audience || 'đại chúng'}.`;
+                      setPromptData({...promptData, userPrompt: suggestion});
+                    }}
+                    className="text-[10px] text-cyan-500 hover:text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded transition-colors"
+                  >
+                    ✨ Gợi ý từ DNA
+                  </button>
+                </div>
                 <textarea 
                   className="w-full bg-linear-surface/50 p-3 rounded-lg border border-cyan-500/30 text-sm text-foreground focus:ring-1 focus:ring-cyan-500 focus:outline-none resize-none h-24 placeholder-slate-500 shadow-inner"
                   placeholder="Ví dụ: Thiết kế mang hơi hướng công nghệ tương lai, dùng tone màu Dark Green..."

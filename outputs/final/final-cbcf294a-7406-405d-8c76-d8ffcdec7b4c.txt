@@ -1,0 +1,17 @@
+BrandFlow Executive Summary (Run: cbcf294a-7406-405d-8c76-d8ffcdec7b4c)
+Goal: test | Budget: 50,000,000 VND
+Final Cost: 39,000,000 VND
+Status: REJECTED (Score: 52.5/100, Rounds: 3)
+---
+CFO Risk Comment:
+> CMO cần xem xét lại chiến lược của mình, vì LTV:CAC ratio đang ở mức 1,5:1, Payback Period là 6 tháng, Cash burn rate là 10.000.000 VND/tháng và NPV là -5.000.000 VND. Điều này cho thấy chiến lược hiện tại không hiệu quả và cần được điều chỉnh.
+Customer Feedback:
+- Thiếu thông tin cụ thể về thị trường và đối thủ cạnh tranh
+- Không có kế hoạch cụ thể để đo lường và đánh giá hiệu quả của chiến dịch
+- Chi phí và ngân sách không được phân bổ rõ ràng
+---
+Key Tactics & KPIs:
+[Product] Phát triển sản phẩm mới với chất lượng cao và giá cả cạnh tranh | Cost: 10,000,000 | KPI: Đạt 500 đơn hàng trong tháng 1 với chi phí 20.000đ/đơn hàng
+[Price] Tổ chức các chương trình khuyến mãi để tăng cường sự quan tâm của khách hàng | Cost: 8,000,000 | KPI: Đạt 1000 lượt đăng ký trong tháng 2 với chi phí 15.000đ/lượt đăng ký
+[Place] Tăng cường độ phủ và tính khả dụng của sản phẩm trên các kênh truyền thống và hiện đại | Cost: 12,000,000 | KPI: Đạt 2000 đơn vị bán hàng trong tháng 3 với chi phí 10.000đ/đơn vị bán hàng
+[Promotion] Tổ chức các chương trình quảng cáo và khuyến mãi để tăng cường độ nhận biết và trải nghiệm của khách hàng | Cost: 9,000,000 | KPI: Đạt 500 lượt đăng ký trong tháng 4 với chi phí 25.000đ/lượt đăng ký

@@ -51,6 +51,28 @@ def parse_mock_md(file_path: str) -> dict:
                 current_msg = []
             current_agent = "CMO"
             current_msg.append(line.replace("CMO:", "", 1).strip())
+        elif line.startswith("CEO:"):
+            if current_msg:
+                agent_logs.append({"agent": current_agent, "message": "\n".join(current_msg).strip()})
+                current_msg = []
+            current_agent = "CEO"
+            current_msg.append(line.replace("CEO:", "", 1).strip())
+        elif line.startswith("COO Agent") or line.startswith("COO:"):
+            if current_msg:
+                agent_logs.append({"agent": current_agent, "message": "\n".join(current_msg).strip()})
+                current_msg = []
+            current_agent = "COO"
+            current_msg.append(line.replace("COO Agent (Vận hành & Trải nghiệm khách hàng):", "", 1).replace("COO:", "", 1).strip())
+        elif line.startswith("**CFO Agent") or line.startswith("**CMO Agent") or line.startswith("**COO Agent") or line.startswith("**CEO Agent"):
+            # Also handle the markdown bolded headers we added
+            if current_msg:
+                agent_logs.append({"agent": current_agent, "message": "\n".join(current_msg).strip()})
+                current_msg = []
+            
+            if "CFO Agent" in line: current_agent = "CFO"
+            elif "CMO Agent" in line: current_agent = "CMO"
+            elif "COO Agent" in line: current_agent = "COO"
+            elif "CEO Agent" in line: current_agent = "CEO"
         elif line.strip():
             current_msg.append(line.strip())
             

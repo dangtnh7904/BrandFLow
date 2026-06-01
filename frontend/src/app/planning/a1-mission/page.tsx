@@ -20,11 +20,15 @@ export default function PageA1Mission() {
   
   // State cục bộ (tránh lag khi gõ)
   const [localData, setLocalData] = useState({
-    role: "",
-    business_def: "",
-    purpose: "",
-    competency: "",
-    directions: [] as { type: string; text: string }[]
+    role: "Tiên phong tạo ra không gian 'Mindful Dining' (Ẩm thực chánh niệm) tại TP.HCM.",
+    business_def: "Mang đến trải nghiệm xoa dịu tâm hồn qua mâm cơm truyền thống và không gian tĩnh lặng, giải quyết vấn đề Burnout của người trẻ.",
+    purpose: "Thơm Khói Bếp - Ấm Tình Nhà: Chữa lành người thị dân bằng hương vị nguyên bản.",
+    competency: "Sở hữu hệ sinh thái Farm-to-Table 100% Organic và kiến trúc nhà gỗ độc bản tạo môi trường trị liệu tâm lý.",
+    directions: [
+      { type: 'will_do', text: 'Chỉ phục vụ tối đa 50 khách/tối để đảm bảo sự yên tĩnh tuyệt đối.' },
+      { type: 'never_do', text: 'Tuyệt đối không chạy đua giảm giá sâu (Deep Discounting) phá vỡ định vị.' },
+      { type: 'might_do', text: 'Mở rộng bán các sản phẩm Organic đóng gói (trà, gạo) mang thương hiệu Bếp Nhà Mộc.' }
+    ]
   });
   const userHasEdited = useRef(false);
 

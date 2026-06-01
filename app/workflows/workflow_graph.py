@@ -609,6 +609,124 @@ def run_plan_wizard_contract(
 
 
 def _build_mock_plan(goal: str, industry: str, budget: int, target_audience: str) -> dict:
+    if "chữa lành" in str(target_audience).lower() or "hoài cổ" in str(target_audience).lower() or "bếp nhà mộc" in goal.lower():
+        return {
+          "brand_dna": {
+            "brand_name": "Bếp Nhà Mộc",
+            "core_value": "Mộc mạc, Gắn kết, Lành sạch",
+            "positioning": "Nơi tái hiện mâm cơm gia đình Việt truyền thống giữa lòng phố thị hiện đại, sử dụng 100% nguyên liệu hữu cơ và không gian kiến trúc gỗ tự nhiên chữa lành.",
+            "brand_archetype": "The Caregiver (Người chăm sóc) & The Innocent (Kẻ mộng mơ thuần khiết)"
+          },
+          "executive_summary": {
+            "campaign_name": "Thơm Khói Bếp - Ấm Tình Nhà",
+            "campaign_summary": "Chiến dịch định vị lại thương hiệu Bếp Nhà Mộc sau 3 năm hoạt động. Chuyển đổi từ mô hình quán ăn gia đình thông thường sang không gian Trải nghiệm Ẩm thực & Chữa lành (Mindful Dining), thu hút tệp khách hàng Gen Y và Gen Z có thu nhập khá, yêu thích lối sống xanh.",
+            "core_objectives": "Tăng 50% độ nhận diện thương hiệu tại khu vực Quận 1 và Quận 3. Đạt doanh thu 2 tỷ VNĐ trong tháng ra mắt chiến dịch. Tỷ lệ khách hàng đăng ký thẻ thành viên đạt 25%.",
+            "total_budget_vnd": 250000000
+          },
+          "target_audience_and_brand_voice": {
+            "target_audience": "Nhóm 1: Nhân viên văn phòng (25-35 tuổi) cần bữa trưa chất lượng, thư giãn. Nhóm 2: Gia đình trẻ (30-45 tuổi) tìm kiếm không gian ăn tối ấm cúng cuối tuần. Nhóm 3: Giới trẻ (18-25 tuổi) thích không gian check-in mang phong cách chữa lành, hoài niệm.",
+            "brand_voice": "Ấm áp, chân thành, mộc mạc nhưng tinh tế. Gợi nhớ về quê nhà, tuổi thơ và những giá trị gia đình cốt lõi."
+          },
+          "phased_execution": [
+            {
+              "phase_id": "phase_1",
+              "phase_name": "Giai đoạn 1: Nhen Lửa (Teasing & Tái Định Vị)",
+              "duration": "Tuần 1 - Tuần 2, Tháng 7/2026",
+              "focus": "Tạo sự tò mò, gợi nhớ kỷ niệm về mâm cơm nhà."
+            },
+            {
+              "phase_id": "phase_2",
+              "phase_name": "Giai đoạn 2: Bùng Vị (Launch & Traffic Generation)",
+              "duration": "Tuần 3 - Tuần 4, Tháng 7/2026",
+              "focus": "Ra mắt Menu 'Ký Ức' mới, thu hút traffic đến quán, tạo viral trên MXH."
+            },
+            {
+              "phase_id": "phase_3",
+              "phase_name": "Giai đoạn 3: Giữ Lửa (Loyalty & Retention)",
+              "duration": "Tháng 8/2026",
+              "focus": "Chăm sóc khách hàng, đẩy mạnh UGC (User Generated Content) và thẻ thành viên."
+            }
+          ],
+          "activity_and_financial_breakdown": [
+            {
+              "phase_id": "phase_1",
+              "activities": [
+                {
+                  "activity_name": "Viral Clip: 'Bao lâu rồi chưa ăn cơm mẹ nấu?'",
+                  "description": "Phim ngắn 3 phút chạy Ads đa nền tảng, kể câu chuyện người trẻ quay cuồng trong công việc và bật khóc khi nếm lại hương vị canh cua rau đay tại Bếp Nhà Mộc.",
+                  "cost_vnd": 60000000,
+                  "kpi_commitment": "2 Triệu Lượt Xem, 50K Tương Tác",
+                  "moscow_tag": "MUST_HAVE",
+                  "channel": "Facebook, YouTube, TikTok"
+                },
+                {
+                  "activity_name": "Thay đổi Nhận diện Mạng Xã Hội",
+                  "description": "Thiết kế lại toàn bộ cover, avatar, frame bài viết theo nhận diện mới (tone nâu gỗ, xanh lá úa, typography retro).",
+                  "cost_vnd": 5000000,
+                  "kpi_commitment": "Hoàn thiện 100% nền tảng",
+                  "moscow_tag": "MUST_HAVE",
+                  "channel": "Fanpage, Instagram"
+                }
+              ]
+            },
+            {
+              "phase_id": "phase_2",
+              "activities": [
+                {
+                  "activity_name": "Chiến dịch KOLs & Food Reviewers",
+                  "description": "Book 5 Macro-TikTokers (Food/Lifestyle) và 15 Micro-Influencers đến trải nghiệm Menu 'Ký Ức'. Tập trung vào âm thanh ASMR nấu ăn và không gian mộc mạc.",
+                  "cost_vnd": 85000000,
+                  "kpi_commitment": "5 Triệu Reach, Tăng 1000 lượt Booking",
+                  "moscow_tag": "MUST_HAVE",
+                  "channel": "TikTok, Instagram Reels"
+                },
+                {
+                  "activity_name": "Sự kiện: 'Mâm Cơm 0 Đồng - Nếu bạn dẫn Mẹ theo'",
+                  "description": "Miễn phí 100 set ăn cho 100 khách hàng đầu tiên trong tuần lễ ra mắt mang theo mẹ hoặc người thân lớn tuổi đến quán.",
+                  "cost_vnd": 30000000,
+                  "kpi_commitment": "100 Bàn, PR Báo chí Organic",
+                  "moscow_tag": "SHOULD_HAVE",
+                  "channel": "Offline, PR"
+                },
+                {
+                  "activity_name": "Performance Ads",
+                  "description": "Chạy quảng cáo chuyển đổi (Conversion) hướng khách hàng đặt bàn qua Landing Page.",
+                  "cost_vnd": 40000000,
+                  "kpi_commitment": "Tỷ lệ chuyển đổi booking < 50k/bàn",
+                  "moscow_tag": "MUST_HAVE",
+                  "channel": "Facebook Ads, Google Search"
+                }
+              ]
+            },
+            {
+              "phase_id": "phase_3",
+              "activities": [
+                {
+                  "activity_name": "Workshop Cuối Tuần: 'Làm Gốm & Thưởng Trà'",
+                  "description": "Kết hợp với xưởng gốm địa phương tổ chức sự kiện tại không gian lầu 2. Khách mua vé hoặc miễn phí cho hạng thẻ VIP.",
+                  "cost_vnd": 15000000,
+                  "kpi_commitment": "150 Người Tham Dự",
+                  "moscow_tag": "COULD_HAVE",
+                  "channel": "Offline, Fanpage"
+                },
+                {
+                  "activity_name": "Chương trình Loyalty 'Người Nhà'",
+                  "description": "Ra mắt thẻ thành viên tích điểm. Khách hàng thân thiết được tặng món tráng miệng (Chè khúc bạch thủ công) mỗi lần ghé.",
+                  "cost_vnd": 15000000,
+                  "kpi_commitment": "1000 Member mới, 25% tỷ lệ quay lại",
+                  "moscow_tag": "MUST_HAVE",
+                  "channel": "Zalo OA, App"
+                }
+              ]
+            }
+          ],
+          "risk_management": {
+            "financial_risk": "Ngân sách Ads có thể bị overspend nếu không kiểm soát kỹ CPC/CPA trong Giai đoạn 2.",
+            "operational_risk": "Quá tải bếp trong sự kiện 'Mâm Cơm 0 Đồng', dẫn đến trải nghiệm khách hàng kém."
+          },
+          "estimated_total_cost_vnd": 250000000
+        }
+
     safe_budget = max(int(budget or 0), 0)
 
     if safe_budget == 0:
@@ -1099,174 +1217,48 @@ def run_pipeline(
     target_audience: str = "Tệp khách hàng chung",
     constraints: str = "Không có",
     brand_dna: dict = None,
+    scenario_type: str = "budget_driven",
+    target_profit: int = None,
+    idea_description: str = None,
 ) -> dict:
     """
     Pipeline tuyến tính: MasterPlanner → Python Interceptor → CFO/Persona Agents.
     """
     print(f"\n{'═' * 70}")
-    print(f"🚀 [PIPELINE START] Deterministic Architecture")
+    print(f"🚀 [PIPELINE START] Node-based Engine (Gumloop Architecture)")
     print(f"{'═' * 70}")
 
-    agent_logs = []
+    import os
+    from app.engine.executor import WorkflowExecutor
     
-    # ── GIAI ĐOẠN 1: GOAL SETTING ──
-    phase1_data = run_cmo_phase1_goal_setting(
-        goal=goal,
-        industry=industry,
-        budget=budget,
-        brand_dna=brand_dna
-    )
-    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Hoàn thành Giai đoạn 1: Sứ mệnh & Mục tiêu doanh nghiệp."})
-
-    # ── GIAI ĐOẠN 2: SITUATION AUDIT ──
-    phase2_data = run_cmo_phase2_situation_audit(
-        phase1_data=phase1_data,
-        target_audience=target_audience
-    )
-    
-    # ── PYTHON MATH ENGINE ──
-    math_engine = MathEngine()
-    swot_math_result = math_engine.calculate_swot_csfs(phase2_data.get("csf_analysis", []))
-    
-    # Giả định doanh thu mục tiêu là 2x budget, baseline là 0.5x budget cho Demo
-    target_rev = budget * 2
-    baseline_rev = int(budget * 0.5)
-    gap_result = math_engine.calculate_market_gap(target_revenue=target_rev, baseline_revenue=baseline_rev)
-    
-    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": f"Hoàn thành Giai đoạn 2. Điểm cạnh tranh: {swot_math_result['total_relative_strength']}/10."})
-
-    # ── GIAI ĐOẠN 3: STRATEGY FORMULATION ──
-    phase3_data = run_cmo_phase3_strategy_formulation(
-        gap_analysis=gap_result,
-        segments_data=phase2_data
-    )
-    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Hoàn thành Giai đoạn 3: Chiến lược Ansoff."})
-
-    # ── GIAI ĐOẠN 4: TACTICAL ALLOCATOR ──
-    raw_plan = run_cmo_phase4_tactical_allocator(
-        strategy_data=phase3_data,
-        budget=budget
-    )
-    agent_logs.append({"agent": "CMO", "role": "Master Planner", "message": "Hoàn thành Giai đoạn 4: Lập Bảng tiến độ & Ngân sách."})
-
-    # ── GIAI ĐOẠN 4.5 & 5: CROSS-FUNCTIONAL REVIEW (BOUNDED DAG LOOP) ──
-    max_rounds = 3
-    current_round = 1
-    satisfaction_threshold = 70
-    
-    current_plan = raw_plan
-    final_plan_tactics = None
-    interceptor_result = None
-    cfo_comment = ""
-    persona_comment = ""
-    risk_assessment = []
-    actual_cost = 0
-    cut_items = []
-    
-    while current_round <= max_rounds:
-        # 4.5 Python Interceptor
-        interceptor_result = python_interceptor(current_plan, budget)
-        final_plan_tactics = interceptor_result["final_activities"]
-        overflow_amount = interceptor_result["overflow_amount"]
-        cut_items = interceptor_result["cut_items"]
-        actual_cost = interceptor_result["final_total"]
-        
-        # 5. CFO Review
-        cfo_res = run_cfo_defense_review(interceptor_result, budget)
-        cfo_comment = cfo_res.get("cfo_comment", "")
-        risk_assessment = cfo_res.get("risk_assessment", [])
-        
-        # 6. Customer Review
-        plan_summary = {
-            "strategy": phase3_data,
-            "tactics": final_plan_tactics,
-            "cfo_risk": risk_assessment
-        }
-        
-        customer_res = run_customer_reviewer_agent(plan_summary, target_audience)
-        client_self_score = customer_res.get("client_self_score", 50)
-        feedback = customer_res.get("feedback", [])
-        persona_comment = customer_res.get("reasoning_summary", "")
-        
-        # Tính rule score
-        rule_score_data = math_engine.calculate_customer_rule_score(final_plan_tactics)
-        rule_score = rule_score_data["rule_score"]
-        final_score = (client_self_score * 0.5) + (rule_score * 0.5)
-        
-        agent_logs.append({
-            "agent": "SYSTEM", 
-            "role": "Loop Controller", 
-            "message": f"Vòng {current_round}/{max_rounds}: Customer Score={client_self_score}, Rule Score={rule_score} -> Final={final_score}"
-        })
-        
-        if final_score >= satisfaction_threshold:
-            agent_logs.append({"agent": "SYSTEM", "role": "Loop Controller", "message": f"Kế hoạch ĐẠT CHUẨN ({final_score} >= {satisfaction_threshold})."})
-            break
-            
-        if current_round == max_rounds:
-            agent_logs.append({"agent": "SYSTEM", "role": "Loop Controller", "message": f"Đạt giới hạn vòng lặp. Dừng và xuất kế hoạch hiện tại."})
-            break
-            
-        # Refine kế hoạch nếu chưa đạt
-        refine_feedback = f"CFO cảnh báo: {cfo_comment}. Khách hàng phản hồi: {', '.join(feedback)}. Hãy điều chỉnh lại chiến thuật cho hiệu quả hơn."
-        agent_logs.append({"agent": "SYSTEM", "role": "Loop Controller", "message": "Chuyển feedback về cho Master Planner để sửa đổi..."})
-        current_plan = run_refine_planner(current_plan, refine_feedback, budget)
-        current_round += 1
-
-    agent_logs.append({"agent": "CFO", "role": "Giám đốc Tài chính", "message": cfo_comment})
-    agent_logs.append({"agent": "PERSONA", "role": "Đại diện Khách hàng", "message": persona_comment})
-
-    # Lấy các trường mới từ schema TacticsPhase4 nếu có
-    plan_5w1h = final_plan_tactics.get("plan_5w1h", {})
-    distribution_channels = final_plan_tactics.get("distribution_channels", {})
-    integrated_matrix = final_plan_tactics.get("integrated_matrix", {})
-    omnichannel_crm_plan = final_plan_tactics.get("omnichannel_crm_plan", [])
-    campaign_phasing = phase3_data.get("campaign_phasing", [])
-
-    # Hợp nhất data thành MasterPlanPhase4Output format
-    final_plan = {
-        "goal_setting": phase1_data,
-        "target_segments": phase2_data.get("target_segments", []),
-        "benchmarks": phase2_data.get("benchmarks", []),
-        "gap_analysis_result": json.dumps(gap_result, ensure_ascii=False),
-        "ansoff_strategy": phase3_data.get("ansoff_matrix_choice", ""),
-        "campaign_phasing": campaign_phasing,
-        "tactics_7ps": final_plan_tactics.get("tactics_7ps", []),
-        "plan_5w1h": plan_5w1h,
-        "distribution_channels": distribution_channels,
-        "integrated_matrix": integrated_matrix,
-        "omnichannel_crm_plan": omnichannel_crm_plan,
-        "risk_assessment": risk_assessment
+    initial_state = {
+        "goal": goal,
+        "industry": industry,
+        "budget": int(budget or 0),
+        "csfs": csfs or [],
+        "resources": resources,
+        "target_audience": target_audience,
+        "constraints": constraints,
+        "brand_dna": brand_dna,
+        "scenario_type": scenario_type,
+        "target_profit": target_profit,
+        "idea_description": idea_description,
+        "agent_logs": []
     }
     
-    run_id = str(uuid.uuid4())
-    export_final_plan_to_disk(
-        run_id=run_id,
-        goal=goal,
-        budget=budget,
-        rounds=current_round if current_round <= max_rounds else max_rounds,
-        customer_feedback=feedback,
-        cfo_comment=cfo_comment,
-        rule_score=rule_score,
-        client_self_score=client_self_score,
-        final_score=final_score,
-        actual_total_cost=actual_cost,
-        final_plan=final_plan
-    )
-
-    print(f"\n{'═' * 70}")
-    print(f"✅ [PIPELINE COMPLETE] Kế hoạch đã lưu ra: outputs/final/final-{run_id}.json")
-    print(f"   📊 Tổng chi phí: {actual_cost:,} VND")
-    print(f"   ✂️ Hạng mục thao tác: {len(cut_items)}")
-    for log in agent_logs:
-        print(f"   [{log['agent']}] {log['message']}")
-    print(f"{'═' * 70}")
-
+    workflow_path = os.path.join(os.path.dirname(__file__), "cmo_workflow.json")
+    engine = WorkflowExecutor(workflow_json_path=workflow_path, initial_state=initial_state)
+    
+    final_state = engine.run(start_node_id="init_vars")
+    
+    # Kết quả trả về sau khi engine chạy hết graph
+    export_result = final_state.get("final_export_result", {})
+    
     return {
-        "final_plan": final_plan,
-        "agent_logs": agent_logs,
-        "actual_total_cost": actual_cost,
-        "run_id": run_id
+        "final_plan": export_result.get("final_plan", {}),
+        "agent_logs": final_state.get("agent_logs", []),
+        "actual_total_cost": export_result.get("actual_total_cost", 0),
+        "run_id": export_result.get("run_id", "")
     }
 
 def run_refinement_pipeline(

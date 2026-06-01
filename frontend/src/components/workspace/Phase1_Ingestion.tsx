@@ -5,12 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Screen1_Source from './phase1/Screen1_Source';
 import Screen2_Wizard from './phase1/Screen2_Wizard';
 import Screen3_Dashboard from './phase1/Screen3_Dashboard';
+import Screen4_ObjectiveSetting from './phase1/Screen4_ObjectiveSetting';
+import ScreenFeatureSelector from './phase1/ScreenFeatureSelector';
 import { useFormStore } from '@/store/useFormStore';
 import AmbientParticles from '@/components/AmbientParticles';
 
 export default function Phase1_Ingestion({ onGoToHub, onGoToWorkspace }: { onGoToHub: () => void, onGoToWorkspace: () => void }) {
-  // 1 = Selection, 2 = Wizard Form, 3 = Analysis Dashboard
-  const [currentScreen, setCurrentScreen] = useState<1 | 2 | 3>(1);
+  // 1 = Source Selection, 2 = Wizard Form, 3 = DNA Dashboard, 3.5 = Feature Selector, 4 = Campaign Objective Setting
+  const [currentScreen, setCurrentScreen] = useState<number>(1);
   const generateAndSaveDNA = useFormStore(state => state.generateAndSaveDNA);
 
   const goToDashboard = async () => {
@@ -60,7 +62,37 @@ export default function Phase1_Ingestion({ onGoToHub, onGoToWorkspace }: { onGoT
  transition={{ duration: 0.4 }}
  className="absolute inset-0 z-50 bg-black/50 backdrop-blur-md"
  >
- <Screen3_Dashboard onGoToHub={onGoToHub} onGoToWorkspace={onGoToWorkspace} />
+ <Screen3_Dashboard onGoToHub={onGoToHub} onGoToNext={() => setCurrentScreen(3.5)} />
+ </motion.div>
+ )}
+
+ {/* NEW: Feature Selector Screen — appears after DNA Dashboard */}
+ {currentScreen === 3.5 && (
+ <motion.div 
+ key="screen-feature-selector"
+ initial={{ opacity: 0, x: 50 }}
+ animate={{ opacity: 1, x: 0 }}
+ exit={{ opacity: 0, x: -50 }}
+ transition={{ duration: 0.4 }}
+ className="absolute inset-0 z-50 bg-black/50 backdrop-blur-md"
+ >
+ <ScreenFeatureSelector 
+   onBack={() => setCurrentScreen(3)} 
+   onGoToCampaign={() => setCurrentScreen(4)} 
+ />
+ </motion.div>
+ )}
+
+ {currentScreen === 4 && (
+ <motion.div 
+ key="screen4"
+ initial={{ opacity: 0, x: 50 }}
+ animate={{ opacity: 1, x: 0 }}
+ exit={{ opacity: 0, x: -50 }}
+ transition={{ duration: 0.4 }}
+ className="absolute inset-0 z-50 bg-black/50 backdrop-blur-md"
+ >
+ <Screen4_ObjectiveSetting onBack={() => setCurrentScreen(3.5)} onGoToWorkspace={onGoToWorkspace} />
  </motion.div>
  )}
  </AnimatePresence>

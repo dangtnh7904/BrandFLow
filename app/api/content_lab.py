@@ -14,6 +14,8 @@ class IngestRequest(BaseModel):
 class AnalyzeRequest(BaseModel):
     scraped_data: Dict[str, Any]
     business_context: Dict[str, Any] = {}
+    brand_dna: Dict[str, Any] = None
+    extracted_answers: Dict[str, Any] = None
 
 # In-memory storage for MVP (In production, use VectorDB or Redis)
 # Dictionary mapping session_id or url to extracted data
@@ -32,7 +34,7 @@ async def ingest_content(req: IngestRequest, user_id: str = Depends(get_current_
 async def analyze_vibe(req: AnalyzeRequest, user_id: str = Depends(get_current_user)):
     try:
         agent = ContentLabAgent()
-        report = await agent.analyze_vibe(req.scraped_data, req.business_context)
+        report = await agent.analyze_vibe(req.scraped_data, req.business_context, req.brand_dna, req.extracted_answers)
         return {"status": "success", "report": report}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,72 +1,67 @@
 {
   "company": {
-    "name": "San Diegency",
-    "hq_location": "San Diego, CA",
-    "mission": "To empower San Diego organizations to effectively communicate with current and potential stakeholders"
+    "name": "Bếp Nhà Mộc",
+    "hq_location": "TP.HCM, Việt Nam",
+    "mission": "Mang tinh hoa 'Mindful Dining' và nghệ thuật ẩm thực chữa lành (Food Therapy) vào từng bữa ăn gia đình Việt, xoa dịu tâm hồn giữa nhịp sống đô thị hối hả."
   },
   "plan_year": "2026",
-  "objective": "To delight and attract businesses in the greater San Diego area with the promise of excellent and unbeatable agency services.",
+  "objective": "Trở thành điểm đến số 1 về không gian ẩm thực chữa lành tại TP.HCM, tập trung vào Gen Z và dân văn phòng đang gặp tình trạng Burnout.",
   "authors": [
-    {"name": "Alex Smith", "email": "asmith@sandiegency.com"},
-    {"name": "Serena Li", "email": "sli@sandiegency.com"}
+    {"name": "Trần Thanh Mộc", "email": "founder@bepnhamoc.vn"},
+    {"name": "Lê Văn Strategy", "email": "cmo@bepnhamoc.vn"}
   ],
   "marketing_leaders": [
-    {"name": "Naman Malik", "title": "CEO", "bio": "Started the agency in 2014. MBA from USC with concentration in Marketing and Entrepreneurship."},
-    {"name": "Serena Li", "title": "CMO", "bio": "A decade of experience in digital marketing. Specialties in content marketing, SEO, PR, and PPC."},
-    {"name": "Alex Smith", "title": "Director of Demand Generation", "bio": "Manages organic acquisition and content marketing teams. 20 years in journalism."}
+    {"name": "Trần Thanh Mộc", "title": "Founder & CEO", "bio": "Hơn 15 năm kinh nghiệm trong ngành F&B truyền thống, đam mê ẩm thực nguyên bản và lối sống chánh niệm."},
+    {"name": "Lê Văn Strategy", "title": "CMO", "bio": "Chuyên gia về Brand Positioning và Data-driven Marketing, từng định hình chiến lược cho nhiều thương hiệu Lifestyle F&B hàng đầu."}
   ],
   "swot": {
-    "strengths": ["80 full-time employees dedicated to serving San Diego businesses", "Serves some of the area's largest, most influential organizations"],
-    "weaknesses": ["Lack of specialization — services identical to other agencies", "Low profit margins due to competition"],
-    "opportunities": ["Growing demand for digital marketing services in SD", "Growing population increases number of businesses"],
-    "threats": ["At least 12 other major San Diego area agencies plus nationwide ones", "Organizations still struggling to recover from economic downturn"]
+    "strengths": ["Không gian 'Therapeutic Environment' độc bản, không thể sao chép", "Nguồn nguyên liệu 100% Farm-to-Table Organic", "Năng lực nấu ẩm thực truyền thống (mắm nhỉ, cá kho tộ) cực chuẩn vị"],
+    "weaknesses": ["Chi phí vận hành (CAC/LTV) ban đầu khá cao do đầu tư cảnh quan", "Quy mô phục vụ (Seating capacity) giới hạn để giữ sự tĩnh lặng"],
+    "opportunities": ["Xu hướng 'Chữa Lành' (Healing) đang bùng nổ trong giới trẻ", "Người tiêu dùng sẵn sàng chi trả cao hơn cho thực phẩm sạch và không gian yên tĩnh"],
+    "threats": ["Nhiều thương hiệu F&B lớn bắt đầu tích hợp yếu tố không gian xanh", "Rủi ro đứt gãy chuỗi cung ứng nguyên liệu Organic"]
   },
   "initiatives": [
-    {"name": "Invest in Account-Based Marketing", "description": "Hire three dedicated ABM reps for targeted account-based initiatives.", "goal": "Appeal to larger, higher-volume clients.", "metrics": "10 accounts acquired through ABM campaigns."},
-    {"name": "Explode our Online Presence", "description": "Invest resources into strategically growing online presence.", "goal": "Tap into new personas and appeal to more potential clients.", "metrics": "Double organic traffic and paid ad leads."},
-    {"name": "Become SD's Webinar Destination", "description": "Pursue webinars for online content, community, and education.", "goal": "Produce minimum six webinars for new leads and client engagement.", "metrics": "3,000 webinar registrants, 50 new QLs."}
+    {"name": "Cinematic Brand Film 'Về Nhà Ăn Cơm'", "description": "Tung ra phim ngắn đậm chất điện ảnh khai thác nỗi đau Toxic Productivity của dân văn phòng.", "goal": "Tạo Viral awareness và định hình rõ khái niệm Food Therapy.", "metrics": "Đạt 2 Triệu Views và 50,000 lượt tương tác trên Social."},
+    {"name": "Micro/Macro Influencers Campaign", "description": "Booking 30+ Influencers (Tiktoker, Food Blogger) review về trải nghiệm không gian tĩnh lặng và món ăn gợi nhớ tuổi thơ.", "goal": "Đẩy mạnh lượng khách Gen Z đến quán check-in.", "metrics": "Tăng 300% lượng khách hàng mới từ Social Media."},
+    {"name": "Eco-friendly Business Lunch", "description": "Gói ăn trưa cho dân văn phòng đựng trong bao bì bã mía, kèm thẻ thông điệp chữa lành mỗi ngày.", "goal": "Tăng cường tỷ lệ quay lại (Retention) của tệp khách hàng công sở.", "metrics": "Bán 10,000 suất Business Lunch mỗi tháng."}
   ],
   "target_market": {
     "industries": [
-      {"name": "Restaurants", "description": "SD's restaurant and brewery scene continues to grow with rising demand for delivery."},
-      {"name": "Schools & Universities", "description": "150+ schools and universities — an untapped market, particularly private institutes."}
+      {"name": "Ngành F&B Lifestyle", "description": "Phân khúc nhà hàng không chỉ bán món ăn mà bán cả trải nghiệm tinh thần và lối sống."},
+      {"name": "Dịch vụ Sức khỏe Tinh thần", "description": "Xu hướng dùng ẩm thực kết hợp không gian để giải tỏa áp lực tâm lý."}
     ],
     "buyer_personas": [
-      {"name": "Chef/Owner Charlotte", "description": "Restaurant owner in her early 30s. Worries about sustainability, skeptical about off-premise dining."},
-      {"name": "Dean Daniel", "description": "Head of advancement, 50s. Wants high enrollment and donation numbers."}
+      {"name": "Mai (25 tuổi) - Gen Z Burnout", "description": "Nhân viên văn phòng, thường xuyên chạy deadline muộn. Cần một nơi yên tĩnh cuối tuần để trốn sếp và mạng xã hội."},
+      {"name": "Hoàng (35 tuổi) - Quản lý cấp trung", "description": "Thu nhập cao nhưng thiếu thời gian cho gia đình. Thèm hương vị mâm cơm quê nhà để vơi đi nỗi nhớ quê."}
     ],
     "competitors": [
-      {"name": "Nation's Marketing Agency", "compete": "Same services with nationwide resources and affordability.", "win": "We offer hyper-localized, personalized services."},
-      {"name": "California Marketing Brothers", "compete": "Identical services except video.", "win": "Hyper-localized work plus video services."},
-      {"name": "Duff & Sandler Agency", "compete": "San Diego-based agency with multiple connections.", "win": "First mover advantage with larger team and resources."}
+      {"name": "Cục Gạch Quán", "compete": "Cùng phân khúc quán ăn gia đình truyền thống cao cấp.", "win": "Chúng ta có định vị 'Food Therapy' rõ rệt hơn, nhắm sâu vào insight Gen Z."},
+      {"name": "Các quán Cafe Acoustic Xanh", "compete": "Không gian yên tĩnh, có nhạc nhẹ.", "win": "Chúng ta mang lại trải nghiệm ẩm thực no bụng thay vì chỉ đồ uống."}
     ]
   },
   "market_strategy": {
-    "product": "San Diegency is a full digital marketing agency, offering expert support and services in all of the following areas: Content Marketing, SEO, Paid Marketing Campaigns, Video Production, Graphic Design, Website Development, General Marketing Strategy. Our services provide a range of options for businesses and organizations of all size and experience. We're happy to work with for-profit and nonprofit, private and public, large and small businesses alike.",
-    "price": "Our price range varies by business type, size, and need. We craft specific packages based on the impact our work will have on our clients' bottom lines, the amount of output our team will produce, and the administrative and research billable hours our team will undertake. Packages start at $3,000 minimum but can go as high as six figures for ongoing, high-impact projects.",
-    "promotion": "We promote our services in the following ways: Organic channels, such as our website and our blog. Paid campaigns on social media and search engines for targeted business owners in San Diego. Webinars – our newest investment to speak to prospects, customers, and new contacts alike. Communal integration and working with local institutions for volunteering and sponsorship opportunities. This strategy combines paid, personal, and organic opportunities to reach new customers and engage existing ones.",
-    "people": "Our Marketing Team has 28 individuals sitting under three teams. We have specialists in demand gen, events, brand, and social eager to help our company reach new heights.",
-    "process": "Due to our sprint approach, our process will look different for all customers. Clients will receive any and all services they are interested in, and we will work with them on a timeline that best suits their needs and budget.",
-    "services": ["Content Marketing", "SEO", "Paid Marketing Campaigns", "Video Production", "Graphic Design", "Website Development", "General Marketing Strategy"]
+    "product": "Bếp Nhà Mộc cung cấp các mâm cơm chuẩn Việt (Cá lóc kho tộ, canh cua rau đay) trong không gian kiến trúc nhà gỗ chữa lành. Đặc biệt, món ăn 100% nguyên liệu Organic, không bột ngọt. Mỗi khách hàng đều được tặng một tấm thẻ 'Lời khuyên chánh niệm' khi dùng bữa.",
+    "price": "Định vị phân khúc Trung - Cao cấp (Premium). Giá trung bình 250,000 - 400,000 VNĐ/người. Mức giá này bù đắp cho Sunk-cost (Chi phí chìm) khổng lồ của việc duy trì không gian xanh và nguyên liệu sạch giữa lòng thành phố.",
+    "promotion": "Phủ sóng mạng xã hội với hình ảnh Cinematic và ASMR (âm thanh nấu ăn). Áp dụng Scarcity Marketing (chỉ phục vụ tối đa 50 khách/tối) để tạo độ khan hiếm và đẩy giá trị cảm nhận lên mức cao nhất.",
+    "people": "Đội ngũ phục vụ được đào tạo theo triết lý 'Thiền': Đi nhẹ, nói khẽ, giao tiếp bằng ánh mắt và sự tận tâm chân thành.",
+    "process": "Từ bước khách bước qua cánh cửa gỗ, ngửi mùi tinh mùi sả chanh, đến khi được dọn mâm cơm nóng hổi... Mọi điểm chạm đều được chuẩn hóa để đảm bảo khách hàng gạt bỏ hoàn toàn áp lực bên ngoài.",
+    "services": ["Ăn tại chỗ (Dine-in)", "Giao hàng bã mía Eco-friendly", "Đặt tiệc gia đình riêng tư"]
   },
   "budget": {
     "expenses": [
-      {"name": "Marketing Software", "amount": 10000},
-      {"name": "Event Sponsorships", "amount": 5000},
-      {"name": "Paid Social", "amount": 12000},
-      {"name": "Paid Search", "amount": 30000}
+      {"name": "Cinematic Brand Film (Bếp Nhà Mộc)", "amount": 50000000},
+      {"name": "Performance Ads (Facebook/Tiktok)", "amount": 35000000},
+      {"name": "KOLs / Influencers Booking", "amount": 55000000}
     ],
-    "total": 57000,
-    "currency": "USD"
+    "total": 140000000,
+    "currency": "VND"
   },
   "marketing_channels": [
-    {"name": "Webinars", "purpose": "Brand awareness, customer acquisition, and client engagement.", "metrics": "Webinar signups, signup-to-attendance rate, attendee-to-QL rate.", "target_value": 3000},
-    {"name": "Instagram", "purpose": "Employee branding, company brand awareness, visual engagement.", "metrics": "Followers, likes.", "target_value": 50000}
+    {"name": "TikTok (ASMR & Review)", "purpose": "Tiếp cận Gen Z, lan truyền video về không gian và âm thanh nấu ăn thư giãn.", "metrics": "Lượt view, lượt chia sẻ, hashtag #BepNhaMoc", "target_value": 3000000},
+    {"name": "Facebook Fanpage", "purpose": "Kể chuyện dài (Photo Story), tạo sự kết nối cảm xúc về ký ức gia đình.", "metrics": "Lượng tương tác, tin nhắn đặt bàn.", "target_value": 150000}
   ],
   "marketing_technology": [
-    {"name": "HubSpot CRM", "category": "Marketing CRM", "description": "We use HubSpot CRM, as it integrates our marketing, sales, and customer service software in one central location. It also connects us to a suite of other marketing tools our team (and our customer base) utilizes."},
-    {"name": "HubSpot Email", "category": "Email Marketing Software", "description": "Our HubSpot email marketing software enables us to send mass communications to our customer base, enroll our webinar registrants in nurture streams before and after their attendance, and enable salespeople to communicate in sync with marketing."},
-    {"name": "HubSpot CMS", "category": "Blogging Software", "description": "HubSpot's blogging software and CMS allows us to quickly write, publish, and historically optimize our blog posts. We hold ourselves to a three-times-a-week publication cadence, and HubSpot lets us churn out interactive content quickly."},
-    {"name": "HubSpot Social", "category": "Social Media Management Software", "description": "We manage our social media publishing with HubSpot's social media software. We can post on multiple platforms and see engagement in one place."}
+    {"name": "BrandFlow AI Engine", "category": "AI Strategy & Automation", "description": "Hệ thống tự động hóa lập kế hoạch và phân bổ chi phí chuẩn xác, giúp Founder kiểm soát dòng tiền."},
+    {"name": "Social Listening", "category": "Market Research", "description": "Theo dõi các từ khóa liên quan đến 'chữa lành', 'cơm nhà', 'quán ăn yên tĩnh' để bắt trend và thấu hiểu khách hàng."}
   ]
 }

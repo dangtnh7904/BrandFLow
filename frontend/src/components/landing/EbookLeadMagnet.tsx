@@ -9,23 +9,23 @@ const EBOOKS = [
     id: 1,
     title: "Branding Masterclass",
     desc: "Bí quyết định vị thương hiệu tinh gọn, khác biệt.",
-    cover: "/resources/branding_cover.png?v=2",
-    pdf: "/resources/BRANDING_MASTERCLASS.pdf?v=2"
+    cover: "/resources/branding_cover.png?v=3",
+    pdf: "/resources/BRANDING_MASTERCLASS.pdf?v=3"
   },
   {
     id: 2,
     title: "Marketing Plan Masterclass",
     desc: "Xây dựng kế hoạch Marketing sinh lời bền vững.",
-    cover: "/resources/marketing_plan_cover.png?v=2",
-    pdf: "/resources/MARKETING_PLAN_MASTERCLASS.pdf?v=2",
+    cover: "/resources/marketing_plan_cover.png?v=3",
+    pdf: "/resources/MARKETING_PLAN_MASTERCLASS.pdf?v=3",
     featured: true
   },
   {
     id: 3,
     title: "The AI-Powered SME",
     desc: "Tự động hóa doanh nghiệp B2B với trí tuệ nhân tạo.",
-    cover: "/resources/ai_marketing_cover.png?v=2",
-    pdf: "/resources/THE_AI_POWERED_SME.pdf?v=2"
+    cover: "/resources/ai_marketing_cover.png?v=3",
+    pdf: "/resources/THE_AI_POWERED_SME.pdf?v=3"
   }
 ];
 

@@ -10,8 +10,8 @@ const EBOOKS = [
     title: 'THE AI-POWERED SME',
     subtitle: 'Định Hình Lại Cuộc Chơi Marketing Trong Kỷ Nguyên AI',
     description: 'Sự thật tàn khốc về AI trong Marketing: AI không tạo ra chiến lược, nó chỉ khuếch đại chiến lược. Cuốn sách giúp C-Level đặt AI vào đúng vị trí của nó.',
-    image: '/resources/ai_marketing_cover.png?v=2',
-    pdfUrl: '/resources/THE_AI_POWERED_SME.pdf?v=2',
+    image: '/resources/ai_marketing_cover.png?v=3',
+    pdfUrl: '/resources/THE_AI_POWERED_SME.pdf?v=3',
     pages: 42,
     category: 'Ebook Chiến Lược'
   },
@@ -20,8 +20,8 @@ const EBOOKS = [
     title: 'BRANDING MASTERCLASS',
     subtitle: 'Từ Sản Phẩm Tốt Trở Thành Thương Hiệu Sống Mãi',
     description: 'Sản phẩm tốt chỉ là điều kiện cần để bước vào sân chơi. Branding là nghệ thuật khắc sâu một cảm xúc duy nhất vào tâm trí khách hàng.',
-    image: '/resources/branding_cover.png?v=2',
-    pdfUrl: '/resources/BRANDING_MASTERCLASS.pdf?v=2',
+    image: '/resources/branding_cover.png?v=3',
+    pdfUrl: '/resources/BRANDING_MASTERCLASS.pdf?v=3',
     pages: 36,
     category: 'Guideline Thực Thi'
   },
@@ -30,8 +30,8 @@ const EBOOKS = [
     title: 'MARKETING PLAN MASTERCLASS',
     subtitle: 'Xây Dựng Kế Hoạch Marketing Có Lợi Nhuận Trong Kỷ Nguyên Số',
     description: 'Dựa trên phương pháp luận chuẩn quốc tế của Giáo sư Malcolm McDonald. Từ Audit thị trường, Phân khúc theo Nhu cầu, đến Ma trận BCG/DPM và Template kế hoạch 1 trang.',
-    image: '/resources/marketing_plan_cover.png?v=2',
-    pdfUrl: '/resources/MARKETING_PLAN_MASTERCLASS.pdf?v=2',
+    image: '/resources/marketing_plan_cover.png?v=3',
+    pdfUrl: '/resources/MARKETING_PLAN_MASTERCLASS.pdf?v=3',
     pages: 38,
     category: 'Framework Chiến Lược'
   }

@@ -91,14 +91,17 @@ async def add_security_headers(request: Request, call_next):
 
 # Cấu hình CORS chặt chẽ: Đóng chặt cửa, chỉ cho phép luồng chạy từ chính Frontend của bạn.
 # Trên Server Riêng, bạn mở file .env và thêm dòng: BRANDFLOW_FRONTEND_URLS=https://ten-mien-frontend-cua-ban.com
-raw_origins = os.environ.get("BRANDFLOW_FRONTEND_URLS", "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001")
-allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+raw_origins = os.environ.get("BRANDFLOW_FRONTEND_URLS", "*")
+if raw_origins == "*":
+    allowed_origins = ["*"]
+else:
+    allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 

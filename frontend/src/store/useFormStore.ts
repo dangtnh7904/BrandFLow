@@ -21,6 +21,15 @@ const getAuthHeaders = (): Record<string, string> => {
   return {};
 };
 
+// Hàm xử lý 401 — Token hết hạn → redirect về Login
+const handleUnauthorized = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('brandflow_token');
+    localStorage.removeItem('brandflow_user_id');
+    window.location.href = '/login';
+  }
+};
+
 interface FormStore {
   forms: Record<string, any>;
   projectId: string | null;
@@ -108,6 +117,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
         if (projects.length > 0) {
           projectId = projects[0].id;
         }
+      } else if (listRes.status === 401) {
+        handleUnauthorized();
+        return;
       }
 
       // 3. Nếu chưa có project nào, tạo mới
@@ -181,6 +193,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
           mappedForms[key] = (value as any).data;
         }
         set({ forms: mappedForms });
+      } else if (res.status === 401) {
+        handleUnauthorized();
+        return;
       } else {
         set({ forms: BEP_NHA_MOC_FORMS_MOCK });
       }
@@ -218,6 +233,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
       if (res.ok) {
         set({ saveStatus: 'saved' });
         setTimeout(() => set({ saveStatus: 'idle' }), 2000);
+      } else if (res.status === 401) {
+        handleUnauthorized();
+        return;
       } else {
         const errText = await res.text();
         console.error("Save API error:", res.status, errText);

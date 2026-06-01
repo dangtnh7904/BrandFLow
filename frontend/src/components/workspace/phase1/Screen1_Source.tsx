@@ -721,11 +721,10 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
             )}
           </AnimatePresence>
 
-          {/* Proceed Button */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="w-full max-w-md mt-auto pt-8 pb-4"
+            className="w-full max-w-md mt-auto pt-8 pb-4 flex flex-col items-center gap-3"
           >
             <button
               onClick={handleProceed}
@@ -738,6 +737,12 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
               )}
             >
               {t('screen1.btn')}
+            </button>
+            <button
+              onClick={() => onNext('wizard')}
+              className="text-xs font-medium text-linear-text-muted hover:text-cyan-400 transition-colors underline-offset-4 hover:underline"
+            >
+              {language === 'vi' ? 'Bỏ qua & Điền thủ công (Skip)' : 'Skip & Fill manually'}
             </button>
           </motion.div>
         </div>

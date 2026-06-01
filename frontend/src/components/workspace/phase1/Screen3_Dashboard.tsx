@@ -344,23 +344,16 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToNext }: { onGoToHub
  transition={{ delay: 0.5 }}
  className="flex flex-col sm:flex-row items-center justify-end gap-4 mt-8 pt-8 border-t border-linear-border/50"
  >
- <button 
- onClick={onGoToHub}
- className="px-8 py-4 rounded-xl font-bold transition-all shadow-sm flex items-center bg-linear-surface border border-linear-border text-foreground hover:bg-linear-surface/80 hover:text-cyan-500 w-full sm:w-auto justify-center"
- >
- {language === 'vi' ? 'Khám phá Tính năng khác' : 'Explore Other Features'}
- </button>
- 
- <button 
- onClick={onGoToNext}
- className="group relative px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-1 w-full sm:w-auto justify-center overflow-hidden"
- >
- {/* Shine effect */}
- <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
- <span className="relative z-10 flex items-center">
- 🎯 {language === 'vi' ? 'Tiếp tục Thiết lập Mục tiêu' : 'Continue to Objectives'} <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
- </span>
- </button>
+  <button 
+  onClick={onGoToNext}
+  className="group relative px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-1 w-full sm:w-auto justify-center overflow-hidden"
+  >
+  {/* Shine effect */}
+  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+  <span className="relative z-10 flex items-center">
+  🚀 {language === 'vi' ? 'Tiếp tục — Chọn Tính Năng' : 'Continue — Select Feature'} <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+  </span>
+  </button>
  </motion.div>
  </div>
  </div>

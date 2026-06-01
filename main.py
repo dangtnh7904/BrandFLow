@@ -131,6 +131,48 @@ WEEK1_MODEL_USAGE: Dict[str, Dict[str, Any]] = {}
 VISITOR_AUDIT_STORE = VisitorAuditStore()
 AUDIT_ADMIN_TOKEN = os.environ.get("BRANDFLOW_AUDIT_ADMIN_TOKEN", "").strip()
 
+# ── Industry Model Advisor imports ──
+try:
+    from app.agents.planner.industry_models import (
+        get_recommended_models,
+        get_visible_planning_forms,
+        detect_company_size,
+        normalize_industry,
+    )
+    _INDUSTRY_MODELS_AVAILABLE = True
+except ImportError as _industry_err:
+    print(f"[WARN] Industry models unavailable: {_industry_err}")
+    _INDUSTRY_MODELS_AVAILABLE = False
+
+
+class IndustryAdvisorRequest(BaseModel):
+    industry: str = "F&B"
+    brand_dna: Optional[dict] = None
+    wizard_answers: Optional[dict] = None
+
+
+@app.post("/api/v1/industry-advisor")
+async def industry_advisor(req: IndustryAdvisorRequest):
+    """
+    API cho Model Advisor Panel.
+    Tự detect ngành + quy mô → trả về model recommendations + visible forms.
+    """
+    if not _INDUSTRY_MODELS_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Industry model engine not available")
+    
+    normalized = normalize_industry(req.industry)
+    company_size = detect_company_size(req.brand_dna, req.wizard_answers)
+    models = get_recommended_models(normalized, company_size)
+    visible_forms = get_visible_planning_forms(normalized, company_size)
+    
+    return {
+        "status": "ok",
+        "industry": normalized,
+        "company_size": company_size,
+        "models": models,
+        "visible_forms": visible_forms,
+    }
+
 
 @app.on_event("startup")
 async def app_startup() -> None:
@@ -1516,7 +1558,7 @@ async def process_intake(request: RawInputRequest):
         result = run_pipeline(
             goal=parsed_data.get("goal", request.raw_text),
             industry=parsed_data.get("industry", "General"),
-            budget=parsed_data.get("budget", 0),
+            budget=int(parsed_data.get("budget") or 0),
             csfs=parsed_data.get("csfs", []),
             resources=parsed_data.get("resources", ""),
             brand_dna=request.brand_dna,

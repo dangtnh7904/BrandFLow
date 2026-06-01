@@ -17,16 +17,18 @@ def create_admin():
         existing_admin = db.query(User).filter(User.email == admin_email).first()
         if existing_admin:
             print(f"Admin {admin_email} already exists.")
-            # Update password just in case
+            # Update password and admin flag just in case
             existing_admin.password_hash = get_password_hash("dinhmanhcvp2005")
+            existing_admin.is_admin = True
             db.commit()
-            print("Password reset to 'dinhmanhcvp2005'.")
+            print("Password reset to 'dinhmanhcvp2005' and is_admin set to True.")
             return
 
         new_admin = User(
             email=admin_email,
             password_hash=get_password_hash("dinhmanhcvp2005"),
-            display_name="Admin BrandFlow"
+            display_name="Admin BrandFlow",
+            is_admin=True
         )
         db.add(new_admin)
         db.commit()

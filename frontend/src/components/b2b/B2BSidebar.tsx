@@ -1,70 +1,71 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronRight, FileText, BarChart2, Briefcase, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Target } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileText, BarChart2, Briefcase, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Target, Dna } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useFormStore } from '@/store/useFormStore';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const SECTIONS = [
+const ALL_SECTIONS = [
   {
     title: "Kế hoạch Marketing Chuẩn",
     icon: Target,
     items: [
-      { id: "p1", label: "1. Tóm tắt điều hành", href: "/planning/executive-summary" },
-      { id: "p2", label: "2. Tổng quan tình hình", href: "/planning/situation-analysis" },
-      { id: "p3", label: "3. Mục tiêu Marketing", href: "/planning/objectives" },
-      { id: "p4", label: "4. Chiến lược Marketing", href: "/planning/strategy" },
-      { id: "p5", label: "5. Chương trình hành động", href: "/planning/action-program" },
-      { id: "p6", label: "6. Kế hoạch triển khai", href: "/planning/implementation" },
-      { id: "p7", label: "7. Kiểm soát & Đánh giá", href: "/planning/control-evaluation" },
-      { id: "p8", label: "8. Định hướng tăng trưởng", href: "/planning/growth-direction" },
+      { id: "p1", formKey: "executive-summary", label: "1. Tóm tắt điều hành", href: "/planning/executive-summary" },
+      { id: "p2", formKey: "situation-analysis", label: "2. Tổng quan tình hình", href: "/planning/situation-analysis" },
+      { id: "p3", formKey: "objectives", label: "3. Mục tiêu Marketing", href: "/planning/objectives" },
+      { id: "p4", formKey: "strategy", label: "4. Chiến lược Marketing", href: "/planning/strategy" },
+      { id: "p5", formKey: "action-program", label: "5. Chương trình hành động", href: "/planning/action-program" },
+      { id: "p6", formKey: "implementation", label: "6. Kế hoạch triển khai", href: "/planning/implementation" },
+      { id: "p7", formKey: "control-evaluation", label: "7. Kiểm soát & Đánh giá", href: "/planning/control-evaluation" },
+      { id: "p8", formKey: "growth-direction", label: "8. Định hướng tăng trưởng", href: "/planning/growth-direction" },
     ]
   },
   {
     title: "Phần A - Chiến lược",
     icon: Briefcase,
     items: [
-      { id: "a0", label: "A0. Tổng quan Phần A", href: "/planning/a0-overview" },
-      { id: "a1", label: "A1. Tuyên bố Sứ mệnh", href: "/planning/a1-mission" },
-      { id: "a2", label: "A2. Hiệu suất SBU", href: "/planning/a2-performance" },
-      { id: "a3", label: "A3. Tóm tắt Dự báo", href: "/planning/a3-revenue" },
-      { id: "a4", label: "A4. Tổng quan Thị trường", href: "/planning/a4-market" },
-      { id: "a5", label: "A5. Phân tích SWOT", href: "/planning/a5-swot" },
-      { id: "a6", label: "A6. Ma trận Danh mục", href: "/planning/a6-portfolio" },
-      { id: "a7", label: "A7. Các Giả định", href: "/planning/a7-assumptions" },
-      { id: "a8", label: "A8. Mục tiêu & Chiến lược", href: "/planning/a8-strategies" },
-      { id: "a9", label: "A9. Ngân sách 3-5 Năm", href: "/planning/a9-budget" },
+      { id: "a0", formKey: "a0-overview", label: "A0. Tổng quan Phần A", href: "/planning/a0-overview" },
+      { id: "a1", formKey: "a1-mission", label: "A1. Tuyên bố Sứ mệnh", href: "/planning/a1-mission" },
+      { id: "a2", formKey: "a2-performance", label: "A2. Hiệu suất SBU", href: "/planning/a2-performance" },
+      { id: "a3", formKey: "a3-revenue", label: "A3. Tóm tắt Dự báo", href: "/planning/a3-revenue" },
+      { id: "a4", formKey: "a4-market", label: "A4. Tổng quan Thị trường", href: "/planning/a4-market" },
+      { id: "a5", formKey: "a5-swot", label: "A5. Phân tích SWOT", href: "/planning/a5-swot" },
+      { id: "a6", formKey: "a6-portfolio", label: "A6. Ma trận Danh mục", href: "/planning/a6-portfolio" },
+      { id: "a7", formKey: "a7-assumptions", label: "A7. Các Giả định", href: "/planning/a7-assumptions" },
+      { id: "a8", formKey: "a8-strategies", label: "A8. Mục tiêu & Chiến lược", href: "/planning/a8-strategies" },
+      { id: "a9", formKey: "a9-budget", label: "A9. Ngân sách 3-5 Năm", href: "/planning/a9-budget" },
     ]
   },
   {
     title: "Phần B - Vận hành",
     icon: LayoutDashboard,
     items: [
-      { id: "b0", label: "B0. Tổng quan Phần B", href: "/planning/b0-overview" },
-      { id: "b1", label: "B1. Mục tiêu Vận hành", href: "/planning/b1-objectives" },
-      { id: "b2", label: "B2. Kế hoạch Hành động", href: "/planning/b2-action" },
-      { id: "b3", label: "B3. Ngân sách Marketing", href: "/planning/b3-budget" },
-      { id: "b4", label: "B4. Kế hoạch Dự phòng", href: "/planning/b4-contingency" },
-      { id: "b5", label: "B5. Báo cáo Lãi Lỗ", href: "/planning/b5-pnl" },
-      { id: "b6", label: "B6. Tiến độ Gantt", href: "/planning/b6-gantt" },
+      { id: "b0", formKey: "b0-overview", label: "B0. Tổng quan Phần B", href: "/planning/b0-overview" },
+      { id: "b1", formKey: "b1-objectives", label: "B1. Mục tiêu Vận hành", href: "/planning/b1-objectives" },
+      { id: "b2", formKey: "b2-action", label: "B2. Kế hoạch Hành động", href: "/planning/b2-action" },
+      { id: "b3", formKey: "b3-budget", label: "B3. Ngân sách Marketing", href: "/planning/b3-budget" },
+      { id: "b4", formKey: "b4-contingency", label: "B4. Kế hoạch Dự phòng", href: "/planning/b4-contingency" },
+      { id: "b5", formKey: "b5-pnl", label: "B5. Báo cáo Lãi Lỗ", href: "/planning/b5-pnl" },
+      { id: "b6", formKey: "b6-gantt", label: "B6. Tiến độ Gantt", href: "/planning/b6-gantt" },
     ]
   },
   {
     title: "Phần C - Tổng hành dinh",
     icon: BarChart2,
     items: [
-      { id: "c0", label: "C0. Tổng quan Phần C", href: "/planning/c0-overview" },
-      { id: "c1", label: "C1. Tuyên bố Định hướng", href: "/planning/c1-direction" },
-      { id: "c2", label: "C2. Lịch sử Danh mục", href: "/planning/c2-history" },
-      { id: "c3", label: "C3. Phân tích Vấn đề", href: "/planning/c3-issues" },
-      { id: "c4", label: "C4. Dashboard Chiến lược", href: "/planning/c4-dashboard" },
+      { id: "c0", formKey: "c0-overview", label: "C0. Tổng quan Phần C", href: "/planning/c0-overview" },
+      { id: "c1", formKey: "c1-direction", label: "C1. Tuyên bố Định hướng", href: "/planning/c1-direction" },
+      { id: "c2", formKey: "c2-history", label: "C2. Lịch sử Danh mục", href: "/planning/c2-history" },
+      { id: "c3", formKey: "c3-issues", label: "C3. Phân tích Vấn đề", href: "/planning/c3-issues" },
+      { id: "c4", formKey: "c4-dashboard", label: "C4. Dashboard Chiến lược", href: "/planning/c4-dashboard" },
     ]
   }
 ];
@@ -78,10 +79,48 @@ export default function B2BSidebar() {
   });
   const pathname = usePathname();
 
+  // Industry-aware filtering
+  const brandDNA = useFormStore((s: any) => s.brandDNA);
+  const intakeAnalysis = useFormStore((s: any) => s.intakeAnalysis);
+  const [visibleFormKeys, setVisibleFormKeys] = useState<Set<string> | null>(null);
+  const [industryInfo, setIndustryInfo] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchAdvisor = async () => {
+      try {
+        const industry = intakeAnalysis?.industry || brandDNA?.industry || "F&B";
+        const API = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+        const res = await fetch(`${API}/api/v1/industry-advisor`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ industry, brand_dna: brandDNA, wizard_answers: {} }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIndustryInfo(data);
+          const keys = new Set<string>(data.visible_forms?.map((f: any) => f.key) || []);
+          setVisibleFormKeys(keys);
+        }
+      } catch (e) {
+        // Fallback: show all forms if API unavailable
+        setVisibleFormKeys(null);
+      }
+    };
+    fetchAdvisor();
+  }, [brandDNA, intakeAnalysis]);
+
   const toggleSection = (title: string) => {
-    if (isCollapsed) return; // Prevent toggling when collapsed
+    if (isCollapsed) return;
     setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));
   };
+
+  // Filter sections based on industry advisor
+  const filteredSections = ALL_SECTIONS.map(section => ({
+    ...section,
+    items: visibleFormKeys 
+      ? section.items.filter(item => visibleFormKeys.has(item.formKey) || item.formKey.includes("overview"))
+      : section.items, // Show all if no advisor data
+  }));
 
   return (
     <motion.div
@@ -114,8 +153,19 @@ export default function B2BSidebar() {
         </button>
       )}
 
+      {/* Industry Badge */}
+      {!isCollapsed && industryInfo && (
+        <div className="mx-3 mt-3 px-3 py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center gap-2">
+          <Dna className="w-4 h-4 text-cyan-400 shrink-0" />
+          <div className="min-w-0">
+            <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider truncate">{industryInfo.models?.industry_display}</div>
+            <div className="text-[10px] text-slate-400 truncate">{industryInfo.models?.size_label}</div>
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto py-4 px-3 space-y-4 overflow-x-hidden">
-        {SECTIONS.map((section) => (
+        {filteredSections.map((section) => (
           <div key={section.title} className="mb-2">
             {!isCollapsed ? (
               <button

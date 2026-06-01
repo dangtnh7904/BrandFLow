@@ -4,6 +4,7 @@ import MetricsBanner from '@/components/landing/MetricsBanner';
 import ServicesBento from '@/components/landing/ServicesBento';
 import PricingSection from '@/components/landing/PricingSection';
 import Footer from '@/components/landing/Footer';
+import EbookLeadMagnet from '@/components/landing/EbookLeadMagnet';
 import { Terminal, BrainCircuit, LineChart } from 'lucide-react';
 
 export default function LandingPage() {
@@ -14,6 +15,10 @@ export default function LandingPage() {
       <main>
         <HeroSection />
         <MetricsBanner />
+        
+        {/* Lead Magnet - Ebook Section */}
+        <EbookLeadMagnet />
+
         <ServicesBento />
         
         {/* Why Us / Approach Section */}

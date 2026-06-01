@@ -27,41 +27,264 @@
             color: #0f172a;
         }
 
-        /* H1: Bìa sách / Tiêu đề chính */
+        /* H1: Mặc định (nếu còn sót lại) */
         h1 { 
-            font-size: 3.5rem; 
+            font-size: 3rem; 
             font-weight: 800; 
-            margin-top: 2rem;
-            margin-bottom: 4rem; 
+            margin-bottom: 2rem; 
             line-height: 1.2; 
+            color: #0f172a;
+        }
+
+        /* --- COVER PAGE --- */
+        .cover-page {
+            width: 100%;
+            height: 100vh;
+            page-break-after: always;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0f172a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 4rem;
+        }
+
+        /* Abstract Cover Graphics */
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: -20%; right: -20%;
+            width: 80%; height: 80%;
+            background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 0;
+        }
+        .cover-page::after {
+            content: '';
+            position: absolute;
+            bottom: -20%; left: -20%;
+            width: 80%; height: 80%;
+            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 0;
+        }
+        
+        .cover-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(212,175,55,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(212,175,55,0.05) 1px, transparent 1px);
+            background-size: 80px 80px;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* Gold frames */
+        .cover-frame {
+            position: absolute;
+            top: 40px; bottom: 40px; left: 40px; right: 40px;
+            border: 2px solid rgba(212,175,55,0.3);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .cover-frame::before {
+            content: ''; position: absolute;
+            top: -2px; left: 20%; width: 60%; height: 4px;
+            background: #0f172a;
+        }
+        .cover-frame::after {
+            content: ''; position: absolute;
+            bottom: -2px; left: 20%; width: 60%; height: 4px;
+            background: #0f172a;
+        }
+
+        .cover-content {
+            z-index: 2;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cover-brand {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.5em;
+            color: #d4af37;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 4rem;
+        }
+
+        .cover-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 95%;
+            margin-bottom: 2rem;
+        }
+
+        .cover-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #cbd5e1;
+            max-width: 80%;
+            margin-bottom: 4rem;
+        }
+
+        .cover-divider {
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            margin-bottom: 4rem;
+        }
+
+        .cover-footer {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.35em;
+            color: rgba(212,175,55,0.7);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* --- TITLE PAGE --- */
+        .title-page {
+            width: 100%;
+            min-height: 100vh;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            position: relative;
+            box-sizing: border-box;
+            padding: 4rem;
+        }
+        
+        /* Viền trang trí cho Title Page */
+        .title-page::before {
+            content: '';
+            position: absolute;
+            top: 25px; bottom: 25px; left: 25px; right: 25px;
+            border: 2px solid rgba(212, 175, 55, 0.3); /* Gold border */
+            pointer-events: none;
+        }
+        .title-page::after {
+            content: '';
+            position: absolute;
+            top: 35px; bottom: 35px; left: 35px; right: 35px;
+            border: 1px solid rgba(212, 175, 55, 0.15); /* Inner thin gold border */
+            pointer-events: none;
+        }
+
+        .title-page-eyebrow {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 0.4em;
+            color: #d4af37;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+
+        .title-page-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #0f172a;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #0f172a;
-            page-break-after: always; /* Luôn ngắt trang sau tiêu đề sách */
+            max-width: 90%;
+            margin-bottom: 2rem;
+        }
+
+        .title-page-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #d4af37;
+            text-align: center;
+            max-width: 80%;
+            margin-bottom: 3.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.05) 50%, transparent 100%);
+            border-top: 1px solid rgba(212,175,55,0.15);
+            border-bottom: 1px solid rgba(212,175,55,0.15);
+        }
+
+        .title-page-divider {
+            width: 80px;
+            height: 4px;
+            background: #d4af37;
+            margin-bottom: 4rem;
+        }
+
+        .title-page-footer {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.25em;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 500;
         }
         
         /* H2: Slide Divider (Cắt cảnh Chương) - Đứng độc lập 1 trang */
         h2 { 
-            page-break-before: always; /* Ngắt trang trước khi bắt đầu H2 */
-            page-break-after: always; /* Ngắt trang sau H2 để chữ thân bài sang trang mới */
-            height: 60vh; /* Chiếm 60% chiều cao giấy */
+            page-break-before: always;
+            page-break-after: always;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 2.8rem; 
-            font-weight: 800; 
-            margin-top: 10vh; /* Đẩy xuống giữa trang */
-            margin-bottom: 0; 
-            color: #d4af37; /* Chữ Vàng Gold */
-            background-color: #0f172a; /* Nền xanh đen */
-            padding: 4rem;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border: 2px solid #334155;
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            position: relative;
+            overflow: hidden;
+            /* Full page height */
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Viền trên: Dải gradient Vàng Gold */
+        h2::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, transparent 0%, #d4af37 20%, #f5e6a3 50%, #d4af37 80%, transparent 100%);
+        }
+
+        /* Viền dưới: Dải gradient Vàng Gold */
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, transparent 0%, #d4af37 20%, #f5e6a3 50%, #d4af37 80%, transparent 100%);
         }
 
         /* H3: Tiêu đề Slide (Slide Title) */
@@ -83,7 +306,8 @@
             margin-bottom: 1.5rem; 
             text-align: justify; 
             hyphens: auto; 
-            page-break-inside: avoid; 
+            orphans: 2;
+            widows: 2;
         }
 
         /* Data Highlighting: Inline Code */
@@ -111,7 +335,6 @@
             line-height: 1.9;
             color: #1e293b;
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.01);
-            page-break-inside: avoid;
             position: relative;
         }
         
@@ -150,8 +373,10 @@
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05);
             border-radius: 12px;
             overflow: hidden;
-            page-break-inside: avoid;
             zoom: 0.9;
+        }
+        tr {
+            page-break-inside: avoid;
         }
         th {
             background-color: #0f172a;

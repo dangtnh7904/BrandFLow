@@ -1234,7 +1234,7 @@ def run_pipeline(
     initial_state = {
         "goal": goal,
         "industry": industry,
-        "budget": budget,
+        "budget": int(budget or 0),
         "csfs": csfs or [],
         "resources": resources,
         "target_audience": target_audience,

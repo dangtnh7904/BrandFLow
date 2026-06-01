@@ -1,0 +1,209 @@
+{
+  "meta": {
+    "run_id": "cbcf294a-7406-405d-8c76-d8ffcdec7b4c",
+    "goal": "test",
+    "budget": 50000000,
+    "approved": false,
+    "rounds": 3,
+    "timestamp": "2026-06-01T10:49:19.126052"
+  },
+  "plan": {
+    "goal_setting": {
+      "mission_statement": "Trở thành nhà cung cấp giải pháp thực phẩm và đồ uống hàng đầu tại Việt Nam, với cam kết mang lại giá trị vượt trội cho khách hàng, đối tác và cộng đồng thông qua sản phẩm chất lượng cao, dịch vụ xuất sắc và chiến lược phát triển bền vững.",
+      "core_competencies": [
+        {
+          "competency": "Năng lực sản xuất và phân phối thực phẩm an toàn, chất lượng cao",
+          "is_vrio": true
+        },
+        {
+          "competency": "Khả năng đổi mới và phát triển sản phẩm mới",
+          "is_vrio": true
+        }
+      ],
+      "objectives": {
+        "financial_goals": [
+          "Tăng trưởng doanh thu hàng năm là 20%, đạt 500.000.000 VND trong năm đầu tiên và 1.000.000.000 VND trong năm thứ 3",
+          "Biên lợi nhuận (Margin) dự kiến là 30%, đạt 150.000.000 VND trong năm đầu tiên và 300.000.000 VND trong năm thứ 3"
+        ],
+        "marketing_goals": [
+          "Tăng cường nhận thức về thương hiệu thông qua các kênh truyền thông xã hội và quảng cáo, đạt 50.000 người theo dõi trên Facebook và 100.000 lượt xem trên YouTube trong năm đầu tiên",
+          "Tăng cường thị phần thông qua việc mở rộng kênh phân phối và hợp tác với các đối tác chiến lược, đạt 10% thị phần trong năm thứ 3"
+        ],
+        "cac_ltv_analysis": "Chi phí thu thập khách hàng (CAC) dự kiến là 500.000 VND/khách hàng, dựa trên chiến lược marketing và quảng cáo. Giá trị vòng đời (LTV) dự kiến là 5.000.000 VND/khách hàng, dựa trên giá trị đơn hàng trung bình (AOV) là 1.000.000 VND và tỷ lệ giữ chân khách hàng là 50% trong 5 năm. Điều này cho thấy lợi nhuận từ mỗi khách hàng là 4.500.000 VND, và tỷ lệ hoàn vốn đầu tư (ROI) dự kiến là 900%."
+      },
+      "red_lines": [
+        "Không được vi phạm các quy định về an toàn thực phẩm và chất lượng sản phẩm, bao gồm cả việc sử dụng nguyên liệu không an toàn và không rõ nguồn gốc",
+        "Không được tham gia vào các hoạt động kinh doanh không đạo đức, bao gồm cả việc cạnh tranh không lành mạnh và vi phạm quyền sở hữu trí tuệ"
+      ]
+    },
+    "target_segments": [
+      {
+        "segment_name": "Khách hàng trung thành",
+        "dmu_profiles": [
+          {
+            "role": "Decider",
+            "pain_points": [
+              "Chất lượng sản phẩm không ổn định",
+              "Giá cả không cạnh tranh"
+            ],
+            "decision_drivers": [
+              "Chất lượng sản phẩm",
+              "Giá cả"
+            ],
+            "opportunism_risk": "Thấp"
+          },
+          {
+            "role": "Influencer",
+            "pain_points": [
+              "Thiếu thông tin về sản phẩm",
+              "Không có trải nghiệm tốt"
+            ],
+            "decision_drivers": [
+              "Thông tin sản phẩm",
+              "Trải nghiệm"
+            ],
+            "opportunism_risk": "Trung bình"
+          }
+        ],
+        "decision_journey": {
+          "problem_recognition": "Khách hàng nhận ra nhu cầu về thực phẩm và đồ uống chất lượng cao",
+          "information_search": "Khách hàng tìm kiếm thông tin về sản phẩm trên internet và mạng xã hội",
+          "alternative_evaluation": "Khách hàng so sánh sản phẩm của công ty với sản phẩm của đối thủ",
+          "purchase_decision": "Khách hàng quyết định mua sản phẩm dựa trên chất lượng và giá cả"
+        },
+        "value_proposition": "Cung cấp thực phẩm và đồ uống chất lượng cao, giá cả cạnh tranh và dịch vụ xuất sắc",
+        "data_sources": [
+          "Dữ liệu khách hàng từ hệ thống CRM",
+          "Báo cáo thị trường thực phẩm và đồ uống tại Việt Nam"
+        ]
+      }
+    ],
+    "benchmarks": [
+      {
+        "factor_name": "Chất lượng sản phẩm",
+        "our_score": 9,
+        "industry_benchmark_score": 8,
+        "weight_percentage": 30.0
+      },
+      {
+        "factor_name": "Giá cả cạnh tranh",
+        "our_score": 8,
+        "industry_benchmark_score": 7,
+        "weight_percentage": 20.0
+      },
+      {
+        "factor_name": "Dịch vụ khách hàng",
+        "our_score": 9,
+        "industry_benchmark_score": 6,
+        "weight_percentage": 20.0
+      }
+    ],
+    "gap_analysis_result": "{\"target_revenue\": 100000000, \"projected_baseline\": 25000000, \"gap_value\": 75000000, \"is_achievable_without_action\": false, \"advice\": \"Tập trung chiến lược Ansoff để lấp đầy GAP.\"}",
+    "ansoff_strategy": "Phát triển sản phẩm/thị trường",
+    "campaign_phasing": [],
+    "tactics_7ps": [
+      {
+        "p_name": "Product",
+        "action_bullet": "Phát triển sản phẩm mới với chất lượng cao và giá cả cạnh tranh",
+        "kpi": "Đạt 500 đơn hàng trong tháng 1 với chi phí 20.000đ/đơn hàng",
+        "budget_vnd": 10000000,
+        "budget_allocation_percent": 20.0,
+        "moscow_tag": "MUST_HAVE",
+        "evaluation_criteria": [
+          "Tăng cường độ nhận biết và trải nghiệm của khách hàng",
+          "Tăng cường độ phủ và tính khả dụng của sản phẩm"
+        ],
+        "risk_management": [
+          "Xử lý rủi ro về chất lượng sản phẩm",
+          "Xử lý rủi ro về giá cả sản phẩm"
+        ]
+      },
+      {
+        "p_name": "Price",
+        "action_bullet": "Tổ chức các chương trình khuyến mãi để tăng cường sự quan tâm của khách hàng",
+        "kpi": "Đạt 1000 lượt đăng ký trong tháng 2 với chi phí 15.000đ/lượt đăng ký",
+        "budget_vnd": 8000000,
+        "budget_allocation_percent": 16.0,
+        "moscow_tag": "SHOULD_HAVE",
+        "evaluation_criteria": [
+          "Tăng cường độ nhận biết và trải nghiệm của khách hàng",
+          "Tăng cường độ phủ và tính khả dụng của sản phẩm"
+        ],
+        "competitor_analysis": [
+          "Phân tích đối thủ cạnh tranh về chất lượng sản phẩm",
+          "Phân tích đối thủ cạnh tranh về giá cả sản phẩm"
+        ]
+      },
+      {
+        "p_name": "Place",
+        "action_bullet": "Tăng cường độ phủ và tính khả dụng của sản phẩm trên các kênh truyền thống và hiện đại",
+        "kpi": "Đạt 2000 đơn vị bán hàng trong tháng 3 với chi phí 10.000đ/đơn vị bán hàng",
+        "budget_vnd": 12000000,
+        "budget_allocation_percent": 24.0,
+        "moscow_tag": "MUST_HAVE",
+        "evaluation_criteria": [
+          "Tăng cường độ nhận biết và trải nghiệm của khách hàng",
+          "Tăng cường độ phủ và tính khả dụng của sản phẩm"
+        ]
+      },
+      {
+        "p_name": "Promotion",
+        "action_bullet": "Tổ chức các chương trình quảng cáo và khuyến mãi để tăng cường độ nhận biết và trải nghiệm của khách hàng",
+        "kpi": "Đạt 500 lượt đăng ký trong tháng 4 với chi phí 25.000đ/lượt đăng ký",
+        "budget_vnd": 9000000,
+        "budget_allocation_percent": 18.0,
+        "moscow_tag": "COULD_HAVE",
+        "evaluation_criteria": [
+          "Tăng cường độ nhận biết và trải nghiệm của khách hàng",
+          "Tăng cường độ phủ và tính khả dụng của sản phẩm"
+        ]
+      }
+    ],
+    "plan_5w1h": {
+      "why": "Để tăng cường độ nhận biết và trải nghiệm của khách hàng",
+      "what": "Sản phẩm thực phẩm và đồ uống chất lượng cao",
+      "where": "Trên toàn quốc",
+      "when": "Tháng 1-3",
+      "who": "Khách hàng mục tiêu là những người trẻ tuổi và trung tuổi có thu nhập cao",
+      "how": "Sử dụng các công cụ truyền thông xã hội và email marketing để tiếp cận khách hàng"
+    },
+    "distribution_channels": {
+      "gt_strategy": "Tập trung vào kênh truyền thống như tạp hóa, sỉ để tăng cường độ phủ và tính khả dụng của sản phẩm",
+      "mt_strategy": "Phát triển kênh hiện đại như siêu thị, CVS để tăng cường độ nhận biết và trải nghiệm của khách hàng",
+      "market_size": "Kênh trực tuyến: 20%"
+    },
+    "integrated_matrix": {},
+    "omnichannel_crm_plan": [
+      "Phát triển một chương trình khách hàng thân thiết để tăng cường sự gắn kết của khách hàng",
+      "Tạo ra một hệ thống quản lý quan hệ khách hàng để theo dõi và phân tích dữ liệu khách hàng",
+      "Xử lý rủi ro về dữ liệu khách hàng"
+    ],
+    "risk_assessment": [
+      {
+        "risk_scenario": "Doanh số không đạt mục tiêu",
+        "probability": 4,
+        "impact": 4,
+        "trigger_point_metric": "Doanh số tháng 1 dưới 400 đơn hàng",
+        "contingency_plan_b": "Nếu doanh số tháng 1 dưới 400 đơn hàng, thì sẽ giảm 20% ngân sách quảng cáo và tăng cường chương trình khuyến mãi để kích thích doanh số."
+      },
+      {
+        "risk_scenario": "Chi phí sản xuất tăng cao",
+        "probability": 3,
+        "impact": 5,
+        "trigger_point_metric": "Chi phí sản xuất tăng trên 15%",
+        "contingency_plan_b": "Nếu chi phí sản xuất tăng trên 15%, thì sẽ tìm kiếm nhà cung cấp mới và đàm phán lại giá để giảm chi phí sản xuất."
+      }
+    ]
+  },
+  "scores": {
+    "rule_score": 45,
+    "client_self_score": 60,
+    "final_score": 52.5
+  },
+  "customer_feedback": [
+    "Thiếu thông tin cụ thể về thị trường và đối thủ cạnh tranh",
+    "Không có kế hoạch cụ thể để đo lường và đánh giá hiệu quả của chiến dịch",
+    "Chi phí và ngân sách không được phân bổ rõ ràng"
+  ],
+  "cfo_decision": "CMO cần xem xét lại chiến lược của mình, vì LTV:CAC ratio đang ở mức 1,5:1, Payback Period là 6 tháng, Cash burn rate là 10.000.000 VND/tháng và NPV là -5.000.000 VND. Điều này cho thấy chiến lược hiện tại không hiệu quả và cần được điều chỉnh."
+}

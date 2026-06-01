@@ -94,7 +94,7 @@ class ContentLabAgent:
             print(f"Error fetching image for LLM: {e}")
             return ""
 
-    async def analyze_vibe(self, scraped_data: Dict[str, Any], business_context: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def analyze_vibe(self, scraped_data: Dict[str, Any], business_context: Dict[str, Any] = None, brand_dna: Dict[str, Any] = None, extracted_answers: Dict[str, Any] = None) -> Dict[str, Any]:
         if not self.llm:
             # Mock mode if no API key
             return {
@@ -114,10 +114,16 @@ class ContentLabAgent:
 
         text_payload = f"Platform: {platform}\nTitle: {title}\nDescription: {desc}\n\nMain Content / Transcript:\n<scraped_content>\n{content}\n</scraped_content>"
         
-        if business_context:
+        has_context = bool(business_context or brand_dna or extracted_answers)
+        if has_context:
             text_payload += f"\n\n--- THÔNG TIN DOANH NGHIỆP CỦA NGƯỜI DÙNG ---\n"
-            text_payload += f"Hãy đóng vai là cố vấn chiến lược. Khi đưa ra phần 'learning_actions', BẮT BUỘC phải dựa trên thông tin sau để biến đổi bài học thành chiến thuật trực tiếp áp dụng cho họ:\n"
-            text_payload += "<business_context>\n" + json.dumps(business_context, ensure_ascii=False, indent=2) + "\n</business_context>"
+            text_payload += f"Hãy đóng vai là cố vấn chiến lược. Khi đưa ra phần 'learning_actions', BẮT BUỘC phải dựa trên thông tin DNA thương hiệu sau để biến đổi bài học thành chiến thuật trực tiếp áp dụng cho họ:\n"
+            if brand_dna:
+                text_payload += "<brand_dna>\n" + json.dumps(brand_dna, ensure_ascii=False, indent=2) + "\n</brand_dna>\n"
+            if business_context:
+                text_payload += "<business_context>\n" + json.dumps(business_context, ensure_ascii=False, indent=2) + "\n</business_context>\n"
+            if extracted_answers:
+                text_payload += "<extracted_answers>\n" + json.dumps(extracted_answers, ensure_ascii=False, indent=2) + "\n</extracted_answers>\n"
 
         messages = [
             SystemMessage(content=SYSTEM_PROMPT)

@@ -16,6 +16,7 @@ import os
 import time
 from typing import List, Literal, Any, Dict
 from pydantic import BaseModel, Field
+from app.agents.planner.industry_models import get_industry_prompt_context, detect_company_size, normalize_industry
 
 # Nhập các schemas b2b chuẩn
 from app.schemas.schemas import (
@@ -96,11 +97,17 @@ def run_cmo_phase1_goal_setting(goal: str, industry: str, budget: int, brand_dna
     llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
     structured_llm = llm.with_structured_output(GoalSettingPhase1)
     
+    # Auto-detect company size & inject industry context
+    normalized_industry = normalize_industry(industry)
+    company_size = detect_company_size(brand_dna)
+    industry_context = get_industry_prompt_context(normalized_industry, company_size)
+    
     dna_str = json.dumps(brand_dna, ensure_ascii=False, indent=2) if brand_dna else "Không có dữ liệu Brand DNA."
     prompt = PHASE1_PROMPT.format(goal=goal, industry=industry, budget=budget, brand_dna=dna_str, scenario_type=scenario_type, target_profit=target_profit, idea_description=idea_description)
+    prompt += f"\n\n{industry_context}"
     prompt += "\n\nDEEP DIVE: Trình bày một cách chi tiết, mạch lạc. Đảm bảo output có độ sâu tương đương hoặc hơn các bản kế hoạch cao cấp. Yêu cầu lập luận sâu sắc cho từng quyết định thay vì chỉ gạch đầu dòng hời hợt. Đừng lo lắng về độ dài, hãy ưu tiên chất lượng phân tích."
     print(f"\n{'═' * 70}")
-    print(f"👑 [CMO] Đang thiết lập Mục tiêu & Ranh giới (Phase 1)...")
+    print(f"👑 [CMO] Đang thiết lập Mục tiêu & Ranh giới (Phase 1) — Ngành: {normalized_industry} / Quy mô: {company_size}...")
     res = structured_llm.invoke(prompt)
     return res.model_dump()
 
@@ -171,18 +178,23 @@ def run_cmo_phase2_situation_audit(phase1_data: dict, industry: str, target_audi
     llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
     structured_llm = llm.with_structured_output(SituationAuditPhase2)
     
+    # Industry context injection
+    normalized_industry = normalize_industry(industry)
+    company_size = detect_company_size(phase1_data.get("brand_dna"))
+    industry_context = get_industry_prompt_context(normalized_industry, company_size)
+    
     print(f"🌍 [WEB SEARCH] Đang tra cứu dữ liệu thị trường thực tế cho ngành {industry}...")
     market_context = fetch_market_context(industry, target_audience)
     
-    # Yêu cầu LLM phân tích sâu
     prompt = PHASE2_PROMPT.format(
         phase1_data=json.dumps(phase1_data, ensure_ascii=False), 
         target_audience=target_audience,
         market_context=market_context
     )
+    prompt += f"\n\n{industry_context}"
     prompt += "\n\nDEEP DIVE: Output phải thể hiện tầm nhìn của một chuyên gia McKinsey. Khuyến khích giải thích cặn kẽ, luận điểm bén và dựa trên dữ liệu. KHÔNG viết quá ngắn. Hãy duy trì chất lượng ngang ngửa bản mẫu 'Bếp Nhà Mộc'."
     
-    print(f"👑 [CMO] Đang phân tích Thị trường & Chọn CSFs (Phase 2)...")
+    print(f"👑 [CMO] Đang phân tích Thị trường & Chọn CSFs (Phase 2) — Ngành: {normalized_industry}...")
     res = structured_llm.invoke(prompt)
     return res.model_dump()
 
@@ -257,19 +269,25 @@ Quy tắc:
 Trả về định dạng chuẩn JSON Schema.
 """
 
-def run_cmo_phase4_tactical_allocator(strategy_data: dict, budget: int, scenario_type: str = "budget_driven") -> dict:
+def run_cmo_phase4_tactical_allocator(strategy_data: dict, budget: int, scenario_type: str = "budget_driven", industry: str = "F&B", brand_dna: dict = None) -> dict:
     from langchain_groq import ChatGroq
     api_key = os.getenv("GROQ_API_KEY")
     llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
     structured_llm = llm.with_structured_output(TacticsPhase4)
     
+    # Industry context injection for tactical recommendations
+    normalized_industry = normalize_industry(industry)
+    company_size = detect_company_size(brand_dna)
+    industry_context = get_industry_prompt_context(normalized_industry, company_size)
+    
     prompt = PHASE4_PROMPT.format(strategy=json.dumps(strategy_data, ensure_ascii=False), budget=budget, scenario_type=scenario_type)
+    prompt += f"\n\n{industry_context}"
     
     if scenario_type == "idea_driven":
         prompt += "\n\nLƯU Ý ĐẶC BIỆT: Đây là kịch bản TÍNH TOÁN THEO Ý TƯỞNG (idea_driven). Ngân sách đầu vào có thể là 0. Bạn hãy tự tin định giá và đề xuất ngân sách phù hợp cho từng tactic dựa trên chi phí thực tế thị trường để hiện thực hóa ý tưởng này."
         
     prompt += "\n\nDEEP DIVE: Mỗi chiến thuật phải mô tả rõ bối cảnh (Context), Hành động cụ thể (Actionable steps) và Cách đo lường. Không giới hạn độ dài, cần sự chi tiết tuyệt đối để thực thi."
-    print(f"👑 [CMO] Đang triển khai Bảng Khối lượng công việc & Ngân sách (Phase 4)...")
+    print(f"👑 [CMO] Đang triển khai Bảng Khối lượng công việc & Ngân sách (Phase 4) — Ngành: {normalized_industry} / Quy mô: {company_size}...")
     res = structured_llm.invoke(prompt)
     return res.model_dump()
 
@@ -282,6 +300,9 @@ def python_interceptor(raw_plan: dict, allowed_budget: int, scenario_type: str =
     plan = copy.deepcopy(raw_plan)
     raw_total = 0
     all_activities = plan.get("tactics_7ps", [])
+    
+    # Defensive: budget có thể là None nếu parse từ input không có budget
+    allowed_budget = int(allowed_budget or 0)
     
     for act in all_activities:
         raw_total += act.get("budget_vnd", 0)

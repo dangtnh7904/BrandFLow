@@ -126,35 +126,49 @@ const COLOR_MAP: Record<string, { bg: string; border: string; text: string; ring
   teal:    { bg: 'bg-teal-500/10', border: 'border-teal-500/30', text: 'text-teal-500', ring: 'ring-teal-500/20', glow: 'shadow-teal-500/10' },
 };
 
-// ── Preset Templates ──────────────────────────────────────────────────────
+// ── Enterprise C-Suite Preset Templates ───────────────────────────────────
 const AGENT_TEMPLATES = [
   { 
-    name: 'Research Analyst', 
-    role: 'Chuyên gia Nghiên cứu Thị trường', 
-    prompt: 'Phân tích chuyên sâu thị trường, đối thủ cạnh tranh, và xu hướng ngành. LUÔN LUÔN trích dẫn nguồn (URL) khi đưa ra số liệu. Kết quả phải có cấu trúc rõ ràng theo framework PESTLE hoặc Porter\'s Five Forces.',
-    tools: ['web_search', 'competitor_intel', 'market_sizing', 'niche_knowledge'],
-    icon: '🔬',
+    name: 'VP of Strategy', 
+    role: 'Phó Chủ tịch Chiến lược — Enterprise Strategic Planning', 
+    prompt: 'Bạn là VP of Strategy với 15+ năm kinh nghiệm tại Big 3 (McKinsey/BCG/Bain). Phân tích chiến lược theo framework: PESTLE → Porter\'s 5 Forces → SWOT → Ansoff Matrix. Mọi đề xuất phải kèm Executive Summary, Strategic Rationale, Risk Assessment, và Implementation Roadmap. LUÔN đưa ra 2 kịch bản (Optimistic/Conservative) với confidence level. Tham chiếu case study thực tế khi phù hợp.',
+    tools: ['web_search', 'competitor_intel', 'market_sizing', 'niche_knowledge', 'data_analysis'],
+    icon: '🏛️',
   },
   { 
-    name: 'Data Analyst PRO', 
-    role: 'Chuyên gia Phân tích Dữ liệu Khách hàng', 
-    prompt: 'Phân tích dữ liệu bằng Python, LUÔN viết code chạy thống kê chứ không được tự nhẩm tính. Xuất biểu đồ nếu cần. Hỗ trợ phân tích RFM, cohort, churn, A/B test significance.',
-    tools: ['data_analysis', 'financial_modeling', 'customer_insights'],
-    icon: '📊',
+    name: 'CFO Advisor', 
+    role: 'Cố vấn Tài chính — Enterprise Financial Intelligence', 
+    prompt: 'Bạn là CFO Advisor chuyên tư vấn tài chính cho doanh nghiệp Enterprise. LUÔN viết code Python để tính toán — KHÔNG BAO GIỜ tự nhẩm tính. Hỗ trợ: DCF valuation, P&L projection, unit economics (CAC/LTV/ARPU/MRR/ARR), break-even analysis, sensitivity analysis, scenario modeling, budget allocation optimization. Output phải có bảng số liệu rõ ràng, đơn vị VND, và so sánh benchmark ngành.',
+    tools: ['data_analysis', 'financial_modeling', 'market_sizing', 'web_search'],
+    icon: '💰',
   },
   { 
-    name: 'Growth Strategist', 
-    role: 'Chiến lược gia Tăng trưởng', 
-    prompt: 'Tư vấn chiến lược tăng trưởng dựa trên data thực tế. Đề xuất phải kèm theo ước tính ROI và timeline. Phân tích CAC/LTV, funnel optimization, và go-to-market strategy.',
-    tools: ['web_search', 'data_analysis', 'campaign_optimizer', 'content_strategy', 'brand_health'],
+    name: 'Growth CMO', 
+    role: 'CMO Tăng trưởng — Full-Funnel Growth Strategy', 
+    prompt: 'Bạn là Growth CMO với expertise về Product-Led Growth và full-funnel optimization. Phân tích theo AARRR framework (Acquisition → Activation → Retention → Revenue → Referral). Đề xuất phải kèm: channel mix optimization, CAC payback period, LTV:CAC ratio target, và media plan chi tiết. Ưu tiên các kênh có ROI cao nhất cho thị trường Việt Nam (Zalo, TikTok, Facebook, Google). Mỗi đề xuất kèm estimated ROAS và timeline.',
+    tools: ['web_search', 'data_analysis', 'campaign_optimizer', 'content_strategy', 'brand_health', 'customer_insights'],
     icon: '🚀',
   },
   { 
-    name: 'Brand Strategist', 
-    role: 'Chiến lược gia Thương hiệu', 
-    prompt: 'Phân tích và tư vấn định vị thương hiệu, brand architecture, messaging framework. Theo dõi brand health và đề xuất chiến lược brand building dài hạn.',
-    tools: ['brand_health', 'competitor_intel', 'customer_insights', 'content_strategy'],
+    name: 'Brand Architect', 
+    role: 'Kiến trúc sư Thương hiệu — Enterprise Brand Strategy', 
+    prompt: 'Bạn là Brand Architect chuyên xây dựng brand architecture cho các tập đoàn lớn. Phân tích: brand positioning (Keller\'s CBBE Model), brand architecture (House of Brands vs Branded House), messaging framework, brand equity measurement. Theo dõi brand health metrics: awareness, consideration, preference, loyalty. Mọi đề xuất phải consistent với Brand DNA và strict rules của doanh nghiệp.',
+    tools: ['brand_health', 'competitor_intel', 'customer_insights', 'content_strategy', 'niche_knowledge'],
     icon: '💎',
+  },
+  { 
+    name: 'Market Intelligence', 
+    role: 'Giám đốc Tình báo Thị trường — Competitive Intelligence', 
+    prompt: 'Bạn là Market Intelligence Director chuyên thu thập và phân tích thông tin cạnh tranh cho Board of Directors. Deliverables: TAM/SAM/SOM sizing, competitive landscape mapping, market trend analysis, whitespace identification. BẮT BUỘC trích dẫn nguồn (URL) cho mọi số liệu. Phân tích phải có depth tương đương báo cáo của Nielsen/Kantar.',
+    tools: ['web_search', 'competitor_intel', 'market_sizing', 'customer_insights', 'data_analysis'],
+    icon: '🔍',
+  },
+  { 
+    name: 'Revenue Ops Leader', 
+    role: 'Revenue Operations — Data-Driven Revenue Growth', 
+    prompt: 'Bạn là Revenue Operations Leader chuyên tối ưu pipeline và revenue efficiency cho Enterprise. Phân tích: conversion funnel optimization, sales/marketing alignment, pipeline velocity, win rate analysis, pricing strategy. LUÔN dùng Python để tính toán metrics. Output: actionable recommendations kèm expected revenue impact (VND) và implementation priority (P0/P1/P2).',
+    tools: ['data_analysis', 'financial_modeling', 'campaign_optimizer', 'customer_insights', 'web_search'],
+    icon: '📈',
   },
 ];
 
@@ -221,26 +235,35 @@ export default function AgentBuilderPage() {
         throw new Error('API unavailable');
       }
     } catch {
-      // Intelligent mock based on selected tools
+      // Enterprise-grade intelligent mock based on selected tools
       const toolNames = Array.from(selectedTools);
-      let response = `🤖 **${name || 'Agent'}** đã tiếp nhận yêu cầu.\n\n`;
+      let response = `## 📋 Executive Summary\n**${name || 'Agent'}** đã hoàn tất phân tích yêu cầu của bạn.\n\n`;
       
-      if (toolNames.includes('data_analysis')) {
-        response += `> \`[Tool: PythonREPL]\` Đang khởi chạy môi trường Python...\n> \`[Observation]\` Đã import pandas, numpy thành công.\n\n`;
-        response += `📊 Kết quả phân tích cho thấy:\n- Conversion Rate: **3.2%** (↑12% MoM)\n- Average Order Value: **$47.50**\n- Customer Lifetime Value: **$285**\n\n`;
+      if (toolNames.includes('data_analysis') || toolNames.includes('financial_modeling')) {
+        response += `> \`[Tool: PythonDataAnalyst]\` Đang khởi chạy môi trường Python...\n> \`[Observation]\` Import pandas, numpy, scipy thành công.\n\n`;
+        response += `### 📊 Financial Performance Dashboard\n| KPI | Giá trị | Benchmark Ngành | Gap |\n|---|---|---|---|\n| Conversion Rate | **3.2%** (↑12% MoM) | 2.5% | +0.7pp ✅ |\n| AOV (Average Order Value) | **1,185,000 VND** | 950,000 VND | +24.7% ✅ |\n| CAC (Cost per Acquisition) | **245,000 VND** | 180,000 VND | +36% ⚠️ |\n| LTV (Lifetime Value) | **7,125,000 VND** | 5,200,000 VND | +37% ✅ |\n| LTV:CAC Ratio | **29.1x** | 15x | Excellent ✅ |\n\n💡 **Insight:** LTV:CAC ratio vượt benchmark 2x cho thấy unit economics rất healthy. Tuy nhiên CAC đang cao hơn ngành 36% — khuyến nghị tối ưu channel mix để giảm CAC xuống <200k VND.\n\n`;
       }
       if (toolNames.includes('web_search')) {
-        response += `> \`[Tool: WebSearch]\` Đang truy cập DuckDuckGo...\n> \`[Observation]\` Tìm thấy 3 nguồn có liên quan.\n\n`;
-        response += `🔍 Thông tin từ nguồn:\n- [1] Thị trường đang tăng trưởng 15% YoY *(Nguồn: Statista 2026)*\n- [2] Segment B2B SaaS dẫn đầu tốc độ tăng trưởng *(Nguồn: Gartner)*\n\n`;
+        response += `> \`[Tool: WebSearch]\` Đang truy cập DuckDuckGo...\n> \`[Observation]\` Tìm thấy 5 nguồn có liên quan.\n\n`;
+        response += `### 🔍 Market Intelligence Report\n- **Quy mô thị trường:** TAM = 12.5 tỷ USD (Việt Nam, 2026) — CAGR 18.2% *(Nguồn: Statista 2026)*\n- **Segment dẫn đầu:** Digital-first brands tăng trưởng 2.3x so với traditional *(Nguồn: McKinsey SEA Report)*\n- **Xu hướng #1:** AI-powered personalization — 67% enterprise đã áp dụng *(Nguồn: Gartner 2026)*\n- **Xu hướng #2:** Social Commerce chiếm 38% e-commerce revenue tại VN *(Nguồn: Google-Temasek)*\n\n`;
       }
       if (toolNames.includes('competitor_intel')) {
-        response += `🎯 **Phân tích Đối thủ:**\n- Competitor A: Đang giảm giá 20%, tập trung vào SMB segment\n- Competitor B: Mới ra mắt tính năng AI, nhắm vào Enterprise\n\n`;
+        response += `### 🎯 Competitive Landscape Analysis\n| Đối thủ | Positioning | Market Share | Recent Moves |\n|---|---|---|---|\n| **Competitor A** | Price Leader | ~18% | Đang giảm giá 20%, focus SMB segment |\n| **Competitor B** | Innovation Leader | ~22% | Ra mắt AI feature, nhắm Enterprise |\n| **Competitor C** | Niche Player | ~8% | Mở rộng sang vertical mới |\n\n⚠️ **Strategic Alert:** Competitor B đang invest mạnh vào AI — khuyến nghị tăng tốc R&D để duy trì competitive advantage.\n\n`;
       }
-      if (toolNames.includes('financial_modeling')) {
-        response += `💰 **Mô hình Tài chính:**\n- Break-even point: Tháng 18\n- IRR dự kiến: 42%\n- NPV (5 năm, r=12%): $2.4M\n\n`;
+      if (toolNames.includes('market_sizing')) {
+        response += `### 📐 Market Sizing (Bottom-Up)\n- **TAM:** 285 nghìn tỷ VND (toàn ngành VN)\n- **SAM:** 42.7 nghìn tỷ VND (segment phục vụ được)\n- **SOM:** 2.14 nghìn tỷ VND (5% SAM — mục tiêu Y1)\n- **Confidence Level:** Medium-High (±15%)\n\n`;
+      }
+      if (toolNames.includes('campaign_optimizer')) {
+        response += `### 📈 Campaign Optimization Recommendations\n| Kênh | Budget Hiện tại | Budget Đề xuất | Expected ROAS |\n|---|---|---|---|\n| Facebook Ads | 40% | 30% (-10pp) | 4.2x |\n| TikTok Ads | 15% | 25% (+10pp) | 5.8x |\n| Google Search | 30% | 25% (-5pp) | 3.5x |\n| Zalo OA | 10% | 15% (+5pp) | 6.1x |\n| KOL/Influencer | 5% | 5% | 3.8x |\n\n✅ **Action:** Shift 10% budget từ Facebook → TikTok (expected +1.6x ROAS uplift).\n\n`;
+      }
+      if (toolNames.includes('brand_health')) {
+        response += `### 🛡️ Brand Health Scorecard\n- **Brand Awareness:** 34% (ngành TB: 45%) — ⚠️ Cần tăng\n- **Brand Consideration:** 22% (ngành TB: 28%) — ⚠️ Gap\n- **Net Promoter Score:** +42 (ngành TB: +35) — ✅ Strong\n- **Share of Voice:** 12% (Top 3 đối thủ: 18-25%) — ⚠️ Cần cải thiện\n\n`;
+      }
+      if (toolNames.includes('customer_insights')) {
+        response += `### 👥 Customer Insight Deep-Dive\n- **Primary Persona:** Decision Makers (C-Level, 35-50 tuổi, thu nhập >50M/tháng)\n- **JTBD #1:** "Tôi cần ra quyết định marketing nhanh hơn với data chính xác"\n- **Pain Point #1:** Thiếu visibility vào ROI của từng kênh marketing\n- **Trigger Event:** Quarter review / Board meeting preparation\n\n`;
       }
       if (toolNames.length === 0) {
-        response = `⚠️ Tôi chưa được trang bị công cụ (Tools) nào. Vui lòng chọn ít nhất một Capability ở phần cấu hình để tôi có thể thực hiện tác vụ chính xác.`;
+        response = `⚠️ **Agent chưa được trang bị Capability.** Vui lòng chọn ít nhất 1 công cụ (Tool) ở phần cấu hình để tôi có thể thực hiện phân tích chính xác, không bịa đặt dữ liệu.`;
       }
 
       setChatLog(prev => [...prev, { role: 'agent', content: response }]);

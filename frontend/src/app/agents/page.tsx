@@ -7,12 +7,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-// Default preset agents (always shown)
+// Default preset agents (always shown) — Enterprise C-Suite Standard
 const PRESET_AGENTS = [
- { id: 'cmo', name: 'Trợ lý CMO', role: 'Giám đốc Marketing', brain: 95, status: 'Hoạt động', color: 'from-purple-500 to-cyan-500', iconColor: 'text-purple-600', skill: 'Bảng Chiến lược', isPreset: true },
- { id: 'cfo', name: 'Trợ lý CFO', role: 'Giám đốc Tài chính', brain: 88, status: 'Hoạt động', color: 'from-blue-500 to-cyan-500', iconColor: 'text-blue-600', skill: 'Công cụ Tính toán', isPreset: true },
- { id: 'cro', name: 'Trợ lý CRO', role: 'Chuyên gia Chuyển đổi', brain: 76, status: 'Nghỉ ngơi', color: 'from-orange-500 to-amber-500', iconColor: 'text-amber-600', skill: 'A/B Testing', isPreset: true },
- { id: 'cdo', name: 'Trợ lý CDO', role: 'Giám đốc Dữ liệu', brain: 92, status: 'Đang xử lý', color: 'from-blue-500 to-indigo-500', iconColor: 'text-blue-600', skill: 'Lõi RAG Analytics', isPreset: true },
+ { id: 'cmo', name: 'Chief Marketing Officer', role: 'CMO — Chiến lược Marketing & Brand', brain: 97, status: 'Hoạt động', color: 'from-purple-600 to-cyan-500', iconColor: 'text-purple-600', skill: 'Brand Strategy · GTM · Positioning', isPreset: true },
+ { id: 'cfo', name: 'Chief Financial Officer', role: 'CFO — Tài chính & Ngân sách Enterprise', brain: 95, status: 'Hoạt động', color: 'from-blue-600 to-cyan-500', iconColor: 'text-blue-600', skill: 'P&L · DCF · Unit Economics', isPreset: true },
+ { id: 'cro', name: 'Chief Revenue Officer', role: 'CRO — Tăng trưởng & Chuyển đổi', brain: 93, status: 'Hoạt động', color: 'from-orange-500 to-amber-400', iconColor: 'text-amber-600', skill: 'Funnel · ROAS · A/B Testing', isPreset: true },
+ { id: 'cdo', name: 'Chief Data Officer', role: 'CDO — Dữ liệu & Market Intelligence', brain: 96, status: 'Hoạt động', color: 'from-blue-500 to-indigo-600', iconColor: 'text-indigo-600', skill: 'TAM/SAM/SOM · Competitor Intel', isPreset: true },
 ];
 
 interface CustomAgentItem {

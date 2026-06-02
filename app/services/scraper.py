@@ -2,12 +2,22 @@ import re
 import httpx
 from bs4 import BeautifulSoup
 from youtube_transcript_api import YouTubeTranscriptApi
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
+
 
 class ContentScraper:
     @staticmethod
     def is_youtube_url(url: str) -> bool:
         return "youtube.com" in url or "youtu.be" in url
+
+    @staticmethod
+    def is_facebook_url(url: str) -> bool:
+        return "facebook.com" in url or "fb.com" in url or "fb.watch" in url
+
+    @staticmethod
+    def is_ecommerce_url(url: str) -> bool:
+        ecommerce_domains = ["shopee.vn", "lazada.vn", "tiki.vn", "sendo.vn", "tiktokshop"]
+        return any(domain in url.lower() for domain in ecommerce_domains)
 
     @staticmethod
     def is_youtube_channel(url: str) -> bool:
@@ -241,9 +251,42 @@ class ContentScraper:
         return data
 
     @staticmethod
-    async def get_website_data(url: str) -> Dict[str, Any]:
+    def _extract_phones(text: str) -> List[str]:
+        """Extract Vietnamese phone numbers from text."""
+        patterns = re.findall(r'(?:(?:\+84|0)\d{9,10})', text)
+        return list(set(patterns))[:5]
+
+    @staticmethod
+    def _extract_emails(text: str) -> List[str]:
+        """Extract email addresses from text."""
+        patterns = re.findall(r'[\w.+-]+@[\w-]+\.[\w.-]+', text)
+        return list(set(patterns))[:5]
+
+    @staticmethod
+    def _extract_social_links(soup) -> Dict[str, str]:
+        """Extract social media links from HTML."""
+        socials = {}
+        for a_tag in soup.find_all('a', href=True):
+            href = a_tag['href']
+            if 'facebook.com' in href and 'facebook' not in socials:
+                socials['facebook'] = href
+            elif 'instagram.com' in href and 'instagram' not in socials:
+                socials['instagram'] = href
+            elif 'tiktok.com' in href and 'tiktok' not in socials:
+                socials['tiktok'] = href
+            elif 'linkedin.com' in href and 'linkedin' not in socials:
+                socials['linkedin'] = href
+            elif 'youtube.com' in href and 'youtube' not in socials:
+                socials['youtube'] = href
+            elif 'zalo.me' in href and 'zalo' not in socials:
+                socials['zalo'] = href
+        return socials
+
+    @staticmethod
+    async def get_facebook_page_data(url: str) -> Dict[str, Any]:
+        """Scrape Facebook fanpage — extract page info from public HTML."""
         data = {
-            "platform": "website",
+            "platform": "facebook",
             "url": url,
             "title": "",
             "description": "",
@@ -251,9 +294,145 @@ class ContentScraper:
             "author": "",
             "content": ""
         }
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept-Language": "vi-VN,vi;q=0.9,en;q=0.8",
+        }
+        try:
+            async with httpx.AsyncClient(follow_redirects=True) as client:
+                resp = await client.get(url, headers=headers, timeout=15.0)
+                soup = BeautifulSoup(resp.text, 'html.parser')
+                
+                # Extract from OG meta tags (most reliable for Facebook pages)
+                og_title = soup.find("meta", property="og:title")
+                og_desc = soup.find("meta", property="og:description")
+                og_image = soup.find("meta", property="og:image")
+                og_site = soup.find("meta", property="og:site_name")
+                
+                data["title"] = og_title.get("content", "") if og_title else ""
+                data["description"] = og_desc.get("content", "") if og_desc else ""
+                data["thumbnail_url"] = og_image.get("content", "") if og_image else ""
+                data["author"] = og_site.get("content", "Facebook") if og_site else "Facebook"
+                
+                # Build content from available data
+                content_parts = []
+                content_parts.append(f"Đây là Fanpage Facebook: {data['title']}")
+                if data['description']:
+                    content_parts.append(f"Mô tả: {data['description']}")
+                
+                # Extract visible text (limited due to FB's JS rendering)
+                for element in soup(["script", "style", "noscript"]):
+                    element.decompose()
+                body_text = soup.get_text(separator='\n', strip=True)
+                # Filter meaningful lines
+                lines = [l.strip() for l in body_text.split('\n') if len(l.strip()) > 30]
+                if lines:
+                    content_parts.append("\n--- NỘI DUNG TRANG ---")
+                    content_parts.append("\n".join(lines[:50]))  # Limit to 50 lines
+                
+                # Extract contact info
+                phones = ContentScraper._extract_phones(body_text)
+                emails = ContentScraper._extract_emails(body_text)
+                if phones:
+                    content_parts.append(f"\nSố điện thoại: {', '.join(phones)}")
+                if emails:
+                    content_parts.append(f"Email: {', '.join(emails)}")
+                
+                data["content"] = "\n".join(content_parts)
+                
+        except Exception as e:
+            data["content"] = f"(Lỗi khi lấy dữ liệu Facebook Fanpage: {e})"
+        
+        return data
+
+    @staticmethod
+    async def get_ecommerce_data(url: str) -> Dict[str, Any]:
+        """Scrape ecommerce product pages (Shopee, Lazada, Tiki)."""
+        data = {
+            "platform": "ecommerce",
+            "url": url,
+            "title": "",
+            "description": "",
+            "thumbnail_url": "",
+            "author": "",
+            "content": ""
+        }
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        try:
+            async with httpx.AsyncClient(follow_redirects=True) as client:
+                resp = await client.get(url, headers=headers, timeout=15.0)
+                soup = BeautifulSoup(resp.text, 'html.parser')
+                
+                # OG meta (works for most ecommerce)
+                og_title = soup.find("meta", property="og:title")
+                og_desc = soup.find("meta", property="og:description")
+                og_image = soup.find("meta", property="og:image")
+                
+                data["title"] = og_title.get("content", "") if og_title else (soup.find('title').text.strip() if soup.find('title') else "")
+                data["description"] = og_desc.get("content", "") if og_desc else ""
+                data["thumbnail_url"] = og_image.get("content", "") if og_image else ""
+                
+                # Detect platform
+                platform_name = "Ecommerce"
+                if "shopee" in url.lower():
+                    platform_name = "Shopee"
+                elif "lazada" in url.lower():
+                    platform_name = "Lazada"
+                elif "tiki" in url.lower():
+                    platform_name = "Tiki"
+                
+                content_parts = [f"Đây là sản phẩm/shop trên {platform_name}: {data['title']}"]
+                if data['description']:
+                    content_parts.append(f"Mô tả: {data['description']}")
+                
+                # Try to extract price, rating from structured data (JSON-LD)
+                for script in soup.find_all('script', type='application/ld+json'):
+                    try:
+                        import json
+                        ld_data = json.loads(script.string)
+                        if isinstance(ld_data, dict):
+                            if ld_data.get('@type') == 'Product':
+                                name = ld_data.get('name', '')
+                                if name:
+                                    content_parts.append(f"Tên sản phẩm: {name}")
+                                offers = ld_data.get('offers', {})
+                                if isinstance(offers, dict):
+                                    price = offers.get('price', offers.get('lowPrice', ''))
+                                    currency = offers.get('priceCurrency', 'VND')
+                                    if price:
+                                        content_parts.append(f"Giá: {price} {currency}")
+                                rating = ld_data.get('aggregateRating', {})
+                                if isinstance(rating, dict):
+                                    content_parts.append(f"Đánh giá: {rating.get('ratingValue', '?')}/5 ({rating.get('reviewCount', '?')} reviews)")
+                    except:
+                        pass
+                
+                data["content"] = "\n".join(content_parts)
+                data["platform"] = platform_name.lower()
+                
+        except Exception as e:
+            data["content"] = f"(Lỗi khi lấy dữ liệu {url}: {e})"
+        
+        return data
+
+    @staticmethod
+    async def get_website_data(url: str) -> Dict[str, Any]:
+        """Enhanced website scraper with structured metadata extraction."""
+        data = {
+            "platform": "website",
+            "url": url,
+            "title": "",
+            "description": "",
+            "thumbnail_url": "",
+            "author": "",
+            "content": "",
+            "metadata": {}  # Structured metadata
+        }
 
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
 
         try:
@@ -262,6 +441,7 @@ class ContentScraper:
                 resp.raise_for_status()
                 
                 soup = BeautifulSoup(resp.text, 'html.parser')
+                full_text = resp.text
                 
                 # Extract Title
                 title_tag = soup.find('title')
@@ -276,18 +456,63 @@ class ContentScraper:
                 if og_desc:
                     data["description"] = og_desc.get("content", "")
                 
-                # Extract main content (simplified text extraction)
-                # Remove script, style, nav, footer, header tags
+                # ── ENHANCED: Extract structured metadata ──
+                metadata = {}
+                
+                # Phone numbers
+                phones = ContentScraper._extract_phones(full_text)
+                if phones:
+                    metadata["phones"] = phones
+                
+                # Emails  
+                emails = ContentScraper._extract_emails(full_text)
+                if emails:
+                    metadata["emails"] = emails
+                
+                # Social links
+                social_links = ContentScraper._extract_social_links(soup)
+                if social_links:
+                    metadata["social_links"] = social_links
+                
+                # Address (common Vietnamese patterns)
+                for addr_tag in soup.find_all(['address', 'p', 'span', 'div'], class_=re.compile(r'address|location|dia-chi', re.I)):
+                    addr_text = addr_tag.get_text(strip=True)
+                    if len(addr_text) > 10 and len(addr_text) < 200:
+                        metadata["address"] = addr_text
+                        break
+                
+                # About/Introduction section
+                about_section = soup.find(id=re.compile(r'about|gioi-thieu|ve-chung-toi', re.I)) or \
+                                soup.find(class_=re.compile(r'about|gioi-thieu|ve-chung-toi', re.I))
+                if about_section:
+                    about_text = about_section.get_text(separator=' ', strip=True)[:1000]
+                    metadata["about"] = about_text
+                
+                data["metadata"] = metadata
+                
+                # ── Main content extraction ──
                 for element in soup(["script", "style", "nav", "footer", "header", "aside"]):
                     element.decompose()
                 
-                # Try to find article or main tag first
                 main_content = soup.find("article") or soup.find("main") or soup.body
                 if main_content:
                     text = main_content.get_text(separator='\n', strip=True)
-                    # Simple heuristic: filter out very short lines (often menus)
                     lines = [line.strip() for line in text.split('\n') if len(line.strip()) > 20]
-                    data["content"] = "\n".join(lines)
+                    
+                    # Prepend structured metadata to content for AI consumption
+                    structured_prefix = ""
+                    if metadata.get("phones"):
+                        structured_prefix += f"Số điện thoại: {', '.join(metadata['phones'])}\n"
+                    if metadata.get("emails"):
+                        structured_prefix += f"Email: {', '.join(metadata['emails'])}\n"
+                    if metadata.get("address"):
+                        structured_prefix += f"Địa chỉ: {metadata['address']}\n"
+                    if metadata.get("social_links"):
+                        structured_prefix += f"Mạng xã hội: {', '.join([f'{k}: {v}' for k,v in metadata['social_links'].items()])}\n"
+                    if metadata.get("about"):
+                        structured_prefix += f"Giới thiệu: {metadata['about']}\n"
+                    
+                    data["content"] = structured_prefix + "\n".join(lines)
                 
         except Exception as e:
             data["content"] = f"(Lỗi khi lấy dữ liệu trang web: {e})"
@@ -296,9 +521,14 @@ class ContentScraper:
 
     @staticmethod
     async def scrape_url(url: str) -> Dict[str, Any]:
+        """Smart URL router — detect platform and use appropriate scraper."""
         if ContentScraper.is_youtube_channel(url):
             return await ContentScraper.get_youtube_channel_data(url)
         elif ContentScraper.is_youtube_url(url):
             return await ContentScraper.get_youtube_data(url)
+        elif ContentScraper.is_facebook_url(url):
+            return await ContentScraper.get_facebook_page_data(url)
+        elif ContentScraper.is_ecommerce_url(url):
+            return await ContentScraper.get_ecommerce_data(url)
         else:
             return await ContentScraper.get_website_data(url)

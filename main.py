@@ -972,7 +972,23 @@ def onboarding_upload_url(request: UrlRequestCustom):
         if ok_count > 0
         else f"Tất cả {fail_count} URL đều thất bại."
     )
-    return {"status": status, "message": message, "results": results}
+    
+    # Run completeness check on crawled content
+    completeness = {}
+    if ok_count > 0:
+        try:
+            combined_text = " ".join([
+                r.get("raw_text_for_ai", "") for r in results if r.get("status") == "success"
+            ])
+            if combined_text.strip():
+                from app.agents.intake.input_validator import validate_input_completeness
+                # Simple heuristic: extract basic info from crawled text
+                basic_data = {"raw_content": combined_text[:5000]}
+                completeness = validate_input_completeness(extracted_data=basic_data)
+        except Exception as e:
+            print(f"⚠️ Completeness check failed for URLs: {e}")
+    
+    return {"status": status, "message": message, "results": results, "completeness": completeness}
 
 
 @app.post("/api/v1/onboarding/upload")
@@ -1056,6 +1072,7 @@ async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str 
     
     # ─── Phân tích file bằng AI để tự động điền Form ───
     extracted_answers = {}
+    completeness = {}
     if ok_count > 0:
         try:
             # Gộp text của các file thành công
@@ -1118,12 +1135,26 @@ async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str 
                     print(f"✅ Bếp Nhà Mộc Mock Data Injected.")
                 else:
                     analyzer = UploadAnalyzer()
-                    extracted_answers = analyzer.extract_answers(all_text)
-                    print(f"✅ AI Auto-fill extracted: {extracted_answers}")
+                    analysis_result = analyzer.extract_answers(all_text)
+                    # New format: {extracted: {...}, completeness: {...}}
+                    if isinstance(analysis_result, dict) and "extracted" in analysis_result:
+                        extracted_answers = analysis_result.get("extracted", {})
+                        completeness = analysis_result.get("completeness", {})
+                    else:
+                        # Backward compat: old format returned flat dict
+                        extracted_answers = analysis_result
+                        from app.agents.intake.input_validator import validate_input_completeness
+                        completeness = validate_input_completeness(extracted_data=extracted_answers)
+                    print(f"✅ AI Auto-fill extracted. Completeness: {completeness.get('completeness_score', '?')}%")
         except Exception as e:
             print(f"⚠️ Lỗi khi chạy AI phân tích file: {e}")
+    
+    # Run completeness check even if AI extraction failed (using whatever data we have)
+    if not completeness and extracted_answers:
+        from app.agents.intake.input_validator import validate_input_completeness
+        completeness = validate_input_completeness(extracted_data=extracted_answers)
             
-    return {"status": status, "message": message, "results": results, "extracted_answers": extracted_answers}
+    return {"status": status, "message": message, "results": results, "extracted_answers": extracted_answers, "completeness": completeness}
 
 @app.post("/api/v1/onboarding/extract-summary")
 async def onboarding_extract_summary(files: List[UploadFile] = File(...), tenant_id: str = Form("default")):

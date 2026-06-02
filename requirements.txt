@@ -29,7 +29,6 @@ langchain-google-genai
 PyJWT
 email-validator
 openai
-langchain-experimental
 langgraph
 langchain-core
 bcrypt

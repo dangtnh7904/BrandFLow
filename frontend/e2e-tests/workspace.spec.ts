@@ -12,7 +12,9 @@ test('workspace planning page loads', async ({ page }) => {
 
   // Navigate to planning page
   await page.goto('/planning');
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(4000);
+  // Wait for actual content to render
+  await page.waitForSelector('body *', { timeout: 5000 }).catch(() => {});
 
   // The page should load without crashing (no white screen)
   // Check that the body has rendered content

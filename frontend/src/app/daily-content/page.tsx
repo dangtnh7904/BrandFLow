@@ -55,13 +55,69 @@ export default function DailyContentPage() {
     return () => { isMounted = false; };
   }, [platform]);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setIsGenerating(true);
-    // Mock API call tailored for SME
-    setTimeout(() => {
+    setGeneratedContent(null);
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = localStorage.getItem('brandflow_token');
+      
+      const res = await fetch(`${API_URL}/api/content-lab/generate`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          topic,
+          format_type: 'Social Post',
+          tone_of_voice: tone,
+          platform,
+          brand_dna: brandDNA || null,
+          business_context: {
+            company_name: brandName,
+            core_usps: coreUsps,
+            ...(wizardAnswers || {}),
+          },
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === 'success' && data.data) {
+          const d = data.data;
+          // Compose display content from structured API response
+          let display = '';
+          if (d.hook) display += `${d.hook}\n\n`;
+          if (d.content_body) display += `${d.content_body}\n\n`;
+          if (d.call_to_action) display += `${d.call_to_action}\n\n`;
+          if (d.hashtags?.length) display += d.hashtags.join(' ');
+          
+          // Store metadata for display
+          (window as any).__bf_content_meta = {
+            headline: d.headline || '',
+            engagement_hooks: d.engagement_hooks || [],
+            best_posting_time: d.best_posting_time || '',
+            visual_suggestion: d.visual_suggestion || '',
+            content_pillar: d.content_pillar || '',
+            seo_keywords: d.seo_keywords || [],
+            estimated_reading_time: d.estimated_reading_time || '',
+          };
+          
+          setGeneratedContent(display.trim());
+        } else {
+          throw new Error('Invalid response');
+        }
+      } else {
+        throw new Error('API error');
+      }
+    } catch (err) {
+      console.error('Content generation error:', err);
+      // Fallback mock with brand DNA
       setGeneratedContent(`🔥 ${topic.toUpperCase()} 🔥\n\nNhiều Founder/CEO của các doanh nghiệp đang rơi vào một cái bẫy vô hình: Khởi nghiệp để được tự do, nhưng cuối cùng lại làm việc 14 tiếng/ngày.\n\nSự thật tàn nhẫn là: Doanh nghiệp của bạn sẽ KHÔNG THỂ 'Scale-up' nếu thiếu đi một hệ thống vững chắc.\n\nTại ${brandName}, chúng tôi tin rằng lợi thế: "${coreUsps[0]}" chính là chìa khóa để giải quyết vấn đề này.\n\n💡 3 BƯỚC ĐỂ BỨT PHÁ:\n1️⃣ Quy trình hóa (SOP) mọi tác vụ lặp lại.\n2️⃣ Tập trung vào giá trị cốt lõi thay vì chạy theo số lượng.\n3️⃣ Ứng dụng AI & Automation vào vận hành để giảm phụ thuộc vào con người.\n\n👇 Hãy bắt đầu xây dựng hệ thống tự vận hành ngay hôm nay cùng ${brandName}!\n\nBạn đang mắc kẹt ở khâu nào nhất? Comment bên dưới để cùng thảo luận nhé! 👇\n\n#${brandName.replace(/\s+/g, '')} #QuanTriDoanhNghiep #ScaleUp`);
+    } finally {
       setIsGenerating(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -89,11 +145,13 @@ export default function DailyContentPage() {
               {/* Platform Selector */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">{t('daily_content.platform')}</label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-5 gap-2">
                   {[
                     { name: 'Facebook', icon: Users, color: 'text-blue-600', bgHover: 'hover:bg-blue-50' },
                     { name: 'LinkedIn', icon: Briefcase, color: 'text-sky-700', bgHover: 'hover:bg-sky-50' },
-                    { name: 'TikTok', icon: Music, color: 'text-slate-900 dark:text-white', bgHover: 'hover:bg-slate-100 dark:hover:bg-slate-800' }
+                    { name: 'TikTok', icon: Music, color: 'text-slate-900 dark:text-white', bgHover: 'hover:bg-slate-100 dark:hover:bg-slate-800' },
+                    { name: 'Instagram', icon: Heart, color: 'text-pink-600', bgHover: 'hover:bg-pink-50' },
+                    { name: 'Zalo', icon: MessageCircle, color: 'text-blue-500', bgHover: 'hover:bg-blue-50' },
                   ].map((p) => (
                     <button 
                       key={p.name}

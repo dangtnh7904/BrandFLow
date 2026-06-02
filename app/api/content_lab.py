@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 from app.services.scraper import ContentScraper
-from app.agents.content_lab.agent import ContentLabAgent
+from app.agents.content_lab.agent import ContentLabAgent, _fetch_trending_topics
 from app.api.auth_routes import get_current_user
 
 router = APIRouter()
@@ -17,15 +17,22 @@ class AnalyzeRequest(BaseModel):
     brand_dna: Dict[str, Any] = None
     extracted_answers: Dict[str, Any] = None
 
-# In-memory storage for MVP (In production, use VectorDB or Redis)
-# Dictionary mapping session_id or url to extracted data
+# ── Enterprise Content Generation Request ──
+class GenerateRequest(BaseModel):
+    topic: str
+    format_type: str = "Social Post"
+    tone_of_voice: str = "Chuyên nghiệp"
+    platform: str = "Facebook"
+    business_context: Dict[str, Any] = None
+    brand_dna: Dict[str, Any] = None
+
+# In-memory storage for MVP
 session_storage = {}
 
 @router.post("/ingest")
 async def ingest_content(req: IngestRequest, user_id: str = Depends(get_current_user)):
     try:
         data = await ContentScraper.scrape_url(req.url)
-        # Store in session if needed, but for MVP we can just return it to frontend
         return {"status": "success", "data": data}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -36,6 +43,34 @@ async def analyze_vibe(req: AnalyzeRequest, user_id: str = Depends(get_current_u
         agent = ContentLabAgent()
         report = await agent.analyze_vibe(req.scraped_data, req.business_context, req.brand_dna, req.extracted_answers)
         return {"status": "success", "report": report}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ── Enterprise Content Generation ──
+@router.post("/generate")
+async def generate_content(req: GenerateRequest, user_id: str = Depends(get_current_user)):
+    """
+    Generate enterprise-grade content with:
+    - Brand DNA context
+    - Real-time Google Trends
+    - Platform-specific optimization
+    """
+    try:
+        agent = ContentLabAgent()
+        
+        # Fetch real-time trends in parallel
+        trending_topics = await _fetch_trending_topics()
+        
+        result = await agent.generate_content(
+            topic=req.topic,
+            format_type=req.format_type,
+            tone_of_voice=req.tone_of_voice,
+            platform=req.platform,
+            business_context=req.business_context,
+            brand_dna=req.brand_dna,
+            trending_topics=trending_topics,
+        )
+        return {"status": "success", "data": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -50,7 +85,6 @@ async def chat_with_content(req: ChatRequest, user_id: str = Depends(get_current
         if not agent.llm:
              return {"status": "success", "reply": "Chế độ Mock: Xin chào, tôi đang trong giai đoạn thử nghiệm. Tính năng Chat sẽ hoạt động khi có API Key Gemini."}
         
-        # Build prompt
         title = req.scraped_data.get('title', '')
         content = req.scraped_data.get('content', '')[:15000]
         context = f"Title: {title}\nContent: {content}"
@@ -93,11 +127,9 @@ KHÔNG GIẢI THÍCH, KHÔNG GẠCH ĐẦU DÒNG.
         response = await agent.llm.ainvoke([HumanMessage(content=prompt)])
         
         filtered = [t.strip('-*. \t') for t in response.content.strip().split('\n') if t.strip()][:5]
-        # Xóa số thứ tự nếu AI cố tình trả về số (vd: 1. Trend)
         filtered = [t.split('. ', 1)[1] if '. ' in t[:5] else t for t in filtered]
         
         return {"status": "success", "data": filtered}
     except Exception as e:
         print(f"Lỗi Trends API: {e}")
         return {"status": "error", "message": str(e), "data": []}
-

@@ -315,6 +315,21 @@ class CustomerReviewerOutput(BaseModel):
     reasoning_summary: str = Field(..., description="Giải thích ngắn gọn lý do cho điểm số và feedback")
 
 
+class OperationalRisk(BaseModel):
+    bottleneck: str = Field(..., description="Điểm nghẽn vận hành (VD: Quá tải kho, Telesale không kịp gọi)")
+    impact_level: Literal["High", "Medium", "Low"] = Field(..., description="Mức độ ảnh hưởng")
+    mitigation_suggestion: str = Field(..., description="Đề xuất khắc phục")
+
+class COOReviewOutput(BaseModel):
+    coo_score: int = Field(..., ge=1, le=100, description="Điểm khả thi vận hành (1-100)")
+    operational_risks: list[OperationalRisk] = Field(..., description="Danh sách rủi ro vận hành")
+    coo_comment: str = Field(..., description="Bình luận tổng quan từ COO")
+
+
+class SalesReviewOutput(BaseModel):
+    sales_alignment_score: int = Field(..., ge=1, le=100, description="Điểm đồng thuận từ Sales (1-100)")
+    lead_quality_concerns: list[str] = Field(..., description="Các lo ngại về chất lượng lead hoặc khả năng chốt sale")
+    sales_comment: str = Field(..., description="Bình luận tổng quan từ Giám đốc Kinh doanh")
 # ============================================================================
 # DESIGN MODULE SCHEMAS
 # ============================================================================

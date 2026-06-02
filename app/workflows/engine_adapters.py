@@ -45,9 +45,9 @@ def calc_market_gap(target_profit: int, budget: int) -> dict:
         return {"gap": target_rev - baseline_rev, "gap_percentage": 0, "error": str(e)}
 
 
-def extract_loop_metrics(interceptor_result: dict, customer_res: dict, cfo_res: dict) -> dict:
+def extract_loop_metrics(interceptor_result: dict, customer_res: dict, cfo_res: dict, coo_res: dict = None, sales_res: dict = None) -> dict:
     """
-    Trích xuất metrics từ kết quả CFO + Persona review.
+    Trích xuất metrics từ kết quả CFO + Persona + COO + Sales review.
     
     v2: Handle None/timeout — nếu agent bị timeout hoặc trả None, 
     dùng fallback values thay vì crash.
@@ -89,6 +89,26 @@ def extract_loop_metrics(interceptor_result: dict, customer_res: dict, cfo_res: 
             "cfo_comment": "CFO review không khả dụng (timeout/error). Khuyến nghị: kiểm tra lại ngân sách thủ công.",
             "risk_assessment": []
         }
+
+    # ── Robust handling cho coo_res ──
+    if not coo_res or not isinstance(coo_res, dict):
+        print("⚠️ [ADAPTER] coo_res is None. Using fallback.")
+        coo_res = {
+            "coo_score": 60,
+            "operational_risks": [],
+            "coo_comment": "COO review không khả dụng (timeout/error)."
+        }
+    coo_score = max(0, min(100, int(coo_res.get("coo_score", 60))))
+
+    # ── Robust handling cho sales_res ──
+    if not sales_res or not isinstance(sales_res, dict):
+        print("⚠️ [ADAPTER] sales_res is None. Using fallback.")
+        sales_res = {
+            "sales_alignment_score": 60,
+            "lead_quality_concerns": [],
+            "sales_comment": "Sales review không khả dụng (timeout/error)."
+        }
+    sales_score = max(0, min(100, int(sales_res.get("sales_alignment_score", 60))))
     
     # ── Calculate scores ──
     try:
@@ -98,20 +118,27 @@ def extract_loop_metrics(interceptor_result: dict, customer_res: dict, cfo_res: 
         print(f"⚠️ [ADAPTER] calculate_customer_rule_score failed: {e}. Using fallback=50.")
         rule_score = 50
     
-    final_score = (client_self_score * 0.5) + (rule_score * 0.5)
+    # New final score formula: Persona 30%, CFO (rule) 20%, COO 25%, Sales 25%
+    final_score = (client_self_score * 0.3) + (rule_score * 0.2) + (coo_score * 0.25) + (sales_score * 0.25)
     
     return {
         "client_self_score": client_self_score,
         "rule_score": rule_score,
+        "coo_score": coo_score,
+        "sales_score": sales_score,
         "final_score": final_score,
         "customer_feedback": feedback if isinstance(feedback, list) else [str(feedback)],
         "cfo_comment": cfo_res.get("cfo_comment", ""),
+        "coo_comment": coo_res.get("coo_comment", ""),
+        "sales_comment": sales_res.get("sales_comment", ""),
         "persona_comment": customer_res.get("reasoning_summary", ""),
-        "risk_assessment": cfo_res.get("risk_assessment", []) if isinstance(cfo_res.get("risk_assessment"), list) else []
+        "risk_assessment": cfo_res.get("risk_assessment", []) if isinstance(cfo_res.get("risk_assessment"), list) else [],
+        "operational_risks": coo_res.get("operational_risks", []) if isinstance(coo_res.get("operational_risks"), list) else [],
+        "lead_quality_concerns": sales_res.get("lead_quality_concerns", []) if isinstance(sales_res.get("lead_quality_concerns"), list) else []
     }
 
 
-def format_refine_feedback(cfo_comment: str, customer_feedback: list) -> str:
+def format_refine_feedback(cfo_comment: str, customer_feedback: list, coo_comment: str = "", sales_comment: str = "") -> str:
     """Format feedback string for the refine planner agent."""
     if not cfo_comment:
         cfo_comment = "Không có phản hồi từ CFO."
@@ -121,7 +148,14 @@ def format_refine_feedback(cfo_comment: str, customer_feedback: list) -> str:
     else:
         feedback_str = "Không có phản hồi từ khách hàng."
     
-    return f"CFO cảnh báo: {cfo_comment}. Khách hàng phản hồi: {feedback_str}. Hãy điều chỉnh lại chiến thuật cho hiệu quả hơn."
+    parts = [
+        f"CFO cảnh báo: {cfo_comment}",
+        f"COO phản hồi: {coo_comment}" if coo_comment else "",
+        f"Sales phản hồi: {sales_comment}" if sales_comment else "",
+        f"Khách hàng phản hồi: {feedback_str}"
+    ]
+    
+    return " | ".join(filter(None, parts)) + ". Hãy điều chỉnh lại chiến thuật để giải quyết các vấn đề trên."
 
 
 def finalize_and_export(state: Dict[str, Any]) -> dict:
@@ -166,7 +200,11 @@ def finalize_and_export(state: Dict[str, Any]) -> dict:
         "distribution_channels": distribution_channels,
         "integrated_matrix": integrated_matrix,
         "omnichannel_crm_plan": omnichannel_crm_plan,
-        "risk_assessment": risk_assessment
+        "risk_assessment": risk_assessment,
+        "operational_risks": metrics.get("operational_risks", []),
+        "lead_quality_concerns": metrics.get("lead_quality_concerns", []),
+        "coo_comment": metrics.get("coo_comment", ""),
+        "sales_comment": metrics.get("sales_comment", "")
     }
     
     # ── VALIDATION — Check if final_plan has meaningful content ──

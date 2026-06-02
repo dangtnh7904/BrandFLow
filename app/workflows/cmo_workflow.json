@@ -124,9 +124,27 @@
           },
           "output_key": "customer_res",
           "fallback": {"client_self_score": 60, "feedback": ["Review skipped due to timeout."], "reasoning_summary": ""}
+        },
+        {
+          "function": "app.agents.planner.agents_core.run_coo_feasibility_review",
+          "inputs": {
+            "plan_summary": "$interceptor_result.final_activities",
+            "industry": "$industry"
+          },
+          "output_key": "coo_res",
+          "fallback": {"coo_score": 60, "operational_risks": [], "coo_comment": "COO review skipped due to timeout."}
+        },
+        {
+          "function": "app.agents.planner.agents_core.run_sales_director_review",
+          "inputs": {
+            "plan_summary": "$interceptor_result.final_activities",
+            "industry": "$industry"
+          },
+          "output_key": "sales_res",
+          "fallback": {"sales_alignment_score": 60, "lead_quality_concerns": ["Review skipped due to timeout."], "sales_comment": "Sales review skipped due to timeout."}
         }
       ],
-      "timeout": 90,
+      "timeout": 120,
       "next": "loop_extract_metrics"
     },
 
@@ -136,7 +154,9 @@
       "inputs": {
         "interceptor_result": "$interceptor_result",
         "customer_res": "$customer_res",
-        "cfo_res": "$cfo_res"
+        "cfo_res": "$cfo_res",
+        "coo_res": "$coo_res",
+        "sales_res": "$sales_res"
       },
       "output_key": "loop_metrics",
       "timeout": 30,
@@ -153,7 +173,9 @@
       "function": "app.workflows.engine_adapters.format_refine_feedback",
       "inputs": {
         "cfo_comment": "$loop_metrics.cfo_comment",
-        "customer_feedback": "$loop_metrics.customer_feedback"
+        "customer_feedback": "$loop_metrics.customer_feedback",
+        "coo_comment": "$loop_metrics.coo_comment",
+        "sales_comment": "$loop_metrics.sales_comment"
       },
       "output_key": "refine_feedback",
       "timeout": 10,

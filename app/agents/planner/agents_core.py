@@ -26,7 +26,9 @@ from app.schemas.schemas import (
     TacticsPhase4,
     CFODefenseOutput,
     MasterPlanPhase4Output,
-    CustomerReviewerOutput
+    CustomerReviewerOutput,
+    COOReviewOutput,
+    SalesReviewOutput
 )
 
 def _resolve_groq_timeout_seconds() -> float:
@@ -540,6 +542,86 @@ def run_customer_reviewer_agent(plan_summary: dict, target_audience: str) -> dic
             "client_self_score": 50,
             "feedback": ["Kế hoạch chưa rõ ràng, cần chứng minh ROI chi tiết hơn."],
             "reasoning_summary": "Lỗi parse AI, trả về mức trung bình để chạy tiếp."
+        }
+
+COO_REVIEW_PROMPT = """Bạn là Giám đốc Vận hành (COO) với hơn 15 năm kinh nghiệm quản trị chuỗi cung ứng, CSKH, và Logistics tại Việt Nam (am hiểu sâu về thương mại điện tử, telesale, vận chuyển GHTK/GHN). 
+
+Đọc toàn bộ Kế hoạch tiếp cận dưới đây:
+{plan_summary}
+
+Ngành nghề: {industry}
+
+═══ NHIỆM VỤ: ĐÁNH GIÁ KHẢ THI VẬN HÀNH ═══
+1. Đánh giá tính khả thi khi triển khai thực tế. Các hoạt động (đặc biệt là Mega Sales, Livestream, Promo) có nguy cơ gây quá tải cho bộ phận CSKH, Telesale, hay Kho vận không?
+2. Nêu ra 2-3 rủi ro vận hành (Operational Bottlenecks) nghiêm trọng nhất nếu lượng đơn hoặc lead đổ về gấp 5 lần dự kiến.
+3. Chấm điểm khả thi vận hành (coo_score: 1-100).
+   - > 80: Tuyệt vời, bộ máy có thể cân tốt.
+   - 60 - 79: Cần chú ý vài điểm nghẽn nhỏ.
+   - < 60: Rủi ro vỡ trận rất cao, phải sửa kế hoạch.
+
+Yêu cầu: Thẳng thắn, nhắm thẳng vào các điểm mù của Marketing. Trả về đúng định dạng JSON Schema.
+"""
+
+def run_coo_feasibility_review(plan_summary: dict, industry: str) -> dict:
+    from langchain_groq import ChatGroq
+    api_key = os.getenv("GROQ_API_KEY")
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2, api_key=api_key)
+    structured_llm = llm.with_structured_output(COOReviewOutput)
+    
+    print(f"\n⚙️ [COO] Đang thẩm định tính khả thi vận hành (Operations/Logistics)...")
+    prompt = COO_REVIEW_PROMPT.format(
+        industry=industry,
+        plan_summary=json.dumps(plan_summary, ensure_ascii=False)[:3000]
+    )
+    
+    try:
+        res = structured_llm.invoke(prompt)
+        return res.model_dump()
+    except Exception as e:
+        return {
+            "coo_score": 60,
+            "operational_risks": [],
+            "coo_comment": f"Lỗi parse AI COO. Bỏ qua để chạy tiếp."
+        }
+
+SALES_REVIEW_PROMPT = """Bạn là Giám đốc Kinh doanh (Sales Director) lão luyện tại thị trường Việt Nam. Mục tiêu số 1 của bạn là: DOANH THU & CHẤT LƯỢNG LEAD. Bạn ghét những kế hoạch Marketing chỉ có bề nổi (Reach, Like) mà không ra số.
+
+Đọc toàn bộ Kế hoạch tiếp cận dưới đây:
+{plan_summary}
+
+Ngành nghề: {industry}
+
+═══ NHIỆM VỤ: ĐÁNH GIÁ CHẤT LƯỢNG LEAD & TỶ LỆ CHỐT SALE ═══
+1. Đánh giá chiến thuật tạo Lead/Traffic: Lead thu được từ kế hoạch này có phải là nhóm khách hàng sẵn sàng xuống tiền không? Hay chỉ là "săn sale" / "xin tư vấn rồi im lặng"?
+2. Mâu thuẫn định giá: Các chương trình khuyến mãi (nếu có) có làm mất giá trị thương hiệu và làm khó team Sales khi up-sell sau này không?
+3. Chấm điểm đồng thuận (sales_alignment_score: 1-100).
+   - > 80: Lead cực nét, team Sales hứa chốt mạnh.
+   - 60 - 79: Chấp nhận được, tỷ lệ chuyển đổi trung bình.
+   - < 60: Lead rác nhiều, lãng phí thời gian Telesale.
+
+Yêu cầu: Phản biện sắc bén. Trả về đúng định dạng JSON Schema.
+"""
+
+def run_sales_director_review(plan_summary: dict, industry: str) -> dict:
+    from langchain_groq import ChatGroq
+    api_key = os.getenv("GROQ_API_KEY")
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2, api_key=api_key)
+    structured_llm = llm.with_structured_output(SalesReviewOutput)
+    
+    print(f"\n💰 [SALES] Đang đánh giá chất lượng Lead & Tỷ lệ chuyển đổi...")
+    prompt = SALES_REVIEW_PROMPT.format(
+        industry=industry,
+        plan_summary=json.dumps(plan_summary, ensure_ascii=False)[:3000]
+    )
+    
+    try:
+        res = structured_llm.invoke(prompt)
+        return res.model_dump()
+    except Exception as e:
+        return {
+            "sales_alignment_score": 60,
+            "lead_quality_concerns": ["AI lỗi parse"],
+            "sales_comment": f"Lỗi parse AI Sales. Bỏ qua để chạy tiếp."
         }
 
 def run_persona_validator(plan_summary: str, target_audience: str) -> str:

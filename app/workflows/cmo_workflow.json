@@ -22,6 +22,7 @@
         "idea_description": "$idea_description"
       },
       "output_key": "phase1_data",
+      "timeout": 120,
       "next": "phase2_situation_audit"
     },
     "phase2_situation_audit": {
@@ -33,6 +34,7 @@
         "target_audience": "$target_audience"
       },
       "output_key": "phase2_data",
+      "timeout": 120,
       "next": "math_swot"
     },
     "math_swot": {
@@ -42,6 +44,7 @@
         "phase2_data": "$phase2_data"
       },
       "output_key": "swot_result",
+      "timeout": 30,
       "next": "math_gap"
     },
     "math_gap": {
@@ -52,6 +55,7 @@
         "budget": "$budget"
       },
       "output_key": "gap_result",
+      "timeout": 30,
       "next": "phase3_strategy_formulation"
     },
     "phase3_strategy_formulation": {
@@ -62,6 +66,7 @@
         "segments_data": "$phase2_data"
       },
       "output_key": "phase3_data",
+      "timeout": 120,
       "next": "phase4_tactical_allocator"
     },
     "phase4_tactical_allocator": {
@@ -73,8 +78,19 @@
         "scenario_type": "$scenario_type"
       },
       "output_key": "current_plan",
-      "next": "loop_python_interceptor"
+      "timeout": 120,
+      "next": "quality_gate_plan"
     },
+
+    "quality_gate_plan": {
+      "type": "QualityGateNode",
+      "check_key": "current_plan",
+      "required_fields": ["tactics_7ps"],
+      "min_content_length": 100,
+      "on_pass": "loop_python_interceptor",
+      "on_fail": "loop_python_interceptor"
+    },
+
     "loop_python_interceptor": {
       "type": "FunctionNode",
       "function": "app.agents.planner.agents_core.python_interceptor",
@@ -84,28 +100,36 @@
         "scenario_type": "$scenario_type"
       },
       "output_key": "interceptor_result",
-      "next": "loop_cfo_review"
+      "timeout": 30,
+      "next": "loop_parallel_review"
     },
-    "loop_cfo_review": {
-      "type": "FunctionNode",
-      "function": "app.agents.planner.agents_core.run_cfo_defense_review",
-      "inputs": {
-        "budget_data": "$interceptor_result",
-        "budget": "$budget"
-      },
-      "output_key": "cfo_res",
-      "next": "loop_persona_review"
-    },
-    "loop_persona_review": {
-      "type": "FunctionNode",
-      "function": "app.agents.planner.agents_core.run_customer_reviewer_agent",
-      "inputs": {
-        "plan_summary": "$interceptor_result.final_activities",
-        "target_audience": "$target_audience"
-      },
-      "output_key": "customer_res",
+
+    "loop_parallel_review": {
+      "type": "ParallelNode",
+      "functions": [
+        {
+          "function": "app.agents.planner.agents_core.run_cfo_defense_review",
+          "inputs": {
+            "budget_data": "$interceptor_result",
+            "budget": "$budget"
+          },
+          "output_key": "cfo_res",
+          "fallback": {"cfo_comment": "CFO review skipped due to timeout.", "risk_assessment": []}
+        },
+        {
+          "function": "app.agents.planner.agents_core.run_customer_reviewer_agent",
+          "inputs": {
+            "plan_summary": "$interceptor_result.final_activities",
+            "target_audience": "$target_audience"
+          },
+          "output_key": "customer_res",
+          "fallback": {"client_self_score": 60, "feedback": ["Review skipped due to timeout."], "reasoning_summary": ""}
+        }
+      ],
+      "timeout": 90,
       "next": "loop_extract_metrics"
     },
+
     "loop_extract_metrics": {
       "type": "FunctionNode",
       "function": "app.workflows.engine_adapters.extract_loop_metrics",
@@ -115,6 +139,7 @@
         "cfo_res": "$cfo_res"
       },
       "output_key": "loop_metrics",
+      "timeout": 30,
       "next": "loop_condition"
     },
     "loop_condition": {
@@ -131,6 +156,7 @@
         "customer_feedback": "$loop_metrics.customer_feedback"
       },
       "output_key": "refine_feedback",
+      "timeout": 10,
       "next": "loop_refine_planner"
     },
     "loop_refine_planner": {
@@ -142,6 +168,7 @@
         "budget": "$budget"
       },
       "output_key": "current_plan",
+      "timeout": 120,
       "next": "loop_increment_round"
     },
     "loop_increment_round": {
@@ -158,6 +185,7 @@
         "state": "$"
       },
       "output_key": "final_export_result",
+      "timeout": 30,
       "next": null
     }
   }

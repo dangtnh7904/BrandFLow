@@ -58,11 +58,34 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   // Đang kiểm tra trạng thái xác thực → hiển thị Loading
   if (isAuthenticated === null && !isPublicRoute) {
     return (
-      <div className="flex items-center justify-center h-screen bg-linear-bg">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-500 text-sm">Đang kiểm tra phiên đăng nhập...</p>
+      <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-[#0B1120] relative overflow-hidden">
+        {/* Ambient background */}
+        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-cyan-400/10 dark:bg-cyan-500/8 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/8 rounded-full blur-[120px] pointer-events-none" />
+        
+        <div className="text-center relative z-10">
+          {/* Logo pulse */}
+          <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center border border-cyan-500/20 animate-pulse">
+            <span className="text-2xl font-black text-cyan-500">B</span>
+          </div>
+          
+          {/* Loading bar */}
+          <div className="w-48 h-1 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto mb-4 overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full animate-[loading_1.5s_ease-in-out_infinite]" 
+              style={{ width: '40%', animation: 'loading 1.5s ease-in-out infinite' }}
+            />
+          </div>
+          
+          <p className="text-slate-400 dark:text-slate-500 text-xs font-medium">Đang khởi tạo phiên làm việc...</p>
         </div>
+        
+        <style jsx>{`
+          @keyframes loading {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(150%); }
+            100% { transform: translateX(-100%); }
+          }
+        `}</style>
       </div>
     );
   }

@@ -14,6 +14,7 @@ export default function DailyContentPage() {
   const [platform, setPlatform] = useState('Facebook');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string | null>(null);
+  const [loadingStep, setLoadingStep] = useState(0);
 
   // Derive masterDNA
   const brandName = brandDNA?.brand_name || wizardAnswers?.company_name || extractedAnswers?.company_name || "Thương hiệu";
@@ -55,9 +56,24 @@ export default function DailyContentPage() {
     return () => { isMounted = false; };
   }, [platform]);
 
+  // AI loading steps
+  const AI_STEPS = [
+    { label: 'Phân tích Brand DNA...', icon: '🧬' },
+    { label: 'Đối sánh Trend thị trường...', icon: '📊' },
+    { label: 'Sáng tạo nội dung...', icon: '✍️' },
+    { label: 'Tối ưu hoá cho ' + platform + '...', icon: '🚀' },
+  ];
+
   const handleGenerate = async () => {
     setIsGenerating(true);
     setGeneratedContent(null);
+    setLoadingStep(0);
+
+    // Simulate progress steps
+    const stepInterval = setInterval(() => {
+      setLoadingStep(prev => Math.min(prev + 1, AI_STEPS.length - 1));
+    }, 2500);
+
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const token = localStorage.getItem('brandflow_token');
@@ -116,7 +132,9 @@ export default function DailyContentPage() {
       // Fallback mock with brand DNA
       setGeneratedContent(`🔥 ${topic.toUpperCase()} 🔥\n\nNhiều Founder/CEO của các doanh nghiệp đang rơi vào một cái bẫy vô hình: Khởi nghiệp để được tự do, nhưng cuối cùng lại làm việc 14 tiếng/ngày.\n\nSự thật tàn nhẫn là: Doanh nghiệp của bạn sẽ KHÔNG THỂ 'Scale-up' nếu thiếu đi một hệ thống vững chắc.\n\nTại ${brandName}, chúng tôi tin rằng lợi thế: "${coreUsps[0]}" chính là chìa khóa để giải quyết vấn đề này.\n\n💡 3 BƯỚC ĐỂ BỨT PHÁ:\n1️⃣ Quy trình hóa (SOP) mọi tác vụ lặp lại.\n2️⃣ Tập trung vào giá trị cốt lõi thay vì chạy theo số lượng.\n3️⃣ Ứng dụng AI & Automation vào vận hành để giảm phụ thuộc vào con người.\n\n👇 Hãy bắt đầu xây dựng hệ thống tự vận hành ngay hôm nay cùng ${brandName}!\n\nBạn đang mắc kẹt ở khâu nào nhất? Comment bên dưới để cùng thảo luận nhé! 👇\n\n#${brandName.replace(/\s+/g, '')} #QuanTriDoanhNghiep #ScaleUp`);
     } finally {
+      clearInterval(stepInterval);
       setIsGenerating(false);
+      setLoadingStep(0);
     }
   };
 
@@ -358,6 +376,67 @@ export default function DailyContentPage() {
                   </button>
                 </div>
               </motion.div>
+            ) : isGenerating ? (
+              /* ═══ AI PROGRESS ANIMATION ═══ */
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="w-full h-full flex flex-col items-center justify-center text-center"
+              >
+                <div className="relative mb-8">
+                  <div className="w-[260px] h-[520px] border-[4px] border-cyan-500/30 rounded-[3rem] flex flex-col items-center justify-center relative bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-[#0f172a] shadow-[0_0_40px_rgba(6,182,212,0.15)]">
+                    <div className="absolute top-2 inset-x-0 h-6 bg-slate-200 dark:bg-slate-800 rounded-full w-28 mx-auto" />
+                    
+                    {/* Progress steps inside phone */}
+                    <div className="px-8 w-full space-y-4">
+                      {AI_STEPS.map((step, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0.3, x: -10 }}
+                          animate={{ opacity: i <= loadingStep ? 1 : 0.3, x: 0 }}
+                          transition={{ delay: i * 0.3, duration: 0.4 }}
+                          className={`flex items-center gap-3 text-left p-2.5 rounded-xl transition-all ${
+                            i === loadingStep
+                              ? 'bg-cyan-500/10 border border-cyan-500/20 shadow-sm'
+                              : i < loadingStep
+                                ? 'opacity-60'
+                                : ''
+                          }`}
+                        >
+                          <span className="text-lg">{i < loadingStep ? '✅' : step.icon}</span>
+                          <span className={`text-xs font-medium ${
+                            i === loadingStep ? 'text-cyan-500' : i < loadingStep ? 'text-emerald-500' : 'text-slate-400'
+                          }`}>
+                            {step.label}
+                          </span>
+                          {i === loadingStep && (
+                            <div className="ml-auto flex gap-0.5">
+                              <div className="w-1 h-1 rounded-full bg-cyan-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                              <div className="w-1 h-1 rounded-full bg-cyan-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                              <div className="w-1 h-1 rounded-full bg-cyan-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+                    
+                    {/* Bottom progress bar */}
+                    <div className="absolute bottom-12 left-8 right-8">
+                      <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"
+                          initial={{ width: '0%' }}
+                          animate={{ width: `${((loadingStep + 1) / AI_STEPS.length) * 100}%` }}
+                          transition={{ duration: 0.5 }}
+                        />
+                      </div>
+                      <p className="text-[9px] text-linear-text-muted mt-2 text-center">AI đang xử lý • ~10 giây</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
             ) : (
               <motion.div 
                 key="empty"
@@ -367,7 +446,6 @@ export default function DailyContentPage() {
               >
                 <div className="relative mb-8">
                   <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full" />
-                  {/* Empty State Phone Wireframe - High End */}
                   <div className="w-[260px] h-[520px] border-[4px] border-slate-200 dark:border-slate-800 rounded-[3rem] flex flex-col items-center justify-center relative bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-[#0f172a] shadow-2xl">
                      <div className="absolute top-2 inset-x-0 h-6 bg-slate-200 dark:bg-slate-800 rounded-full w-28 mx-auto" />
                      <ImageIcon className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-6 drop-shadow-md" />

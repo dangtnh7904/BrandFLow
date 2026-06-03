@@ -385,10 +385,10 @@ def export_slides_to_pptx(slides: List[Dict], brand_name: str = "Brand") -> Byte
     Export slide JSON array to a PowerPoint (.pptx) file.
     Returns BytesIO buffer ready for streaming.
     """
-    from pptx import Presentation
-    from pptx.util import Inches, Pt, Emu
-    from pptx.dml.color import RGBColor
-    from pptx.enum.text import PP_ALIGN
+    from pptx import Presentation  # type: ignore[import-untyped]
+    from pptx.util import Inches, Pt, Emu  # type: ignore[import-untyped]
+    from pptx.dml.color import RGBColor  # type: ignore[import-untyped]
+    from pptx.enum.text import PP_ALIGN  # type: ignore[import-untyped]
     
     prs = Presentation()
     prs.slide_width = Inches(13.333)
@@ -442,7 +442,7 @@ def export_slides_to_pptx(slides: List[Dict], brand_name: str = "Brand") -> Byte
             elem_type = elem.get("type", "body")
             
             if elem_type == "divider":
-                from pptx.util import Pt as PtUtil
+                from pptx.util import Pt as PtUtil  # type: ignore[import-untyped]
                 shape = slide.shapes.add_shape(
                     1, left, top, width, Emu(Pt(2))
                 )

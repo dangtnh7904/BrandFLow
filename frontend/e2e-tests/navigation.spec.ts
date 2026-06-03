@@ -34,9 +34,8 @@ test('resources page loads ebooks', async ({ page }) => {
   await page.goto('/resources');
   await page.waitForTimeout(4000);
 
-  // The resources page uses buttons (not <a> tags) for PDF downloads
-  // Check for the download buttons
-  const downloadButtons = page.locator('button', { hasText: /PDF/i });
+  // The resources page uses buttons for downloads
+  const downloadButtons = page.locator('button', { hasText: /Tải Xuống/i });
   const count = await downloadButtons.count();
   expect(count).toBeGreaterThanOrEqual(1);
 

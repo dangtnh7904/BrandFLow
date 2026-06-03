@@ -6,12 +6,16 @@ import {
   Palette, TerminalSquare, AlertCircle, RefreshCw, 
   ImageIcon, Briefcase, Download, 
   Activity, Type, Network, Settings,
-  LineChart, PenTool, Send, MousePointer2, CheckCircle2, FileText
+  LineChart, PenTool, Send, MousePointer2, CheckCircle2, FileText,
+  Sparkles, Loader2, ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import dynamic from 'next/dynamic';
 
 import { useFormStore } from '@/store/useFormStore';
+
+const SlideEditor = dynamic(() => import('@/components/deck-builder/SlideEditor'), { ssr: false });
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -42,7 +46,13 @@ export default function DesignStudioPage() {
   const [activeAgent, setActiveAgent] = useState<string | null>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'visuals' | 'case-study'>('visuals');
+  const [activeTab, setActiveTab] = useState<'visuals' | 'case-study' | 'deck-builder'>('visuals');
+
+  // ─── Deck Builder State ───
+  const [deckSlides, setDeckSlides] = useState<any[]>([]);
+  const [deckTemplate, setDeckTemplate] = useState<'brand_guideline' | 'pitch_deck' | 'proposal'>('brand_guideline');
+  const [deckLoading, setDeckLoading] = useState(false);
+  const [deckError, setDeckError] = useState<string | null>(null);
 
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
 
@@ -137,6 +147,50 @@ export default function DesignStudioPage() {
     navigator.clipboard.writeText(hex);
     setCopiedColor(hex);
     setTimeout(() => setCopiedColor(null), 2000);
+  };
+
+  // ─── Generate Deck Slides ───
+  const handleGenerateDeck = async () => {
+    setDeckLoading(true);
+    setDeckError(null);
+    setDeckSlides([]);
+    addLog("System", `Đang sinh ${deckTemplate === 'brand_guideline' ? 'Brand Guideline' : deckTemplate === 'pitch_deck' ? 'Pitch Deck' : 'Marketing Proposal'}...`, "info");
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = typeof window !== 'undefined' ? localStorage.getItem('brandflow_token') : null;
+      const res = await fetch(`${API_URL}/api/v1/design/generate-slides`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          template_type: deckTemplate,
+          brand_name: masterDNA.brand_name,
+          goal: masterDNA.goal,
+          industry: masterDNA.industry,
+          core_usps: masterDNA.core_usps,
+          target_audience: masterDNA.target_audience,
+          tone_of_voice: masterDNA.tone_of_voice,
+        }),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || `HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      if (data.status === 'success' && data.data?.slides) {
+        setDeckSlides(data.data.slides);
+        addLog("System", `Sinh thành công ${data.data.slides.length} slides!`, "success");
+      } else {
+        throw new Error(data.message || 'Unknown error');
+      }
+    } catch (err: any) {
+      setDeckError(err.message);
+      addLog("System", `Lỗi: ${err.message}`, "warn");
+    } finally {
+      setDeckLoading(false);
+    }
   };
 
   const handleExportPDF = async () => {
@@ -299,8 +353,11 @@ export default function DesignStudioPage() {
         
         {/* TABS HEADER (Luôn hiển thị) */}
         <div className="flex bg-linear-surface border border-linear-border rounded-lg p-1">
-           <button onClick={() => setActiveTab('visuals')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'visuals' ? 'bg-cyan-500 text-white shadow-md' : 'text-linear-text-muted hover:text-foreground'}`}>Visual Assets (DALL-E)</button>
-           <button onClick={() => setActiveTab('case-study')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'case-study' ? 'bg-cyan-500 text-white shadow-md' : 'text-linear-text-muted hover:text-foreground'}`}>Behance Case Study</button>
+           <button onClick={() => setActiveTab('visuals')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'visuals' ? 'bg-cyan-500 text-white shadow-md' : 'text-linear-text-muted hover:text-foreground'}`}>Visual Assets</button>
+           <button onClick={() => setActiveTab('case-study')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'case-study' ? 'bg-cyan-500 text-white shadow-md' : 'text-linear-text-muted hover:text-foreground'}`}>Case Study</button>
+           <button onClick={() => setActiveTab('deck-builder')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'deck-builder' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-orange-500/20' : 'text-linear-text-muted hover:text-foreground'}`}>
+             ✨ Brand Deck
+           </button>
         </div>
       </div>
 
@@ -477,6 +534,72 @@ export default function DesignStudioPage() {
                      </button>
                   </div>
               </div>
+           )}
+
+           {/* TAB: DECK BUILDER */}
+           {activeTab === 'deck-builder' && (
+             <div className="flex flex-col gap-6 w-full h-full">
+               {deckSlides.length === 0 ? (
+                 <div className="flex flex-col items-center justify-center py-24 animate-in fade-in duration-700">
+                   <div className="w-24 h-24 mb-8 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center border border-amber-500/30 shadow-xl">
+                     <Sparkles className="w-12 h-12 text-amber-400" />
+                   </div>
+                   <h2 className="text-2xl font-bold text-foreground mb-3">Brand Deck Builder</h2>
+                   <p className="text-linear-text-muted text-sm text-center max-w-lg mb-8">
+                     AI tự động sinh Brand Guideline, Pitch Deck, hoặc Marketing Proposal chuẩn enterprise.
+                     Chỉnh sửa trực tiếp và xuất PDF/PPTX.
+                   </p>
+                   
+                   {/* Template Selector */}
+                   <div className="flex gap-3 mb-8">
+                     {([
+                       { key: 'brand_guideline' as const, icon: '🎨', label: 'Brand Guideline', desc: '8 slides nhận diện thương hiệu' },
+                       { key: 'pitch_deck' as const, icon: '🚀', label: 'Pitch Deck', desc: '8 slides gọi vốn/thuyết trình' },
+                       { key: 'proposal' as const, icon: '📊', label: 'Proposal', desc: '7 slides đề xuất chiến dịch' },
+                     ]).map(tmpl => (
+                       <button
+                         key={tmpl.key}
+                         onClick={() => setDeckTemplate(tmpl.key)}
+                         className={`flex flex-col items-center p-5 rounded-2xl border-2 transition-all min-w-[170px] ${
+                           deckTemplate === tmpl.key
+                             ? 'border-amber-500 bg-amber-500/10 shadow-lg shadow-amber-500/10'
+                             : 'border-linear-border/50 bg-background/50 hover:border-amber-500/30'
+                         }`}
+                       >
+                         <span className="text-2xl mb-2">{tmpl.icon}</span>
+                         <span className="text-xs font-bold text-foreground">{tmpl.label}</span>
+                         <span className="text-[10px] text-linear-text-muted mt-1">{tmpl.desc}</span>
+                       </button>
+                     ))}
+                   </div>
+                   
+                   <button
+                     onClick={handleGenerateDeck}
+                     disabled={deckLoading}
+                     className="px-10 py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full font-bold shadow-lg shadow-orange-500/20 hover:scale-105 transition-all flex items-center disabled:opacity-50 disabled:hover:scale-100"
+                   >
+                     {deckLoading ? (
+                       <><Loader2 className="w-5 h-5 mr-3 animate-spin" /> AI đang thiết kế...</>
+                     ) : (
+                       <>Sinh Deck bằng AI <ChevronRight className="w-5 h-5 ml-2" /></>
+                     )}
+                   </button>
+                   
+                   {deckError && (
+                     <div className="mt-4 bg-red-500/10 text-red-400 px-4 py-2 rounded-lg text-xs flex items-center">
+                       <AlertCircle className="w-4 h-4 mr-2" /> {deckError}
+                     </div>
+                   )}
+                 </div>
+               ) : (
+                 <SlideEditor
+                   slides={deckSlides}
+                   onSlidesChange={setDeckSlides}
+                   brandName={masterDNA.brand_name}
+                   templateType={deckTemplate}
+                 />
+               )}
+             </div>
            )}
 
         </div>

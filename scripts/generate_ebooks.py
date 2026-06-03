@@ -8,9 +8,10 @@ Features:
   • Styled bullet points (gạch đầu dòng đẹp)
   • Chapter title pages (trang tiêu đề chương)
   • Pull-quotes & callout boxes
-  • Table rendering (bảng biểu)
+  • Table rendering (bảng biểu) — smart column widths
   • Elegant typography & spacing
   • Page decorations (header line, footer page number)
+  • Smart page breaks (no unnecessary blank pages)
 =============================================================================
 """
 
@@ -165,35 +166,39 @@ class HighEndPDF(FPDF):
 
     # ── Content Renderers ──
 
+    def _ensure_space(self, needed_mm=30):
+        """Check if there's enough space on the current page, if not add a new page."""
+        if self.get_y() > PAGE_H - MARGIN_B - needed_mm:
+            self.add_page()
+
     def write_paragraph(self, text, indent=True):
         """Write an indented paragraph with proper leading."""
+        self._ensure_space(20)
         self.set_font("Body", "", 11)
         self.set_text_color(*BODY)
         if indent:
-            # First-line indent
             self.set_x(MARGIN_L + INDENT)
             first_line_w = CONTENT_W - INDENT
         else:
             self.set_x(MARGIN_L)
             first_line_w = CONTENT_W
 
-        # Handle bold **text** inline
-        clean_text = self._clean_bold(text)
         clean_text = self._clean_bold(text)
         self.multi_cell(first_line_w if indent else CONTENT_W, 7.5, clean_text, new_x="LMARGIN", new_y="NEXT")
         self.ln(4)
 
     def write_bold_paragraph(self, text):
         """Write bold text (usually conclusions)."""
+        self._ensure_space(20)
         self.set_font("Body", "B", 11)
         self.set_text_color(*DARK)
-        clean = self._clean_bold(text)
         clean = self._clean_bold(text)
         self.multi_cell(CONTENT_W, 7.5, clean, new_x="LMARGIN", new_y="NEXT")
         self.ln(4)
 
     def write_bullet(self, text, level=0):
         """Write a styled bullet point with proper indentation."""
+        self._ensure_space(15)
         bullet_indent = MARGIN_L + 8 + (level * 10)
         text_indent = bullet_indent + 8
         text_width = PAGE_W - MARGIN_R - text_indent
@@ -210,12 +215,12 @@ class HighEndPDF(FPDF):
         self.set_text_color(*BODY)
         self.set_x(text_indent)
         clean = self._clean_bold(text)
-        clean = self._clean_bold(text)
         self.multi_cell(text_width, 7, clean, new_x="LMARGIN", new_y="NEXT")
         self.ln(3)
 
     def write_numbered_item(self, num, text):
         """Write a numbered list item (1. 2. 3.)"""
+        self._ensure_space(15)
         num_indent = MARGIN_L + 6
         text_indent = num_indent + 10
         text_width = PAGE_W - MARGIN_R - text_indent
@@ -231,32 +236,39 @@ class HighEndPDF(FPDF):
         self.set_text_color(*BODY)
         self.set_x(text_indent)
         clean = self._clean_bold(text)
-        clean = self._clean_bold(text)
         self.multi_cell(text_width, 7, clean, new_x="LMARGIN", new_y="NEXT")
         self.ln(3)
 
     def write_callout(self, text, callout_type="NOTE"):
-        """Write a styled callout/blockquote box."""
+        """Write a styled callout/blockquote box with accurate height calculation."""
         bg = CALLOUT_BG if callout_type in ("NOTE", "IMPORTANT") else TIP_BG
         accent = CYAN if callout_type in ("NOTE", "IMPORTANT") else (16, 185, 129)
-        icon = "💡" if callout_type == "TIP" else ("⚠️" if callout_type == "WARNING" else "ℹ️")
 
-        y_start = self.get_y()
-        # Check if need new page
-        if y_start > PAGE_H - 60:
-            self.add_page()
-            y_start = self.get_y()
-
-        # Background
-        self.set_fill_color(*bg)
-        # Calculate text height first
-        self.set_font("Body", "", 10.5)
         clean = self._clean_bold(text)
 
-        # Estimate height
-        lines_est = max(1, len(clean) // 70 + 1)
-        box_h = max(20, lines_est * 7 + 16)
+        # Accurate height calculation using get_string_width
+        self.set_font("Body", "I", 10.5)
+        text_area_w = CONTENT_W - 26
+        # Calculate number of lines the text will actually occupy
+        words = clean.split(' ')
+        line_count = 1
+        current_line = ""
+        for word in words:
+            test_line = current_line + (" " if current_line else "") + word
+            if self.get_string_width(test_line) > text_area_w:
+                line_count += 1
+                current_line = word
+            else:
+                current_line = test_line
+        box_h = max(22, line_count * 6.5 + 16)
 
+        # Check if need new page
+        if self.get_y() + box_h > PAGE_H - MARGIN_B - 5:
+            self.add_page()
+
+        y_start = self.get_y()
+
+        # Background
         self.set_fill_color(*bg)
         self.rect(MARGIN_L + 4, y_start, CONTENT_W - 8, box_h, "F")
 
@@ -268,7 +280,7 @@ class HighEndPDF(FPDF):
         self.set_font("Body", "I", 10.5)
         self.set_text_color(60, 70, 90)
         self.set_xy(MARGIN_L + 14, y_start + 6)
-        self.multi_cell(CONTENT_W - 26, 6.5, clean, new_x="LMARGIN", new_y="NEXT")
+        self.multi_cell(text_area_w, 6.5, clean, new_x="LMARGIN", new_y="NEXT")
         self.set_y(y_start + box_h + 6)
 
     def write_h2(self, text):
@@ -287,6 +299,7 @@ class HighEndPDF(FPDF):
 
     def write_h3(self, text):
         """Sub-section header (###)"""
+        self._ensure_space(25)
         self.ln(6)
         self.set_font("Body", "B", 13)
         self.set_text_color(*NAVY)
@@ -295,6 +308,7 @@ class HighEndPDF(FPDF):
 
     def write_code(self, text):
         """Inline code / formula"""
+        self._ensure_space(15)
         self.set_font("Body", "", 10)
         self.set_text_color(80, 80, 80)
         self.set_fill_color(240, 240, 245)
@@ -304,12 +318,44 @@ class HighEndPDF(FPDF):
         self.ln(4)
 
     def write_table(self, headers, rows):
-        """Render a styled table."""
+        """Render a styled table with smart column widths based on content."""
         if not headers or not rows:
             return
 
         num_cols = len(headers)
-        col_w = (CONTENT_W - 4) / num_cols
+        available_w = CONTENT_W - 4
+
+        # ── Smart column width calculation ──
+        # Measure max text width for each column across header + all rows
+        self.set_font("Body", "B", 9)
+        col_max_w = []
+        for col_idx in range(num_cols):
+            header_text = headers[col_idx].strip().strip('*').strip(':').strip()
+            max_w = self.get_string_width(header_text) + 6  # padding
+
+            self.set_font("Body", "", 8.5)
+            for row in rows:
+                if col_idx < len(row):
+                    cell_text = self._clean_bold(row[col_idx].strip())
+                    cell_w = self.get_string_width(cell_text) + 6
+                    max_w = max(max_w, cell_w)
+            self.set_font("Body", "B", 9)
+            col_max_w.append(max_w)
+
+        # Distribute widths proportionally, with min/max constraints
+        total_natural = sum(col_max_w) or 1
+        col_widths = []
+        min_col_w = max(20, available_w / (num_cols * 2.5))  # min per column
+        max_col_w = available_w * 0.6  # max 60% for any single column
+
+        for w in col_max_w:
+            proportional = (w / total_natural) * available_w
+            clamped = max(min_col_w, min(max_col_w, proportional))
+            col_widths.append(clamped)
+
+        # Normalize to fit exactly
+        scale = available_w / sum(col_widths)
+        col_widths = [w * scale for w in col_widths]
 
         self.ln(4)
 
@@ -319,8 +365,9 @@ class HighEndPDF(FPDF):
         self.set_font("Body", "B", 9)
         x_start = MARGIN_L + 2
         for i, h in enumerate(headers):
-            self.set_xy(x_start + i * col_w, self.get_y())
-            self.cell(col_w, 8, h.strip().strip('*').strip(':').strip(), border=0, fill=True)
+            self.set_xy(x_start + sum(col_widths[:i]), self.get_y())
+            header_text = h.strip().strip('*').strip(':').strip()
+            self.cell(col_widths[i], 8, header_text, border=0, fill=True)
         self.ln(8)
 
         # Data rows
@@ -336,25 +383,51 @@ class HighEndPDF(FPDF):
             y_before = self.get_y()
             max_h = 7
             cells_text = []
-            for cell in row:
-                clean = self._clean_bold(cell.strip())
+            for col_idx in range(num_cols):
+                if col_idx < len(row):
+                    clean = self._clean_bold(row[col_idx].strip())
+                else:
+                    clean = ""
                 cells_text.append(clean)
-                try:
-                    lines = len(self.multi_cell(col_w, 5, clean, dry_run=True, output="LINES"))
-                except TypeError:
-                    lines = len(self.multi_cell(col_w, 5, clean, split_only=True))
-                max_h = max(max_h, lines * 5 + 4)
+                # Estimate line count for this cell
+                cell_w = col_widths[col_idx] - 2  # small padding
+                if cell_w > 0 and clean:
+                    words = clean.split(' ')
+                    line_count = 1
+                    current_line = ""
+                    for word in words:
+                        test_line = current_line + (" " if current_line else "") + word
+                        if self.get_string_width(test_line) > cell_w:
+                            line_count += 1
+                            current_line = word
+                        else:
+                            current_line = test_line
+                    cell_h = line_count * 5 + 3
+                    max_h = max(max_h, cell_h)
 
             # Check page break
-            if y_before + max_h > PAGE_H - MARGIN_B:
+            if y_before + max_h > PAGE_H - MARGIN_B - 5:
                 self.add_page()
                 y_before = self.get_y()
+                # Re-draw header on new page
+                self.set_fill_color(*TABLE_HEADER_BG)
+                self.set_text_color(*WHITE)
+                self.set_font("Body", "B", 9)
+                for i, h in enumerate(headers):
+                    self.set_xy(x_start + sum(col_widths[:i]), y_before)
+                    header_text = h.strip().strip('*').strip(':').strip()
+                    self.cell(col_widths[i], 8, header_text, border=0, fill=True)
+                self.ln(8)
+                y_before = self.get_y()
+                self.set_font("Body", "", 8.5)
 
             # Fill row background
             fill = row_idx % 2 == 1
+            self.set_text_color(*BODY)
+            self.set_font("Body", "", 8.5)
             for i, txt in enumerate(cells_text):
-                self.set_xy(x_start + i * col_w, y_before)
-                self.multi_cell(col_w, 5, txt, border=0, fill=fill, new_x="RIGHT", new_y="TOP")
+                self.set_xy(x_start + sum(col_widths[:i]), y_before)
+                self.multi_cell(col_widths[i], 5, txt, border=0, fill=fill, new_x="RIGHT", new_y="TOP")
             self.set_y(y_before + max_h)
 
         self.ln(6)
@@ -389,7 +462,6 @@ class HighEndPDF(FPDF):
             points.append((px, py))
         # Draw
         if style in ("F", "FD", "DF"):
-            # Fill
             self.set_fill_color(*GOLD)
         for i, (px, py) in enumerate(points):
             if i == 0:
@@ -398,7 +470,6 @@ class HighEndPDF(FPDF):
             
     def circle(self, x, y, r, style="D"):
         """Draw a circle using bezier curves (approximation)."""
-        # In FPDF2, ellipse is supported
         if style == "F":
             self.ellipse(x - r, y - r, 2*r, 2*r, style="F")
         else:
@@ -408,7 +479,6 @@ class HighEndPDF(FPDF):
         """Fill empty spaces at bottom of page with elegant brand mark."""
         y = self.get_y()
         if y < PAGE_H - 100:
-            # Lots of space left, add a large elegant logo/quote
             mid = PAGE_W / 2
             center_y = y + (PAGE_H - MARGIN_B - y) / 2
             
@@ -488,21 +558,25 @@ def parse_and_render(pdf: HighEndPDF, lines: list):
 
         # ── H2: Chapter title → Full page chapter divider ──
         if stripped.startswith('## '):
-            if pdf.page_no() > 2 and pdf.get_y() < PAGE_H - 100:
-                pdf.write_space_filler()
-
             title = stripped[3:].strip()
             # Extract chapter number from title if present
             ch_match = re.match(r'(?:CHƯƠNG|Chương|Chapter)\s+(\d+)', title)
             if ch_match:
                 chapter_num = int(ch_match.group(1))
+                # Only add space filler if we're mid-page with lots of empty space
+                # (more than 40% of the page is empty) — avoids unnecessary blank pages
+                if pdf.page_no() > 2 and pdf.get_y() < PAGE_H * 0.55:
+                    pdf.write_space_filler()
                 pdf.add_chapter_page(chapter_num, title)
-                pdf.add_page()  # New content page after chapter
+                # DON'T add extra blank page — chapter page already created
+                # Content continues on next add_page when auto_page_break triggers
+                # or the next element calls _ensure_space
+                pdf.add_page()
             elif 'PHỤ LỤC' in title.upper() or 'APPENDIX' in title.upper():
                 pdf.add_chapter_page(None, title)
                 pdf.add_page()
             else:
-                if pdf.page_no() <= 2: # Currently on TOC page
+                if pdf.page_no() <= 2:  # Currently on TOC page
                     pdf.add_page()
                 pdf.write_h2(title)
             i += 1

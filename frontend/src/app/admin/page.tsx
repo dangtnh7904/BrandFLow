@@ -7,7 +7,7 @@ import {
   Shield, Users, Activity, Loader2, RefreshCw, X, Clock, Package,
   TrendingUp, Zap, Globe2, BarChart3, Target, Rocket, 
   Brain, DollarSign, ArrowUpRight, ArrowDownRight, Layers,
-  LineChart, PieChart, Cpu, Sparkles, Building2, Award
+  LineChart, PieChart, Cpu, Sparkles, Award
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -61,15 +61,7 @@ function generateAgentUsageStats() {
   ];
 }
 
-function generateTopClients() {
-  return [
-    { name: 'VinGroup Ventures', industry: 'Conglomerate', users: 12, plan: 'Enterprise', mrr: '45,000,000₫' },
-    { name: 'FPT Digital', industry: 'Technology', users: 8, plan: 'Enterprise', mrr: '32,000,000₫' },
-    { name: 'The Coffee House', industry: 'F&B', users: 5, plan: 'Pro', mrr: '12,500,000₫' },
-    { name: 'Tiki Corporation', industry: 'E-commerce', users: 6, plan: 'Pro', mrr: '15,000,000₫' },
-    { name: 'Masan Consumer', industry: 'FMCG', users: 4, plan: 'Enterprise', mrr: '28,000,000₫' },
-  ];
-}
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SPARKLINE COMPONENT — Mini chart for KPI cards
@@ -152,7 +144,7 @@ export default function AdminDashboard() {
   const metrics = useMemo(() => generatePlatformMetrics(totalUsers), [totalUsers]);
   const weeklyGrowth = useMemo(() => generateWeeklyGrowth(), []);
   const agentStats = useMemo(() => generateAgentUsageStats(), []);
-  const topClients = useMemo(() => generateTopClients(), []);
+
 
   // Helper function to generate mock details for a user
   const getMockUserDetails = (user: any) => {
@@ -298,7 +290,7 @@ export default function AdminDashboard() {
                   <KPICard icon={Award} label="NPS Score" value={`${metrics.nps}`} subtitle="World-class > 70" trend="Top 10%" trendUp={true} color="#F59E0B" />
                 </div>
 
-                {/* Retention + Top Clients */}
+                {/* Retention */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   
                   {/* Retention Metrics */}
@@ -343,34 +335,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  {/* Top Enterprise Clients */}
-                  <div className="bg-linear-surface border border-linear-border rounded-2xl overflow-hidden">
-                    <div className="px-6 py-4 border-b border-linear-border/50 flex items-center justify-between">
-                      <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-purple-400" /> Top Enterprise Clients
-                      </h3>
-                      <span className="text-[10px] text-linear-text-muted bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20 font-bold">Demo Data</span>
-                    </div>
-                    <div className="divide-y divide-linear-border/30">
-                      {topClients.map((client, idx) => (
-                        <div key={idx} className="px-6 py-3 flex items-center justify-between hover:bg-white/5 transition-colors">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-xs font-black text-purple-400">
-                              {client.name.charAt(0)}
-                            </div>
-                            <div>
-                              <div className="text-xs font-bold text-foreground">{client.name}</div>
-                              <div className="text-[10px] text-linear-text-muted">{client.industry} · {client.users} seats</div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-xs font-black text-emerald-400">{client.mrr}</div>
-                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${client.plan === 'Enterprise' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>{client.plan}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+
                 </div>
               </motion.div>
             )}

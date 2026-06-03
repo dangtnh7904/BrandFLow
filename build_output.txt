@@ -1,0 +1,91 @@
+﻿npx.cmd : ΓÜá `eslint` configuration in next.config.ts is no longer supported. See more info here: 
+https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+At line:1 char:14
++ cd frontend; npx.cmd next build 2>&1 | Out-File -FilePath ../build_ou ...
++              ~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá `eslint` co...xt-lint-options:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ΓÜá Invalid next.config.ts options detected: 
+ΓÜá     Unrecognized key(s) in object: 'eslint'
+ΓÜá See more info here: https://nextjs.org/docs/messages/invalid-next-config
+Γû▓ Next.js 16.2.3 (Turbopack)
+- Environments: .env.production
+- Experiments (use with caution):
+  ┬╖ serverActions
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 13.0s
+  Skipping validation of types
+  Finished TypeScript config validation in 13ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/59) ...
+  Generating static pages using 11 workers (14/59) 
+  Generating static pages using 11 workers (29/59) 
+  Generating static pages using 11 workers (44/59) 
+Γ£ô Generating static pages using 11 workers (59/59) in 2.7s
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /
+Γö£ Γùï /_not-found
+Γö£ Γùï /admin
+Γö£ Γùï /agent-builder
+Γö£ Γùï /agents
+Γö£ ╞Æ /api/agent
+Γö£ ╞Æ /api/marketing-plan-data
+Γö£ Γùï /assets
+Γö£ Γùï /content-lab
+Γö£ Γùï /daily-content
+Γö£ Γùï /dashboard
+Γö£ Γùï /design-studio
+Γö£ Γùï /hub
+Γö£ Γùï /login
+Γö£ Γùï /niche-knowledge
+Γö£ Γùï /onboarding
+Γö£ Γùï /onepager
+Γö£ Γùï /planning
+Γö£ Γùï /planning/a0-overview
+Γö£ Γùï /planning/a1-mission
+Γö£ Γùï /planning/a2-performance
+Γö£ Γùï /planning/a3-revenue
+Γö£ Γùï /planning/a4-market
+Γö£ Γùï /planning/a5-swot
+Γö£ Γùï /planning/a6-portfolio
+Γö£ Γùï /planning/a7-assumptions
+Γö£ Γùï /planning/a8-strategies
+Γö£ Γùï /planning/a9-budget
+Γö£ Γùï /planning/action-program
+Γö£ Γùï /planning/b0-overview
+Γö£ Γùï /planning/b1-objectives
+Γö£ Γùï /planning/b2-action
+Γö£ Γùï /planning/b3-action
+Γö£ Γùï /planning/b3-budget
+Γö£ Γùï /planning/b4-contingency
+Γö£ Γùï /planning/b5-contingency
+Γö£ Γùï /planning/b5-pnl
+Γö£ Γùï /planning/b6-gantt
+Γö£ Γùï /planning/b7-gantt
+Γö£ Γùï /planning/c0-overview
+Γö£ Γùï /planning/c1-direction
+Γö£ Γùï /planning/c2-history
+Γö£ Γùï /planning/c2-matrix
+Γö£ Γùï /planning/c3-issues
+Γö£ Γùï /planning/c4-dashboard
+Γö£ Γùï /planning/control-evaluation
+Γö£ Γùï /planning/d0-report
+Γö£ Γùï /planning/executive-summary
+Γö£ Γùï /planning/growth-direction
+Γö£ Γùï /planning/implementation
+Γö£ Γùï /planning/objectives
+Γö£ Γùï /planning/situation-analysis
+Γö£ Γùï /planning/strategy
+Γö£ Γùï /resources
+Γö£ Γùï /sandbox
+Γö£ Γùï /settings
+Γöö Γùï /workspace
+
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

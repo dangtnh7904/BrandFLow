@@ -191,6 +191,23 @@ async def app_startup() -> None:
     logger.info("✅ [DB] Form database initialized.")
 
 
+# ── Health Check (Required for Railway/Docker) ──────────────────
+@app.get("/health", tags=["System"])
+async def health_check():
+    """Health check endpoint for load balancers and container orchestrators."""
+    return {"status": "healthy", "service": "brandflow-api", "version": "1.0.0"}
+
+@app.get("/api/v1/system-info", tags=["System"])
+async def system_info():
+    """System info for frontend status display."""
+    return {
+        "status": "ok",
+        "ai_pipeline": _AI_PIPELINE_AVAILABLE,
+        "database": "connected",
+        "version": "1.0.0",
+    }
+
+
 # ── Đăng ký Form Data CRUD Router ─────────────────────────────────
 from app.api.auth_routes import router as auth_router, get_admin_user
 from app.api.research_routes import router as research_router

@@ -199,3 +199,30 @@ class CustomAgent(Base):
 
     def __repr__(self):
         return f"<CustomAgent {self.name} ({self.role})>"
+
+
+# ═══════════════════════════════════════════════════════════════════
+# BRAND_DNA — Persistent Brand DNA analysis results
+# ═══════════════════════════════════════════════════════════════════
+class BrandDNA(Base):
+    __tablename__ = "brand_dna"
+
+    id = Column(String(36), primary_key=True, default=_uuid)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    brand_name = Column(String(255), nullable=True)
+    dna_data = Column(JSON, nullable=False, default=dict)  # Full Brand DNA JSON
+    intake_analysis = Column(JSON, nullable=True, default=dict)  # Intake analysis from onboarding
+    source = Column(String(50), default="wizard")  # wizard | file_upload | url
+    created_at = Column(DateTime, default=_now, nullable=False)
+    updated_at = Column(DateTime, default=_now, onupdate=_now, nullable=False)
+
+    # Relationships
+    owner = relationship("User", backref="brand_dnas")
+
+    __table_args__ = (
+        # Latest DNA per user (can have history)
+        Index("ix_brand_dna_user", "user_id", "created_at"),
+    )
+
+    def __repr__(self):
+        return f"<BrandDNA {self.brand_name or self.user_id}>"

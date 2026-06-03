@@ -478,3 +478,144 @@ class ContentLabAgent:
                         "best_posting_time": "",
                         "visual_suggestion": ""
                     }
+
+    async def batch_generate_content(
+        self,
+        topics: List[str],
+        format_type: str = "Social Post",
+        tone_of_voice: str = "Chuyên nghiệp",
+        platform: str = "Facebook",
+        business_context: Dict[str, Any] = None,
+        brand_dna: Dict[str, Any] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Generate multiple content pieces in parallel for a weekly calendar.
+        Max 7 topics per batch.
+        """
+        # Limit to 7
+        topics = topics[:7]
+
+        # Fetch trends once for all
+        trending = await _fetch_trending_topics_cached()
+
+        # Generate in parallel with semaphore (max 3 concurrent)
+        semaphore = asyncio.Semaphore(3)
+
+        async def gen_one(topic: str) -> Dict[str, Any]:
+            async with semaphore:
+                return await self.generate_content(
+                    topic=topic,
+                    format_type=format_type,
+                    tone_of_voice=tone_of_voice,
+                    platform=platform,
+                    business_context=business_context,
+                    brand_dna=brand_dna,
+                    trending_topics=trending,
+                )
+
+        results = await asyncio.gather(*[gen_one(t) for t in topics], return_exceptions=True)
+
+        output = []
+        for i, r in enumerate(results):
+            if isinstance(r, Exception):
+                output.append({
+                    "topic": topics[i],
+                    "error": str(r),
+                    "headline": topics[i],
+                    "content_body": f"Lỗi: {r}",
+                    "hashtags": [], "call_to_action": "", "hook": "",
+                })
+            else:
+                r["topic"] = topics[i]
+                output.append(r)
+
+        return output
+
+    async def repurpose_content(
+        self,
+        original_content: str,
+        original_platform: str,
+        target_platforms: List[str],
+        brand_dna: Dict[str, Any] = None,
+    ) -> Dict[str, Dict[str, Any]]:
+        """
+        Take content from one platform and repurpose it for multiple others.
+        E.g., Facebook post → LinkedIn + TikTok script + Instagram caption.
+        """
+        if not self.llm:
+            return {p: {"content_body": f"Mock repurpose for {p}", "platform": p} for p in target_platforms}
+
+        results = {}
+        for platform in target_platforms:
+            if platform == original_platform:
+                continue
+
+            guidelines = _get_platform_guidelines(platform)
+            dna_str = json.dumps(brand_dna, ensure_ascii=False, indent=2) if brand_dna else "Không có."
+
+            prompt = f"""Bạn là chuyên gia Content Repurposing. Nhiệm vụ: Chuyển đổi nội dung gốc sang format tối ưu cho {platform}.
+
+NỘI DUNG GỐC (từ {original_platform}):
+{original_content[:3000]}
+
+BRAND DNA:
+{dna_str}
+
+{guidelines}
+
+YÊU CẦU:
+- KHÔNG copy nguyên si. Phải VIẾT LẠI hoàn toàn cho đúng đặc thù {platform}.
+- Giữ nguyên message cốt lõi nhưng thay đổi format, length, tone cho phù hợp.
+- Đối với TikTok: viết dạng SCRIPT nói.
+- Đối với LinkedIn: viết dạng thought leadership.
+- Đối với Instagram: viết ngắn + focus hashtags.
+
+Trả về JSON:
+{{
+    "headline": "Tiêu đề cho {platform}",
+    "content_body": "Nội dung đã repurpose",
+    "hashtags": ["#tag1", "#tag2"],
+    "call_to_action": "CTA phù hợp {platform}",
+    "platform": "{platform}"
+}}
+
+Chỉ trả JSON. Không backticks."""
+
+            try:
+                response = await self.llm.ainvoke([HumanMessage(content=prompt)])
+                raw = response.content.strip()
+                if raw.startswith("```json"):
+                    raw = raw.split("```json")[1].rsplit("```", 1)[0].strip()
+                elif raw.startswith("```"):
+                    raw = raw.split("```")[1].rsplit("```", 1)[0].strip()
+                results[platform] = json.loads(raw, strict=False)
+            except Exception as e:
+                results[platform] = {
+                    "error": str(e),
+                    "content_body": f"Lỗi repurpose cho {platform}: {e}",
+                    "platform": platform,
+                }
+
+        return results
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CACHED TREND FETCHER — Uses SmartCache to avoid redundant API calls
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def _fetch_trending_topics_cached() -> List[str]:
+    """Fetch trends with 1-hour cache."""
+    try:
+        from app.core.cache_layer import SmartCache
+        cache = SmartCache.instance()
+        cached = cache.get_trends("google_vn")
+        if cached:
+            return cached
+        
+        trends = await _fetch_trending_topics()
+        if trends:
+            cache.set_trends("google_vn", trends, ttl=3600)
+        return trends
+    except Exception:
+        return await _fetch_trending_topics()
+

@@ -61,6 +61,62 @@ def _chat_completion_with_timeout(client, **kwargs):
 
 
 # =============================================================================
+# MODEL FACTORY — Gemini 2.0 Flash (primary) → Groq llama-3.3 (fallback)
+# =============================================================================
+
+def _get_strategy_llm(temperature: float = 0.3):
+    """
+    Smart model selection:
+    - Primary: Gemini 2.0 Flash (best quality for Vietnamese strategic analysis)
+    - Fallback: Groq llama-3.3-70b (fast, decent quality)
+    """
+    # Try Gemini first
+    google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    if google_key:
+        try:
+            from langchain_google_genai import ChatGoogleGenerativeAI
+            llm = ChatGoogleGenerativeAI(
+                model="gemini-2.0-flash",
+                temperature=temperature,
+                max_retries=1,
+                timeout=60.0,
+            )
+            print("   🧠 [Model] Using Gemini 2.0 Flash (primary)")
+            return llm
+        except Exception as e:
+            print(f"   ⚠️ [Model] Gemini unavailable ({e}), falling back to Groq")
+
+    # Fallback to Groq
+    from langchain_groq import ChatGroq
+    api_key = os.getenv("GROQ_API_KEY", "dummy_key")
+    print("   🧠 [Model] Using Groq llama-3.3-70b (fallback)")
+    return ChatGroq(model="llama-3.3-70b-versatile", temperature=temperature, api_key=api_key)
+
+
+def _get_review_llm(temperature: float = 0.2):
+    """
+    For review/validation agents (CFO, Persona, COO) — prioritize speed.
+    Uses Gemini 2.0 Flash-Lite or Groq.
+    """
+    google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    if google_key:
+        try:
+            from langchain_google_genai import ChatGoogleGenerativeAI
+            return ChatGoogleGenerativeAI(
+                model="gemini-2.0-flash",
+                temperature=temperature,
+                max_retries=1,
+                timeout=45.0,
+            )
+        except Exception:
+            pass
+
+    from langchain_groq import ChatGroq
+    api_key = os.getenv("GROQ_API_KEY", "dummy_key")
+    return ChatGroq(model="llama-3.3-70b-versatile", temperature=temperature, api_key=api_key)
+
+
+# =============================================================================
 # GIAI ĐOẠN 1: GOAL SETTING (CMO)
 # =============================================================================
 PHASE1_PROMPT = """Bạn là một Chuyên gia Tư vấn Chiến lược Cấp cao (CMO & Strategic Consultant) từ hãng tư vấn hàng đầu (McKinsey/BCG) với 20+ năm kinh nghiệm tại thị trường Đông Nam Á. Bạn đang xây dựng kế hoạch cho một doanh nghiệp trong lĩnh vực {industry}.
@@ -117,11 +173,7 @@ Trả về đúng định dạng JSON Schema.
 """
 
 def run_cmo_phase1_goal_setting(goal: str, industry: str, budget: int, brand_dna: dict = None, scenario_type: str = "budget_driven", target_profit: int = None, idea_description: str = None) -> dict:
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        api_key = "dummy_key" # fallback for dev environment
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
+    llm = _get_strategy_llm(temperature=0.3)
     structured_llm = llm.with_structured_output(GoalSettingPhase1)
     
     # Auto-detect company size & inject industry context
@@ -221,9 +273,7 @@ Trả về chuẩn JSON.
 """
 
 def run_cmo_phase2_situation_audit(phase1_data: dict, industry: str, target_audience: str) -> dict:
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY")
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
+    llm = _get_strategy_llm(temperature=0.3)
     structured_llm = llm.with_structured_output(SituationAuditPhase2)
     
     # Industry context injection
@@ -296,9 +346,7 @@ Trả về JSON chứa giải thích chi tiết, đầy đủ ngữ cảnh chi�
 """
 
 def run_cmo_phase3_strategy_formulation(gap_analysis: dict, segments_data: dict) -> dict:
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY")
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
+    llm = _get_strategy_llm(temperature=0.3)
     structured_llm = llm.with_structured_output(StrategyPhase3)
     
     prompt = PHASE3_PROMPT.format(
@@ -364,9 +412,7 @@ Trả về định dạng chuẩn JSON Schema.
 """
 
 def run_cmo_phase4_tactical_allocator(strategy_data: dict, budget: int, scenario_type: str = "budget_driven", industry: str = "F&B", brand_dna: dict = None) -> dict:
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY")
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3, api_key=api_key)
+    llm = _get_strategy_llm(temperature=0.3)
     structured_llm = llm.with_structured_output(TacticsPhase4)
     
     # Industry context injection for tactical recommendations
@@ -470,9 +516,7 @@ Trả về định dạng JSON chuyên nghiệp.
 """
 
 def run_cfo_defense_review(budget_data: dict, budget: int) -> dict:
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY")
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2, api_key=api_key)
+    llm = _get_review_llm(temperature=0.2)
     structured_llm = llm.with_structured_output(CFODefenseOutput)
     
     cut_items_str = ", ".join(budget_data.get("cut_items", [])) if budget_data.get("cut_items") else "Đã an toàn."
@@ -523,9 +567,7 @@ Trả về chuẩn JSON Schema CustomerReviewerOutput.
 """
 
 def run_customer_reviewer_agent(plan_summary: dict, target_audience: str) -> dict:
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY")
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.4, api_key=api_key)
+    llm = _get_review_llm(temperature=0.4)
     structured_llm = llm.with_structured_output(CustomerReviewerOutput)
     
     print(f"\n🎭 [CUSTOMER] Đang nhập vai phản biện và chấm điểm Kế hoạch...")
@@ -563,9 +605,7 @@ Yêu cầu: Thẳng thắn, nhắm thẳng vào các điểm mù của Marketing
 """
 
 def run_coo_feasibility_review(plan_summary: dict, industry: str) -> dict:
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY")
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2, api_key=api_key)
+    llm = _get_review_llm(temperature=0.2)
     structured_llm = llm.with_structured_output(COOReviewOutput)
     
     print(f"\n⚙️ [COO] Đang thẩm định tính khả thi vận hành (Operations/Logistics)...")
@@ -603,9 +643,7 @@ Yêu cầu: Phản biện sắc bén. Trả về đúng định dạng JSON Sche
 """
 
 def run_sales_director_review(plan_summary: dict, industry: str) -> dict:
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY")
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2, api_key=api_key)
+    llm = _get_review_llm(temperature=0.2)
     structured_llm = llm.with_structured_output(SalesReviewOutput)
     
     print(f"\n💰 [SALES] Đang đánh giá chất lượng Lead & Tỷ lệ chuyển đổi...")
@@ -632,7 +670,6 @@ def run_persona_validator(plan_summary: str, target_audience: str) -> str:
 
 # Refiner agent is kept for iterative feedback loop in workspace
 def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
-    from langchain_groq import ChatGroq
     from langchain_core.prompts import PromptTemplate
     from langchain_core.output_parsers import StrOutputParser
     # For now, simplistic JSON string replacer just to satisfy module imports

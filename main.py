@@ -200,11 +200,19 @@ async def health_check():
 @app.get("/api/v1/system-info", tags=["System"])
 async def system_info():
     """System info for frontend status display."""
+    cache_stats = {}
+    try:
+        from app.core.cache_layer import SmartCache
+        cache_stats = SmartCache.instance().get_stats()
+    except Exception:
+        cache_stats = {"status": "unavailable"}
+    
     return {
         "status": "ok",
         "ai_pipeline": _AI_PIPELINE_AVAILABLE,
         "database": "connected",
-        "version": "1.0.0",
+        "version": "2.0.0",
+        "cache": cache_stats,
     }
 
 

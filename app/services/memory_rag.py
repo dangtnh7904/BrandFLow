@@ -109,7 +109,7 @@ def extract_and_save_rule(human_feedback: str, rejected_plan: str, tenant_id: st
         rule_summary (str) đã lưu thành công, hoặc chuỗi lỗi.
     """
     try:
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.0, max_retries=1, timeout=30.0)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.0, max_retries=1, timeout=30.0)
         chain = (
             learner_prompt.partial(
                 format_instructions=learner_parser.get_format_instructions()
@@ -150,7 +150,53 @@ def extract_and_save_rule(human_feedback: str, rejected_plan: str, tenant_id: st
 
 
 # =============================================================================
-# 3. KHO TRI THỨC NGÀNH (NICHE KNOWLEDGE BASE)
+# 3. SMART DOCUMENT PROCESSING — Handles long documents without data loss
+# =============================================================================
+
+MAX_DIRECT_CHARS = 50000  # Gemini 2.0 Flash: 1M tokens ≈ 500K chars, 50K is safe
+
+def _smart_truncate_document(content: str) -> str:
+    """
+    Smart document processing:
+    - ≤50K chars: pass through directly (Gemini 2.0 Flash handles easily)
+    - >50K chars: chunk → summarize → merge (no data loss)
+    """
+    if not content:
+        return ""
+    
+    if len(content) <= MAX_DIRECT_CHARS:
+        return content
+    
+    # For very long documents: chunk and summarize
+    print(f"   📄 [Doc] Document too long ({len(content):,} chars). Smart-summarizing...")
+    
+    chunk_size = 15000
+    chunks = [content[i:i + chunk_size] for i in range(0, len(content), chunk_size)]
+    
+    try:
+        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.0, max_retries=1, timeout=30.0)
+        
+        summaries = []
+        for i, chunk in enumerate(chunks[:10]):  # Max 10 chunks = 150K chars covered
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", "Tóm tắt nội dung sau thành 1-2 đoạn văn ngắn, giữ lại MỌI thông tin quan trọng về thương hiệu, sản phẩm, khách hàng, đối thủ, và chiến lược. KHÔNG thêm nhận xét cá nhân."),
+                ("human", "{text}")
+            ])
+            chain = prompt | llm
+            result = chain.invoke({"text": chunk})
+            summaries.append(result.content)
+        
+        merged = "\n\n---\n\n".join(summaries)
+        print(f"   ✅ [Doc] Summarized {len(chunks)} chunks → {len(merged):,} chars")
+        return merged
+        
+    except Exception as e:
+        print(f"   ⚠️ [Doc] Summarization failed ({e}), using first {MAX_DIRECT_CHARS:,} chars")
+        return content[:MAX_DIRECT_CHARS]
+
+
+# =============================================================================
+# 3b. KHO TRI THỨC NGÀNH (NICHE KNOWLEDGE BASE)
 # =============================================================================
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -306,7 +352,8 @@ def extract_unified_dna(form_data: dict, document_content: str, tenant_id: str =
     Sử dụng LLM để đọc Form Data và Text thô, trích xuất cấu trúc BrandDNA JSON.
     Sau đó tự động lưu các strict_rules vào ChromaDB.
     """
-    safe_content = document_content[:15000] if document_content else "Không có tài liệu."
+    # Smart document processing: up to 50K chars, summarize if longer
+    safe_content = _smart_truncate_document(document_content) if document_content else "Không có tài liệu."
     form_str = json.dumps(form_data, ensure_ascii=False, indent=2) if form_data else "Không có dữ liệu form."
 
     try:
@@ -345,7 +392,7 @@ def extract_unified_dna(form_data: dict, document_content: str, tenant_id: str =
                 "intake_analysis": fallback_intake
             }
 
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.1, max_retries=1, timeout=30.0)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.1, max_retries=1, timeout=45.0)
         chain = (
             dna_prompt.partial(
                 format_instructions=dna_parser.get_format_instructions()
@@ -468,7 +515,7 @@ def generate_guideline_from_qa(qa_pairs: dict, tenant_id: str = "default") -> di
     ])
     
     try:
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2, max_retries=1, timeout=30.0)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.2, max_retries=1, timeout=30.0)
         chain = prompt | llm
         
         response = chain.invoke({"qa_text": qa_text})

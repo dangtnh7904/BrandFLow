@@ -253,3 +253,105 @@ def delete_form(
     if not ok:
         raise HTTPException(status_code=404, detail=f"Không tìm thấy data cho form '{form_key}'.")
     return {"status": "success", "message": f"Đã xóa data form '{form_key}'."}
+
+
+# ═══════════════════════════════════════════════════════════════════
+# BRAND DNA PERSISTENCE
+# ═══════════════════════════════════════════════════════════════════
+
+from pydantic import BaseModel as PydanticBaseModel
+from typing import Dict, Any
+
+class BrandDNASave(PydanticBaseModel):
+    dna_data: Dict[str, Any]
+    intake_analysis: Dict[str, Any] = {}
+    brand_name: str = ""
+    source: str = "wizard"
+
+
+@router.post("/brand-dna", summary="Lưu Brand DNA")
+def save_brand_dna(
+    body: BrandDNASave,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Save or update Brand DNA analysis result for the current user."""
+    from app.models.models import BrandDNA
+    
+    # Upsert: update latest or create new
+    existing = db.query(BrandDNA).filter(
+        BrandDNA.user_id == user_id
+    ).order_by(BrandDNA.created_at.desc()).first()
+    
+    if existing:
+        existing.dna_data = body.dna_data
+        existing.intake_analysis = body.intake_analysis
+        existing.brand_name = body.brand_name or body.dna_data.get("brand_name", "")
+        existing.source = body.source
+    else:
+        existing = BrandDNA(
+            user_id=user_id,
+            dna_data=body.dna_data,
+            intake_analysis=body.intake_analysis,
+            brand_name=body.brand_name or body.dna_data.get("brand_name", ""),
+            source=body.source,
+        )
+        db.add(existing)
+    
+    db.commit()
+    db.refresh(existing)
+    
+    # Update cache
+    try:
+        from app.core.cache_layer import SmartCache
+        SmartCache.instance().set_dna(user_id, body.dna_data)
+    except Exception:
+        pass
+    
+    return {
+        "status": "success",
+        "id": existing.id,
+        "brand_name": existing.brand_name,
+    }
+
+
+@router.get("/brand-dna", summary="Lấy Brand DNA đã lưu")
+def get_brand_dna(
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get the latest Brand DNA for current user. Checks cache first."""
+    # Check cache
+    try:
+        from app.core.cache_layer import SmartCache
+        cached = SmartCache.instance().get_dna(user_id)
+        if cached:
+            return {"status": "success", "data": cached, "cached": True}
+    except Exception:
+        pass
+    
+    from app.models.models import BrandDNA
+    
+    entry = db.query(BrandDNA).filter(
+        BrandDNA.user_id == user_id
+    ).order_by(BrandDNA.created_at.desc()).first()
+    
+    if not entry:
+        raise HTTPException(status_code=404, detail="Chưa có Brand DNA. Hoàn thành onboarding trước.")
+    
+    # Populate cache
+    try:
+        from app.core.cache_layer import SmartCache
+        SmartCache.instance().set_dna(user_id, entry.dna_data)
+    except Exception:
+        pass
+    
+    return {
+        "status": "success",
+        "data": entry.dna_data,
+        "intake_analysis": entry.intake_analysis,
+        "brand_name": entry.brand_name,
+        "source": entry.source,
+        "updated_at": entry.updated_at.isoformat() if entry.updated_at else None,
+    }
+

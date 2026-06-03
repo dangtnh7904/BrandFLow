@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Dict, Any, List, Optional
 
 from app.services.scraper import ContentScraper
-from app.agents.content_lab.agent import ContentLabAgent, _fetch_trending_topics
+from app.agents.content_lab.agent import ContentLabAgent, _fetch_trending_topics, _fetch_trending_topics_cached
 from app.api.auth_routes import get_current_user
 
 router = APIRouter()
@@ -26,8 +26,26 @@ class GenerateRequest(BaseModel):
     business_context: Dict[str, Any] = None
     brand_dna: Dict[str, Any] = None
 
+# ── Batch Generate ──
+class BatchGenerateRequest(BaseModel):
+    topics: List[str]
+    format_type: str = "Social Post"
+    tone_of_voice: str = "Chuyên nghiệp"
+    platform: str = "Facebook"
+    business_context: Dict[str, Any] = None
+    brand_dna: Dict[str, Any] = None
+
+# ── Repurpose ──
+class RepurposeRequest(BaseModel):
+    original_content: str
+    original_platform: str = "Facebook"
+    target_platforms: List[str] = ["LinkedIn", "TikTok", "Instagram"]
+    brand_dna: Dict[str, Any] = None
+
+
 # In-memory storage for MVP
 session_storage = {}
+
 
 @router.post("/ingest")
 async def ingest_content(req: IngestRequest, user_id: str = Depends(get_current_user)):
@@ -46,20 +64,16 @@ async def analyze_vibe(req: AnalyzeRequest, user_id: str = Depends(get_current_u
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 # ── Enterprise Content Generation ──
 @router.post("/generate")
 async def generate_content(req: GenerateRequest, user_id: str = Depends(get_current_user)):
-    """
-    Generate enterprise-grade content with:
-    - Brand DNA context
-    - Real-time Google Trends
-    - Platform-specific optimization
-    """
+    """Generate enterprise-grade content with Brand DNA + cached Google Trends + Platform optimization."""
     try:
         agent = ContentLabAgent()
         
-        # Fetch real-time trends in parallel
-        trending_topics = await _fetch_trending_topics()
+        # Fetch real-time trends (cached 1h)
+        trending_topics = await _fetch_trending_topics_cached()
         
         result = await agent.generate_content(
             topic=req.topic,
@@ -73,6 +87,77 @@ async def generate_content(req: GenerateRequest, user_id: str = Depends(get_curr
         return {"status": "success", "data": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Batch Generate (Weekly Calendar) ──
+@router.post("/batch-generate")
+async def batch_generate(req: BatchGenerateRequest, user_id: str = Depends(get_current_user)):
+    """Generate 5-7 content pieces in parallel for a weekly content calendar."""
+    if not req.topics or len(req.topics) == 0:
+        raise HTTPException(status_code=400, detail="Cần ít nhất 1 chủ đề")
+    
+    try:
+        agent = ContentLabAgent()
+        results = await agent.batch_generate_content(
+            topics=req.topics,
+            format_type=req.format_type,
+            tone_of_voice=req.tone_of_voice,
+            platform=req.platform,
+            business_context=req.business_context,
+            brand_dna=req.brand_dna,
+        )
+        return {
+            "status": "success",
+            "count": len(results),
+            "data": results,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Repurpose Content (Multi-Platform) ──
+@router.post("/repurpose")
+async def repurpose_content(req: RepurposeRequest, user_id: str = Depends(get_current_user)):
+    """Convert content from one platform to multiple others."""
+    try:
+        agent = ContentLabAgent()
+        results = await agent.repurpose_content(
+            original_content=req.original_content,
+            original_platform=req.original_platform,
+            target_platforms=req.target_platforms,
+            brand_dna=req.brand_dna,
+        )
+        return {
+            "status": "success",
+            "platforms": list(results.keys()),
+            "data": results,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Competitor Analysis ──
+@router.post("/competitor-analyze")
+async def competitor_analyze(req: IngestRequest, user_id: str = Depends(get_current_user)):
+    """Analyze a competitor's content strategy from their URL."""
+    try:
+        scraped = await ContentScraper.scrape_url(req.url)
+        
+        agent = ContentLabAgent()
+        report = await agent.analyze_vibe(scraped, business_context={"analysis_type": "competitor"})
+        
+        return {
+            "status": "success",
+            "competitor_url": req.url,
+            "scraped_summary": {
+                "title": scraped.get("title", ""),
+                "platform": scraped.get("platform", ""),
+            },
+            "analysis": report,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 class ChatRequest(BaseModel):
     scraped_data: Dict[str, Any]
@@ -99,6 +184,18 @@ async def chat_with_content(req: ChatRequest, user_id: str = Depends(get_current
 
 @router.get("/trends")
 async def get_platform_trends(platform: str = "Tất cả", user_id: str = Depends(get_current_user)):
+    """Get trending topics with 1-hour cache."""
+    # Check cache first
+    try:
+        from app.core.cache_layer import SmartCache
+        cache = SmartCache.instance()
+        cache_key = f"filtered_{platform}"
+        cached = cache.get_trends(cache_key)
+        if cached:
+            return {"status": "success", "data": cached, "cached": True}
+    except Exception:
+        cache = None
+
     import urllib.request
     import xml.etree.ElementTree as ET
     try:
@@ -114,7 +211,10 @@ async def get_platform_trends(platform: str = "Tất cả", user_id: str = Depen
 
         agent = ContentLabAgent()
         if not agent.llm or platform == "Tất cả" or not platform:
-            return {"status": "success", "data": raw_trends[:5]}
+            result = raw_trends[:5]
+            if cache:
+                cache.set_trends(f"filtered_{platform}", result, ttl=3600)
+            return {"status": "success", "data": result}
             
         prompt = f"""Dưới đây là top 20 Google Trends hôm nay tại Việt Nam:
 {chr(10).join(raw_trends)}
@@ -128,6 +228,9 @@ KHÔNG GIẢI THÍCH, KHÔNG GẠCH ĐẦU DÒNG.
         
         filtered = [t.strip('-*. \t') for t in response.content.strip().split('\n') if t.strip()][:5]
         filtered = [t.split('. ', 1)[1] if '. ' in t[:5] else t for t in filtered]
+        
+        if cache:
+            cache.set_trends(f"filtered_{platform}", filtered, ttl=3600)
         
         return {"status": "success", "data": filtered}
     except Exception as e:

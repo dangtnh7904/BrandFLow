@@ -854,6 +854,49 @@ def get_audit_funnel_stats(_: str = Depends(get_admin_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi lấy thống kê phễu: {str(e)}")
 
+
+# ── Enhanced Analytics Endpoints (Investor Dashboard) ──────────────
+
+@app.get("/api/v1/audit/daily-growth")
+def get_daily_growth(days: int = 30, _: str = Depends(get_admin_user)):
+    """Daily new users, active users, and visits for growth chart."""
+    try:
+        return {"status": "success", "data": VISITOR_AUDIT_STORE.get_daily_growth(days=days)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/audit/hourly-heatmap")
+def get_hourly_heatmap(_: str = Depends(get_admin_user)):
+    """Activity distribution by hour of day."""
+    try:
+        return {"status": "success", "data": VISITOR_AUDIT_STORE.get_hourly_heatmap()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/audit/feature-categories")
+def get_feature_categories(_: str = Depends(get_admin_user)):
+    """API usage grouped by business feature categories."""
+    try:
+        return {"status": "success", "data": VISITOR_AUDIT_STORE.get_feature_categories()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/audit/engagement-stats")
+def get_engagement_stats(_: str = Depends(get_admin_user)):
+    """User engagement: power users, returning rate, peak hour, etc."""
+    try:
+        return {"status": "success", "data": VISITOR_AUDIT_STORE.get_engagement_stats()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/audit/growth-metrics")
+def get_growth_metrics(_: str = Depends(get_admin_user)):
+    """Week-over-week growth metrics for investor reporting."""
+    try:
+        return {"status": "success", "data": VISITOR_AUDIT_STORE.get_growth_metrics()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/v1/onboarding/interview")
 async def onboarding_interview(request: InterviewRequest):
     """

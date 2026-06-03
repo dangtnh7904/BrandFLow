@@ -346,3 +346,242 @@ class VisitorAuditStore:
                 return [dict(row) for row in rows]
             finally:
                 conn.close()
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # ENHANCED ANALYTICS — Investor-grade metrics from real data
+    # ═══════════════════════════════════════════════════════════════════════
+
+    def get_daily_growth(self, days: int = 30) -> list[dict[str, Any]]:
+        """Daily new users + total visits for growth chart."""
+        with self._lock:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            try:
+                # New users per day
+                new_users = conn.execute(
+                    """
+                    SELECT DATE(first_seen_at) as day, COUNT(*) as new_users
+                    FROM visitor_profiles
+                    GROUP BY DATE(first_seen_at)
+                    ORDER BY day DESC
+                    LIMIT ?
+                    """, (days,)
+                ).fetchall()
+
+                # Visits per day
+                visits = conn.execute(
+                    """
+                    SELECT DATE(visited_at) as day, COUNT(*) as visits,
+                           COUNT(DISTINCT visitor_key) as active_users
+                    FROM visit_events
+                    GROUP BY DATE(visited_at)
+                    ORDER BY day DESC
+                    LIMIT ?
+                    """, (days,)
+                ).fetchall()
+
+                new_users_map = {r["day"]: r["new_users"] for r in new_users}
+                result = []
+                for v in visits:
+                    result.append({
+                        "day": v["day"],
+                        "visits": v["visits"],
+                        "active_users": v["active_users"],
+                        "new_users": new_users_map.get(v["day"], 0),
+                    })
+                return result
+            finally:
+                conn.close()
+
+    def get_hourly_heatmap(self) -> list[dict[str, Any]]:
+        """Activity distribution by hour of day (0-23)."""
+        with self._lock:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            try:
+                rows = conn.execute(
+                    """
+                    SELECT
+                        CAST(strftime('%H', visited_at) AS INTEGER) as hour,
+                        COUNT(*) as count
+                    FROM visit_events
+                    GROUP BY hour
+                    ORDER BY hour
+                    """
+                ).fetchall()
+                return [dict(row) for row in rows]
+            finally:
+                conn.close()
+
+    def get_feature_categories(self) -> list[dict[str, Any]]:
+        """Group API paths into business feature categories for investors."""
+        with self._lock:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            try:
+                rows = conn.execute(
+                    """
+                    SELECT path, COUNT(*) as count
+                    FROM visit_events
+                    WHERE path LIKE '/api/%'
+                    GROUP BY path
+                    """
+                ).fetchall()
+
+                categories: dict[str, int] = {}
+                category_map = {
+                    "onboarding": "🚀 Onboarding",
+                    "auth": "🔐 Authentication",
+                    "design": "🎨 Design Studio",
+                    "content-lab": "✍️ Content Lab",
+                    "research": "🔍 Market Research",
+                    "agent": "🤖 AI Agents",
+                    "audit": "📊 Analytics",
+                    "form": "📝 Forms & Data",
+                    "strategy": "📈 Strategy",
+                }
+                for row in rows:
+                    path = row["path"]
+                    matched = False
+                    for key, label in category_map.items():
+                        if key in path:
+                            categories[label] = categories.get(label, 0) + row["count"]
+                            matched = True
+                            break
+                    if not matched and "/api/" in path:
+                        categories["⚙️ Other API"] = categories.get("⚙️ Other API", 0) + row["count"]
+
+                return sorted(
+                    [{"category": k, "count": v} for k, v in categories.items()],
+                    key=lambda x: x["count"], reverse=True
+                )
+            finally:
+                conn.close()
+
+    def get_engagement_stats(self) -> dict[str, Any]:
+        """Power user metrics and engagement statistics."""
+        with self._lock:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            try:
+                total_users = conn.execute("SELECT COUNT(*) as c FROM visitor_profiles").fetchone()["c"]
+                total_visits = conn.execute("SELECT COUNT(*) as c FROM visit_events").fetchone()["c"]
+
+                # Average visits per user
+                avg_visits = round(total_visits / max(total_users, 1), 1)
+
+                # Power users (>10 visits)
+                power_users = conn.execute(
+                    "SELECT COUNT(*) as c FROM visitor_profiles WHERE visits_count > 10"
+                ).fetchone()["c"]
+
+                # New users today
+                new_today = conn.execute(
+                    "SELECT COUNT(*) as c FROM visitor_profiles WHERE DATE(first_seen_at) = DATE('now')"
+                ).fetchone()["c"]
+
+                # New users this week
+                new_this_week = conn.execute(
+                    "SELECT COUNT(*) as c FROM visitor_profiles WHERE first_seen_at >= DATE('now', '-7 days')"
+                ).fetchone()["c"]
+
+                # Returning users (visited more than once)
+                returning = conn.execute(
+                    "SELECT COUNT(*) as c FROM visitor_profiles WHERE visits_count > 1"
+                ).fetchone()["c"]
+
+                # Active today (distinct visitors today)
+                active_today = conn.execute(
+                    "SELECT COUNT(DISTINCT visitor_key) as c FROM visit_events WHERE DATE(visited_at) = DATE('now')"
+                ).fetchone()["c"]
+
+                # Peak hour
+                peak = conn.execute(
+                    """
+                    SELECT CAST(strftime('%H', visited_at) AS INTEGER) as hour, COUNT(*) as c
+                    FROM visit_events
+                    GROUP BY hour ORDER BY c DESC LIMIT 1
+                    """
+                ).fetchone()
+
+                # Most used feature
+                top_feature = conn.execute(
+                    """
+                    SELECT path, COUNT(*) as c FROM visit_events
+                    WHERE path LIKE '/api/%'
+                    GROUP BY path ORDER BY c DESC LIMIT 1
+                    """
+                ).fetchone()
+
+                return {
+                    "total_users": total_users,
+                    "total_visits": total_visits,
+                    "avg_visits_per_user": avg_visits,
+                    "power_users": power_users,
+                    "power_user_pct": round((power_users / max(total_users, 1)) * 100, 1),
+                    "new_today": new_today,
+                    "new_this_week": new_this_week,
+                    "returning_users": returning,
+                    "returning_pct": round((returning / max(total_users, 1)) * 100, 1),
+                    "active_today": active_today,
+                    "peak_hour": peak["hour"] if peak else None,
+                    "peak_hour_count": peak["c"] if peak else 0,
+                    "top_feature": top_feature["path"] if top_feature else None,
+                    "top_feature_count": top_feature["c"] if top_feature else 0,
+                }
+            finally:
+                conn.close()
+
+    def get_growth_metrics(self) -> dict[str, Any]:
+        """Week-over-week growth calculations for investors."""
+        with self._lock:
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            try:
+                # This week vs last week users
+                this_week = conn.execute(
+                    "SELECT COUNT(*) as c FROM visitor_profiles WHERE first_seen_at >= DATE('now', '-7 days')"
+                ).fetchone()["c"]
+                last_week = conn.execute(
+                    "SELECT COUNT(*) as c FROM visitor_profiles WHERE first_seen_at >= DATE('now', '-14 days') AND first_seen_at < DATE('now', '-7 days')"
+                ).fetchone()["c"]
+
+                wow_growth = round(((this_week - last_week) / max(last_week, 1)) * 100, 1) if last_week > 0 else 100.0
+
+                # This week visits vs last week
+                this_week_visits = conn.execute(
+                    "SELECT COUNT(*) as c FROM visit_events WHERE visited_at >= DATE('now', '-7 days')"
+                ).fetchone()["c"]
+                last_week_visits = conn.execute(
+                    "SELECT COUNT(*) as c FROM visit_events WHERE visited_at >= DATE('now', '-14 days') AND visited_at < DATE('now', '-7 days')"
+                ).fetchone()["c"]
+
+                visit_growth = round(((this_week_visits - last_week_visits) / max(last_week_visits, 1)) * 100, 1) if last_week_visits > 0 else 100.0
+
+                # Cumulative user count
+                cumulative = conn.execute(
+                    """
+                    SELECT DATE(first_seen_at) as day, COUNT(*) as new_users
+                    FROM visitor_profiles
+                    GROUP BY day
+                    ORDER BY day
+                    """
+                ).fetchall()
+
+                running_total = 0
+                cumulative_data = []
+                for row in cumulative:
+                    running_total += row["new_users"]
+                    cumulative_data.append({"day": row["day"], "total": running_total})
+
+                return {
+                    "new_users_this_week": this_week,
+                    "new_users_last_week": last_week,
+                    "wow_user_growth_pct": wow_growth,
+                    "visits_this_week": this_week_visits,
+                    "visits_last_week": last_week_visits,
+                    "wow_visit_growth_pct": visit_growth,
+                    "cumulative_users": cumulative_data[-10:] if cumulative_data else [],
+                }
+            finally:
+                conn.close()

@@ -4,6 +4,7 @@ BrandFlow — Premium eBook PDF Generator (High-End Design)
 =============================================================================
 Tạo PDF chuyên nghiệp chuẩn editorial từ nội dung Markdown.
 Features:
+  • Dual-font typography: Georgia (headings) + Arial (body)
   • Paragraph first-line indent (lùi đầu dòng)
   • Styled bullet points (gạch đầu dòng đẹp)
   • Chapter title pages (trang tiêu đề chương)
@@ -51,6 +52,10 @@ MARGIN_B = 20
 CONTENT_W = PAGE_W - MARGIN_L - MARGIN_R
 INDENT = 8  # First-line indent for paragraphs
 
+# ── Font Names (dual typography system) ──
+FONT_HEADING = "Heading"   # Georgia — serif, elegant, for titles
+FONT_BODY = "Body"         # Arial — sans-serif, clean, for paragraphs
+
 
 class HighEndPDF(FPDF):
     def __init__(self, title, cover_image_path):
@@ -60,17 +65,30 @@ class HighEndPDF(FPDF):
         self.chapter_count = 0
         self.in_table = False
 
-        # Fonts
+        # ── BODY FONT: Arial (sans-serif) — readability for paragraphs ──
         try:
-            self.add_font("Body", "", r"C:\Windows\Fonts\arial.ttf", uni=True)
-            self.add_font("Body", "B", r"C:\Windows\Fonts\arialbd.ttf", uni=True)
-            self.add_font("Body", "I", r"C:\Windows\Fonts\ariali.ttf", uni=True)
-            self.add_font("Body", "BI", r"C:\Windows\Fonts\arialbi.ttf", uni=True)
+            self.add_font(FONT_BODY, "", r"C:\Windows\Fonts\arial.ttf", uni=True)
+            self.add_font(FONT_BODY, "B", r"C:\Windows\Fonts\arialbd.ttf", uni=True)
+            self.add_font(FONT_BODY, "I", r"C:\Windows\Fonts\ariali.ttf", uni=True)
+            self.add_font(FONT_BODY, "BI", r"C:\Windows\Fonts\arialbi.ttf", uni=True)
         except Exception:
-            self.add_font("Body", "", r"C:\Windows\Fonts\arial.ttf")
-            self.add_font("Body", "B", r"C:\Windows\Fonts\arialbd.ttf")
+            self.add_font(FONT_BODY, "", r"C:\Windows\Fonts\arial.ttf")
+            self.add_font(FONT_BODY, "B", r"C:\Windows\Fonts\arialbd.ttf")
 
-        self._has_georgia = False
+        # ── HEADING FONT: Times New Roman (serif) — elegance for titles, full Vietnamese Unicode ──
+        try:
+            self.add_font(FONT_HEADING, "", r"C:\Windows\Fonts\times.ttf", uni=True)
+            self.add_font(FONT_HEADING, "B", r"C:\Windows\Fonts\timesbd.ttf", uni=True)
+            self.add_font(FONT_HEADING, "I", r"C:\Windows\Fonts\timesi.ttf", uni=True)
+            self.add_font(FONT_HEADING, "BI", r"C:\Windows\Fonts\timesbi.ttf", uni=True)
+            self._has_heading_font = True
+        except Exception:
+            print("⚠ Times New Roman not found, falling back to Arial for headings")
+            self._has_heading_font = False
+
+    def _heading_font(self):
+        """Return the heading font name (Georgia if available, else Arial)."""
+        return FONT_HEADING if self._has_heading_font else FONT_BODY
 
     # ── Cover Page ──
     def add_cover(self):
@@ -81,7 +99,7 @@ class HighEndPDF(FPDF):
             print(f"Cover error: {e}")
             self.set_fill_color(*NAVY)
             self.rect(0, 0, 210, 297, "F")
-            self.set_font("Body", "B", 36)
+            self.set_font(self._heading_font(), "B", 36)
             self.set_text_color(*WHITE)
             self.set_xy(20, 100)
             self.multi_cell(170, 18, self.doc_title, align="C")
@@ -94,7 +112,7 @@ class HighEndPDF(FPDF):
         self.rect(0, 0, PAGE_W, PAGE_H, "F")
 
         # Background Pattern / Geometric Shapes
-        self.set_draw_color(30, 41, 59)  # Slate-800
+        self.set_draw_color(30, 41, 59)
         self.set_line_width(2)
         self.circle(PAGE_W, 0, 100, style="D")
         self.circle(PAGE_W, 0, 150, style="D")
@@ -107,27 +125,26 @@ class HighEndPDF(FPDF):
         self.set_line_width(0.8)
         self.line(MARGIN_L, 100, MARGIN_L + 50, 100)
 
-        # Chapter number
-        self.set_font("Body", "B", 14)
+        # Chapter number — small caps style (Body font, lighter)
+        self.set_font(FONT_BODY, "B", 12)
         self.set_text_color(*GOLD)
         self.set_xy(MARGIN_L, 108)
         chapter_label = f"CHƯƠNG {chapter_num}" if chapter_num else ""
         self.cell(0, 8, chapter_label, new_x="LMARGIN", new_y="NEXT")
 
-        # Chapter title
-        font_name = "Body"
-        self.set_font(font_name, "B", 28)
+        # Chapter title — Heading font (Georgia), large and elegant
+        self.set_font(self._heading_font(), "B", 30)
         self.set_text_color(*WHITE)
-        self.set_xy(MARGIN_L, 122)
-        self.multi_cell(CONTENT_W, 14, chapter_title, new_x="LMARGIN", new_y="NEXT")
+        self.set_xy(MARGIN_L, 124)
+        self.multi_cell(CONTENT_W, 15, chapter_title, new_x="LMARGIN", new_y="NEXT")
 
         # Bottom decorative line
         self.set_draw_color(*GOLD)
         self.set_line_width(0.3)
         self.line(MARGIN_L, PAGE_H - 40, PAGE_W - MARGIN_R, PAGE_H - 40)
 
-        # BrandFlow watermark
-        self.set_font("Body", "I", 9)
+        # BrandFlow watermark — italic body font
+        self.set_font(FONT_BODY, "I", 9)
         self.set_text_color(100, 110, 130)
         self.set_xy(MARGIN_L, PAGE_H - 35)
         self.cell(CONTENT_W, 6, "BrandFlow Insights", align="C")
@@ -136,13 +153,12 @@ class HighEndPDF(FPDF):
     def header(self):
         if self.page_no() <= 1:
             return
-        # Subtle top line
         self.set_draw_color(*ACCENT_LINE)
         self.set_line_width(0.3)
         self.line(MARGIN_L, 12, PAGE_W - MARGIN_R, 12)
 
-        # Header text
-        self.set_font("Body", "I", 8)
+        # Header text — small body font
+        self.set_font(FONT_BODY, "I", 7.5)
         self.set_text_color(*MUTED)
         self.set_xy(MARGIN_L, 14)
         self.cell(CONTENT_W / 2, 5, self.doc_title)
@@ -155,26 +171,24 @@ class HighEndPDF(FPDF):
         if self.page_no() <= 1:
             return
         self.set_y(-MARGIN_B)
-        # Bottom line
         self.set_draw_color(200, 200, 210)
         self.set_line_width(0.2)
         self.line(MARGIN_L, PAGE_H - MARGIN_B, PAGE_W - MARGIN_R, PAGE_H - MARGIN_B)
-        # Page number
-        self.set_font("Body", "", 9)
+        self.set_font(FONT_BODY, "", 8)
         self.set_text_color(*MUTED)
         self.cell(0, 10, str(self.page_no()), align="C")
 
     # ── Content Renderers ──
 
     def _ensure_space(self, needed_mm=30):
-        """Check if there's enough space on the current page, if not add a new page."""
+        """Check if there's enough space on the current page."""
         if self.get_y() > PAGE_H - MARGIN_B - needed_mm:
             self.add_page()
 
     def write_paragraph(self, text, indent=True):
-        """Write an indented paragraph with proper leading."""
+        """Write an indented paragraph — Body font (Arial), comfortable line height."""
         self._ensure_space(20)
-        self.set_font("Body", "", 11)
+        self.set_font(FONT_BODY, "", 10.5)
         self.set_text_color(*BODY)
         if indent:
             self.set_x(MARGIN_L + INDENT)
@@ -184,72 +198,71 @@ class HighEndPDF(FPDF):
             first_line_w = CONTENT_W
 
         clean_text = self._clean_bold(text)
-        self.multi_cell(first_line_w if indent else CONTENT_W, 7.5, clean_text, new_x="LMARGIN", new_y="NEXT")
-        self.ln(4)
+        self.multi_cell(first_line_w if indent else CONTENT_W, 7, clean_text, new_x="LMARGIN", new_y="NEXT")
+        self.ln(3.5)
 
     def write_bold_paragraph(self, text):
-        """Write bold text (usually conclusions)."""
+        """Write bold text — Body font bold."""
         self._ensure_space(20)
-        self.set_font("Body", "B", 11)
+        self.set_font(FONT_BODY, "B", 10.5)
         self.set_text_color(*DARK)
         clean = self._clean_bold(text)
-        self.multi_cell(CONTENT_W, 7.5, clean, new_x="LMARGIN", new_y="NEXT")
-        self.ln(4)
+        self.multi_cell(CONTENT_W, 7, clean, new_x="LMARGIN", new_y="NEXT")
+        self.ln(3.5)
 
     def write_bullet(self, text, level=0):
-        """Write a styled bullet point with proper indentation."""
+        """Write a styled bullet point — Body font."""
         self._ensure_space(15)
         bullet_indent = MARGIN_L + 8 + (level * 10)
         text_indent = bullet_indent + 8
         text_width = PAGE_W - MARGIN_R - text_indent
 
         # Bullet symbol
-        self.set_font("Body", "B", 11)
+        self.set_font(FONT_BODY, "B", 10)
         self.set_text_color(*CYAN)
         self.set_xy(bullet_indent, self.get_y())
         bullet_char = "●" if level == 0 else "○"
-        self.cell(6, 7, bullet_char)
+        self.cell(6, 6.5, bullet_char)
 
         # Bullet text
-        self.set_font("Body", "", 11)
+        self.set_font(FONT_BODY, "", 10.5)
         self.set_text_color(*BODY)
         self.set_x(text_indent)
         clean = self._clean_bold(text)
-        self.multi_cell(text_width, 7, clean, new_x="LMARGIN", new_y="NEXT")
-        self.ln(3)
+        self.multi_cell(text_width, 6.5, clean, new_x="LMARGIN", new_y="NEXT")
+        self.ln(2.5)
 
     def write_numbered_item(self, num, text):
-        """Write a numbered list item (1. 2. 3.)"""
+        """Write a numbered list item — Body font."""
         self._ensure_space(15)
         num_indent = MARGIN_L + 6
         text_indent = num_indent + 10
         text_width = PAGE_W - MARGIN_R - text_indent
 
-        # Number badge
-        self.set_font("Body", "B", 11)
+        # Number
+        self.set_font(FONT_BODY, "B", 10.5)
         self.set_text_color(*NAVY)
         self.set_xy(num_indent, self.get_y())
-        self.cell(8, 7, f"{num}.")
+        self.cell(8, 6.5, f"{num}.")
 
-        # Item text
-        self.set_font("Body", "", 11)
+        # Text
+        self.set_font(FONT_BODY, "", 10.5)
         self.set_text_color(*BODY)
         self.set_x(text_indent)
         clean = self._clean_bold(text)
-        self.multi_cell(text_width, 7, clean, new_x="LMARGIN", new_y="NEXT")
-        self.ln(3)
+        self.multi_cell(text_width, 6.5, clean, new_x="LMARGIN", new_y="NEXT")
+        self.ln(2.5)
 
     def write_callout(self, text, callout_type="NOTE"):
-        """Write a styled callout/blockquote box with accurate height calculation."""
+        """Write a styled callout box — Body italic font."""
         bg = CALLOUT_BG if callout_type in ("NOTE", "IMPORTANT") else TIP_BG
         accent = CYAN if callout_type in ("NOTE", "IMPORTANT") else (16, 185, 129)
 
         clean = self._clean_bold(text)
 
-        # Accurate height calculation using get_string_width
-        self.set_font("Body", "I", 10.5)
+        # Accurate height calculation
+        self.set_font(FONT_BODY, "I", 10)
         text_area_w = CONTENT_W - 26
-        # Calculate number of lines the text will actually occupy
         words = clean.split(' ')
         line_count = 1
         current_line = ""
@@ -260,9 +273,8 @@ class HighEndPDF(FPDF):
                 current_line = word
             else:
                 current_line = test_line
-        box_h = max(22, line_count * 6.5 + 16)
+        box_h = max(22, line_count * 6 + 16)
 
-        # Check if need new page
         if self.get_y() + box_h > PAGE_H - MARGIN_B - 5:
             self.add_page()
 
@@ -276,40 +288,39 @@ class HighEndPDF(FPDF):
         self.set_fill_color(*accent)
         self.rect(MARGIN_L + 4, y_start, 3, box_h, "F")
 
-        # Content
-        self.set_font("Body", "I", 10.5)
+        # Content — Body italic
+        self.set_font(FONT_BODY, "I", 10)
         self.set_text_color(60, 70, 90)
         self.set_xy(MARGIN_L + 14, y_start + 6)
-        self.multi_cell(text_area_w, 6.5, clean, new_x="LMARGIN", new_y="NEXT")
+        self.multi_cell(text_area_w, 6, clean, new_x="LMARGIN", new_y="NEXT")
         self.set_y(y_start + box_h + 6)
 
     def write_h2(self, text):
-        """Section header (##)"""
-        self.ln(8)
-        font_name = "Body"
-        self.set_font(font_name, "B", 18)
+        """Section header (##) — Heading font (Georgia), large."""
+        self.ln(10)
+        self.set_font(self._heading_font(), "B", 20)
         self.set_text_color(*NAVY)
-        self.multi_cell(CONTENT_W, 10, text, new_x="LMARGIN", new_y="NEXT")
+        self.multi_cell(CONTENT_W, 11, text, new_x="LMARGIN", new_y="NEXT")
         # Underline accent
         self.set_draw_color(*CYAN)
         self.set_line_width(0.6)
         y = self.get_y() + 2
         self.line(MARGIN_L, y, MARGIN_L + 40, y)
-        self.ln(8)
+        self.ln(10)
 
     def write_h3(self, text):
-        """Sub-section header (###)"""
+        """Sub-section header (###) — Heading font (Georgia), medium."""
         self._ensure_space(25)
-        self.ln(6)
-        self.set_font("Body", "B", 13)
+        self.ln(8)
+        self.set_font(self._heading_font(), "B", 14)
         self.set_text_color(*NAVY)
         self.multi_cell(CONTENT_W, 8, text, new_x="LMARGIN", new_y="NEXT")
-        self.ln(4)
+        self.ln(5)
 
     def write_code(self, text):
-        """Inline code / formula"""
+        """Inline code / formula — Body font, smaller."""
         self._ensure_space(15)
-        self.set_font("Body", "", 10)
+        self.set_font(FONT_BODY, "", 9.5)
         self.set_text_color(80, 80, 80)
         self.set_fill_color(240, 240, 245)
         clean = text.strip('`')
@@ -318,7 +329,7 @@ class HighEndPDF(FPDF):
         self.ln(4)
 
     def write_table(self, headers, rows):
-        """Render a styled table with smart column widths based on content."""
+        """Render a styled table — Body font with smart column widths."""
         if not headers or not rows:
             return
 
@@ -326,34 +337,32 @@ class HighEndPDF(FPDF):
         available_w = CONTENT_W - 4
 
         # ── Smart column width calculation ──
-        # Measure max text width for each column across header + all rows
-        self.set_font("Body", "B", 9)
+        self.set_font(FONT_BODY, "B", 8.5)
         col_max_w = []
         for col_idx in range(num_cols):
             header_text = headers[col_idx].strip().strip('*').strip(':').strip()
-            max_w = self.get_string_width(header_text) + 6  # padding
+            max_w = self.get_string_width(header_text) + 6
 
-            self.set_font("Body", "", 8.5)
+            self.set_font(FONT_BODY, "", 8)
             for row in rows:
                 if col_idx < len(row):
                     cell_text = self._clean_bold(row[col_idx].strip())
                     cell_w = self.get_string_width(cell_text) + 6
                     max_w = max(max_w, cell_w)
-            self.set_font("Body", "B", 9)
+            self.set_font(FONT_BODY, "B", 8.5)
             col_max_w.append(max_w)
 
-        # Distribute widths proportionally, with min/max constraints
+        # Distribute proportionally with min/max
         total_natural = sum(col_max_w) or 1
         col_widths = []
-        min_col_w = max(20, available_w / (num_cols * 2.5))  # min per column
-        max_col_w = available_w * 0.6  # max 60% for any single column
+        min_col_w = max(20, available_w / (num_cols * 2.5))
+        max_col_w = available_w * 0.6
 
         for w in col_max_w:
             proportional = (w / total_natural) * available_w
             clamped = max(min_col_w, min(max_col_w, proportional))
             col_widths.append(clamped)
 
-        # Normalize to fit exactly
         scale = available_w / sum(col_widths)
         col_widths = [w * scale for w in col_widths]
 
@@ -362,7 +371,7 @@ class HighEndPDF(FPDF):
         # Header row
         self.set_fill_color(*TABLE_HEADER_BG)
         self.set_text_color(*WHITE)
-        self.set_font("Body", "B", 9)
+        self.set_font(FONT_BODY, "B", 8.5)
         x_start = MARGIN_L + 2
         for i, h in enumerate(headers):
             self.set_xy(x_start + sum(col_widths[:i]), self.get_y())
@@ -377,9 +386,8 @@ class HighEndPDF(FPDF):
             else:
                 self.set_fill_color(*WHITE)
             self.set_text_color(*BODY)
-            self.set_font("Body", "", 8.5)
+            self.set_font(FONT_BODY, "", 8)
 
-            # Calculate max height for this row
             y_before = self.get_y()
             max_h = 7
             cells_text = []
@@ -389,8 +397,7 @@ class HighEndPDF(FPDF):
                 else:
                     clean = ""
                 cells_text.append(clean)
-                # Estimate line count for this cell
-                cell_w = col_widths[col_idx] - 2  # small padding
+                cell_w = col_widths[col_idx] - 2
                 if cell_w > 0 and clean:
                     words = clean.split(' ')
                     line_count = 1
@@ -405,26 +412,23 @@ class HighEndPDF(FPDF):
                     cell_h = line_count * 5 + 3
                     max_h = max(max_h, cell_h)
 
-            # Check page break
             if y_before + max_h > PAGE_H - MARGIN_B - 5:
                 self.add_page()
                 y_before = self.get_y()
-                # Re-draw header on new page
                 self.set_fill_color(*TABLE_HEADER_BG)
                 self.set_text_color(*WHITE)
-                self.set_font("Body", "B", 9)
+                self.set_font(FONT_BODY, "B", 8.5)
                 for i, h in enumerate(headers):
                     self.set_xy(x_start + sum(col_widths[:i]), y_before)
                     header_text = h.strip().strip('*').strip(':').strip()
                     self.cell(col_widths[i], 8, header_text, border=0, fill=True)
                 self.ln(8)
                 y_before = self.get_y()
-                self.set_font("Body", "", 8.5)
+                self.set_font(FONT_BODY, "", 8)
 
-            # Fill row background
             fill = row_idx % 2 == 1
             self.set_text_color(*BODY)
-            self.set_font("Body", "", 8.5)
+            self.set_font(FONT_BODY, "", 8)
             for i, txt in enumerate(cells_text):
                 self.set_xy(x_start + sum(col_widths[:i]), y_before)
                 self.multi_cell(col_widths[i], 5, txt, border=0, fill=fill, new_x="RIGHT", new_y="TOP")
@@ -441,7 +445,6 @@ class HighEndPDF(FPDF):
         self.set_line_width(0.2)
         self.line(mid - 30, y, mid - 8, y)
         self.line(mid + 8, y, mid + 30, y)
-        # Diamond
         self.set_fill_color(*GOLD)
         self.regular_polygon(mid, y, 2.5, 4, style="F")
         self.ln(10)
@@ -460,7 +463,6 @@ class HighEndPDF(FPDF):
             px = x + r * math.cos(angle)
             py = y + r * math.sin(angle)
             points.append((px, py))
-        # Draw
         if style in ("F", "FD", "DF"):
             self.set_fill_color(*GOLD)
         for i, (px, py) in enumerate(points):
@@ -469,7 +471,7 @@ class HighEndPDF(FPDF):
             self.line(points[i][0], points[i][1], points[(i+1) % n][0], points[(i+1) % n][1])
             
     def circle(self, x, y, r, style="D"):
-        """Draw a circle using bezier curves (approximation)."""
+        """Draw a circle."""
         if style == "F":
             self.ellipse(x - r, y - r, 2*r, 2*r, style="F")
         else:
@@ -482,14 +484,13 @@ class HighEndPDF(FPDF):
             mid = PAGE_W / 2
             center_y = y + (PAGE_H - MARGIN_B - y) / 2
             
-            # Subtle circle
             self.set_draw_color(240, 245, 250)
             self.set_line_width(0.5)
             self.circle(mid, center_y, 25, style="D")
             self.circle(mid, center_y, 20, style="D")
             
-            # Text
-            self.set_font("Body", "I", 12)
+            # Watermark — Heading font italic
+            self.set_font(self._heading_font(), "I", 12)
             self.set_text_color(200, 210, 225)
             self.set_xy(MARGIN_L, center_y - 4)
             self.cell(CONTENT_W, 8, "BRANDFLOW INSIGHTS", align="C")
@@ -559,24 +560,18 @@ def parse_and_render(pdf: HighEndPDF, lines: list):
         # ── H2: Chapter title → Full page chapter divider ──
         if stripped.startswith('## '):
             title = stripped[3:].strip()
-            # Extract chapter number from title if present
             ch_match = re.match(r'(?:CHƯƠNG|Chương|Chapter)\s+(\d+)', title)
             if ch_match:
                 chapter_num = int(ch_match.group(1))
-                # Only add space filler if we're mid-page with lots of empty space
-                # (more than 40% of the page is empty) — avoids unnecessary blank pages
                 if pdf.page_no() > 2 and pdf.get_y() < PAGE_H * 0.55:
                     pdf.write_space_filler()
                 pdf.add_chapter_page(chapter_num, title)
-                # DON'T add extra blank page — chapter page already created
-                # Content continues on next add_page when auto_page_break triggers
-                # or the next element calls _ensure_space
                 pdf.add_page()
             elif 'PHỤ LỤC' in title.upper() or 'APPENDIX' in title.upper():
                 pdf.add_chapter_page(None, title)
                 pdf.add_page()
             else:
-                if pdf.page_no() <= 2:  # Currently on TOC page
+                if pdf.page_no() <= 2:
                     pdf.add_page()
                 pdf.write_h2(title)
             i += 1
@@ -589,7 +584,7 @@ def parse_and_render(pdf: HighEndPDF, lines: list):
             i += 1
             continue
 
-        # ── Callout blocks (> [!NOTE], > [!TIP], etc.) ──
+        # ── Callout blocks ──
         if stripped.startswith('> [!'):
             match = re.match(r'>\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]', stripped)
             if match:
@@ -605,7 +600,6 @@ def parse_and_render(pdf: HighEndPDF, lines: list):
                 if text:
                     callout_buffer.append(text)
             else:
-                # Simple blockquote
                 in_callout = True
                 callout_type = "NOTE"
                 callout_buffer = [text] if text else []
@@ -615,7 +609,6 @@ def parse_and_render(pdf: HighEndPDF, lines: list):
         # ── Tables ──
         if stripped.startswith('|'):
             cells = [c.strip() for c in stripped.split('|')[1:-1]]
-            # Check if separator row (|---|---|)
             if all(re.match(r'^[-:]+$', c) for c in cells):
                 i += 1
                 continue
@@ -651,7 +644,7 @@ def parse_and_render(pdf: HighEndPDF, lines: list):
             i += 1
             continue
 
-        # ── Bold-only lines (likely conclusions) ──
+        # ── Bold-only lines ──
         if stripped.startswith('**') and stripped.endswith('**'):
             pdf.write_bold_paragraph(stripped)
             i += 1
@@ -678,12 +671,13 @@ def create_premium_pdf(md_filename, pdf_filename, title, cover_img):
     # Cover
     pdf.add_cover()
 
-    # Table of contents page (minimal)
+    # Table of contents page
     pdf.add_page()
     pdf.set_fill_color(*NAVY)
     pdf.rect(0, 0, PAGE_W, PAGE_H, "F")
 
-    pdf.set_font("Body", "B", 12)
+    # TOC title — Heading font
+    pdf.set_font(pdf._heading_font(), "B", 14)
     pdf.set_text_color(*GOLD)
     pdf.set_xy(MARGIN_L, 40)
     pdf.cell(CONTENT_W, 8, "MỤC LỤC", align="C", new_x="LMARGIN", new_y="NEXT")
@@ -709,7 +703,8 @@ def create_premium_pdf(md_filename, pdf_filename, title, cover_img):
         if s.startswith('## '):
             toc_items.append(s[3:].strip())
 
-    pdf.set_font("Body", "", 11)
+    # TOC items — Body font
+    pdf.set_font(FONT_BODY, "", 10.5)
     pdf.set_text_color(180, 190, 210)
     for idx, item in enumerate(toc_items):
         pdf.set_x(MARGIN_L + 10)
@@ -728,18 +723,20 @@ def create_premium_pdf(md_filename, pdf_filename, title, cover_img):
     pdf.set_line_width(0.5)
     pdf.line(MARGIN_L, 120, MARGIN_L + 40, 120)
 
-    font_name = "Georgia" if pdf._has_georgia else "Body"
-    pdf.set_font(font_name, "I", 16)
+    # Closing quote — Heading font italic
+    pdf.set_font(pdf._heading_font(), "I", 16)
     pdf.set_text_color(*WHITE)
     pdf.set_xy(MARGIN_L, 130)
     pdf.multi_cell(CONTENT_W, 10, "Cảm ơn bạn đã đọc.\nChúc bạn thành công trên hành trình\nxây dựng thương hiệu.", align="C")
 
     pdf.ln(20)
-    pdf.set_font("Body", "B", 13)
+    # Brand name — Heading font bold
+    pdf.set_font(pdf._heading_font(), "B", 13)
     pdf.set_text_color(*GOLD)
     pdf.cell(CONTENT_W, 8, "brandflow.io", align="C", new_x="LMARGIN", new_y="NEXT")
 
-    pdf.set_font("Body", "", 10)
+    # Copyright — Body font
+    pdf.set_font(FONT_BODY, "", 9)
     pdf.set_text_color(*MUTED)
     pdf.ln(5)
     pdf.cell(CONTENT_W, 6, "© 2026 BrandFlow. All rights reserved.", align="C")
@@ -753,9 +750,9 @@ def create_premium_pdf(md_filename, pdf_filename, title, cover_img):
 if __name__ == "__main__":
     print("═" * 60)
     print("  BrandFlow Premium eBook Generator")
+    print("  Typography: Times New Roman (headings) + Arial (body)")
     print("═" * 60)
 
-    # Ebook 1: AI-Powered SME
     create_premium_pdf(
         md_filename="high_end_ebook_ai.md",
         pdf_filename="THE_AI_POWERED_SME.pdf",
@@ -763,7 +760,6 @@ if __name__ == "__main__":
         cover_img=os.path.join(EBOOKS_DIR, "cover_ai.png")
     )
 
-    # Ebook 2: Branding Masterclass
     create_premium_pdf(
         md_filename="high_end_guideline_branding.md",
         pdf_filename="BRANDING_MASTERCLASS.pdf",
@@ -771,7 +767,6 @@ if __name__ == "__main__":
         cover_img=os.path.join(EBOOKS_DIR, "cover_branding.png")
     )
 
-    # Ebook 3: Marketing Plan Masterclass
     create_premium_pdf(
         md_filename="high_end_ebook_marketing_plan.md",
         pdf_filename="MARKETING_PLAN_MASTERCLASS.pdf",

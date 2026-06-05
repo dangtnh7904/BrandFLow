@@ -1,65 +1,155 @@
-﻿import json
+"""
+═══════════════════════════════════════════════════════════════════════════════
+BrandFlow — Trace Logger (Structured Agent Trace)
+═══════════════════════════════════════════════════════════════════════════════
+Design doc: docs/plans/2026-03-26-trace-logger-json-design.md
+
+Records full-trace agent messages to JSON files per run:
+  outputs/trace/<run_id>/planner.json
+  outputs/trace/<run_id>/customer.json
+  outputs/trace/<run_id>/cfo.json
+  outputs/trace/<run_id>/coo.json
+  outputs/trace/<run_id>/sales.json
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
+import json
+import os
 import uuid
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 
-@dataclass
+TRACE_OUTPUT_DIR = os.getenv("BRANDFLOW_TRACE_DIR", "outputs/trace")
+
+
 class TraceLogger:
-    root_dir: Path
-    goal: str
-    budget: int
+    """
+    Structured trace logger for multi-agent workflow runs.
+    
+    Usage:
+        logger = TraceLogger(goal="Launch milk tea combo", budget=12000000)
+        logger.log("planner", "assistant", "Phase 1 completed: ...", step=1)
+        logger.log("cfo", "assistant", "Budget approved: ...", step=2)
+        logger.finalize()
+    """
 
-    def __post_init__(self):
-        self.run_id = str(uuid.uuid4())
-        self.base_dir = self.root_dir / "trace" / self.run_id
-        self.base_dir.mkdir(parents=True, exist_ok=True)
-        self._init_file("planner")
-        self._init_file("customer")
-        self._init_file("cfo")
+    def __init__(
+        self,
+        goal: str = "",
+        budget: int = 0,
+        industry: str = "",
+        run_id: Optional[str] = None,
+    ):
+        self.run_id = run_id or str(uuid.uuid4())[:8]
+        self.goal = goal
+        self.budget = budget
+        self.industry = industry
+        self.created_at = datetime.now(timezone.utc).isoformat()
+        self._messages: dict[str, list] = {}
+        self._step_counter = 0
 
-    def _init_file(self, agent: str) -> None:
-        path = self.base_dir / f"{agent}.json"
-        if not path.exists():
-            payload = {
-                "meta": {
-                    "run_id": self.run_id,
-                    "agent": agent,
-                    "goal": self.goal,
-                    "budget": self.budget,
-                    "created_at": self._now_iso(),
-                },
-                "messages": [],
-            }
-            path.write_text(
-                json.dumps(payload, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
-
-    def _now_iso(self) -> str:
-        return datetime.now(timezone.utc).astimezone().isoformat()
-
-    def read_file(self, agent: str) -> dict:
-        path = self.base_dir / f"{agent}.json"
-        return json.loads(path.read_text(encoding="utf-8"))
-
-    def log(self, agent: str, role: str, content: str, step: int) -> None:
+        # Create output directory
+        self.output_dir = Path(TRACE_OUTPUT_DIR) / self.run_id
         try:
-            data = self.read_file(agent)
-            data["messages"].append({
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            print(f"⚠️ [TraceLogger] Cannot create dir {self.output_dir}: {e}")
+
+    def log(
+        self,
+        agent: str,
+        role: str,
+        content: str,
+        step: Optional[int] = None,
+        metadata: Optional[dict] = None,
+    ):
+        """
+        Append a trace message for an agent.
+        
+        Args:
+            agent: Agent name (planner, cfo, customer, coo, sales, intake, etc.)
+            role: Message role (system, assistant, user)
+            content: The text content (can be long)
+            step: Step number (auto-incremented if None)
+            metadata: Optional dict of extra data (scores, timing, etc.)
+        """
+        if step is None:
+            self._step_counter += 1
+            step = self._step_counter
+
+        if agent not in self._messages:
+            self._messages[agent] = []
+
+        entry = {
+            "run_id": self.run_id,
+            "agent": agent,
+            "role": role,
+            "content": content[:10000],  # Truncate to 10K chars max per message
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "step": step,
+        }
+        if metadata:
+            entry["metadata"] = metadata
+
+        self._messages[agent].append(entry)
+
+        # Write immediately (append-safe)
+        self._write_agent_file(agent)
+
+    def _write_agent_file(self, agent: str):
+        """Write/overwrite agent trace file."""
+        filepath = self.output_dir / f"{agent}.json"
+        data = {
+            "meta": {
                 "run_id": self.run_id,
                 "agent": agent,
-                "role": role,
-                "content": content,
-                "timestamp": self._now_iso(),
-                "step": step,
-            })
-            path = self.base_dir / f"{agent}.json"
-            path.write_text(
+                "goal": self.goal,
+                "budget": self.budget,
+                "industry": self.industry,
+                "created_at": self.created_at,
+            },
+            "messages": self._messages.get(agent, []),
+        }
+        try:
+            filepath.write_text(
                 json.dumps(data, ensure_ascii=False, indent=2),
                 encoding="utf-8",
             )
+        except Exception as e:
+            print(f"⚠️ [TraceLogger] Write failed for {filepath}: {e}")
+
+    def finalize(self) -> dict:
+        """Write all agent files and return summary."""
+        for agent in self._messages:
+            self._write_agent_file(agent)
+
+        summary = {
+            "run_id": self.run_id,
+            "output_dir": str(self.output_dir),
+            "agents_traced": list(self._messages.keys()),
+            "total_messages": sum(len(msgs) for msgs in self._messages.values()),
+        }
+        
+        # Write summary index
+        index_path = self.output_dir / "_index.json"
+        try:
+            index_path.write_text(
+                json.dumps(summary, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
         except Exception:
-            # Do not fail the workflow if logging fails
             pass
+
+        print(f"📋 [TraceLogger] Run {self.run_id}: {summary['total_messages']} messages across {len(summary['agents_traced'])} agents → {self.output_dir}")
+        return summary
+
+    def get_all_messages(self) -> dict:
+        """Return all messages grouped by agent (for API response)."""
+        return {
+            "run_id": self.run_id,
+            "agents": {
+                agent: msgs for agent, msgs in self._messages.items()
+            },
+        }

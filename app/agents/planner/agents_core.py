@@ -668,6 +668,195 @@ def run_persona_validator(plan_summary: str, target_audience: str) -> str:
     return res.get("reasoning_summary", "Rủi ro: Các hoạt động này chưa đánh trúng Pain-points của tôi.")
 
 
+# ═══════════════════════════════════════════════════════════════════
+# CUSTOMER REVIEW LOOP (Design doc: customer-agent-design.md)
+# ═══════════════════════════════════════════════════════════════════
+
+# Config (overridable via env)
+CUSTOMER_SATISFACTION_THRESHOLD = int(os.getenv("BRANDFLOW_CUSTOMER_THRESHOLD", "70"))
+MAX_CUSTOMER_ROUNDS = int(os.getenv("BRANDFLOW_MAX_CUSTOMER_ROUNDS", "3"))
+SCORE_WEIGHT_RULE = float(os.getenv("BRANDFLOW_SCORE_WEIGHT_RULE", "0.7"))
+SCORE_WEIGHT_SELF = float(os.getenv("BRANDFLOW_SCORE_WEIGHT_SELF", "0.3"))
+
+
+def calculate_customer_rule_score(
+    plan: dict,
+    budget: int = 0,
+    brand_dna: dict = None,
+    target_audience: str = "",
+) -> dict:
+    """
+    Deterministic Python rule score (0-100) per design doc.
+    Criteria weights (sum = 100):
+      - KPI/Activity clarity: 35
+      - Feasibility & budget fit: 25
+      - Strategic coherence: 20
+      - Target audience fit: 10
+      - Brand DNA fit: 10
+    """
+    scores = {}
+
+    # ── 1. KPI/Activity clarity (35 pts) ──
+    activities = plan.get("activity_and_financial_breakdown", plan.get("activities", []))
+    kpi_score = 0
+    if isinstance(activities, list) and len(activities) > 0:
+        has_kpi_count = sum(1 for a in activities if isinstance(a, dict) and (a.get("kpi") or a.get("success_metric")))
+        has_cost_count = sum(1 for a in activities if isinstance(a, dict) and a.get("cost", 0) > 0)
+        kpi_ratio = has_kpi_count / len(activities) if activities else 0
+        cost_ratio = has_cost_count / len(activities) if activities else 0
+        kpi_score = int((kpi_ratio * 0.6 + cost_ratio * 0.4) * 35)
+    scores["kpi_clarity"] = kpi_score
+
+    # ── 2. Feasibility & budget fit (25 pts) ──
+    budget_score = 0
+    total_cost = sum(a.get("cost", 0) for a in activities if isinstance(a, dict)) if isinstance(activities, list) else 0
+    if budget > 0 and total_cost > 0:
+        ratio = total_cost / budget
+        if ratio <= 1.0:
+            budget_score = 25  # Within budget
+        elif ratio <= 1.1:
+            budget_score = 18  # Slightly over (10%)
+        elif ratio <= 1.3:
+            budget_score = 10  # Significantly over
+        else:
+            budget_score = 5   # Way over budget
+    elif total_cost == 0:
+        budget_score = 5  # No cost data = bad
+    scores["budget_fit"] = budget_score
+
+    # ── 3. Strategic coherence (20 pts) ──
+    coherence_score = 0
+    has_strategy = bool(plan.get("strategic_pillars") or plan.get("positioning_statement") or plan.get("core_strategy"))
+    has_segments = bool(plan.get("target_segments") or plan.get("customer_segments"))
+    has_channels = bool(plan.get("channel_strategy") or plan.get("channel_mix"))
+    coherence_score = int(((1 if has_strategy else 0) * 0.4 + (1 if has_segments else 0) * 0.3 + (1 if has_channels else 0) * 0.3) * 20)
+    scores["strategic_coherence"] = coherence_score
+
+    # ── 4. Target audience fit (10 pts) ──
+    audience_score = 0
+    plan_audience = str(plan.get("target_audience", plan.get("target_segments", "")))
+    if target_audience and len(plan_audience) > 10:
+        audience_score = 10  # Has audience data
+    elif plan_audience:
+        audience_score = 5
+    scores["audience_fit"] = audience_score
+
+    # ── 5. Brand DNA fit (10 pts) ──
+    dna_score = 0
+    if brand_dna:
+        # Check if plan references brand-related terms
+        plan_str = json.dumps(plan, ensure_ascii=False).lower()
+        brand_name = str(brand_dna.get("brand_name", brand_dna.get("company_name", ""))).lower()
+        if brand_name and brand_name in plan_str:
+            dna_score = 10
+        elif brand_dna.get("tone_of_voice") or brand_dna.get("core_usps"):
+            dna_score = 7  # Has DNA but not explicitly referenced
+        else:
+            dna_score = 3
+    else:
+        dna_score = 5  # No DNA provided = neutral
+    scores["dna_fit"] = dna_score
+
+    total = sum(scores.values())
+    scores["total"] = total
+    scores["max"] = 100
+
+    return scores
+
+
+def run_customer_review_loop(
+    plan: dict,
+    budget: int,
+    target_audience: str,
+    brand_dna: dict = None,
+) -> dict:
+    """
+    Customer Review Loop per design doc:
+    1. CustomerReviewer scores + feedback
+    2. CFO checks budget (cuts if needed)
+    3. CustomerReviewer re-scores
+    4. Repeat until satisfied or max rounds
+
+    Returns:
+        {
+            "final_score": float,
+            "rule_score": int,
+            "client_self_score": int,
+            "approved": bool,
+            "needs_human_intervention": bool,
+            "rounds": int,
+            "feedback_history": [...],
+        }
+    """
+    print(f"\n{'═' * 50}")
+    print(f"🔄 [REVIEW LOOP] Starting Customer Review Loop (max {MAX_CUSTOMER_ROUNDS} rounds, threshold={CUSTOMER_SATISFACTION_THRESHOLD})")
+    print(f"{'═' * 50}")
+
+    feedback_history = []
+    current_plan = plan
+    approved = False
+    needs_human_intervention = False
+
+    for round_num in range(1, MAX_CUSTOMER_ROUNDS + 1):
+        print(f"\n   📋 Round {round_num}/{MAX_CUSTOMER_ROUNDS}")
+
+        # ── Step 1: Calculate rule score (Python, deterministic) ──
+        rule_scores = calculate_customer_rule_score(
+            current_plan, budget=budget, brand_dna=brand_dna, target_audience=target_audience
+        )
+        rule_score = rule_scores["total"]
+        print(f"   📊 Rule Score: {rule_score}/100 (KPI={rule_scores['kpi_clarity']}, Budget={rule_scores['budget_fit']}, Coherence={rule_scores['strategic_coherence']})")
+
+        # ── Step 2: LLM generates client_self_score + feedback ──
+        customer_result = run_customer_reviewer_agent(current_plan, target_audience)
+        client_self_score = customer_result.get("client_self_score", 50)
+        feedback = customer_result.get("feedback", [])
+        reasoning = customer_result.get("reasoning_summary", "")
+
+        # ── Step 3: Combine scores ──
+        final_score = SCORE_WEIGHT_RULE * rule_score + SCORE_WEIGHT_SELF * client_self_score
+        print(f"   🎯 Final Score: {final_score:.1f} (rule={rule_score}×{SCORE_WEIGHT_RULE} + self={client_self_score}×{SCORE_WEIGHT_SELF})")
+
+        round_result = {
+            "round": round_num,
+            "rule_score": rule_score,
+            "rule_breakdown": rule_scores,
+            "client_self_score": client_self_score,
+            "final_score": round(final_score, 1),
+            "feedback": feedback,
+            "reasoning": reasoning,
+        }
+        feedback_history.append(round_result)
+
+        # ── Step 4: Check satisfaction ──
+        if final_score >= CUSTOMER_SATISFACTION_THRESHOLD:
+            print(f"   ✅ APPROVED (score {final_score:.1f} >= threshold {CUSTOMER_SATISFACTION_THRESHOLD})")
+            approved = True
+            break
+
+        # ── Step 5: Not satisfied — run CFO to cut costs if needed ──
+        if round_num < MAX_CUSTOMER_ROUNDS:
+            print(f"   ⚠️ Score {final_score:.1f} < {CUSTOMER_SATISFACTION_THRESHOLD}. Running CFO review before next round...")
+            try:
+                cfo_result = run_cfo_defense_review({"final_activities": current_plan}, budget)
+                round_result["cfo_review"] = cfo_result
+            except Exception as e:
+                print(f"   ⚠️ CFO review failed: {e}")
+
+    if not approved:
+        needs_human_intervention = True
+        print(f"   🚨 Max rounds reached. needs_human_intervention = True")
+
+    return {
+        "final_score": round(final_score, 1),
+        "rule_score": rule_score,
+        "client_self_score": client_self_score,
+        "approved": approved,
+        "needs_human_intervention": needs_human_intervention,
+        "rounds": len(feedback_history),
+        "feedback_history": feedback_history,
+    }
+
 # Refiner agent is kept for iterative feedback loop in workspace
 def run_refine_planner(previous_plan: dict, feedback: str, budget: int) -> dict:
     from langchain_core.prompts import PromptTemplate

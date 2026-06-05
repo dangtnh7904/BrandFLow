@@ -52,13 +52,25 @@ export default function DesignStudioPage() {
     creativeMode: 'balanced'
   });
 
+  // ── Build masterDNA by deeply merging: brandDNA (highest priority) > intakeAnalysis > wizardAnswers > extractedAnswers ──
+  // intakeAnalysis contains the rich Strategic Audit from Intake Agent (PESTLE, VRIO, financial health, etc.)
+  const intake = intakeAnalysis?.expert_business_analysis || intakeAnalysis || {};
   const masterDNA = {
-    brand_name: brandDNA?.brand_name || wizardAnswers?.company_name || extractedAnswers?.company_name || "Doanh nghiệp",
-    goal: brandDNA?.positioning || wizardAnswers?.goal || "Xây dựng thương hiệu mạnh",
-    industry: wizardAnswers?.industry || extractedAnswers?.industry || "General",
-    core_usps: brandDNA?.core_usps || wizardAnswers?.core_usps || extractedAnswers?.core_usps || [],
-    target_audience: wizardAnswers?.target_audience || extractedAnswers?.target_audience || "Khách hàng mục tiêu",
-    tone_of_voice: brandDNA?.tone_of_voice || wizardAnswers?.tone_of_voice || extractedAnswers?.tone_of_voice || "Chuyên nghiệp"
+    brand_name: brandDNA?.brand_name || intake?.brand_name || wizardAnswers?.company_name || extractedAnswers?.company_name || "Doanh nghiệp",
+    goal: brandDNA?.positioning || intake?.strategic_recommendation || wizardAnswers?.goal || "Xây dựng thương hiệu mạnh",
+    industry: wizardAnswers?.industry || extractedAnswers?.industry || intake?.industry || "General",
+    core_usps: brandDNA?.core_usps || intake?.core_usps || wizardAnswers?.core_usps || extractedAnswers?.core_usps || [],
+    target_audience: intake?.target_audience || wizardAnswers?.target_audience || extractedAnswers?.target_audience || "Khách hàng mục tiêu",
+    tone_of_voice: brandDNA?.tone_of_voice || intake?.tone_of_voice || wizardAnswers?.tone_of_voice || extractedAnswers?.tone_of_voice || "Chuyên nghiệp",
+    // NEW: Pass rich intake context to Design Agent for precision
+    brand_personality: brandDNA?.brand_archetype || intake?.brand_personality || intake?.brand_archetype || "",
+    color_palette: brandDNA?.color_palette || intake?.visual_identity?.color_palette || [],
+    strict_rules: brandDNA?.strict_rules || intake?.strict_rules || intake?.brand_rules || [],
+    financial_context: intake?.financial_health || "",
+    competitive_insight: intake?.competitive_landscape || intake?.competitors || "",
+    // Full intakeAnalysis for backend agents that accept it
+    _full_intake: intakeAnalysis,
+    _full_brand_dna: brandDNA,
   };
 
   const [loading, setLoading] = useState(false);
@@ -95,24 +107,32 @@ export default function DesignStudioPage() {
     try {
       setLoading(true);
       setError(null);
-      setResult(null);
-      setBlocks([]);
+      // Don't clear results/blocks — preserve old content while loading
+      // so user can still view previous output on other tabs
       setAgentLogs([]);
 
       setActiveAgent('System');
       addLog("System", "Initiating Design Network...", "info");
       await sleep(800);
       
+      // Build rich payload from masterDNA (now includes intakeAnalysis data)
       const payload = {
         brand_name: masterDNA.brand_name,
         goal: masterDNA.goal,
         industry: masterDNA.industry,
-        core_usps: masterDNA.core_usps,
-        target_audience_insights: [masterDNA.target_audience],
+        core_usps: Array.isArray(masterDNA.core_usps) ? masterDNA.core_usps : [],
+        target_audience_insights: [masterDNA.target_audience, masterDNA.brand_personality].filter(Boolean),
         target_audience: masterDNA.target_audience,
         tone_of_voice: masterDNA.tone_of_voice,
-        strict_rules: [],
-        custom_prompt: promptData.userPrompt || ""
+        strict_rules: Array.isArray(masterDNA.strict_rules) ? masterDNA.strict_rules : [],
+        custom_prompt: promptData.userPrompt || "",
+        // Pass full DNA context so backend agents can reference exact intake data
+        brand_dna_context: masterDNA._full_brand_dna || undefined,
+        business_context: masterDNA._full_intake ? {
+          financial_health: masterDNA.financial_context,
+          competitive_insight: typeof masterDNA.competitive_insight === 'string' ? masterDNA.competitive_insight : JSON.stringify(masterDNA.competitive_insight),
+          brand_personality: masterDNA.brand_personality,
+        } : undefined,
       };
 
       setActiveAgent('Creative Agent');
@@ -193,9 +213,16 @@ export default function DesignStudioPage() {
           brand_name: masterDNA.brand_name,
           goal: masterDNA.goal,
           industry: masterDNA.industry,
-          core_usps: masterDNA.core_usps,
+          core_usps: Array.isArray(masterDNA.core_usps) ? masterDNA.core_usps : [],
           target_audience: masterDNA.target_audience,
           tone_of_voice: masterDNA.tone_of_voice,
+          // Pass full DNA context for rich slide content
+          brand_dna: masterDNA._full_brand_dna || undefined,
+          business_context: masterDNA._full_intake ? {
+            financial_health: masterDNA.financial_context,
+            competitive_insight: typeof masterDNA.competitive_insight === 'string' ? masterDNA.competitive_insight : JSON.stringify(masterDNA.competitive_insight),
+            brand_personality: masterDNA.brand_personality,
+          } : undefined,
         }),
       });
       if (!res.ok) {
@@ -485,8 +512,8 @@ export default function DesignStudioPage() {
             <Palette className="w-5 h-5 text-cyan-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight">Design Studio</h1>
-            <p className="text-linear-text-muted text-[11px] font-medium">AI-powered Visual Identity · Case Study · Brand Deck</p>
+            <h1 className="page-title">Design Studio</h1>
+            <p className="page-desc text-[11px]">AI-powered Visual Identity · Case Study · Brand Deck</p>
           </div>
         </div>
         
@@ -520,7 +547,7 @@ export default function DesignStudioPage() {
           />
 
           {/* DNA Card */}
-          <motion.div className="bento-card p-5 relative overflow-hidden flex flex-col shrink-0">
+          <motion.div className="section-card p-5 flex flex-col shrink-0">
             <div className="flex items-center mb-4 pb-2.5 border-b border-linear-border/50">
               <Network className="w-4 h-4 mr-2 text-indigo-400" />
               <h2 className="text-xs font-bold text-foreground uppercase tracking-wider">DNA Sync</h2>

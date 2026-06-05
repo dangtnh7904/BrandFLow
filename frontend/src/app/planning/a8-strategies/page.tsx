@@ -85,7 +85,7 @@ export default function PageA8Strategies() {
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isLaunching ? 'bg-white/20 text-white' : 'bg-slate-200/50 dark:bg-slate-700/50'}`}>
                           {step.time || `T${idx+1}`}
                         </span>
-                        {isLaunching && <span className="animate-pulse w-2 h-2 rounded-full bg-white"></span>}
+                        {isLaunching && <span className="animate-pulse w-2 h-2 rounded-full bg-linear-surface "></span>}
                       </div>
                       <h4 className={`font-bold ${isLaunching ? 'text-lg md:text-xl' : 'text-base'} mb-2 line-clamp-2`}>{title}</h4>
                     </div>

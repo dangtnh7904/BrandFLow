@@ -26,7 +26,7 @@ export default function StrategyPage() {
         </InstructionAlert>
         
         {loading ? (
-          <div className="bento-card p-6 min-h-[400px] flex items-center justify-center border border-emerald-100 bg-white/50 backdrop-blur-sm">
+          <div className="bento-card p-6 min-h-[400px] flex items-center justify-center border border-emerald-100 bg-linear-surface /50 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
               <p className="text-emerald-700 font-medium animate-pulse">Đang tổng hợp dữ liệu chiến lược từ AI Agents...</p>
@@ -104,7 +104,7 @@ export default function StrategyPage() {
               ].map((p, i) => (
                 <div key={i} className={`bento-card p-6 bg-gradient-to-br ${p.color} border ${p.border} hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}>
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-2xl bg-white p-2 rounded-lg shadow-sm">{p.icon}</span>
+                    <span className="text-2xl bg-linear-surface  p-2 rounded-lg shadow-sm">{p.icon}</span>
                     <h4 className={`font-bold ${p.textColor}`}>{p.title}</h4>
                   </div>
                   <p className="text-sm text-slate-700 leading-relaxed">{p.desc}</p>
@@ -114,7 +114,7 @@ export default function StrategyPage() {
 
             {/* Target Audience & Positioning */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bento-card p-6 bg-white border border-slate-200">
+              <div className="bento-card p-6 bg-linear-surface  border border-slate-200">
                 <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                   <span className="text-blue-500">📊</span> Phân khúc Khách hàng Trọng tâm
                 </h4>
@@ -136,7 +136,7 @@ export default function StrategyPage() {
                 </div>
               </div>
 
-              <div className="bento-card p-6 bg-white border border-slate-200">
+              <div className="bento-card p-6 bg-linear-surface  border border-slate-200">
                 <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                   <span className="text-purple-500">🏆</span> Định vị Cạnh tranh (Competitive Positioning)
                 </h4>

@@ -13,9 +13,10 @@ interface PageTemplateProps {
   description: string;
   children: React.ReactNode;
   saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
+  showFullReport?: boolean;
 }
 
-export default function B2BPageTemplate({ title, description, children, saveStatus }: PageTemplateProps) {
+export default function B2BPageTemplate({ title, description, children, saveStatus, showFullReport = false }: PageTemplateProps) {
   const { language, t } = useLanguage();
   const [previewMode, setPreviewMode] = useState<'section' | 'full' | null>(null);
   const [feedback, setFeedback] = useState('');
@@ -59,8 +60,8 @@ export default function B2BPageTemplate({ title, description, children, saveStat
       {/* NORMAL TOP HEADER (Hidden in preview mode) */}
       <div className={`print-hide sticky top-0 z-10 bg-linear-surface/90 backdrop-blur-md border-b border-linear-border px-8 py-5 flex items-center justify-between shadow-sm ${previewMode === 'section' ? 'hidden' : ''}`}>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
-          <p className="text-sm text-linear-text-muted mt-1">{description}</p>
+          <h1 className="page-title">{title}</h1>
+          <p className="page-desc">{description}</p>
         </div>
         <div className="flex items-center space-x-3 print-hide">
           {saveStatus && <SaveIndicator status={saveStatus} />}
@@ -71,15 +72,16 @@ export default function B2BPageTemplate({ title, description, children, saveStat
           
           <button 
             onClick={() => setPreviewMode('section')}
-            className="flex items-center px-4 py-2 border border-linear-border rounded-md bg-white dark:bg-slate-800 text-sm font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm"
+            className="btn-secondary text-sm font-semibold"
           >
             <Download className="w-4 h-4 mr-2 text-blue-600 dark:text-blue-400" />
             {language === 'vi' ? 'Tải Xuống PDF' : 'Download PDF'}
           </button>
 
+          {showFullReport && (
           <button 
             onClick={() => setPreviewMode('full')}
-            className="flex items-center px-4 py-2 border border-transparent rounded-md gradient-ai-bg text-sm font-bold text-white shadow-sm hover:shadow-lg transition-all relative overflow-hidden group"
+            className="btn-primary text-sm font-bold relative overflow-hidden group"
           >
             <FileText className="w-4 h-4 mr-2" />
             {language === 'vi' ? 'Export Full Report' : 'Export Full Report'}
@@ -87,6 +89,7 @@ export default function B2BPageTemplate({ title, description, children, saveStat
               Premium
             </span>
           </button>
+          )}
         </div>
       </div>
 

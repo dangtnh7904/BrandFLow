@@ -9,10 +9,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export default function DashboardPage() {
  const { t } = useLanguage();
  return (
- <div className="p-8 max-w-7xl mx-auto w-full">
- <header className="mb-10">
- <h1 className="text-3xl font-semibold tracking-tight text-foreground mb-2">{t('dashboard_home.title')}</h1>
- <p className="text-linear-text-muted">{t('dashboard_home.desc')}</p>
+ <div className="page-container">
+ <header className="page-header">
+ <h1 className="page-title">{t('dashboard_home.title')}</h1>
+ <p className="page-desc">{t('dashboard_home.desc')}</p>
  </header>
 
  {/* Vercel Style: Precise Bento Grid System */}

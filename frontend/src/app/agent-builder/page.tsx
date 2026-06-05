@@ -313,7 +313,7 @@ export default function AgentBuilderPage() {
 
   return (
     <div className="w-full h-full overflow-y-auto bg-background">
-      <div className="max-w-[1400px] mx-auto p-6 md:p-8 space-y-6">
+      <div className="page-container max-w-[1400px] space-y-6">
         
         {/* ── Header ───────────────────────────────────── */}
         <motion.div 
@@ -329,8 +329,8 @@ export default function AgentBuilderPage() {
               <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-foreground tracking-tight">Agent Studio</h1>
-              <p className="text-sm text-linear-text-muted">Thiết kế AI Agent chuyên biệt cấp Enterprise — với bộ công cụ chuyên sâu</p>
+              <h1 className="page-title">Agent Studio</h1>
+              <p className="page-desc">Thiết kế AI Agent chuyên biệt cấp Enterprise — với bộ công cụ chuyên sâu</p>
             </div>
           </div>
 
@@ -350,7 +350,7 @@ export default function AgentBuilderPage() {
             <button 
               onClick={handleSave}
               disabled={isSaving || !canSave}
-              className="gradient-ai-bg px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/30 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="btn-primary px-6 py-2.5 flex items-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/30 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {isSaving ? "Đang lưu..." : "Lưu & Triển khai Agent"}

@@ -75,21 +75,41 @@ Dựa vào thông tin trên, hãy suy luận ra Visual Language và sinh Prompt 
     def generate_design_prompts(self, request: DesignGenerateRequest) -> dict:
         """
         Dịch DNA sang Visual Language và Prompts. Cấy ngầm (Inject) các rules vào Negative Format.
+        Now enriched with brand_dna_context from Intake Agent for precision.
         """
         # Quy hoạch strict rules
         formatted_rules = "\n".join([f"- {rule}" for rule in request.strict_rules]) if request.strict_rules else "Không có ràng buộc đặc biệt."
         
+        # Enrich audience insights with brand_dna_context from Intake Agent
+        audience_parts = list(request.target_audience_insights) if request.target_audience_insights else []
+        enrichment_note = ""
+        if request.brand_dna_context:
+            ctx = request.brand_dna_context
+            # Extract rich fields from intake analysis
+            if ctx.get("brand_archetype"):
+                enrichment_note += f"\nBrand Archetype: {ctx['brand_archetype']}"
+            if ctx.get("positioning"):
+                enrichment_note += f"\nPositioning: {ctx['positioning']}"
+            if ctx.get("core_value"):
+                enrichment_note += f"\nCore Values: {ctx['core_value']}"
+            if ctx.get("color_palette"):
+                enrichment_note += f"\nPreferred Colors: {', '.join(ctx['color_palette']) if isinstance(ctx['color_palette'], list) else ctx['color_palette']}"
+
         chain = self.prompt_template | self.llm | self.output_parser
         
         try:
             print(f"🎨 [Brand Designer] Đang suy diễn ngôn ngữ thiết kế cho ngành {request.industry}...")
+            custom_with_context = (request.custom_prompt or "Không có")
+            if enrichment_note:
+                custom_with_context += f"\n\n--- BRAND DNA CONTEXT (từ Intake Agent) ---{enrichment_note}"
+
             result = chain.invoke({
                 "industry": request.industry,
                 "core_usps": ", ".join(request.core_usps),
-                "audience": ", ".join(request.target_audience_insights),
+                "audience": ", ".join(audience_parts) if audience_parts else request.target_audience,
                 "tone": request.tone_of_voice,
                 "rules": formatted_rules,
-                "custom_prompt": request.custom_prompt or "Không có",
+                "custom_prompt": custom_with_context,
                 "format_instructions": self.output_parser.get_format_instructions()
             })
             

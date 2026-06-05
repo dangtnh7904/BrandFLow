@@ -19,18 +19,18 @@ export default function AssetsPage() {
 
  return (
  <div className="w-full h-full overflow-y-auto">
- <div className="flex flex-col p-8 max-w-6xl mx-auto w-full min-h-full">
+ <div className="page-container max-w-6xl min-h-full">
  <div className="mb-8 flex justify-between items-end">
  <div>
- <h2 className="text-2xl font-bold text-foreground mb-2 flex items-center">
+ <h2 className="page-title flex items-center">
  <FolderGit2 className="w-6 h-6 mr-3 text-blue-500" />
  {t('assets.title')}
  </h2>
- <p className="text-linear-text-muted">{t('assets.desc')}</p>
+ <p className="page-desc">{t('assets.desc')}</p>
  </div>
  <div className="relative w-64 hidden md:block">
  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-linear-text-muted" />
- <input type="text" placeholder="Tìm kiếm tệp..." className="w-full bg-linear-surface border border-linear-border shadow-sm rounded-xl py-2 pl-9 pr-4 text-sm text-foreground focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-shadow" />
+ <input type="text" placeholder="Tìm kiếm tệp..." className="input-field pl-9" />
  </div>
  </div>
 

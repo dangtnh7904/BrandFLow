@@ -193,3 +193,11 @@ class SmartCache:
             self._dna.clear()
             self._stats = {"hits": 0, "misses": 0, "evictions": 0}
             logger.info("[Cache] All caches cleared")
+
+    def invalidate_user(self, user_id: str):
+        """Remove all cached data for a specific user (GDPR purge support)."""
+        with self._rw_lock:
+            if user_id in self._dna:
+                del self._dna[user_id]
+                logger.info(f"[Cache] Invalidated DNA cache for user {user_id[:8]}...")
+

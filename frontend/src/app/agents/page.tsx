@@ -104,18 +104,18 @@ export default function AgentsPage() {
  ];
 
  return (
- <div className="w-full h-full overflow-y-auto">
- <div className="flex flex-col p-8 max-w-6xl mx-auto w-full min-h-full">
+  <div className="w-full h-full overflow-y-auto">
+  <div className="page-container max-w-6xl min-h-full">
  <div className="mb-8 flex justify-between items-end">
- <div>
- <h2 className="text-2xl font-bold text-foreground mb-2 flex items-center">
- <Network className="w-6 h-6 mr-3 text-cyan-600" />
- {t('agents.title')}
- </h2>
- <p className="text-linear-text-muted">{t('agents.desc')}</p>
- </div>
+  <div>
+  <h2 className="page-title flex items-center">
+  <Network className="w-6 h-6 mr-3 text-cyan-600" />
+  {t('agents.title')}
+  </h2>
+  <p className="page-desc">{t('agents.desc')}</p>
+  </div>
  <Link href="/agent-builder">
-   <button className="hidden md:flex items-center px-5 py-2.5 gradient-ai-bg rounded-xl text-sm font-bold text-white hover:shadow-lg hover:shadow-cyan-500/20 transition-all shadow-sm gap-2">
+    <button className="hidden md:flex items-center btn-primary gap-2">
      <Plus className="w-4 h-4" /> Thuê Trợ lý mới
      <ArrowRight className="w-4 h-4 opacity-70" />
    </button>

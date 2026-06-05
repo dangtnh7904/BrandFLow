@@ -7,7 +7,7 @@ import { Loader2, Plus, PlaySquare, Globe, MessageSquare, PieChart, Send, Sparkl
 
 export default function ContentLabPage() {
   const { t } = useLanguage();
-  const { wizardAnswers, brandDNA, extractedAnswers } = useFormStore();
+  const { wizardAnswers, brandDNA, extractedAnswers, intakeAnalysis } = useFormStore();
   
   const [urlInput, setUrlInput] = useState('');
   const [chatInput, setChatInput] = useState('');
@@ -77,8 +77,20 @@ export default function ContentLabPage() {
         },
         body: JSON.stringify({ 
           scraped_data: targetSource,
-          business_context: wizardAnswers,
-          brand_dna: brandDNA,
+          business_context: {
+            ...wizardAnswers,
+            // Merge intake analysis for rich strategic context
+            ...(intakeAnalysis?.expert_business_analysis || {}),
+          },
+          brand_dna: {
+            ...brandDNA,
+            // Enrich with intake analysis fields if available
+            ...(intakeAnalysis ? {
+              financial_health: intakeAnalysis.expert_business_analysis?.financial_health,
+              strategic_recommendation: intakeAnalysis.expert_business_analysis?.strategic_recommendation,
+              competitive_landscape: intakeAnalysis.expert_business_analysis?.competitive_landscape,
+            } : {}),
+          },
           extracted_answers: extractedAnswers
         }),
       });
@@ -127,9 +139,7 @@ export default function ContentLabPage() {
   return (
     <div className="h-[calc(100vh-64px)] w-full flex p-2 md:p-6 gap-4 bg-transparent overflow-hidden">
       {/* LEFT PANE: Sources */}
-      <div className="w-1/3 min-w-[320px] max-w-[400px] border border-linear-border/50 rounded-2xl bg-linear-surface/60 backdrop-blur-2xl flex flex-col shadow-[0_8px_30px_rgb(0,0,0,0.12)] relative overflow-hidden">
-        {/* Decorative Top Glow */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 opacity-50"></div>
+      <div className="w-1/3 min-w-[320px] max-w-[400px] section-card flex flex-col relative overflow-hidden">
         
         <div className="p-5 border-b border-linear-border/30 flex items-center justify-between">
           <div>
@@ -153,7 +163,7 @@ export default function ContentLabPage() {
             <button 
               type="submit" 
               disabled={isIngesting}
-              className="w-full flex items-center justify-center py-2.5 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 shadow-md shadow-cyan-500/20"
+              className="btn-primary w-full"
             >
               {isIngesting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
               {isIngesting ? "Đang xử lý dữ liệu..." : "Thêm Source"}

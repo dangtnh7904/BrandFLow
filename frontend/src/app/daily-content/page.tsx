@@ -139,20 +139,20 @@ export default function DailyContentPage() {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto w-full flex flex-col h-[calc(100vh)] overflow-hidden">
-      <header className="mb-6 shrink-0 mt-4 md:mt-0">
-        <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 mb-4 shadow-sm">
-          <Sparkles className="w-4 h-4 text-blue-500 mr-2" />
-          <span className="text-[11px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">{t('daily_content.badge')}</span>
+    <div className="page-container flex flex-col h-[calc(100vh)] overflow-hidden">
+      <header className="page-header shrink-0">
+        <div className="page-badge bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400">
+          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+          {t('daily_content.badge')}
         </div>
-        <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-foreground mb-3">{t('daily_content.title')}</h1>
-        <p className="text-linear-text-muted max-w-2xl text-base">{t('daily_content.desc')}</p>
+        <h1 className="page-title">{t('daily_content.title')}</h1>
+        <p className="page-desc max-w-2xl">{t('daily_content.desc')}</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 min-h-0 pb-6">
         {/* === CONFIGURATION PANEL === */}
         <div className="lg:col-span-5 xl:col-span-4 space-y-6 overflow-y-auto no-scrollbar pr-1 pb-10">
-          <div className="bg-linear-surface rounded-2xl border border-linear-border p-6 shadow-sm">
+          <div className="section-card">
             <h2 className="text-lg font-semibold text-foreground flex items-center mb-5">
               <PenSquare className="w-5 h-5 mr-2 text-blue-500" />
               {t('daily_content.config_title')}

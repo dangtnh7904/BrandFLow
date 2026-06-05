@@ -1223,6 +1223,7 @@ def run_pipeline(
 ) -> dict:
     """
     Pipeline tuyến tính: MasterPlanner → Python Interceptor → CFO/Persona Agents.
+    Now with TraceLogger + FinalOutputWriter integration.
     """
     print(f"\n{'═' * 70}")
     print(f"🚀 [PIPELINE START] Node-based Engine (Gumloop Architecture)")
@@ -1230,7 +1231,15 @@ def run_pipeline(
 
     import os
     from app.engine.executor import WorkflowExecutor
-    
+    from app.core.trace_logger import TraceLogger
+    from app.core.final_output_writer import FinalOutputWriter
+
+    run_id = str(uuid.uuid4())[:8]
+
+    # Initialize TraceLogger for this run
+    trace = TraceLogger(goal=goal, budget=budget, industry=industry, run_id=run_id)
+    trace.log("system", "system", f"Pipeline started: goal='{goal}', industry='{industry}', budget={budget:,}", step=0)
+
     initial_state = {
         "goal": goal,
         "industry": industry,
@@ -1243,7 +1252,8 @@ def run_pipeline(
         "scenario_type": scenario_type,
         "target_profit": target_profit,
         "idea_description": idea_description,
-        "agent_logs": []
+        "agent_logs": [],
+        "_trace_logger": trace,  # Pass trace to engine for per-node logging
     }
     
     workflow_path = os.path.join(os.path.dirname(__file__), "cmo_workflow.json")
@@ -1253,12 +1263,42 @@ def run_pipeline(
     
     # Kết quả trả về sau khi engine chạy hết graph
     export_result = final_state.get("final_export_result", {})
-    
+
+    # Log completion
+    trace.log("system", "system", f"Pipeline completed. Total cost: {export_result.get('actual_total_cost', 0):,} VND", step=999)
+
+    # Trace all agent_logs from execution
+    for i, log_entry in enumerate(final_state.get("agent_logs", []), 1):
+        agent_name = log_entry.get("agent", "unknown").lower()
+        trace.log(agent_name, "assistant", log_entry.get("message", ""), step=i)
+
+    trace.finalize()
+
+    # Write final output files
+    final_plan = export_result.get("final_plan", {})
+    writer = FinalOutputWriter(run_id=run_id)
+    try:
+        writer.write(
+            goal=goal,
+            budget=budget,
+            industry=industry,
+            approved=True,
+            plan=final_plan,
+            scores=export_result.get("scores", {}),
+            customer_feedback=export_result.get("customer_feedback", []),
+            cfo_decision=export_result.get("cfo_decision", {}),
+            review_board=export_result.get("review_board", {}),
+            rounds=1,
+        )
+    except Exception as e:
+        print(f"⚠️ [FinalOutput] Write failed (non-blocking): {e}")
+
     return {
-        "final_plan": export_result.get("final_plan", {}),
+        "final_plan": final_plan,
         "agent_logs": final_state.get("agent_logs", []),
         "actual_total_cost": export_result.get("actual_total_cost", 0),
-        "run_id": export_result.get("run_id", "")
+        "run_id": run_id,
+        "trace_dir": str(trace.output_dir),
     }
 
 def run_refinement_pipeline(
@@ -1268,7 +1308,15 @@ def run_refinement_pipeline(
 ) -> dict:
     """
     Pipeline (Refinement): Nhận phản hồi từ CEO và bắt Agent cập nhật kế hoạch.
+    Now with TraceLogger + FinalOutputWriter.
     """
+    from app.core.trace_logger import TraceLogger
+    from app.core.final_output_writer import FinalOutputWriter
+
+    run_id = str(uuid.uuid4())[:8]
+    trace = TraceLogger(goal=f"Refinement: {feedback[:50]}", budget=budget, run_id=run_id)
+    trace.log("system", "user", f"CEO Feedback: {feedback}", step=0)
+
     print(f"\n{'═' * 70}")
     print(f"🚀 [PIPELINE START] Refinement Arbitration")
     print(f"   Feedback: {feedback}")
@@ -1280,6 +1328,7 @@ def run_refinement_pipeline(
         feedback=feedback,
         budget=budget,
     )
+    trace.log("refiner", "assistant", f"Plan revised. Activities: {len(raw_plan.get('activity_and_financial_breakdown', []))}", step=1)
 
     # ── STEP 2: Python Interceptor (Kế toán Python) ──
     interceptor_result = python_interceptor(raw_plan, budget)
@@ -1287,9 +1336,9 @@ def run_refinement_pipeline(
     overflow_amount = interceptor_result["overflow_amount"]
     cut_items = interceptor_result["cut_items"]
     actual_cost = interceptor_result["final_total"]
+    trace.log("math_engine", "system", f"Interceptor: raw={interceptor_result['raw_total']:,}, final={actual_cost:,}, cut={len(cut_items)} items", step=2)
 
     # ── STEP 3: Agent 2 & Agent 3 chạy song song ──
-    # target_audience có thể nằm ở phase 1 hoặc 2. Ở đây extract nếu có.
     target_audience = "Khách hàng B2B"
     if "target_segments" in raw_plan and len(raw_plan["target_segments"]) > 0:
         target_audience = raw_plan["target_segments"][0].get("segment_name", "Khách hàng")
@@ -1312,6 +1361,9 @@ def run_refinement_pipeline(
                 f"CFO/PERSONA timeout sau {PARALLEL_AGENT_TIMEOUT_SECONDS} giay."
             ) from exc
 
+    trace.log("cfo", "assistant", cfo_comment, step=3)
+    trace.log("persona", "assistant", persona_comment, step=4)
+
     # ── KẾT QUẢ CUỐI CÙNG ──
     agent_logs = [
         {"agent": "CMO", "role": "Giám đốc Marketing", "message": f"Dạ, tôi đã sửa lại theo phản hồi của Sếp. Kế hoạch mới có tổng chi phí sơ bộ là {interceptor_result['raw_total']:,} VND."},
@@ -1328,10 +1380,28 @@ def run_refinement_pipeline(
     # Cập nhật mảng tactics trong raw_plan sau khi ep giá
     raw_plan["activity_and_financial_breakdown"] = final_plan_tactics.get("activity_and_financial_breakdown", [])
 
+    trace.log("system", "system", f"Refinement complete. Final cost: {actual_cost:,} VND", step=999)
+    trace.finalize()
+
+    # Write final output
+    writer = FinalOutputWriter(run_id=run_id)
+    try:
+        writer.write(
+            goal=f"Refinement: {feedback[:80]}",
+            budget=budget,
+            approved=True,
+            plan=raw_plan,
+            cfo_decision={"verdict": cfo_comment[:200]},
+            rounds=1,
+        )
+    except Exception:
+        pass
+
     return {
         "final_plan": raw_plan,
         "agent_logs": agent_logs,
         "actual_total_cost": interceptor_result['final_total'],
+        "run_id": run_id,
     }
 
 if __name__ == "__main__":

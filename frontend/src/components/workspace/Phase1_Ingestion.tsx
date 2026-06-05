@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Screen1_Source from './phase1/Screen1_Source';
+import ScreenBusinessIntent from './phase1/ScreenBusinessIntent';
 import Screen2_Wizard from './phase1/Screen2_Wizard';
 import Screen3_Dashboard from './phase1/Screen3_Dashboard';
 import Screen4_ObjectiveSetting from './phase1/Screen4_ObjectiveSetting';
@@ -11,8 +12,9 @@ import { useFormStore } from '@/store/useFormStore';
 import AmbientParticles from '@/components/AmbientParticles';
 
 export default function Phase1_Ingestion({ onGoToHub, onGoToWorkspace }: { onGoToHub: () => void, onGoToWorkspace: () => void }) {
-  // 1 = Source Selection, 2 = Wizard Form, 3 = DNA Dashboard, 3.5 = Feature Selector, 4 = Campaign Objective Setting
+  // 1 = Source Selection, 1.5 = Business Intent, 2 = Wizard Form, 3 = DNA Dashboard, 3.5 = Feature Selector, 4 = Campaign Objective Setting
   const [currentScreen, setCurrentScreen] = useState<number>(1);
+  const [intentNextPath, setIntentNextPath] = useState<'wizard' | 'dashboard'>('wizard');
   const generateAndSaveDNA = useFormStore(state => state.generateAndSaveDNA);
 
   const goToDashboard = async () => {
@@ -36,7 +38,20 @@ export default function Phase1_Ingestion({ onGoToHub, onGoToWorkspace }: { onGoT
  transition={{ duration: 0.4 }}
  className="absolute inset-0"
  >
- <Screen1_Source onNext={(path) => path === 'wizard' ? setCurrentScreen(2) : goToDashboard()} />
+ <Screen1_Source onNext={(path) => { setIntentNextPath(path); setCurrentScreen(1.5); }} />
+ </motion.div>
+ )}
+
+ {currentScreen === 1.5 && (
+ <motion.div 
+ key="screen-intent"
+ initial={{ opacity: 0, x: 50 }}
+ animate={{ opacity: 1, x: 0 }}
+ exit={{ opacity: 0, x: -50 }}
+ transition={{ duration: 0.4 }}
+ className="absolute inset-0"
+ >
+ <ScreenBusinessIntent onNext={() => intentNextPath === 'wizard' ? setCurrentScreen(2) : goToDashboard()} />
  </motion.div>
  )}
  

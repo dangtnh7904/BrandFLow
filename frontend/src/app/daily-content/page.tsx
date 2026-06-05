@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Copy, Send, CheckCircle2, Lock, ArrowRight, PenSquare, Image as ImageIcon, Flame, Users, Briefcase, Music, MoreHorizontal, Heart, MessageCircle, Share2, Compass } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFormStore } from '@/store/useFormStore';
+import DNAContextBanner from '@/components/shared/DNAContextBanner';
 
 export default function DailyContentPage() {
   const { t } = useLanguage();
@@ -148,6 +149,8 @@ export default function DailyContentPage() {
         <h1 className="page-title">{t('daily_content.title')}</h1>
         <p className="page-desc max-w-2xl">{t('daily_content.desc')}</p>
       </header>
+
+      <DNAContextBanner />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 min-h-0 pb-6">
         {/* === CONFIGURATION PANEL === */}

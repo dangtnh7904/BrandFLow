@@ -1,0 +1,11 @@
+BrandFlow Executive Summary (Run: f8d31fdf-585d-4694-8148-03c8a21e6bf7)
+Goal: Lập kế hoạch chiến lược | Budget: 0 VND
+Final Cost: 0 VND
+Status: REJECTED (Score: 54.0/100, Rounds: 3)
+---
+CFO Risk Comment:
+> CFO review skipped due to timeout.
+Customer Feedback:
+- Kế hoạch chưa rõ ràng, cần chứng minh ROI chi tiết hơn.
+---
+Key Tactics & KPIs:

@@ -56,9 +56,11 @@ except ImportError as _import_err:
         DocumentIngestor = None  # type: ignore
 
 from app.core.access_audit import VisitorAuditStore
-from app.core.database import init_db as init_form_db
+from app.core.database import init_db as init_form_db, get_db
+from sqlalchemy.orm import Session
 from app.api.form_routes import router as form_router
 from app.api.design_routes import router as design_router
+from app.api.onboarding_routes import router as onboarding_router
 from pydantic import BaseModel
 import os
 import uuid
@@ -225,7 +227,7 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(research_router)
 app.include_router(agent_builder_router, prefix="/api/v1/agents")
 app.include_router(form_router)
-
+app.include_router(onboarding_router)
 # ── Đăng ký Design Module Router ──────────────────────────────────
 app.include_router(design_router)
 
@@ -1781,8 +1783,19 @@ async def process_intake(request: RawInputRequest):
         # 1. Bóc tách
         parsed_data = analyze_raw_input(raw_text)
         
-        # Override budget nếu Frontend gửi lên giá trị cố định
-        if request.budget and request.budget >= 1000000:
+        # Override bằng business_intent nếu có
+        business_intent = request.business_intent or {}
+        if business_intent:
+            parsed_data["scenario_type"] = "idea_driven" if business_intent.get("mode") == "idea_first" else "budget_driven"
+            if business_intent.get("budget"):
+                parsed_data["budget"] = business_intent.get("budget")
+            if business_intent.get("idea"):
+                parsed_data["idea_description"] = business_intent.get("idea")
+            if business_intent.get("businessGoal"):
+                parsed_data["goal"] = business_intent.get("businessGoal")
+                
+        # Override budget nếu Frontend gửi lên giá trị cố định (legacy fallback)
+        elif request.budget and request.budget >= 1000000:
             parsed_data["budget"] = request.budget
         
         # 2. Kiểm tra

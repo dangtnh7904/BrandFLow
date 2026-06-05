@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFormStore } from '@/store/useFormStore';
 import { Loader2, Plus, PlaySquare, Globe, MessageSquare, PieChart, Send, Sparkles, BrainCircuit, Search, ChevronRight, Trash2, RefreshCw } from 'lucide-react';
+import DNAContextBanner from '@/components/shared/DNAContextBanner';
 
 export default function ContentLabPage() {
   const { t } = useLanguage();
@@ -137,7 +138,9 @@ export default function ContentLabPage() {
   const currentReport = activeSource ? activeSource.report : null;
 
   return (
-    <div className="h-[calc(100vh-64px)] w-full flex p-2 md:p-6 gap-4 bg-transparent overflow-hidden">
+    <div className="h-[calc(100vh-64px)] w-full flex flex-col p-2 md:p-6 bg-transparent overflow-hidden">
+      <DNAContextBanner />
+      <div className="flex-1 flex gap-4 overflow-hidden">
       {/* LEFT PANE: Sources */}
       <div className="w-1/3 min-w-[320px] max-w-[400px] section-card flex flex-col relative overflow-hidden">
         
@@ -465,6 +468,7 @@ export default function ContentLabPage() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

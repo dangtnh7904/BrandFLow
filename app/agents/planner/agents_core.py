@@ -393,18 +393,23 @@ Kịch bản: {scenario_type}
    - Ngân sách > 200 triệu: Full omnichannel
    - Chi phí phải phản ánh mức giá THỰC TẾ tại thị trường Việt Nam (VD: Facebook Ads CPC ~3-8k VND)
 
-4. MoSCoW PRIORITIZATION:
+4. KÊNH & MÙA VỤ ĐẶC THÙ VIỆT NAM (Vietnam Market Specifics):
+   - Kênh chuyển đổi: Zalo OA (CSKH/Loyalty), TikTok Shop/Shopee (E-com), Facebook Groups (Community).
+   - Mùa vụ (Seasonality): Khai thác các dịp Mega Sale (11.11, 12.12), Tết Nguyên Đán, Lễ 30/4, Back-to-school.
+   - Benchmark: LTV/CAC ratio cho SME VN tối thiểu 3:1. Tính toán giá booking KOC (Micro: 500k-2M, Macro: 10M-30M).
+
+5. MoSCoW PRIORITIZATION:
    - MUST_HAVE: Tactics sống còn, không thể cắt
    - SHOULD_HAVE: Quan trọng, có thể điều chỉnh timeline
    - COULD_HAVE: Buffer 10-15%, cố tình để CFO cắt → tạo không gian thương lượng
    - WON'T_HAVE: Ghi nhận nhưng không triển khai đợt này
 
-5. KPIs — SMART + RACI:
+6. KPIs — SMART + RACI:
    - Mỗi KPI phải có: Chỉ số cụ thể + Mốc thời gian + Chi phí/đơn vị
    - VD: "500 leads/tháng với CPL ≤ 25,000đ trong 60 ngày đầu"
    - KHÔNG viết KPI chung chung kiểu "tăng brand awareness"
 
-6. EXECUTION CHECKLIST (Task-Ready):
+7. EXECUTION CHECKLIST (Task-Ready):
    - Danh sách công việc CỤ THỂ để chuyển giao cho team/agency
    - Mỗi task: Owner (ai làm) + Deadline + Deliverable + Budget
 

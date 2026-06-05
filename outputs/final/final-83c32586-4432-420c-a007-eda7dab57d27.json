@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "run_id": "83c32586-4432-420c-a007-eda7dab57d27",
+    "goal": "Lập kế hoạch chiến lược",
+    "budget": 0,
+    "approved": false,
+    "rounds": 3,
+    "timestamp": "2026-06-05T16:41:56.545409"
+  },
+  "plan": {
+    "goal_setting": {},
+    "target_segments": [],
+    "benchmarks": [],
+    "gap_analysis_result": "{\"target_revenue\": 100000000, \"projected_baseline\": 0, \"gap_value\": 100000000, \"is_achievable_without_action\": false, \"advice\": \"Tập trung chiến lược Ansoff để lấp đầy GAP.\"}",
+    "ansoff_strategy": "",
+    "campaign_phasing": [],
+    "tactics_7ps": [],
+    "plan_5w1h": {},
+    "distribution_channels": {},
+    "integrated_matrix": {},
+    "omnichannel_crm_plan": [],
+    "risk_assessment": [],
+    "operational_risks": [],
+    "lead_quality_concerns": [
+      "AI lỗi parse"
+    ],
+    "coo_comment": "Lỗi parse AI COO. Bỏ qua để chạy tiếp.",
+    "sales_comment": "Lỗi parse AI Sales. Bỏ qua để chạy tiếp."
+  },
+  "scores": {
+    "rule_score": 45,
+    "client_self_score": 50,
+    "final_score": 54.0
+  },
+  "customer_feedback": [
+    "Kế hoạch chưa rõ ràng, cần chứng minh ROI chi tiết hơn."
+  ],
+  "cfo_decision": "CFO review skipped due to timeout."
+}

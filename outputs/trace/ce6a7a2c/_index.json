@@ -1,0 +1,8 @@
+{
+  "run_id": "ce6a7a2c",
+  "output_dir": "outputs\\trace\\ce6a7a2c",
+  "agents_traced": [
+    "system"
+  ],
+  "total_messages": 13
+}

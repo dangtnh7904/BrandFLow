@@ -15,6 +15,7 @@ class RawInputRequest(BaseModel):
     idea_description: Optional[str] = Field(None, description="Mô tả ý tưởng (nếu có)")
     comprehensive_form: Optional[Dict[str, Any]] = Field(None, description="Dữ liệu form trắc nghiệm")
     brand_dna: Optional[Dict[str, Any]] = Field(None, description="Brand DNA đã trích xuất")
+    business_intent: Optional[Dict[str, Any]] = Field(None, description="Ý định kinh doanh của user (mode, budget, idea, timeline, etc)")
     tenant_id: str = Field("default", description="Mã định danh phiên làm việc của người dùng")
 
 class ExtractDNARequest(BaseModel):

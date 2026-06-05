@@ -61,6 +61,16 @@ interface FormStore {
   rawIngestedContent: string;
   appendRawIngestedContent: (text: string) => void;
   generateAndSaveDNA: (documentContent?: string) => Promise<void>;
+
+  // Vietnam Market — Business Intent
+  businessIntent: {
+    mode: 'budget_first' | 'idea_first' | null;
+    budget?: number;
+    idea?: string;
+    businessGoal: string;
+    timeline: string;
+  };
+  setBusinessIntent: (intent: Partial<FormStore['businessIntent']>) => void;
 }
 
 export const useFormStore = create<FormStore>((set, get) => ({
@@ -78,6 +88,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
   brandDNA: null,
   intakeAnalysis: null,
   rawIngestedContent: "",
+  businessIntent: { mode: null, businessGoal: '', timeline: '3_months' },
 
   setExtractedAnswers: (answers) => set({ extractedAnswers: answers }),
   setWizardAnswer: (key, value) => set((state) => ({ wizardAnswers: { ...state.wizardAnswers, [key]: value } })),
@@ -85,6 +96,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
   setBrandDNA: (dna) => set({ brandDNA: dna }),
   setIntakeAnalysis: (data) => set({ intakeAnalysis: data }),
   appendRawIngestedContent: (text) => set((state) => ({ rawIngestedContent: state.rawIngestedContent + "\n" + text })),
+  setBusinessIntent: (intent) => set((state) => ({ businessIntent: { ...state.businessIntent, ...intent } })),
 
   initializeProject: async () => {
     if (get().initialized) return;
@@ -293,7 +305,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
   runDebateAndPlanning: async () => {
     try {
-      const { wizardAnswers, brandDNA, intakeAnalysis, extractedAnswers } = get();
+      const { wizardAnswers, brandDNA, intakeAnalysis, extractedAnswers, businessIntent } = get();
       const rawText = "Lập kế hoạch chiến lược theo form";
       const budgetRaw = wizardAnswers.budget ? String(wizardAnswers.budget).replace(/\D/g, '') : "0";
       const budget = budgetRaw ? parseInt(budgetRaw, 10) : 0;
@@ -302,8 +314,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
         raw_text: rawText, 
         comprehensive_form: wizardAnswers,
         tenant_id: getUserId() || "anonymous",
-        budget: budget,
-        brand_dna: brandDNA
+        budget: businessIntent.mode === 'budget_first' && businessIntent.budget ? businessIntent.budget : budget,
+        brand_dna: brandDNA,
+        business_intent: businessIntent
       };
 
       const res = await fetch(`${API_URL}/api/v1/planning/intake`, {

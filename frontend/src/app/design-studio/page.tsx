@@ -13,8 +13,8 @@ import {
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import dynamic from 'next/dynamic';
-
 import { useFormStore } from '@/store/useFormStore';
+import DNAContextBanner from '@/components/shared/DNAContextBanner';
 
 const SlideEditor = dynamic(() => import('@/components/deck-builder/SlideEditor'), { ssr: false });
 
@@ -530,6 +530,8 @@ export default function DesignStudioPage() {
            </button>
         </div>
       </div>
+
+      <DNAContextBanner />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 min-h-0 pb-2">
         

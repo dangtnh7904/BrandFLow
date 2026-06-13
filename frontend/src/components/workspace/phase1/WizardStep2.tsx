@@ -38,7 +38,7 @@ import DynamicQuestionRenderer from './DynamicQuestionRenderer';
     }
   };
 
-  const audit = extractedAnswers?.strategic_marketing_audit;
+  const audit = (extractedAnswers?.strategic_marketing_audit as unknown as Record<string, any> | null) ?? null;
 
   return (
   <div className="space-y-12">

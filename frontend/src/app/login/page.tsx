@@ -1,18 +1,23 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Hexagon, Loader2 } from 'lucide-react';
+import { Mail, Lock, Hexagon, Loader2 } from 'lucide-react';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
 const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID";
-const LINKEDIN_CLIENT_ID = process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID || "YOUR_LINKEDIN_CLIENT_ID";
-const LINKEDIN_REDIRECT_URI = typeof window !== 'undefined' 
-  ? `${window.location.origin}/login` 
+const FACEBOOK_REDIRECT_URI = typeof window !== 'undefined'
+  ? `${window.location.origin}/login`
   : 'http://localhost:3000/login';
+
+type SocialProvider = 'google' | 'facebook';
+type SocialLoadingProvider = SocialProvider | 'linkedin';
+
+const providerLabels: Record<SocialProvider, string> = {
+  google: 'Google',
+  facebook: 'Facebook',
+};
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -20,23 +25,9 @@ function LoginForm() {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<'google' | 'facebook' | 'linkedin' | null>(null);
-  const router = useRouter();
+  const [socialLoading, setSocialLoading] = useState<SocialLoadingProvider | null>(null);
 
-  // ── Handle LinkedIn OAuth callback ──
-  React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    const state = params.get('state');
-    if (code && state === 'linkedin_oauth') {
-      setSocialLoading('linkedin');
-      handleSocialBackendAuth(code, 'linkedin');
-      // Clean URL
-      window.history.replaceState({}, '', '/login');
-    }
-  }, []);
-
-  const handleSocialBackendAuth = async (token: string, provider: 'google' | 'facebook' | 'linkedin') => {
+  const handleSocialBackendAuth = React.useCallback(async (token: string, provider: SocialProvider) => {
     try {
       const res = await fetch('/api/v1/auth/social', {
         method: 'POST',
@@ -46,7 +37,7 @@ function LoginForm() {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.detail || `Lỗi xác thực ${provider}`);
+        setError(data.detail || `Lỗi xác thực ${providerLabels[provider]}`);
         setSocialLoading(null);
         return;
       }
@@ -56,13 +47,33 @@ function LoginForm() {
       localStorage.setItem('brandflow_email', data.email);
       localStorage.setItem('brandflow_is_admin', data.is_admin);
       localStorage.removeItem('bf_ws_stage');
-      
+
       window.location.href = '/onboarding';
     } catch (err) {
-      setError(`Lỗi kết nối máy chủ khi đăng nhập ${provider}`);
+      setError(`Lỗi kết nối máy chủ khi đăng nhập ${providerLabels[provider]}`);
       setSocialLoading(null);
     }
-  };
+  }, []);
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const state = params.get('state') || hashParams.get('state');
+    const facebookToken = hashParams.get('access_token');
+    const linkedinCode = params.get('code');
+
+    if (facebookToken && state === 'facebook_oauth') {
+      setSocialLoading('facebook');
+      void handleSocialBackendAuth(facebookToken, 'facebook');
+      window.history.replaceState({}, '', '/login');
+      return;
+    }
+
+    if (linkedinCode && state === 'linkedin_oauth') {
+      setError('Đăng nhập LinkedIn chưa được backend hỗ trợ.');
+      window.history.replaceState({}, '', '/login');
+    }
+  }, [handleSocialBackendAuth]);
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -75,20 +86,24 @@ function LoginForm() {
     }
   });
 
-  const responseFacebook = (response: any) => {
-    if (response.accessToken) {
-       setSocialLoading('facebook');
-       handleSocialBackendAuth(response.accessToken, 'facebook');
-    } else {
-       setError('Đăng nhập Facebook thất bại');
-       setSocialLoading(null);
+  const loginWithFacebook = () => {
+    if (FACEBOOK_APP_ID === "YOUR_FACEBOOK_APP_ID") {
+      setSocialLoading('facebook');
+      void handleSocialBackendAuth('mock_facebook_token', 'facebook');
+      return;
     }
+
+    const oauthUrl = new URL('https://www.facebook.com/v19.0/dialog/oauth');
+    oauthUrl.searchParams.set('client_id', FACEBOOK_APP_ID);
+    oauthUrl.searchParams.set('redirect_uri', FACEBOOK_REDIRECT_URI);
+    oauthUrl.searchParams.set('state', 'facebook_oauth');
+    oauthUrl.searchParams.set('scope', 'email,public_profile');
+    oauthUrl.searchParams.set('response_type', 'token');
+    window.location.href = oauthUrl.toString();
   };
 
   const loginWithLinkedIn = () => {
-    const scope = 'openid%20profile%20email';
-    const url = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${encodeURIComponent(LINKEDIN_REDIRECT_URI)}&state=linkedin_oauth&scope=${scope}`;
-    window.location.href = url;
+    setError('Đăng nhập LinkedIn chưa được backend hỗ trợ.');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,7 +112,7 @@ function LoginForm() {
     setError('');
 
     const endpoint = isRegister ? '/api/v1/auth/register' : '/api/v1/auth/login';
-    
+
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -113,13 +128,11 @@ function LoginForm() {
         return;
       }
 
-      // Lưu trữ token
       localStorage.setItem('brandflow_token', data.access_token);
       localStorage.setItem('brandflow_user_id', data.user_id);
       localStorage.setItem('brandflow_email', data.email);
       localStorage.setItem('brandflow_is_admin', data.is_admin);
 
-      // Xóa cache rác
       localStorage.removeItem('bf_ws_stage');
       localStorage.removeItem('bf_phase1_screen');
       localStorage.removeItem('bf_doc_text');
@@ -133,19 +146,17 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#fafafa] dark:bg-[#0B1120] p-4 relative overflow-hidden font-sans">
-      {/* Background Orbs */}
       <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-cyan-400/10 dark:bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] bg-indigo-500/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-[420px] relative z-10"
       >
-        {/* Logo/Brand Area */}
         <div className="text-center mb-10 flex flex-col items-center">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -161,18 +172,14 @@ function LoginForm() {
           </p>
         </div>
 
-        {/* Card */}
         <div className="bg-white/80 dark:bg-[#111827]/80 backdrop-blur-2xl p-8 rounded-[2rem] border border-slate-200/60 dark:border-slate-800/60 shadow-[0_8px_40px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
-          
-          {/* Social Logins */}
           <div className="space-y-3 mb-8">
-            {/* Google */}
             <button
               type="button"
               onClick={() => {
                 if (GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID") {
                   setSocialLoading('google');
-                  handleSocialBackendAuth('mock_google_token', 'google');
+                  void handleSocialBackendAuth('mock_google_token', 'google');
                 } else {
                   loginWithGoogle();
                 }
@@ -183,46 +190,30 @@ function LoginForm() {
               {socialLoading === 'google' ? <Loader2 className="w-5 h-5 animate-spin text-slate-500" /> : (
                 <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
                   <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
-                    <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
-                    <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/>
-                    <path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"/>
-                    <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"/>
+                    <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z" />
+                    <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z" />
+                    <path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z" />
+                    <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z" />
                   </g>
                 </svg>
               )}
               Tiếp tục với Google
             </button>
-            
-            {/* Facebook */}
-            <FacebookLogin
-              appId={FACEBOOK_APP_ID}
-              callback={responseFacebook}
-              fields="name,email,picture"
-              render={(renderProps: any) => (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (FACEBOOK_APP_ID === "YOUR_FACEBOOK_APP_ID") {
-                      setSocialLoading('facebook');
-                      handleSocialBackendAuth('mock_facebook_token', 'facebook');
-                    } else {
-                      renderProps.onClick();
-                    }
-                  }}
-                  disabled={socialLoading !== null}
-                  className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-[#1f2937] border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 transition-all focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700 disabled:opacity-70"
-                >
-                  {socialLoading === 'facebook' ? <Loader2 className="w-5 h-5 animate-spin text-slate-500" /> : (
-                    <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-                      <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                  )}
-                  Tiếp tục với Facebook
-                </button>
-              )}
-            />
 
-            {/* LinkedIn */}
+            <button
+              type="button"
+              onClick={loginWithFacebook}
+              disabled={socialLoading !== null}
+              className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-[#1f2937] border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 transition-all focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700 disabled:opacity-70"
+            >
+              {socialLoading === 'facebook' ? <Loader2 className="w-5 h-5 animate-spin text-slate-500" /> : (
+                <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              )}
+              Tiếp tục với Facebook
+            </button>
+
             <button
               type="button"
               onClick={loginWithLinkedIn}
@@ -231,7 +222,7 @@ function LoginForm() {
             >
               {socialLoading === 'linkedin' ? <Loader2 className="w-5 h-5 animate-spin text-slate-500" /> : (
                 <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-                  <path fill="#0A66C2" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  <path fill="#0A66C2" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                 </svg>
               )}
               Tiếp tục với LinkedIn
@@ -249,7 +240,7 @@ function LoginForm() {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 className="bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 p-3 rounded-xl text-sm flex items-center gap-2"
@@ -324,8 +315,7 @@ function LoginForm() {
             </div>
           </form>
         </div>
-        
-        {/* Footer */}
+
         <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-8 font-medium">
           © 2026 BrandFlow AI. Protected by Advanced SSL.
         </p>

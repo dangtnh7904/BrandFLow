@@ -1,3 +1,5 @@
 {
-  "css.lint.unknownAtRules": "ignore"
+    "chat.tools.terminal.autoApprove": {
+        "npm install": true
+    }
 }

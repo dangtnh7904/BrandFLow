@@ -278,6 +278,10 @@ body.preview-mode .print-section-view button {
   display: none !important;
 }
 
+.executive-report-cover {
+  background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1000');
+}
+
 body.printing-section .sidebar-container,
 body.printing-section .b2b-header-nav,
 body.printing-section .print-hide,

@@ -244,8 +244,8 @@ export default function ExecutiveReport() {
           ======================= */}
       <div className={pageClass}>
         <div className="absolute top-0 left-0 w-full h-[60%]">
-          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1000')" }}></div>
-          <div className="absolute inset-0 bg-slate-900/60"></div>
+          <div className="w-full h-full bg-cover bg-center executive-report-cover"></div>
+          <div className="absolute inset-0 bg-slate-900/60 mix-blend-multiply"></div>
           <div className="absolute top-10 left-10 text-white font-black text-4xl tracking-tighter flex items-center">
             <Zap className="w-8 h-8 text-cyan-400 mr-2" />
             BrandFlow<span className="text-cyan-400">.</span>

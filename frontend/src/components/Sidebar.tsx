@@ -90,6 +90,7 @@ const MENU_ITEMS = [
   { id: 'content-lab', langKey: 'sidebar.content_lab', icon: Sparkles, href: '/content-lab', group: 'core', desc: { en: 'Advanced AI', vi: 'AI nâng cao' } },
   { id: 'b2b', langKey: 'b2b.title', icon: Briefcase, href: '/planning', group: 'advanced', desc: { en: 'Marketing Plan', vi: 'Kế hoạch MKT' } },
   { id: 'dashboard', langKey: 'sidebar.dashboard', icon: LayoutDashboard, href: '/dashboard', group: 'advanced', desc: { en: 'Analytics', vi: 'Phân tích' } },
+  { id: 'analytics', langKey: 'sidebar.dashboard', icon: LayoutDashboard, href: '/analytics', group: 'advanced', desc: { en: 'GTM Strategy', vi: 'Chiến lược GTM' } },
   { id: 'agents', langKey: 'sidebar.agents', icon: Network, href: '/agents', group: 'system', desc: { en: 'Agent Builder', vi: 'Xây Agent' } },
   { id: 'assets', langKey: 'sidebar.assets', icon: FolderGit2, href: '/assets', group: 'system', desc: { en: 'Files', vi: 'Tài liệu' } },
   { id: 'settings', langKey: 'sidebar.settings', icon: Settings, href: '/settings', group: 'system', desc: { en: 'Config', vi: 'Cấu hình' } },

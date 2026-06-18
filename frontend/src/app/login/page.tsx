@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Mail, Lock, Hexagon, Loader2 } from 'lucide-react';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
+
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
 const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID";
 const FACEBOOK_REDIRECT_URI = typeof window !== 'undefined'
@@ -199,6 +200,7 @@ function LoginForm() {
               )}
               Tiếp tục với Google
             </button>
+
 
             <button
               type="button"

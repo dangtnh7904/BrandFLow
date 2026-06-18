@@ -374,6 +374,9 @@ function PrintStandee() {
         </div>
 
       </div>
+      
+      {/* Vinyl Glare Overlay for Print */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0) 60%)', pointerEvents: 'none', zIndex: 100 }} />
     </div>
   );
 }
@@ -622,6 +625,8 @@ function PrintOnePager() {
         </div>
       </div>
 
+      {/* Premium Glossy Paper Glare Overlay for Print */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%)', pointerEvents: 'none', zIndex: 100 }} />
     </div>
   );
 }

@@ -224,8 +224,20 @@ function PrintStandee() {
         <circle cx="650" cy="350" r="8" fill="#fff" />
         <circle cx="650" cy="350" r="30" fill="none" stroke="#06B6D4" strokeWidth="2" strokeDasharray="4 4" />
         
+        {/* Tiny Data Nodes scattered across blueprint */}
+        <circle cx="100" cy="800" r="4" fill="#06B6D4" opacity="0.6" />
+        <circle cx="100" cy="800" r="12" fill="none" stroke="#06B6D4" strokeWidth="1" opacity="0.3" />
+        <line x1="100" y1="800" x2="250" y2="750" stroke="#06B6D4" strokeWidth="1" strokeDasharray="2 4" opacity="0.3" />
+        <circle cx="250" cy="750" r="3" fill="#3B82F6" opacity="0.8" />
+        
+        <circle cx="700" cy="1500" r="5" fill="#3B82F6" opacity="0.5" />
+        <circle cx="700" cy="1500" r="20" fill="none" stroke="#3B82F6" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
+        <line x1="700" y1="1500" x2="600" y2="1650" stroke="#3B82F6" strokeWidth="1" strokeDasharray="2 4" opacity="0.3" />
+        <circle cx="600" cy="1650" r="3" fill="#06B6D4" opacity="0.8" />
+        <circle cx="600" cy="1650" r="15" fill="none" stroke="#06B6D4" strokeWidth="1" opacity="0.3" />
+        
         {/* Giant Watermark Hexagon */}
-        <g transform="translate(-100, 1200) scale(4) rotate(15)" opacity="0.03">
+        <g transform="translate(-100, 1200) scale(4) rotate(15)" opacity="0.08">
           <polygon points="50,1 95,25 95,75 50,99 5,75 5,25" fill="none" stroke="#fff" strokeWidth="4" />
           <polygon points="50,15 80,32 80,68 50,85 20,68 20,32" fill="none" stroke="#06B6D4" strokeWidth="2" />
         </g>
@@ -235,7 +247,7 @@ function PrintStandee() {
       <div style={{
         position: 'absolute', right: -120, top: '40%', transform: 'rotate(-90deg)',
         fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 160, fontWeight: 900,
-        color: 'transparent', WebkitTextStroke: '2px rgba(255,255,255,0.04)', letterSpacing: '0.1em',
+        color: 'transparent', WebkitTextStroke: '3px rgba(255,255,255,0.1)', letterSpacing: '0.1em',
         whiteSpace: 'nowrap', zIndex: 0
       }}>
         SYSTEM V2.0
@@ -448,14 +460,14 @@ function PrintInfographic() {
         </div>
 
         {/* Node MATH ENGINE */}
-        <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-          <div style={{ padding: '30px', background: '#0F172A', border: '2px solid #06B6D4', borderRadius: 30, textAlign: 'center', width: '90%', position: 'relative', boxShadow: '0 20px 50px rgba(6,182,212,0.15)' }}>
-            <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', background: '#06B6D4', color: '#030712', padding: '6px 20px', borderRadius: 20, fontWeight: 800, fontSize: 12, letterSpacing: '0.1em' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '30px 0' }}>
+          <div style={{ padding: '34px', background: 'linear-gradient(180deg, #0F172A 0%, #083344 100%)', border: '3px solid #06B6D4', borderRadius: 30, textAlign: 'center', width: '92%', position: 'relative', boxShadow: '0 0 60px rgba(6,182,212,0.3), inset 0 0 30px rgba(6,182,212,0.15)' }}>
+            <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', background: '#06B6D4', color: '#030712', padding: '6px 24px', borderRadius: 20, fontWeight: 900, fontSize: 14, letterSpacing: '0.15em', boxShadow: '0 0 20px rgba(6,182,212,0.8)' }}>
               CORE PROCESSING
             </div>
-            <h2 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 40, fontWeight: 900, color: '#fff', margin: '16px 0 10px 0' }}>PYTHON MATH ENGINE</h2>
-            <p style={{ fontSize: 16, color: '#cbd5e1', maxWidth: 600, margin: '0 auto', lineHeight: 1.5 }}>
-              Code Python thuần tính toán Weighted SWOT Score. <strong>Cắt đứt hoàn toàn sự ảo giác tính toán của AI.</strong>
+            <h2 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 44, fontWeight: 900, color: '#fff', margin: '20px 0 12px 0', textShadow: '0 0 20px rgba(255,255,255,0.3)' }}>PYTHON MATH ENGINE</h2>
+            <p style={{ fontSize: 16, color: '#e2e8f0', maxWidth: 650, margin: '0 auto', lineHeight: 1.6 }}>
+              Thuật toán mô hình tĩnh tĩnh toán Weighted SWOT Score & Financial Metrics. <strong>Phủ quyết tuyệt đối mọi sự ảo giác tính toán của AI.</strong>
             </p>
           </div>
         </div>
@@ -465,9 +477,6 @@ function PrintInfographic() {
           <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>03</div>
           <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Strategy & Tactical Budgeting</h3>
-            <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>Chọn chiến lược Ansoff. Python Interceptor tự động cắt giảm ngân sách dựa trên MoSCoW framework.</p>
-          </div>
-        </div>
         {/* Node 4 */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%', alignSelf: 'flex-end' }}>
           <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
@@ -519,81 +528,81 @@ function PrintOnePager() {
       <div style={{ position: 'absolute', bottom: '-10%', left: '-20%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
 
       {/* ── HEADER ── */}
-      <div style={{ position: 'relative', zIndex: 10, padding: '40px 50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Logo size={50} dark={false} />
+      <div style={{ position: 'relative', zIndex: 10, padding: '30px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Logo size={40} dark={false} />
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#06B6D4', letterSpacing: '0.3em', textTransform: 'uppercase' }}>PRODUCT SPECIFICATION</div>
-          <div style={{ fontSize: 10, color: '#64748b', marginTop: 4, letterSpacing: '0.1em' }}>DOC.REF: B2B-MKT-26 / A4</div>
+          <div style={{ fontSize: 11, fontWeight: 800, color: '#06B6D4', letterSpacing: '0.3em', textTransform: 'uppercase' }}>PRODUCT SPECIFICATION</div>
+          <div style={{ fontSize: 9, color: '#64748b', marginTop: 4, letterSpacing: '0.1em' }}>DOC.REF: B2B-MKT-26 / A4</div>
         </div>
       </div>
 
       {/* ── HERO TYPOGRAPHY ── */}
-      <div style={{ position: 'relative', zIndex: 10, padding: '20px 50px 0', display: 'flex', flexDirection: 'column' }}>
-        <h1 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 64, fontWeight: 900, lineHeight: 1, letterSpacing: '-0.02em', margin: 0, textTransform: 'uppercase' }}>
+      <div style={{ position: 'relative', zIndex: 10, padding: '10px 40px 0', display: 'flex', flexDirection: 'column' }}>
+        <h1 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 52, fontWeight: 900, lineHeight: 1, letterSpacing: '-0.02em', margin: 0, textTransform: 'uppercase' }}>
           <span style={{ color: '#fff' }}>Hệ Điều Hành</span><br/>
           <span style={{ 
             background: 'linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
           }}>Marketing B2B</span>
         </h1>
-        <p style={{ fontSize: 16, color: '#94a3b8', marginTop: 20, maxWidth: 400, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 16, maxWidth: 400, lineHeight: 1.6 }}>
           Tự động hóa toàn bộ quy trình lên chiến lược Marketing B2B với 5 AI Agents chuyên biệt và Python Math Engine độc quyền chống ảo giác.
         </p>
       </div>
 
       {/* ── MASSIVE METRICS (Like Standee) ── */}
-      <div style={{ position: 'relative', zIndex: 10, padding: '40px 50px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 30 }}>
+      <div style={{ position: 'relative', zIndex: 10, padding: '24px 40px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
         
         {/* Metric 1 */}
-        <div style={{ position: 'relative', padding: '30px', background: 'rgba(255,255,255,0.02)', borderRadius: 24, border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#06B6D4', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>Conversion Rate</div>
+        <div style={{ position: 'relative', padding: '24px', background: 'rgba(255,255,255,0.02)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: '#06B6D4', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 6 }}>Conversion Rate</div>
           <div style={{
-            fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, lineHeight: 1,
+            fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 64, fontWeight: 900, lineHeight: 1,
             background: 'linear-gradient(135deg, #fff 20%, #06B6D4 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
-          }}>10%</div>
-          <div style={{ fontSize: 12, color: '#64748b', marginTop: 16 }}>Tỷ lệ chuyển đổi trung bình B2B</div>
-          <svg width="100%" height="60" style={{ position: 'absolute', bottom: 0, left: 0 }}>
-            <path d="M0,60 Q100,0 200,60 Z" fill="rgba(6,182,212,0.1)" />
-            <path d="M0,60 Q100,30 200,60 Z" fill="rgba(6,182,212,0.2)" />
+          }}>10<span style={{ fontSize: 32, opacity: 0.8 }}>%</span></div>
+          <div style={{ fontSize: 11, color: '#64748b', marginTop: 12 }}>Tỷ lệ chuyển đổi trung bình B2B</div>
+          <svg width="100%" height="40" style={{ position: 'absolute', bottom: 0, left: 0 }}>
+            <path d="M0,40 Q100,0 200,40 Z" fill="rgba(6,182,212,0.1)" />
+            <path d="M0,40 Q100,20 200,40 Z" fill="rgba(6,182,212,0.2)" />
           </svg>
         </div>
 
         {/* Metric 2 */}
-        <div style={{ position: 'relative', padding: '30px', background: 'rgba(255,255,255,0.02)', borderRadius: 24, border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#3B82F6', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>Time Saved</div>
+        <div style={{ position: 'relative', padding: '24px', background: 'rgba(255,255,255,0.02)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: '#3B82F6', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 6 }}>Time Saved</div>
           <div style={{
-            fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, lineHeight: 1,
+            fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 64, fontWeight: 900, lineHeight: 1,
             background: 'linear-gradient(135deg, #fff 20%, #3B82F6 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
-          }}>85%</div>
-          <div style={{ fontSize: 12, color: '#64748b', marginTop: 16 }}>Rút ngắn quy trình hoạch định</div>
-          <svg width="100%" height="60" style={{ position: 'absolute', bottom: 0, left: 0 }}>
-            <path d="M0,60 Q100,0 200,60 Z" fill="rgba(37,99,235,0.1)" />
-            <path d="M0,60 Q100,30 200,60 Z" fill="rgba(37,99,235,0.2)" />
+          }}>85<span style={{ fontSize: 32, opacity: 0.8 }}>%</span></div>
+          <div style={{ fontSize: 11, color: '#64748b', marginTop: 12 }}>Rút ngắn quy trình hoạch định</div>
+          <svg width="100%" height="40" style={{ position: 'absolute', bottom: 0, left: 0 }}>
+            <path d="M0,40 Q100,0 200,40 Z" fill="rgba(37,99,235,0.1)" />
+            <path d="M0,40 Q100,20 200,40 Z" fill="rgba(37,99,235,0.2)" />
           </svg>
         </div>
 
       </div>
 
       {/* ── CORE FEATURES (Glassmorphism Cards) ── */}
-      <div style={{ position: 'relative', zIndex: 10, padding: '0 50px', display: 'flex', flexDirection: 'column', gap: 20, flex: 1 }}>
+      <div style={{ position: 'relative', zIndex: 10, padding: '0 40px', display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
         
         {/* Feature 1 */}
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'rgba(15,23,42,0.6)', padding: '24px 30px', borderRadius: 20, borderLeft: '4px solid #06B6D4' }}>
-          <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(6,182,212,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#06B6D4', fontSize: 24, fontWeight: 900, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>01</div>
+        <div style={{ display: 'flex', gap: 20, alignItems: 'center', background: 'rgba(15,23,42,0.6)', padding: '16px 24px', borderRadius: 16, borderLeft: '4px solid #06B6D4', boxShadow: '0 0 20px rgba(6,182,212,0.15)' }}>
+          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(6,182,212,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#06B6D4', fontSize: 20, fontWeight: 900, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>01</div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>5 AI Agents Chuyên Biệt</div>
-            <div style={{ fontSize: 12, color: '#94a3b8' }}>Intake, Strategy, Design, Content giao tiếp và phân tích chéo như một đội ngũ Agency B2B thực sự.</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 2 }}>5 AI Agents Chuyên Biệt</div>
+            <div style={{ fontSize: 11, color: '#94a3b8' }}>Intake, Strategy, Design, Content giao tiếp và phân tích chéo như một đội ngũ Agency B2B thực sự.</div>
           </div>
         </div>
 
         {/* Feature 2 */}
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'rgba(15,23,42,0.6)', padding: '24px 30px', borderRadius: 20, borderLeft: '4px solid #3B82F6' }}>
-          <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(37,99,235,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6', fontSize: 24, fontWeight: 900, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>02</div>
+        <div style={{ display: 'flex', gap: 20, alignItems: 'center', background: 'rgba(15,23,42,0.6)', padding: '16px 24px', borderRadius: 16, borderLeft: '4px solid #3B82F6', boxShadow: '0 0 20px rgba(37,99,235,0.15)' }}>
+          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(37,99,235,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6', fontSize: 20, fontWeight: 900, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>02</div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Python Math Engine</div>
-            <div style={{ fontSize: 12, color: '#94a3b8' }}>Mô hình tĩnh kiểm toán tài chính (CAC, ROI, CPL), phủ quyết tuyệt đối các đề xuất AI gây rủi ro ngân sách.</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 2 }}>Python Math Engine</div>
+            <div style={{ fontSize: 11, color: '#94a3b8' }}>Mô hình tĩnh kiểm toán tài chính (CAC, ROI, CPL), phủ quyết tuyệt đối các đề xuất AI gây rủi ro ngân sách.</div>
           </div>
         </div>
 

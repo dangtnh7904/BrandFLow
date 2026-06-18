@@ -312,8 +312,7 @@ function PrintStandee() {
               <div style={{ fontSize: 16, fontWeight: 800, color: '#94a3b8', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 20 }}>Conversion Rate</div>
               <div style={{
                 fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 140, fontWeight: 900, lineHeight: 1,
-                background: 'linear-gradient(135deg, #fff 20%, #06B6D4 100%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+                color: '#06B6D4'
               }}>
                 10<span style={{ fontSize: 60, opacity: 0.8 }}>%</span>
               </div>
@@ -335,8 +334,7 @@ function PrintStandee() {
               <div style={{ fontSize: 16, fontWeight: 800, color: '#94a3b8', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 20 }}>Time Saved</div>
               <div style={{
                 fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 140, fontWeight: 900, lineHeight: 1,
-                background: 'linear-gradient(135deg, #fff 20%, #3B82F6 100%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+                color: '#3B82F6'
               }}>
                 85<span style={{ fontSize: 60, opacity: 0.8 }}>%</span>
               </div>
@@ -527,8 +525,7 @@ function PrintOnePager() {
         <h1 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 64, fontWeight: 900, lineHeight: 1, letterSpacing: '-0.02em', margin: 0, textTransform: 'uppercase' }}>
           <span style={{ color: '#fff' }}>Hệ Điều Hành</span><br/>
           <span style={{ 
-            background: 'linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+            color: '#06B6D4'
           }}>Marketing B2B</span>
         </h1>
         <p style={{ fontSize: 16, color: '#94a3b8', marginTop: 20, maxWidth: 400, lineHeight: 1.6 }}>
@@ -544,8 +541,7 @@ function PrintOnePager() {
           <div style={{ fontSize: 12, fontWeight: 800, color: '#06B6D4', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>Conversion Rate</div>
           <div style={{
             fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, lineHeight: 1,
-            background: 'linear-gradient(135deg, #fff 20%, #06B6D4 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+            color: '#06B6D4'
           }}>10<span style={{ fontSize: 40, opacity: 0.8 }}>%</span></div>
           <div style={{ fontSize: 12, color: '#64748b', marginTop: 16 }}>Tỷ lệ chuyển đổi trung bình B2B</div>
           <svg width="100%" height="60" style={{ position: 'absolute', bottom: 0, left: 0 }}>
@@ -559,8 +555,7 @@ function PrintOnePager() {
           <div style={{ fontSize: 12, fontWeight: 800, color: '#3B82F6', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>Time Saved</div>
           <div style={{
             fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, lineHeight: 1,
-            background: 'linear-gradient(135deg, #fff 20%, #3B82F6 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+            color: '#3B82F6'
           }}>85<span style={{ fontSize: 40, opacity: 0.8 }}>%</span></div>
           <div style={{ fontSize: 12, color: '#64748b', marginTop: 16 }}>Rút ngắn quy trình hoạch định</div>
           <svg width="100%" height="60" style={{ position: 'absolute', bottom: 0, left: 0 }}>

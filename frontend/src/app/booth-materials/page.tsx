@@ -290,7 +290,7 @@ function PrintStandee() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
             {[
               { num: '01', title: '5 AI Agents Chuyên Biệt', desc: 'Intake, Strategy, Design, Content giao tiếp và phân tích chéo như một đội ngũ thực sự.', icon: '⚡' },
-              { num: '02', title: 'Python Math Engine', desc: 'Tính toán Weighted SWOT, phủ quyết các đề xuất AI không khả thi về mặt tài chính.', icon: '🛡️' },
+              { num: '02', title: 'AI CFO & Cross-Audit', desc: 'Hệ thống tự phản biện. AI CFO dự báo ROI và phủ quyết tuyệt đối các chiến lược rủi ro từ Marketer AI.', icon: '🛡️' },
               { num: '03', title: 'Master Blueprint PDF', desc: 'Xuất bản kế hoạch dưới dạng báo cáo thuyết trình đầu tư chuyên nghiệp trong vài phút.', icon: '📄' },
             ].map((f, i) => (
               <div key={i} style={{ display: 'flex', gap: 40, alignItems: 'flex-start', paddingLeft: 80, position: 'relative' }}>
@@ -465,9 +465,9 @@ function PrintInfographic() {
             <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', background: '#06B6D4', color: '#030712', padding: '6px 24px', borderRadius: 20, fontWeight: 900, fontSize: 14, letterSpacing: '0.15em', boxShadow: '0 0 20px rgba(6,182,212,0.8)' }}>
               CORE PROCESSING
             </div>
-            <h2 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 44, fontWeight: 900, color: '#fff', margin: '20px 0 12px 0', textShadow: '0 0 20px rgba(255,255,255,0.3)' }}>PYTHON MATH ENGINE</h2>
+            <h2 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 44, fontWeight: 900, color: '#fff', margin: '20px 0 12px 0', textShadow: '0 0 20px rgba(255,255,255,0.3)' }}>AI CFO & CROSS-AUDIT</h2>
             <p style={{ fontSize: 16, color: '#e2e8f0', maxWidth: 650, margin: '0 auto', lineHeight: 1.6 }}>
-              Thuật toán mô hình tĩnh tĩnh toán Weighted SWOT Score & Financial Metrics. <strong>Phủ quyết tuyệt đối mọi sự ảo giác tính toán của AI.</strong>
+              Cơ chế Thẩm định chéo tự trị (Autonomous Syndicate). <strong>CFO AI tự động dự báo ROI, ép KPI và phủ quyết các chiến lược gây lãng phí ngân sách.</strong>
             </p>
           </div>
         </div>
@@ -477,7 +477,7 @@ function PrintInfographic() {
           <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>03</div>
           <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Strategy & Tactical Budgeting</h3>
-            <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>Chọn chiến lược Ansoff. Python Interceptor tự động cắt giảm ngân sách dựa trên MoSCoW framework.</p>
+            <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>Chọn chiến lược Ansoff. AI CFO tự động cắt giảm ngân sách dựa trên MoSCoW framework.</p>
           </div>
         </div>
         {/* Node 4 */}
@@ -549,7 +549,7 @@ function PrintOnePager() {
           }}>Marketing B2B</span>
         </h1>
         <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 16, maxWidth: 400, lineHeight: 1.6 }}>
-          Tự động hóa toàn bộ quy trình lên chiến lược Marketing B2B với 5 AI Agents chuyên biệt và Python Math Engine độc quyền chống ảo giác.
+          Tự động hóa toàn bộ quy trình chiến lược Marketing B2B với 5 AI Agents chuyên biệt và Cơ chế AI CFO Thẩm định chéo chống rủi ro ngân sách.
         </p>
       </div>
 
@@ -604,8 +604,8 @@ function PrintOnePager() {
         <div style={{ display: 'flex', gap: 20, alignItems: 'center', background: 'rgba(15,23,42,0.6)', padding: '16px 24px', borderRadius: 16, borderLeft: '4px solid #3B82F6', boxShadow: '0 0 20px rgba(37,99,235,0.15)' }}>
           <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(37,99,235,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6', fontSize: 20, fontWeight: 900, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>02</div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 2 }}>Python Math Engine</div>
-            <div style={{ fontSize: 11, color: '#94a3b8' }}>Mô hình tĩnh kiểm toán tài chính (CAC, ROI, CPL), phủ quyết tuyệt đối các đề xuất AI gây rủi ro ngân sách.</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 2 }}>AI CFO & Cross-Audit</div>
+            <div style={{ fontSize: 11, color: '#94a3b8' }}>Hệ thống tự phản biện. AI CFO dự báo ROI và phủ quyết tuyệt đối các chiến lược rủi ro từ Marketer AI.</div>
           </div>
         </div>
 

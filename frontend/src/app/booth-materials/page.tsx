@@ -306,15 +306,14 @@ function PrintStandee() {
           
           {/* Conversion */}
           <div style={{ position: 'relative', padding: '60px', background: 'rgba(255,255,255,0.02)', borderRadius: 40, border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}>
-            <div style={{ position: 'absolute', top: '-20%', left: '-20%', width: '140%', height: '140%', background: 'radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 60%)', filter: 'blur(40px)', zIndex: 0 }} />
+            <div style={{ position: 'absolute', top: '-20%', left: '-20%', width: '140%', height: '140%', background: 'radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 60%)', zIndex: 0 }} />
             
             <div style={{ position: 'relative', zIndex: 10 }}>
               <div style={{ fontSize: 16, fontWeight: 800, color: '#94a3b8', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 20 }}>Conversion Rate</div>
               <div style={{
                 fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 140, fontWeight: 900, lineHeight: 1,
                 background: 'linear-gradient(135deg, #fff 20%, #06B6D4 100%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 20px 40px rgba(6,182,212,0.4))'
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
               }}>
                 10<span style={{ fontSize: 60, opacity: 0.8 }}>%</span>
               </div>
@@ -330,15 +329,14 @@ function PrintStandee() {
 
           {/* Time Saved */}
           <div style={{ position: 'relative', padding: '60px', background: 'rgba(255,255,255,0.02)', borderRadius: 40, border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}>
-            <div style={{ position: 'absolute', top: '-20%', left: '-20%', width: '140%', height: '140%', background: 'radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 60%)', filter: 'blur(40px)', zIndex: 0 }} />
+            <div style={{ position: 'absolute', top: '-20%', left: '-20%', width: '140%', height: '140%', background: 'radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 60%)', zIndex: 0 }} />
             
             <div style={{ position: 'relative', zIndex: 10 }}>
               <div style={{ fontSize: 16, fontWeight: 800, color: '#94a3b8', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 20 }}>Time Saved</div>
               <div style={{
                 fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 140, fontWeight: 900, lineHeight: 1,
                 background: 'linear-gradient(135deg, #fff 20%, #3B82F6 100%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 20px 40px rgba(37,99,235,0.4))'
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
               }}>
                 85<span style={{ fontSize: 60, opacity: 0.8 }}>%</span>
               </div>
@@ -429,7 +427,7 @@ function PrintInfographic() {
         {/* Node 1 */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%' }}>
           <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>01</div>
-          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
+          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.95)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Goal Setting & Constraints</h3>
             <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>CMO AI thiết lập Sứ mệnh cốt lõi và <strong>Red Lines</strong> (Lằn ranh đỏ) — Những nguyên tắc doanh nghiệp tuyệt đối không được vi phạm.</p>
           </div>
@@ -437,7 +435,7 @@ function PrintInfographic() {
 
         {/* Node 2 */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%', alignSelf: 'flex-end' }}>
-          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
+          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.95)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Situation Audit (Gap Analysis)</h3>
             <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>Phân tệp khách hàng theo Needs-based Audience. Gán trọng số Critical Success Factors.</p>
           </div>
@@ -460,14 +458,14 @@ function PrintInfographic() {
         {/* Node 3 */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%' }}>
           <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>03</div>
-          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
+          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.95)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Strategy & Tactical Budgeting</h3>
             <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>Chọn chiến lược Ansoff. Python Interceptor tự động cắt giảm ngân sách dựa trên MoSCoW framework.</p>
           </div>
         </div>
         {/* Node 4 */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%', alignSelf: 'flex-end' }}>
-          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
+          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.95)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Cross-functional Review</h3>
             <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>CFO AI rà soát Downside Risk. Persona AI soát lỗi &quot;ngáo giá trị&quot; (Value Hallucination) trước khi chốt.</p>
           </div>
@@ -512,8 +510,8 @@ function PrintOnePager() {
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '40px 40px', zIndex: 0 }} />
       
       {/* Massive Glowing Orbs */}
-      <div style={{ position: 'absolute', top: '-10%', right: '-20%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
-      <div style={{ position: 'absolute', bottom: '-10%', left: '-20%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', top: '-10%', right: '-20%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', bottom: '-10%', left: '-20%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%)', zIndex: 0 }} />
 
       {/* ── HEADER ── */}
       <div style={{ position: 'relative', zIndex: 10, padding: '40px 50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -577,7 +575,7 @@ function PrintOnePager() {
       <div style={{ position: 'relative', zIndex: 10, padding: '0 50px', display: 'flex', flexDirection: 'column', gap: 20, flex: 1 }}>
         
         {/* Feature 1 */}
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'rgba(15,23,42,0.6)', padding: '24px 30px', borderRadius: 20, borderLeft: '4px solid #06B6D4' }}>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'rgba(15,23,42,0.95)', padding: '24px 30px', borderRadius: 20, borderLeft: '4px solid #06B6D4' }}>
           <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(6,182,212,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#06B6D4', fontSize: 24, fontWeight: 900, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>01</div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>5 AI Agents Chuyên Biệt</div>
@@ -586,7 +584,7 @@ function PrintOnePager() {
         </div>
 
         {/* Feature 2 */}
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'rgba(15,23,42,0.6)', padding: '24px 30px', borderRadius: 20, borderLeft: '4px solid #3B82F6' }}>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'rgba(15,23,42,0.95)', padding: '24px 30px', borderRadius: 20, borderLeft: '4px solid #3B82F6' }}>
           <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(37,99,235,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6', fontSize: 24, fontWeight: 900, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>02</div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Python Math Engine</div>
@@ -595,7 +593,7 @@ function PrintOnePager() {
         </div>
 
         {/* Feature 3 */}
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'rgba(15,23,42,0.6)', padding: '24px 30px', borderRadius: 20, borderLeft: '4px solid #10B981' }}>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'rgba(15,23,42,0.95)', padding: '24px 30px', borderRadius: 20, borderLeft: '4px solid #10B981' }}>
           <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10B981', fontSize: 24, fontWeight: 900, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>03</div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Master Blueprint PDF</div>

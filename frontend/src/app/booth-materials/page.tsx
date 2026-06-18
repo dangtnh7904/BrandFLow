@@ -316,7 +316,7 @@ function PrintStandee() {
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 filter: 'drop-shadow(0 20px 40px rgba(6,182,212,0.4))'
               }}>
-                10<span style={{ fontSize: 60, opacity: 0.8 }}>%</span>
+                10%
               </div>
               <div style={{ fontSize: 16, color: '#64748b', marginTop: 30, maxWidth: 300, margin: '30px auto 0' }}>Tỷ lệ chuyển đổi trung bình B2B</div>
             </div>
@@ -340,7 +340,7 @@ function PrintStandee() {
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 filter: 'drop-shadow(0 20px 40px rgba(37,99,235,0.4))'
               }}>
-                85<span style={{ fontSize: 60, opacity: 0.8 }}>%</span>
+                85%
               </div>
               <div style={{ fontSize: 16, color: '#64748b', marginTop: 30, maxWidth: 300, margin: '30px auto 0' }}>Rút ngắn quy trình hoạch định truyền thống</div>
             </div>
@@ -548,7 +548,7 @@ function PrintOnePager() {
             fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, lineHeight: 1,
             background: 'linear-gradient(135deg, #fff 20%, #06B6D4 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
-          }}>10<span style={{ fontSize: 40, opacity: 0.8 }}>%</span></div>
+          }}>10%</div>
           <div style={{ fontSize: 12, color: '#64748b', marginTop: 16 }}>Tỷ lệ chuyển đổi trung bình B2B</div>
           <svg width="100%" height="60" style={{ position: 'absolute', bottom: 0, left: 0 }}>
             <path d="M0,60 Q100,0 200,60 Z" fill="rgba(6,182,212,0.1)" />
@@ -563,7 +563,7 @@ function PrintOnePager() {
             fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, lineHeight: 1,
             background: 'linear-gradient(135deg, #fff 20%, #3B82F6 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
-          }}>85<span style={{ fontSize: 40, opacity: 0.8 }}>%</span></div>
+          }}>85%</div>
           <div style={{ fontSize: 12, color: '#64748b', marginTop: 16 }}>Rút ngắn quy trình hoạch định</div>
           <svg width="100%" height="60" style={{ position: 'absolute', bottom: 0, left: 0 }}>
             <path d="M0,60 Q100,0 200,60 Z" fill="rgba(37,99,235,0.1)" />
@@ -749,6 +749,9 @@ async function exportToPDF(elementId: string, filename: string, pdfW: number, pd
   // Ensure element is visible for capture
   const prev = el.style.display;
   el.style.display = 'flex';
+  
+  // WAIT FOR BROWSER TO COMPUTE LAYOUT AND PAINT CSS FILTERS
+  await new Promise(r => setTimeout(r, 150));
 
   // We use html-to-image which natively supports CSS filters, text gradients, etc.
   const { toPng } = await import('html-to-image');

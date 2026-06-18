@@ -404,7 +404,7 @@ function PrintInfographic() {
       width: w, height: h, background: '#050B14',
       fontFamily: 'var(--font-inter), sans-serif', color: '#fff',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
-      position: 'relative', padding: '60px'
+      position: 'relative', padding: '40px 50px'
     }}>
       {/* ── BACKGROUND ── */}
       <div style={{
@@ -426,85 +426,85 @@ function PrintInfographic() {
       </svg>
 
       {/* ── HEADER ── */}
-      <div style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 30 }}>
-        <Logo size={60} />
+      <div style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 20 }}>
+        <Logo size={50} />
         <div style={{ textAlign: 'right' }}>
-          <h1 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontWeight: 900, fontSize: 48, letterSpacing: '-0.02em', margin: 0, textTransform: 'uppercase' }}>
+          <h1 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontWeight: 900, fontSize: 40, letterSpacing: '-0.02em', margin: 0, textTransform: 'uppercase' }}>
             System Architecture
           </h1>
-          <div style={{ fontSize: 16, color: '#06B6D4', letterSpacing: '0.1em', marginTop: 8 }}>
+          <div style={{ fontSize: 14, color: '#06B6D4', letterSpacing: '0.1em', marginTop: 6 }}>
             AI-DRIVEN B2B MARKETING WORKFLOW
           </div>
         </div>
       </div>
 
       {/* ── FLOWCHART CONTENT ── */}
-      <div style={{ position: 'relative', zIndex: 10, flex: 1, display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 40 }}>
+      <div style={{ position: 'relative', zIndex: 10, flex: 1, display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 20 }}>
         
         {/* Node 1 */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%' }}>
-          <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>01</div>
-          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
-            <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Goal Setting & Constraints</h3>
-            <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>CMO AI thiết lập Sứ mệnh cốt lõi và <strong>Red Lines</strong> (Lằn ranh đỏ) — Những nguyên tắc doanh nghiệp tuyệt đối không được vi phạm.</p>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, width: '80%' }}>
+          <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 64, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>01</div>
+          <div style={{ padding: '20px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 16, flex: 1, backdropFilter: 'blur(10px)' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 6 }}>Goal Setting & Constraints</h3>
+            <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.5 }}>CMO AI thiết lập Sứ mệnh cốt lõi và <strong>Red Lines</strong> (Lằn ranh đỏ) — Những nguyên tắc doanh nghiệp tuyệt đối không được vi phạm.</p>
           </div>
         </div>
 
         {/* Node 2 */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%', alignSelf: 'flex-end' }}>
-          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
-            <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Situation Audit (Gap Analysis)</h3>
-            <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>Phân tệp khách hàng theo Needs-based Audience. Gán trọng số Critical Success Factors.</p>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, width: '80%', alignSelf: 'flex-end' }}>
+          <div style={{ padding: '20px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 16, flex: 1, backdropFilter: 'blur(10px)' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 6 }}>Situation Audit (Gap Analysis)</h3>
+            <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.5 }}>Phân tệp khách hàng theo Needs-based Audience. Gán trọng số Critical Success Factors.</p>
           </div>
-          <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>02</div>
+          <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 64, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>02</div>
         </div>
 
         {/* Node MATH ENGINE */}
-        <div style={{ display: 'flex', justifyContent: 'center', margin: '30px 0' }}>
-          <div style={{ padding: '34px', background: 'linear-gradient(180deg, #0F172A 0%, #083344 100%)', border: '3px solid #06B6D4', borderRadius: 30, textAlign: 'center', width: '92%', position: 'relative', boxShadow: '0 0 60px rgba(6,182,212,0.3), inset 0 0 30px rgba(6,182,212,0.15)' }}>
-            <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', background: '#06B6D4', color: '#030712', padding: '6px 24px', borderRadius: 20, fontWeight: 900, fontSize: 14, letterSpacing: '0.15em', boxShadow: '0 0 20px rgba(6,182,212,0.8)' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>
+          <div style={{ padding: '24px', background: 'linear-gradient(180deg, #0F172A 0%, #083344 100%)', border: '3px solid #06B6D4', borderRadius: 24, textAlign: 'center', width: '92%', position: 'relative', boxShadow: '0 0 60px rgba(6,182,212,0.3), inset 0 0 30px rgba(6,182,212,0.15)' }}>
+            <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: '#06B6D4', color: '#030712', padding: '4px 20px', borderRadius: 20, fontWeight: 900, fontSize: 12, letterSpacing: '0.15em', boxShadow: '0 0 20px rgba(6,182,212,0.8)' }}>
               CORE PROCESSING
             </div>
-            <h2 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 44, fontWeight: 900, color: '#fff', margin: '20px 0 12px 0', textShadow: '0 0 20px rgba(255,255,255,0.3)' }}>AI CFO & CROSS-AUDIT</h2>
-            <p style={{ fontSize: 16, color: '#e2e8f0', maxWidth: 650, margin: '0 auto', lineHeight: 1.6 }}>
+            <h2 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 36, fontWeight: 900, color: '#fff', margin: '16px 0 10px 0', textShadow: '0 0 20px rgba(255,255,255,0.3)' }}>AI CFO & CROSS-AUDIT</h2>
+            <p style={{ fontSize: 14, color: '#e2e8f0', maxWidth: 650, margin: '0 auto', lineHeight: 1.5 }}>
               Cơ chế Thẩm định chéo tự trị (Autonomous Syndicate). <strong>CFO AI tự động dự báo ROI, ép KPI và phủ quyết các chiến lược gây lãng phí ngân sách.</strong>
             </p>
           </div>
         </div>
 
         {/* Node 3 */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%' }}>
-          <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>03</div>
-          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
-            <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Strategy & Tactical Budgeting</h3>
-            <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>Chọn chiến lược Ansoff. AI CFO tự động cắt giảm ngân sách dựa trên MoSCoW framework.</p>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, width: '80%' }}>
+          <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 64, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>03</div>
+          <div style={{ padding: '20px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 16, flex: 1, backdropFilter: 'blur(10px)' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 6 }}>Strategy & Tactical Budgeting</h3>
+            <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.5 }}>Chọn chiến lược Ansoff. AI CFO tự động cắt giảm ngân sách dựa trên MoSCoW framework.</p>
           </div>
         </div>
         {/* Node 4 */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%', alignSelf: 'flex-end' }}>
-          <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
-            <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Cross-functional Review</h3>
-            <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>CFO AI rà soát Downside Risk. Persona AI soát lỗi &quot;ngáo giá trị&quot; (Value Hallucination) trước khi chốt.</p>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, width: '80%', alignSelf: 'flex-end' }}>
+          <div style={{ padding: '20px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 16, flex: 1, backdropFilter: 'blur(10px)' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 6 }}>Cross-functional Review</h3>
+            <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.5 }}>CFO AI rà soát Downside Risk. Persona AI soát lỗi &quot;ngáo giá trị&quot; (Value Hallucination) trước khi chốt.</p>
           </div>
-          <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>04</div>
+          <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 64, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>04</div>
         </div>
 
       </div>
 
       {/* ── FOOTER ── */}
-      <div style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 24, marginTop: 20 }}>
+      <div style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 20, marginTop: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 64, height: 64, background: '#fff', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
+          <div style={{ width: 60, height: 60, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 6 }}>
             <QRCodeSVG value="http://brandflowhust.vercel.app" style={{ width: 48, height: 48, color: '#030712' }} />
           </div>
           <div>
             <div style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>brandflow.ai</div>
-            <div style={{ fontSize: 12, color: '#94a3b8' }}>Quét mã QR để trải nghiệm Demo</div>
+            <div style={{ fontSize: 11, color: '#94a3b8' }}>Quét mã QR để trải nghiệm Demo</div>
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 12, color: '#06B6D4', fontWeight: 700, letterSpacing: '0.05em' }}>OUTPUT: MASTER BLUEPRINT PDF</div>
-          <div style={{ fontSize: 10, color: '#64748b', marginTop: 4 }}>Báo cáo chuẩn thuyết trình, Agency white-label.</div>
+          <div style={{ fontSize: 11, color: '#06B6D4', fontWeight: 700, letterSpacing: '0.05em' }}>OUTPUT: MASTER BLUEPRINT PDF</div>
+          <div style={{ fontSize: 9, color: '#64748b', marginTop: 4 }}>Báo cáo chuẩn thuyết trình, Agency white-label.</div>
         </div>
       </div>
     </div>

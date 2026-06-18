@@ -477,6 +477,9 @@ function PrintInfographic() {
           <div style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: 80, fontWeight: 900, color: 'rgba(255,255,255,0.05)', lineHeight: 0.8, alignSelf: 'center' }}>03</div>
           <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Strategy & Tactical Budgeting</h3>
+            <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>Chọn chiến lược Ansoff. Python Interceptor tự động cắt giảm ngân sách dựa trên MoSCoW framework.</p>
+          </div>
+        </div>
         {/* Node 4 */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, width: '80%', alignSelf: 'flex-end' }}>
           <div style={{ padding: '24px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 20, flex: 1, backdropFilter: 'blur(10px)' }}>

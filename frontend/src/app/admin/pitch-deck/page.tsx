@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Rocket, Layers } from 'lucide-react';
+import { Rocket, Layers, BookOpen } from 'lucide-react';
 import PitchDeckSlides from '../PitchDeckSlides';
 import BusinessModelOnePager from '../BusinessModelOnePager';
+import InternalPitchGuide from '../InternalPitchGuide';
 
 export default function PitchDeckPage() {
-  const [pitchTab, setPitchTab] = useState<'12-slide' | 'onepager'>('12-slide');
+  const [pitchTab, setPitchTab] = useState<'12-slide' | 'onepager' | 'guide'>('12-slide');
 
   return (
     <div className="min-h-screen bg-background">
@@ -43,9 +44,17 @@ export default function PitchDeckPage() {
               >
                 <Layers className="w-4 h-4 inline-block mr-2 -mt-0.5" /> Business Model One-Pager
               </button>
+              <button 
+                onClick={() => setPitchTab('guide')}
+                className={`px-8 py-3 rounded-full text-sm font-bold transition-all ${pitchTab === 'guide' ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] scale-105' : 'bg-linear-surface border border-linear-border text-linear-text-muted hover:text-foreground'}`}
+              >
+                <BookOpen className="w-4 h-4 inline-block mr-2 -mt-0.5" /> Hướng Dẫn Nội Bộ
+              </button>
             </div>
 
-            {pitchTab === '12-slide' ? <PitchDeckSlides /> : <BusinessModelOnePager />}
+            {pitchTab === '12-slide' && <PitchDeckSlides />}
+            {pitchTab === 'onepager' && <BusinessModelOnePager />}
+            {pitchTab === 'guide' && <InternalPitchGuide />}
           </motion.div>
         </AnimatePresence>
       </div>

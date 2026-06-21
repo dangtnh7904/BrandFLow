@@ -39,6 +39,21 @@ export default function PitchDeckSlides() {
     <SlideAsk key="ask" />
   ];
 
+  const pitchScripts = [
+    "Xin chào các nhà đầu tư. Tôi là [Tên bạn], Founder của BrandFlow. Chúng tôi mang đến một giải pháp giúp các doanh nghiệp lập chiến lược marketing cấp độ chuyên gia chỉ trong 10 phút, không cần thuê CMO, và không cần phụ thuộc vào agency.",
+    "Hãy nhìn vào thực tế thị trường hiện nay. 98% doanh nghiệp ở Việt Nam là các doanh nghiệp vừa và nhỏ (SME). Nỗi đau lớn nhất của họ là 'mù marketing'. Họ không có đủ ngân sách 30-50 triệu mỗi tháng để thuê một agency bài bản. Nếu tự làm, họ đốt tiền chạy quảng cáo vô tội vạ vì thiếu tư duy chiến lược. Những công cụ AI hiện tại như ChatGPT thì chỉ giỏi viết content, nhưng lại quá 'nông' để thiết kế một bản kế hoạch kinh doanh có hệ thống.",
+    "Đó là lý do BrandFlow ra đời. Chúng tôi mô phỏng lại toàn bộ quy trình làm việc của một team marketing chuyên nghiệp. Với BrandFlow, quá trình định vị thương hiệu và lập kế hoạch chiến thuật - vốn mất 2 đến 4 tuần của agency - nay được rút gọn xuống chỉ còn 10 phút. Chúng tôi giải quyết triệt để điểm yếu của AI bằng cấu trúc *Kiểm duyệt chéo (Mandatory Debate)* và *Math Engine*, giúp các con số ngân sách luôn chính xác tuyệt đối.",
+    "Tại sao chúng tôi làm điều này bây giờ? Chi phí xử lý của AI đã giảm 10 lần trong vòng 1 năm qua, tạo ra một thời điểm vàng. Thị trường công cụ Marketing cho SME tại Đông Nam Á đạt quy mô hơn 300 triệu USD, nhưng hiện tại chưa có một nền tảng chuyên biệt nào được thiết kế tối ưu, hiểu rõ ngôn ngữ và hành vi của người Việt như BrandFlow.",
+    "Sản phẩm của chúng tôi không nằm trên giấy. Nó đã được xây dựng và đang hoạt động. Khác với một chatbot thông thường, BrandFlow sở hữu kiến trúc 4 bước rõ ràng: Từ phân tích dữ liệu, tranh luận chiến lược, lập ngân sách cho tới thực thi nội dung. Nền tảng tự động xuất ra 19 biểu mẫu quản trị chuẩn mực, từ SWOT, định vị thương hiệu đến biểu đồ phân bổ ngân sách.",
+    "Dù chỉ mới ra mắt phiên bản Private Beta vào tháng 5 vừa qua, chúng tôi đã thu hút hơn 45 người dùng đầu tiên. Họ đã tạo ra hơn 120 bản kế hoạch thực tế, với thời gian trung bình chỉ 8 phút cho một bản. Quan trọng hơn, chỉ số đo lường sự hài lòng (NPS) của chúng tôi đạt 62, một con số rất tích cực trong mảng B2B.",
+    "Chúng tôi áp dụng mô hình SaaS Freemium. Khách hàng cá nhân có thể trải nghiệm miễn phí, trong khi các SME sẽ trả mức phí dao động từ 500 ngàn đến 1.5 triệu đồng mỗi tháng. Với chi phí vận hành AI (LLM cost) rất thấp, biên lợi nhuận gộp của chúng tôi duy trì ở mức ấn tượng, từ 83 đến 88%.",
+    "Nhiều người hỏi, điều gì ngăn khách hàng dùng luôn ChatGPT? Câu trả lời nằm ở 5 rào cản bảo vệ (Moats) của BrandFlow. Chúng tôi có luồng công việc chuyên biệt cho marketing, có cơ chế AI tranh luận độc quyền, có bộ tính toán toán học độc lập, vòng lặp dữ liệu lớn, và sự am hiểu sâu sắc về thị trường nội địa. Đây là những thứ mà một mô hình ngôn ngữ chung chung không bao giờ làm được.",
+    "Về kế hoạch tiếp cận thị trường, chúng tôi không tốn tiền chạy quảng cáo đại trà. Chúng tôi sử dụng chiến lược Product-Led Growth - cấp công cụ miễn phí cho các cộng đồng khởi nghiệp và sinh viên để tạo hiệu ứng truyền miệng. Sau đó, BrandFlow sẽ kết hợp với các trung tâm đào tạo doanh nghiệp và các nền tảng thương mại điện tử để bán chéo sản phẩm.",
+    "Nhìn về tương lai, trong 12 tháng tới, mục tiêu của chúng tôi là đạt 1,000 người dùng trả phí. Sang năm thứ hai, BrandFlow sẽ mở rộng ra thị trường Đông Nam Á thông qua hệ thống đại lý đa quốc gia (White-label) và phát triển các mạng lưới Agent chuyên biệt cho từng nền tảng như TikTok, Shopee.",
+    "Tôi rất tự hào về đội ngũ của mình. Chúng tôi là sự kết hợp giữa các kỹ sư AI dạn dày kinh nghiệm và các chuyên gia marketing từng thực chiến tại nhiều startup và agency lớn. Chúng tôi sở hữu lợi thế 'unfair advantage' trong việc kết hợp công nghệ lõi và tư duy kinh doanh.",
+    "Để đạt được mục tiêu đó, hôm nay chúng tôi tìm kiếm [Số tiền gọi vốn] cho vòng Pre-Seed. Nguồn vốn này sẽ cung cấp cho chúng tôi [Số tháng] runway, tập trung 60% vào nâng cấp hạ tầng AI, 40% vào chi phí phát triển khách hàng. BrandFlow không chỉ là một công cụ, chúng tôi là tương lai của quy trình làm việc tự động trong marketing. Xin cảm ơn các anh chị đã lắng nghe, và tôi rất sẵn lòng giải đáp mọi câu hỏi."
+  ];
+
   const next = () => setCurrentSlide(prev => (prev + 1) % slides.length);
   const prev = () => setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
 
@@ -99,6 +114,17 @@ export default function PitchDeckSlides() {
         <div className="text-white/40 text-sm font-bold tracking-widest font-mono">
           {String(currentSlide + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
         </div>
+      </div>
+
+      {/* Speaker Notes */}
+      <div className="w-full max-w-[1300px] mt-6 bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-xl text-left relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-1 h-full bg-amber-500" />
+        <h3 className="text-amber-500 text-xs font-black uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+          <Sparkles className="w-4 h-4" /> Kịch Bản Thuyết Trình (Speaker Notes)
+        </h3>
+        <p className="text-white/80 text-lg leading-relaxed font-medium">
+          {pitchScripts[currentSlide]}
+        </p>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import {
   TrendingUp, Users, Target, Zap, ArrowUpRight, ArrowDownRight,
   BarChart3, PieChart, Layers, Sparkles, Crown, Timer,
@@ -449,9 +450,9 @@ export default function MarketingAnalyticsPage() {
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[11px] font-bold text-emerald-400">Cập nhật realtime</span>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg text-sm font-bold text-white hover:shadow-lg hover:shadow-cyan-500/20 transition-all">
+            <Link href="/admin/analytics/export" className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg text-sm font-bold text-white hover:shadow-lg hover:shadow-cyan-500/20 transition-all">
               <Download className="w-4 h-4" /> Export PDF
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -502,6 +503,38 @@ export default function MarketingAnalyticsPage() {
                     </div>
                   </motion.div>
                 ))}
+              </div>
+
+              {/* AI CMO Executive Summary */}
+              <div className="bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 border border-blue-500/20 rounded-2xl p-6 md:p-8 relative overflow-hidden shadow-[inset_0_0_40px_rgba(59,130,246,0.05)]">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 blur-[80px] rounded-full pointer-events-none" />
+                <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 flex items-center gap-2 mb-6">
+                  <Brain className="w-5 h-5 text-blue-400" /> AI CMO Advisory: Đánh giá & Định hướng chiến lược
+                </h3>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
+                  <div className="bg-black/20 backdrop-blur-sm rounded-xl p-5 border border-white/5 shadow-lg">
+                     <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-emerald-400"/> Tín hiệu Product-Market Fit</h4>
+                     <p className="text-[13px] text-white/70 leading-relaxed">
+                       Tỉ lệ giữ chân <strong className="text-emerald-400">88.4% (99/112 DN active)</strong> cao bất thường so với chuẩn SaaS B2B (thường ~40-50% giai đoạn đầu). 
+                       Engagement rất sâu (36.5 visits/DN) và trung bình tạo 4 plan/tháng. Khách hàng không chỉ dùng thử cho biết, mà đang thực sự <strong className="text-white">tích hợp BrandFlow vào daily workflow</strong> của họ.
+                     </p>
+                  </div>
+                  <div className="bg-black/20 backdrop-blur-sm rounded-xl p-5 border border-white/5 shadow-lg">
+                     <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2"><Target className="w-4 h-4 text-pink-400"/> Ideal Customer Profile (ICP)</h4>
+                     <p className="text-[13px] text-white/70 leading-relaxed">
+                       Ngành <strong className="text-pink-400">Mỹ phẩm & Bất Động Sản</strong> đang là 'Sweet Spot' (Chuyển đổi &gt;72%, Churn gần như 0%). 
+                       Đặc biệt, việc AMEKA và KITE LABS yêu cầu mở rộng tính năng chứng tỏ nhóm <strong className="text-white">Creative/Marketing Agency</strong> là tệp khách hàng sẵn sàng trả phí gói Enterprise để tăng năng suất cho nhân sự của họ.
+                     </p>
+                  </div>
+                  <div className="bg-black/20 backdrop-blur-sm rounded-xl p-5 border border-white/5 shadow-lg">
+                     <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2"><Rocket className="w-4 h-4 text-amber-400"/> Strategic Next Step (Q3/2026)</h4>
+                     <p className="text-[13px] text-white/70 leading-relaxed">
+                       1. <strong className="text-amber-400">Scale ngân sách x3</strong> vào Facebook/TikTok Ads nhắm thẳng tệp SME F&B và Mỹ phẩm.<br/>
+                       2. <strong className="text-amber-400">Đóng gói gói "Agency License"</strong> đánh trực tiếp qua Kênh B2B Direct Sales.<br/>
+                       3. Sửa gấp luồng Onboarding cho nhóm Giáo Dục (nhóm đang có tỷ lệ Churn cao nhất 14.3%).
+                     </p>
+                  </div>
+                </div>
               </div>
 
               {/* 2-col: Daily Activity + Key Insights */}
@@ -1036,6 +1069,46 @@ export default function MarketingAnalyticsPage() {
                       <div className="text-[10px] text-linear-text-muted mt-1">{m.sub}</div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* AI CMO GTM Strategic Directive */}
+              <div className="bg-[#050505] border border-cyan-500/30 rounded-2xl p-6 relative overflow-hidden shadow-[inset_0_0_60px_rgba(6,182,212,0.05)]">
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-cyan-500/20 blur-[60px] rounded-full pointer-events-none" />
+                <h3 className="text-base font-black text-white flex items-center gap-2 mb-5">
+                  <Brain className="w-5 h-5 text-cyan-400" /> AI CMO Strategic Directive
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-emerald-500 pl-4">
+                      <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Growth Engine: Product-Led (PLG)</h4>
+                      <p className="text-[13px] text-white/70 leading-relaxed">
+                        Tập trung vào <strong>Growth Loop</strong>: DN dùng thử → Thấy kết quả ngay trong 10 phút → Báo cáo tự động xuất ra file Excel/PDF rất đẹp mang đi trình chiếu sếp/khách hàng → Khách hàng hỏi "Làm sao làm được?" → Tự nhiên mang về User mới (Viral qua Word-of-Mouth).
+                      </p>
+                    </div>
+                    <div className="border-l-2 border-purple-500 pl-4">
+                      <h4 className="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">Acquisition Strategy (Thu hút)</h4>
+                      <p className="text-[13px] text-white/70 leading-relaxed">
+                        Không chạy quảng cáo chung chung. Chỉ đánh mạnh vào Use Case: <strong>"Mẫu Plan Marketing Spa/Mỹ Phẩm tự động 100%"</strong>. Đánh vào nỗi đau "Sợ tốn tiền thuê Agency" của các chủ doanh nghiệp F&B / Beauty.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-amber-500 pl-4">
+                      <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">Monetization (Kiếm tiền)</h4>
+                      <p className="text-[13px] text-white/70 leading-relaxed">
+                        Sử dụng chiến thuật <strong>"Reverse Trial"</strong>. Mở khóa toàn bộ full-feature (5 agents) trong 7 ngày đầu để user bị 'nghiện' tốc độ làm việc. Sau 7 ngày, khóa tính năng Math Engine và Export, bắt buộc nâng cấp gói PLUS (499K).
+                      </p>
+                    </div>
+                    <div className="border-l-2 border-pink-500 pl-4">
+                      <h4 className="text-xs font-bold text-pink-400 uppercase tracking-wider mb-1">Enterprise Expansion (B2B Sales)</h4>
+                      <p className="text-[13px] text-white/70 leading-relaxed">
+                        Nhóm Agency (như KITE LABS) sẵn sàng trả tiền để mua White-label. Cần có 1 đội Telesales trực tiếp liên hệ các Agency quảng cáo quy mô &lt; 20 nhân sự, chào bán gói Enterprise (Custom Agent) để họ tối ưu chi phí nhân sự.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 

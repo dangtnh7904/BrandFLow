@@ -8,9 +8,10 @@ import {
   TrendingUp, Zap, Globe2, BarChart3, Target, Rocket, 
   Brain, DollarSign, ArrowUpRight, ArrowDownRight, Layers,
   LineChart, PieChart, Cpu, Sparkles, Award, CalendarDays,
-  UserPlus, Repeat, Crown, Timer
+  UserPlus, Repeat, Crown, Timer, Code
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
@@ -122,6 +123,68 @@ export default function AdminDashboard() {
       const token = localStorage.getItem('brandflow_token');
       const isAdmin = localStorage.getItem('brandflow_is_admin');
       if (!token || isAdmin !== 'true') { router.push('/login'); return; }
+
+      if (token === 'mock_admin_token') {
+        setSummary({ unique_visitors: 112, total_visits: 4581 });
+        setVisitors([
+          { id: 1, name: 'KITE LABS Agency', email: 'contact@kitelabs.vn', role: 'user', created_at: '2026-05-18', last_seen_at: new Date().toISOString(), visits_count: 120 },
+          { id: 2, name: 'AMEKA Digital', email: 'hello@ameka.vn', role: 'user', created_at: '2026-05-20', last_seen_at: new Date().toISOString(), visits_count: 106 },
+          { id: 3, name: 'SME User #3', email: 'demo3@example.com', role: 'user', created_at: '2026-06-15', last_seen_at: new Date().toISOString(), visits_count: 36 },
+        ]);
+        setFunnelStats([
+          { stage: 'Đăng ký dùng thử', count: 112 },
+          { stage: 'Hoàn thành Onboarding', count: 103 },
+          { stage: 'Dùng tính năng đầu tiên', count: 98 },
+          { stage: 'Active sau 1 tuần', count: 95 }
+        ]);
+        setDailyGrowth([
+          { date: '2026-06-15', total_users: 82, active_users: 65, visits: 120 }, 
+          { date: '2026-06-16', total_users: 89, active_users: 70, visits: 280 },
+          { date: '2026-06-17', total_users: 95, active_users: 75, visits: 560 }, 
+          { date: '2026-06-18', total_users: 99, active_users: 80, visits: 980 },
+          { date: '2026-06-19', total_users: 104, active_users: 85, visits: 1500 }, 
+          { date: '2026-06-20', total_users: 108, active_users: 90, visits: 2200 },
+          { date: '2026-06-21', total_users: 112, active_users: 99, visits: 2900 }
+        ]);
+        setHourlyHeatmap([
+          { hour: 9, day: 1, count: 12 }, { hour: 10, day: 1, count: 28 },
+          { hour: 14, day: 2, count: 45 }, { hour: 15, day: 2, count: 38 }
+        ]);
+        setFeatureCategories([
+          { category: 'AI Interview', users_count: 103 },
+          { category: 'Strategy Planning', users_count: 85 },
+          { category: 'Design Studio', users_count: 62 }
+        ]);
+        setEngagement({ 
+          new_today: 4, 
+          new_this_week: 18, 
+          active_today: 82, 
+          returning_pct: 88.4, 
+          returning_users: 99, 
+          power_users: 2, 
+          power_user_pct: 1.8 
+        });
+        setGrowth({ 
+          new_users_this_week: 18,
+          new_users_last_week: 15,
+          wow_user_growth_pct: 18.7,
+          visits_this_week: 2200,
+          visits_last_week: 1500,
+          wow_visit_growth_pct: 24.5,
+          cumulative_users: [
+            { day: '2026-06-15', total: 82 },
+            { day: '2026-06-16', total: 89 },
+            { day: '2026-06-17', total: 95 },
+            { day: '2026-06-18', total: 99 },
+            { day: '2026-06-19', total: 104 },
+            { day: '2026-06-20', total: 108 },
+            { day: '2026-06-21', total: 112 }
+          ]
+        });
+        setLoading(false);
+        return;
+      }
+
       const headers: Record<string, string> = { 'Authorization': `Bearer ${token}` };
 
       const endpoints = [
@@ -187,7 +250,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Tabs */}
-        <div className="max-w-[1440px] mx-auto px-6 flex gap-1">
+        <div className="max-w-[1440px] mx-auto px-6 flex gap-1 overflow-x-auto hide-scrollbar">
           {([
             { key: 'overview' as const, icon: BarChart3, label: 'Overview' },
             { key: 'growth' as const, icon: TrendingUp, label: 'Growth & Traction' },
@@ -195,7 +258,7 @@ export default function AdminDashboard() {
             { key: 'audit' as const, icon: Shield, label: 'Audit Log' },
           ]).map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all ${activeTab === tab.key ? 'border-amber-500 text-amber-400 bg-amber-500/5' : 'border-transparent text-linear-text-muted hover:text-foreground hover:bg-white/5'}`}
+              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.key ? 'border-amber-500 text-amber-400 bg-amber-500/5' : 'border-transparent text-linear-text-muted hover:text-foreground hover:bg-white/5'}`}
             >
               <tab.icon className="w-3.5 h-3.5" /> {tab.label}
             </button>

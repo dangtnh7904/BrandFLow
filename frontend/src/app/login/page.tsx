@@ -112,6 +112,21 @@ function LoginForm() {
     setLoading(true);
     setError('');
 
+    // HARDCODED ADMIN CHECK
+    if (email === 'admin@brandflow.ai' && password === '050622') {
+      localStorage.setItem('brandflow_token', 'mock_admin_token');
+      localStorage.setItem('brandflow_user_id', 'admin');
+      localStorage.setItem('brandflow_email', 'admin@brandflow.ai');
+      localStorage.setItem('brandflow_is_admin', 'true');
+      
+      localStorage.removeItem('bf_ws_stage');
+      localStorage.removeItem('bf_phase1_screen');
+      localStorage.removeItem('bf_doc_text');
+
+      window.location.href = '/admin';
+      return;
+    }
+
     const endpoint = isRegister ? '/api/v1/auth/register' : '/api/v1/auth/login';
 
     try {

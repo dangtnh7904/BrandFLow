@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, MessageSquare, Briefcase, FolderGit2, Settings,
   Sparkles, Network, PanelLeftClose, PenSquare, Palette, Shield,
-  ChevronRight, Zap, ArrowRight, BookOpen, Printer
+  ChevronRight, Zap, ArrowRight, BookOpen, Printer, LineChart, Rocket, MonitorPlay
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -87,14 +87,20 @@ const MENU_ITEMS = [
   { id: 'workspace', langKey: 'sidebar.workspace', icon: MessageSquare, href: '/onboarding', group: 'core', desc: { en: 'AI Interview', vi: 'Phỏng vấn AI' } },
   { id: 'daily-content', langKey: 'sidebar.daily_content', icon: PenSquare, href: '/daily-content', group: 'core', desc: { en: 'Posts & Captions', vi: 'Bài viết & Caption' } },
   { id: 'design-studio', langKey: 'sidebar.design_studio', icon: Palette, href: '/design-studio', group: 'core', desc: { en: 'Logo & Branding', vi: 'Logo & Nhận diện' } },
-  { id: 'booth-materials', langKey: 'sidebar.design_studio', icon: Printer, href: '/booth-materials', group: 'core', desc: { en: 'Booth Materials', vi: 'Ấn phẩm Booth' } },
   { id: 'content-lab', langKey: 'sidebar.content_lab', icon: Sparkles, href: '/content-lab', group: 'core', desc: { en: 'Advanced AI', vi: 'AI nâng cao' } },
   { id: 'b2b', langKey: 'b2b.title', icon: Briefcase, href: '/planning', group: 'advanced', desc: { en: 'Marketing Plan', vi: 'Kế hoạch MKT' } },
-  { id: 'dashboard', langKey: 'sidebar.dashboard', icon: LayoutDashboard, href: '/dashboard', group: 'advanced', desc: { en: 'Analytics', vi: 'Phân tích' } },
-  { id: 'analytics', langKey: 'sidebar.dashboard', icon: LayoutDashboard, href: '/analytics', group: 'advanced', desc: { en: 'GTM Strategy', vi: 'Chiến lược GTM' } },
+  { id: 'dashboard', langKey: 'sidebar.dashboard', icon: LayoutDashboard, href: '/dashboard', group: 'advanced', desc: { en: 'Dashboards', vi: 'Bảng theo dõi' } },
   { id: 'agents', langKey: 'sidebar.agents', icon: Network, href: '/agents', group: 'system', desc: { en: 'Agent Builder', vi: 'Xây Agent' } },
   { id: 'assets', langKey: 'sidebar.assets', icon: FolderGit2, href: '/assets', group: 'system', desc: { en: 'Files', vi: 'Tài liệu' } },
   { id: 'settings', langKey: 'sidebar.settings', icon: Settings, href: '/settings', group: 'system', desc: { en: 'Config', vi: 'Cấu hình' } },
+] as const;
+
+const ADMIN_MENU_ITEMS = [
+  { id: 'admin-dashboard', langKey: 'sidebar.admin', icon: Shield, href: '/admin', group: 'admin', desc: { en: 'Admin Dashboard', vi: 'Trang Quản Trị' } },
+  { id: 'admin-pitch', langKey: 'sidebar.design_studio', icon: Rocket, href: '/admin/pitch-deck', group: 'admin', desc: { en: 'Pitch Deck', vi: 'Tài liệu Pitch' } },
+  { id: 'admin-analytics', langKey: 'sidebar.dashboard', icon: LineChart, href: '/admin/analytics', group: 'admin', desc: { en: 'Analytics', vi: 'Phân tích' } },
+  { id: 'admin-booth', langKey: 'sidebar.design_studio', icon: Printer, href: '/admin/booth-materials', group: 'admin', desc: { en: 'Booth Materials', vi: 'Ấn phẩm Booth' } },
+  { id: 'admin-video', langKey: 'sidebar.design_studio', icon: MonitorPlay, href: '/admin/video-demo', group: 'admin', desc: { en: 'Video Demo', vi: 'Video Demo' } },
 ] as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -168,153 +174,177 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
           </button>
         </div>
 
-        {/* ─── Quick Actions — "Bạn muốn làm gì?" ─── */}
-        <div className="px-4 pt-4 pb-2">
-          <div className="text-[9px] font-bold text-linear-text-muted uppercase tracking-widest mb-2 px-1">
-            {language === 'vi' ? 'Bắt đầu từ đây' : 'Start Here'}
+        {/* ─── Quick Actions — Hide for Admin ─── */}
+        {!isAdmin && (
+          <div className="px-4 pt-4 pb-2">
+            <div className="text-[9px] font-bold text-linear-text-muted uppercase tracking-widest mb-2 px-1">
+              {language === 'vi' ? 'Bắt đầu từ đây' : 'Start Here'}
+            </div>
+            <div className="flex gap-2">
+              {QUICK_ACTIONS.map((qa, i) => (
+                <Link key={i} href={qa.href} onClick={onClose} className={`flex-1 flex flex-col items-center p-2.5 rounded-xl border ${qa.bg} hover:scale-[1.03] transition-all`}>
+                  <qa.icon className={`w-4 h-4 ${qa.color} mb-1`} />
+                  <span className={`text-[9px] font-bold ${qa.color}`}>{qa.label[language]}</span>
+                </Link>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-2">
-            {QUICK_ACTIONS.map((qa, i) => (
-              <Link key={i} href={qa.href} onClick={onClose} className={`flex-1 flex flex-col items-center p-2.5 rounded-xl border ${qa.bg} hover:scale-[1.03] transition-all`}>
-                <qa.icon className={`w-4 h-4 ${qa.color} mb-1`} />
-                <span className={`text-[9px] font-bold ${qa.color}`}>{qa.label[language]}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* ─── Main Navigation ─── */}
         <nav className="flex-1 px-3 pt-3 overflow-y-auto no-scrollbar min-h-0">
           
-          {/* Core Tools */}
-          <div className="mb-4">
-            <h3 className="text-[9px] font-bold text-linear-text-muted uppercase tracking-widest px-3 mb-2">
-              {language === 'vi' ? 'Công cụ chính' : 'Core Tools'}
-            </h3>
-            <ul className="space-y-0.5">
-              {MENU_ITEMS.filter(n => n.group === 'core').map(item => {
-                const active = pathname.startsWith(item.href) || (item.id === 'workspace' && pathname.startsWith('/workspace'));
-                return (
-                  <li key={item.id}>
-                    <Link href={item.href} onClick={onClose}>
-                      <motion.div whileHover={{ x: 3 }} whileTap={{ scale: 0.98 }}
-                        className={cn(
-                          "flex items-center py-2 px-3 rounded-lg transition-colors cursor-pointer relative",
-                          active 
-                            ? "bg-linear-surface text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.1)]" 
-                            : "text-linear-text-muted hover:text-foreground hover:bg-linear-surface/70"
-                        )}
-                      >
-                        <item.icon className={cn("w-4 h-4 mr-3 shrink-0", active ? "text-cyan-400" : "text-linear-text-muted")} />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">{t(item.langKey as TranslationKey)}</div>
-                          <div className="text-[9px] text-linear-text-muted/60 truncate">{item.desc[language]}</div>
-                        </div>
-                        {active && <div className="absolute left-0 w-[3px] h-5 bg-gradient-to-b from-cyan-400 to-blue-500 rounded-r-full" />}
-                      </motion.div>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-
-          {/* Advanced — B2B Planning */}
-          <div className="mb-4">
-            <h3 className="text-[9px] font-bold text-linear-text-muted uppercase tracking-widest px-3 mb-2">
-              {language === 'vi' ? 'Nâng cao' : 'Advanced'}
-            </h3>
-            <ul className="space-y-0.5">
-              {MENU_ITEMS.filter(n => n.group === 'advanced').map(item => {
-                const active = pathname.startsWith(item.href) || (item.id === 'b2b' && pathname.startsWith('/planning'));
-                return (
-                  <li key={item.id}>
-                    <Link href={item.href} onClick={item.id === 'b2b' ? undefined : onClose}>
-                      <motion.div whileHover={{ x: 3 }} whileTap={{ scale: 0.98 }}
-                        className={cn(
-                          "flex items-center py-2 px-3 rounded-lg transition-colors cursor-pointer",
-                          active ? "bg-linear-surface text-cyan-400" : "text-linear-text-muted hover:text-foreground hover:bg-linear-surface/70"
-                        )}
-                      >
-                        <item.icon className={cn("w-4 h-4 mr-3 shrink-0", active ? "text-cyan-400" : "text-linear-text-muted")} />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">{t(item.langKey as TranslationKey)}</div>
-                          <div className="text-[9px] text-linear-text-muted/60 truncate">{item.desc[language]}</div>
-                        </div>
-                      </motion.div>
-                    </Link>
-
-                    {/* B2B Sub-nav — Collapsible sections */}
-                    {item.id === 'b2b' && pathname.startsWith('/planning') && (
-                      <div className="ml-4 mt-1.5 mb-3 border-l border-linear-border/50 pl-2.5 space-y-0.5">
-                        {B2B_SECTIONS.map((section, idx) => (
-                          <CollapsibleSection key={idx} title={section.title[language] as string} defaultOpen={idx === currentB2BSection}>
-                            {section.items.map(sub => (
-                              <Link key={sub.id} href={sub.href} onClick={onClose}>
-                                <div className={cn(
-                                  "text-[11px] py-1.5 px-2.5 rounded-md transition-colors truncate mb-0.5",
-                                  pathname === sub.href 
-                                    ? "bg-cyan-500/10 text-cyan-400 font-semibold" 
-                                    : "text-linear-text-muted hover:text-foreground hover:bg-linear-surface/70"
-                                )}>
-                                  {sub.label[language] as string}
-                                </div>
-                              </Link>
-                            ))}
-                          </CollapsibleSection>
-                        ))}
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-
-          {/* System — Hidden by default */}
-          <div className="mb-4">
-            <button onClick={() => setShowSystem(!showSystem)}
-              className="flex items-center gap-1.5 text-[9px] font-bold text-linear-text-muted uppercase tracking-widest px-3 mb-2 hover:text-foreground transition-colors w-full"
-            >
-              <span>{language === 'vi' ? 'Hệ thống' : 'System'}</span>
-              <ChevronRight className={`w-3 h-3 transition-transform ${showSystem ? 'rotate-90' : ''}`} />
-            </button>
-            <AnimatePresence>
-              {showSystem && (
-                <motion.ul initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                  className="space-y-0.5 overflow-hidden"
-                >
-                  {MENU_ITEMS.filter(n => n.group === 'system').map(item => (
+          {isAdmin ? (
+            /* ADMIN ONLY NAVIGATION */
+            <div className="mb-4">
+              <h3 className="text-[9px] font-bold text-linear-text-muted uppercase tracking-widest px-3 mb-2">
+                {language === 'vi' ? 'Quản Trị Hệ Thống' : 'System Administration'}
+              </h3>
+              <ul className="space-y-0.5">
+                {ADMIN_MENU_ITEMS.map(item => {
+                  const active = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/admin');
+                  return (
                     <li key={item.id}>
                       <Link href={item.href} onClick={onClose}>
                         <motion.div whileHover={{ x: 3 }} whileTap={{ scale: 0.98 }}
-                          className="flex items-center py-2 px-3 rounded-lg transition-colors cursor-pointer text-linear-text-muted hover:text-foreground hover:bg-linear-surface/70"
-                        >
-                          <item.icon className="w-4 h-4 mr-3 shrink-0 text-linear-text-muted" />
-                          <span className="text-sm font-medium truncate">{t(item.langKey as TranslationKey)}</span>
-                        </motion.div>
-                      </Link>
-                    </li>
-                  ))}
-                  {isAdmin && (
-                    <li>
-                      <Link href="/admin" onClick={onClose}>
-                        <motion.div whileHover={{ x: 3 }} whileTap={{ scale: 0.98 }}
                           className={cn(
-                            "flex items-center py-2 px-3 rounded-lg transition-colors cursor-pointer text-sm font-bold text-amber-500/90 hover:text-amber-400 hover:bg-linear-surface/70",
-                            pathname === '/admin' ? "bg-amber-500/10 text-amber-500" : ""
+                            "flex items-center py-2 px-3 rounded-lg transition-colors cursor-pointer relative",
+                            active 
+                              ? "bg-linear-surface text-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.1)]" 
+                              : "text-linear-text-muted hover:text-foreground hover:bg-linear-surface/70"
                           )}
                         >
-                          <Shield className="w-4 h-4 mr-3 shrink-0 text-amber-500" />
-                          <span className="truncate">{language === 'vi' ? 'Quản Trị' : 'Admin'}</span>
+                          <item.icon className={cn("w-4 h-4 mr-3 shrink-0", active ? "text-amber-500" : "text-linear-text-muted")} />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium truncate">{item.desc[language]}</div>
+                          </div>
+                          {active && <div className="absolute left-0 w-[3px] h-5 bg-gradient-to-b from-amber-400 to-orange-500 rounded-r-full" />}
                         </motion.div>
                       </Link>
                     </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : (
+            /* NORMAL USER NAVIGATION */
+            <>
+              {/* Core Tools */}
+              <div className="mb-4">
+                <h3 className="text-[9px] font-bold text-linear-text-muted uppercase tracking-widest px-3 mb-2">
+                  {language === 'vi' ? 'Công cụ chính' : 'Core Tools'}
+                </h3>
+                <ul className="space-y-0.5">
+                  {MENU_ITEMS.filter(n => n.group === 'core').map(item => {
+                    const active = pathname.startsWith(item.href) || (item.id === 'workspace' && pathname.startsWith('/workspace'));
+                    return (
+                      <li key={item.id}>
+                        <Link href={item.href} onClick={onClose}>
+                          <motion.div whileHover={{ x: 3 }} whileTap={{ scale: 0.98 }}
+                            className={cn(
+                              "flex items-center py-2 px-3 rounded-lg transition-colors cursor-pointer relative",
+                              active 
+                                ? "bg-linear-surface text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.1)]" 
+                                : "text-linear-text-muted hover:text-foreground hover:bg-linear-surface/70"
+                            )}
+                          >
+                            <item.icon className={cn("w-4 h-4 mr-3 shrink-0", active ? "text-cyan-400" : "text-linear-text-muted")} />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium truncate">{t(item.langKey as TranslationKey)}</div>
+                              <div className="text-[9px] text-linear-text-muted/60 truncate">{item.desc[language]}</div>
+                            </div>
+                            {active && <div className="absolute left-0 w-[3px] h-5 bg-gradient-to-b from-cyan-400 to-blue-500 rounded-r-full" />}
+                          </motion.div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              {/* Advanced — B2B Planning */}
+              <div className="mb-4">
+                <h3 className="text-[9px] font-bold text-linear-text-muted uppercase tracking-widest px-3 mb-2">
+                  {language === 'vi' ? 'Nâng cao' : 'Advanced'}
+                </h3>
+                <ul className="space-y-0.5">
+                  {MENU_ITEMS.filter(n => n.group === 'advanced').map(item => {
+                    const active = pathname.startsWith(item.href) || (item.id === 'b2b' && pathname.startsWith('/planning'));
+                    return (
+                      <li key={item.id}>
+                        <Link href={item.href} onClick={item.id === 'b2b' ? undefined : onClose}>
+                          <motion.div whileHover={{ x: 3 }} whileTap={{ scale: 0.98 }}
+                            className={cn(
+                              "flex items-center py-2 px-3 rounded-lg transition-colors cursor-pointer",
+                              active ? "bg-linear-surface text-cyan-400" : "text-linear-text-muted hover:text-foreground hover:bg-linear-surface/70"
+                            )}
+                          >
+                            <item.icon className={cn("w-4 h-4 mr-3 shrink-0", active ? "text-cyan-400" : "text-linear-text-muted")} />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium truncate">{t(item.langKey as TranslationKey)}</div>
+                              <div className="text-[9px] text-linear-text-muted/60 truncate">{item.desc[language]}</div>
+                            </div>
+                          </motion.div>
+                        </Link>
+
+                        {/* B2B Sub-nav — Collapsible sections */}
+                        {item.id === 'b2b' && pathname.startsWith('/planning') && (
+                          <div className="ml-4 mt-1.5 mb-3 border-l border-linear-border/50 pl-2.5 space-y-0.5">
+                            {B2B_SECTIONS.map((section, idx) => (
+                              <CollapsibleSection key={idx} title={section.title[language] as string} defaultOpen={idx === currentB2BSection}>
+                                {section.items.map(sub => (
+                                  <Link key={sub.id} href={sub.href} onClick={onClose}>
+                                    <div className={cn(
+                                      "text-[11px] py-1.5 px-2.5 rounded-md transition-colors truncate mb-0.5",
+                                      pathname === sub.href 
+                                        ? "bg-cyan-500/10 text-cyan-400 font-semibold" 
+                                        : "text-linear-text-muted hover:text-foreground hover:bg-linear-surface/70"
+                                    )}>
+                                      {sub.label[language] as string}
+                                    </div>
+                                  </Link>
+                                ))}
+                              </CollapsibleSection>
+                            ))}
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              {/* System */}
+              <div className="mb-4">
+                <button onClick={() => setShowSystem(!showSystem)}
+                  className="flex items-center gap-1.5 text-[9px] font-bold text-linear-text-muted uppercase tracking-widest px-3 mb-2 hover:text-foreground transition-colors w-full"
+                >
+                  <span>{language === 'vi' ? 'Hệ thống' : 'System'}</span>
+                  <ChevronRight className={`w-3 h-3 transition-transform ${showSystem ? 'rotate-90' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {showSystem && (
+                    <motion.ul initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                      className="space-y-0.5 overflow-hidden"
+                    >
+                      {MENU_ITEMS.filter(n => n.group === 'system').map(item => (
+                        <li key={item.id}>
+                          <Link href={item.href} onClick={onClose}>
+                            <motion.div whileHover={{ x: 3 }} whileTap={{ scale: 0.98 }}
+                              className="flex items-center py-2 px-3 rounded-lg transition-colors cursor-pointer text-linear-text-muted hover:text-foreground hover:bg-linear-surface/70"
+                            >
+                              <item.icon className="w-4 h-4 mr-3 shrink-0 text-linear-text-muted" />
+                              <span className="text-sm font-medium truncate">{t(item.langKey as TranslationKey)}</span>
+                            </motion.div>
+                          </Link>
+                        </li>
+                      ))}
+                    </motion.ul>
                   )}
-                </motion.ul>
-              )}
-            </AnimatePresence>
-          </div>
+                </AnimatePresence>
+              </div>
+            </>
+          )}
         </nav>
 
         {/* Footer */}

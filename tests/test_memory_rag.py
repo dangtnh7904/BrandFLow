@@ -5,7 +5,7 @@ from langchain_chroma import Chroma
 from langchain_core.embeddings import FakeEmbeddings
 from langchain_core.messages import AIMessage
 
-from app.services.memory_rag import extract_and_save_rule, get_relevant_guidelines
+from memory_rag import extract_and_save_rule, get_relevant_guidelines
 
 @pytest.fixture
 def in_memory_vectorstore():

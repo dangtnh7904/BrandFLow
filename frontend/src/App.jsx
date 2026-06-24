@@ -5,6 +5,12 @@ import DashboardOverview from './components/DashboardOverview';
 import ScreenUpload from './components/ScreenUpload';
 import ScreenSimulation from './components/ScreenSimulation';
 import ScreenDashboard from './components/ScreenDashboard';
+import ScreenLogin from './components/ScreenLogin';
+import AdminSidebar from './components/AdminSidebar';
+import AdminAnalytics from './components/AdminAnalytics';
+import AdminPitchDeck from './components/AdminPitchDeck';
+import AdminBusinessModel from './components/AdminBusinessModel';
+import AdminBoothMaterial from './components/AdminBoothMaterial';
 import { Database, Network } from 'lucide-react';
 
 const getBudgetData = (data) => {
@@ -18,6 +24,7 @@ const getBudgetData = (data) => {
 };
 
 export default function App() {
+  const [userRole, setUserRole] = useState('guest'); // 'guest', 'user', 'admin'
   const [currentView, setCurrentView] = useState('dashboard');
   const [iteration, setIteration] = useState(1);
   const [feedback, setFeedback] = useState('');
@@ -158,17 +165,41 @@ export default function App() {
     }
   };
 
+  const handleLogin = (role) => {
+    setUserRole(role);
+    if (role === 'admin') setCurrentView('admin_analytics');
+    else setCurrentView('dashboard');
+  };
+
+  const handleLogout = () => {
+    setUserRole('guest');
+    setCurrentView('dashboard');
+  };
+
+  if (userRole === 'guest') {
+    return <ScreenLogin onLogin={handleLogin} />;
+  }
+
+  const isAdmin = userRole === 'admin';
+
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-zinc-950 font-sans transition-colors duration-300">
-      <Sidebar currentView={currentView} onNavigate={setCurrentView} />
+    <div className={`flex min-h-screen ${isAdmin ? 'bg-[#0a0f1e]' : 'bg-slate-50 dark:bg-zinc-950'} font-sans transition-colors duration-300`}>
+      {isAdmin ? (
+        <AdminSidebar currentView={currentView} onNavigate={setCurrentView} onLogout={handleLogout} />
+      ) : (
+        <Sidebar currentView={currentView} onNavigate={setCurrentView} onLogout={handleLogout} />
+      )}
       <div className="flex-1 ml-64 flex flex-col">
-        <Header 
-            currentView={currentView} 
-            onNewProjectClick={() => setCurrentView('upload')} 
-            onNavigate={setCurrentView} 
-            isDarkMode={isDarkMode}
-            toggleTheme={toggleTheme}
-        />
+        {!isAdmin && (
+          <Header 
+              currentView={currentView} 
+              onNewProjectClick={() => setCurrentView('upload')} 
+              onNavigate={setCurrentView} 
+              isDarkMode={isDarkMode}
+              toggleTheme={toggleTheme}
+              onLogout={handleLogout}
+          />
+        )}
         <main className="flex-1 overflow-y-auto w-full">
           {currentView === 'dashboard' && <DashboardOverview />}
           {currentView === 'upload' && <ScreenUpload onGenerate={handleGenerate} />}
@@ -196,7 +227,7 @@ export default function App() {
             />
           )}
           
-          {currentView === 'agents' && (
+          {currentView === 'agents' && !isAdmin && (
             <div className="p-8 max-w-4xl mx-auto">
               <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[20px] p-10 text-center shadow-sm">
                 <Network className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-4" />
@@ -204,6 +235,12 @@ export default function App() {
               </div>
             </div>
           )}
+
+          {/* Admin Views */}
+          {isAdmin && currentView === 'admin_analytics' && <AdminAnalytics />}
+          {isAdmin && currentView === 'admin_pitch_deck' && <AdminPitchDeck />}
+          {isAdmin && currentView === 'admin_business_model' && <AdminBusinessModel />}
+          {isAdmin && currentView === 'admin_booth' && <AdminBoothMaterial />}
         </main>
       </div>
     </div>

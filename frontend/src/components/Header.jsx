@@ -10,7 +10,7 @@ const VIEW_LABELS = {
   agents: 'Mạng lưới AI Agent',
 };
 
-export default function Header({ currentView, onNewProjectClick, onNavigate, isDarkMode, toggleTheme }) {
+export default function Header({ currentView, onNewProjectClick, onNavigate, isDarkMode, toggleTheme, onLogout }) {
   return (
     <header className="flex items-center justify-between px-8 py-6 sticky top-0 z-10 bg-slate-50/90 dark:bg-zinc-950/90 backdrop-blur-md transition-colors duration-300">
       <div>
@@ -46,9 +46,9 @@ export default function Header({ currentView, onNewProjectClick, onNavigate, isD
             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </button>
 
-        <div className="flex items-center text-slate-700 dark:text-slate-800 dark:text-white cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+        <div onClick={onLogout} className="flex items-center text-slate-700 dark:text-slate-800 dark:text-white cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
           <User className="w-5 h-5 mr-2" />
-          <span className="text-sm font-semibold">Đăng nhập</span>
+          <span className="text-sm font-semibold">Đăng xuất</span>
         </div>
         
         <Settings className="w-5 h-5 text-slate-500 dark:text-zinc-400 cursor-pointer hover:text-slate-800 dark:hover:text-slate-800 dark:text-white transition-colors" />

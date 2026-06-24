@@ -11,6 +11,7 @@ import AdminAnalytics from './components/AdminAnalytics';
 import AdminPitchDeck from './components/AdminPitchDeck';
 import AdminBusinessModel from './components/AdminBusinessModel';
 import AdminBoothMaterial from './components/AdminBoothMaterial';
+import AutoPilotDemo from './components/AutoPilotDemo';
 import { Database, Network } from 'lucide-react';
 
 const getBudgetData = (data) => {
@@ -35,6 +36,7 @@ export default function App() {
   const [agentLogs, setAgentLogs] = useState(null);
   const [tenantId, setTenantId] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isAutoPilotActive, setIsAutoPilotActive] = useState(false);
 
   useEffect(() => {
     let tId = localStorage.getItem('brandflow_tenant_id');
@@ -53,6 +55,20 @@ export default function App() {
         setIsDarkMode(false);
         document.documentElement.classList.remove('dark');
     }
+
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        setIsAutoPilotActive(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    if (window.location.search.includes('autopilot=true')) {
+        setIsAutoPilotActive(true);
+    }
+
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const toggleTheme = () => {
@@ -177,7 +193,12 @@ export default function App() {
   };
 
   if (userRole === 'guest') {
-    return <ScreenLogin onLogin={handleLogin} />;
+    return (
+      <>
+        <ScreenLogin onLogin={handleLogin} />
+        <AutoPilotDemo isActive={isAutoPilotActive} onComplete={() => setIsAutoPilotActive(false)} />
+      </>
+    );
   }
 
   const isAdmin = userRole === 'admin';
@@ -243,6 +264,11 @@ export default function App() {
           {isAdmin && currentView === 'admin_booth' && <AdminBoothMaterial />}
         </main>
       </div>
+
+      <AutoPilotDemo 
+        isActive={isAutoPilotActive} 
+        onComplete={() => setIsAutoPilotActive(false)} 
+      />
     </div>
   );
 }

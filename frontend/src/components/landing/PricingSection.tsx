@@ -8,7 +8,7 @@ import Link from 'next/link';
 const TIERS = [
   {
     name: "Free",
-    price: "0 VNĐ",
+    price: "$0",
     description: "Trải nghiệm cơ bản sức mạnh của AI trong việc lập kế hoạch.",
     features: [
       "Sử dụng Dashboard Cơ Bản",
@@ -21,16 +21,31 @@ const TIERS = [
     popular: false
   },
   {
-    name: "Pro (Gemini-style)",
-    price: "499.000 VNĐ",
+    name: "Plus",
+    price: "$19",
+    period: "/tháng",
+    description: "Dành cho nhà quảng cáo độc lập cần hệ thống AI vận hành cơ bản.",
+    features: [
+      "Tất cả tính năng của gói Free",
+      "Giới hạn 100 câu lệnh / ngày",
+      "Tiếp cận Mạng lưới 3 AI Agents",
+      "Xuất báo cáo PDF cơ bản"
+    ],
+    cta: "Nâng cấp Plus",
+    link: "/dashboard",
+    popular: false
+  },
+  {
+    name: "Pro",
+    price: "$199",
     period: "/tháng",
     description: "Dành cho chuyên gia Marketing cần bộ công cụ tự động hóa toàn diện.",
     features: [
-      "Tất cả tính năng của gói Free",
+      "Tất cả tính năng của gói Plus",
       "Không giới hạn câu lệnh",
-      "Tiếp cận Mạng lưới 5 AI Agents",
+      "Tiếp cận toàn bộ Mạng lưới AI Agents",
       "Tối ưu hóa AEO/SEO tự động",
-      "Xuất báo cáo PDF & Asset thương hiệu"
+      "Xuất báo cáo PDF & Asset thương hiệu nâng cao"
     ],
     cta: "Nâng cấp Pro",
     link: "/dashboard",

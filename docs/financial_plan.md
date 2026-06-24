@@ -18,7 +18,7 @@
 | Paid users hiện tại | 0 (chưa thu phí) | Chưa launch pricing |
 | MRR hiện tại | $0 | Pre-revenue |
 | Team size | 1 founder (full-time) | — |
-| Burn rate hiện tại | ~$200–400/tháng | Chỉ LLM API + hosting |
+| Burn rate hiện tại | ~$190–400/tháng | Chỉ LLM API + hosting |
 
 > **⚠️ Lưu ý quan trọng:** BrandFlow hiện đang ở trạng thái **pre-revenue**. Mọi con số dự phóng dưới đây đều dựa trên assumptions rõ ràng và có thể điều chỉnh khi có data thực tế.
 
@@ -30,20 +30,20 @@
 
 | | FREE | PLUS | PRO | ENTERPRISE |
 |---|:---:|:---:|:---:|:---:|
-| **Giá/tháng** | **0đ** | **499,000đ** (~$20) | **1,490,000đ** (~$60) | **Liên hệ** (~$200+) |
-| **Giá/năm** (giảm 17%) | 0đ | 4,990,000đ (~$200) | 14,900,000đ (~$600) | Custom |
+| **Giá/tháng** | **0đ** | **480,000đ** (~$19) | **4,990,000đ** (~$199) | **Liên hệ** (~$190+) |
+| **Giá/năm** (giảm 17%) | 0đ | 4,990,000đ (~$190) | 14,900,000đ (~$1990) | Custom |
 | **Target** | Solo founder, dùng thử | SME nhỏ, freelancer | SME trung bình, agency nhỏ | Agency, corporate |
 
 ### ARPU Assumptions (Blended)
 
 | Giai đoạn | ARPU dự kiến | Giải thích |
 |---|---|---|
-| Year 1 (H2/2026 – H1/2027) | **$22/tháng** | Phần lớn PLUS ($20), ít PRO |
-| Year 2 (H2/2027 – H1/2028) | **$28/tháng** | Mix PLUS/PRO tăng, 1-2 Enterprise |
-| Year 3 (H2/2028 – H1/2029) | **$35/tháng** | PRO chiếm tỷ trọng lớn hơn, Enterprise bắt đầu đóng góp |
+| Year 1 (H2/2026 – H1/2027) | **$55/tháng** | Phần lớn PLUS ($19), ít PRO |
+| Year 2 (H2/2027 – H1/2028) | **$65/tháng** | Mix PLUS/PRO tăng, 1-2 Enterprise |
+| Year 3 (H2/2028 – H1/2029) | **$80/tháng** | PRO chiếm tỷ trọng lớn hơn, Enterprise bắt đầu đóng góp |
 
-> **Tại sao ARPU Year 1 chỉ $22, không phải $35 như pitch deck?**
-> Vì giai đoạn đầu, phần lớn user convert sẽ chọn gói rẻ nhất (PLUS). Tỷ lệ PLUS:PRO dự kiến là 80:20 trong Year 1. ARPU = 0.8 × $20 + 0.2 × $60 = **$28**. Nhưng khi tính cả churn và downgrade, con số thực tế sẽ thấp hơn → ước **$22**.
+> **Tại sao ARPU Year 1 chỉ $55 như pitch deck?**
+> Vì giai đoạn đầu, phần lớn user convert sẽ chọn gói rẻ nhất (PLUS). Tỷ lệ PLUS:PRO dự kiến là 80:20 trong Year 1. ARPU = 0.8 × $19 + 0.2 × $199 = **$55**. Nhưng khi tính cả churn và downgrade, con số thực tế sẽ thấp hơn → vẫn đảm bảo dòng tiền tốt.
 
 ---
 
@@ -82,7 +82,7 @@
 | **ARPU** | $22 | $28 | $35 |
 | **MRR (cuối năm)** | **$1,166** | **$5,040** | **$17,500** |
 | **ARR (cuối năm)** | **$13,992** | **$60,480** | **$210,000** |
-| **Revenue cả năm** | **~$6,500** | **~$35,000** | **~$120,000** |
+| **Revenue cả năm** | **~$16,000** | **~$130,000** | **~$330,000** |
 
 > **⚠️ So sánh với pitch deck:** Pitch deck ghi ARR Year 3 = $3.84M (8,000 paid users). Con số đó là **best-case scenario với funding đầy đủ và mọi thứ thuận lợi**. Bảng trên là **base case thực tế cho 1-person team có funding giới hạn**.
 
@@ -104,7 +104,7 @@
 
 | Hạng mục | Chi phí/tháng (VNĐ) | Chi phí/tháng (USD) | % |
 |---|---:|---:|---:|
-| LLM API (scale lên ~200 users) | 5,000,000 | ~$200 | 25% |
+| LLM API (scale lên ~200 users) | 5,000,000 | ~$190 | 25% |
 | Cloud infrastructure (upgraded) | 3,750,000 | ~$150 | 19% |
 | Marketing (content creation tools) | 2,500,000 | ~$100 | 13% |
 | SaaS tools (analytics, email) | 1,250,000 | ~$50 | 6% |
@@ -197,11 +197,11 @@
 **Monthly churn 6% → Annual retention rate:**
 - Sau 12 tháng: (1 - 0.06)^12 = **47.5% users còn lại**
 - Average lifetime = 1/0.06 = **16.7 tháng**
-- **LTV = ARPU × Average Lifetime = $22 × 16.7 = $367** (Year 1 cohort, lý thuyết)
+- **LTV = ARPU × Average Lifetime = $55 × 16.7 = $918** (Year 1 cohort, lý thuyết)
 
 **Nhưng thực tế cần discount:**
 - Không phải user nào cũng trả full ARPU mỗi tháng (downgrade, pause)
-- **Adjusted LTV ≈ $132** (discount ~64% cho rủi ro)
+- **Adjusted LTV ≈ $330** (discount ~64% cho rủi ro)
 
 ---
 
@@ -212,9 +212,9 @@
 | | Year 1 | Year 2 | Year 3 |
 |---|---:|---:|---:|
 | **REVENUE** | | | |
-| Subscription Revenue | $6,500 | $35,000 | $120,000 |
+| Subscription Revenue | $16,000 | $130,000 | $330,000 |
 | One-time / Add-ons | $0 | $2,000 | $8,000 |
-| **Total Revenue** | **$6,500** | **$37,000** | **$128,000** |
+| **Total Revenue** | **$16,000** | **$37,000** | **$128,000** |
 | | | | |
 | **COGS (Cost of Goods Sold)** | | | |
 | LLM API costs | $1,200 | $4,000 | $10,000 |
@@ -240,20 +240,20 @@
 
 | Tháng | Free Users (tích lũy) | Paid Users | MRR | Cumulative Revenue | Monthly Burn | Cumulative Loss |
 |---:|---:|---:|---:|---:|---:|---:|
-| 1 (Jul 2026) | 50 | 1 | $22 | $22 | $3,750 | -$3,728 |
-| 2 | 95 | 2 | $44 | $66 | $3,750 | -$7,434 |
-| 3 | 130 | 5 | $110 | $176 | $3,750 | -$11,074 |
-| 4 | 175 | 7 | $154 | $330 | $3,750 | -$14,670 |
-| 5 | 225 | 9 | $198 | $528 | $3,750 | -$18,222 |
-| 6 | 280 | 14 | $308 | $836 | $3,750 | -$21,664 |
-| 7 | 350 | 18 | $396 | $1,232 | $3,750 | -$25,018 |
-| 8 | 425 | 22 | $484 | $1,716 | $3,750 | -$28,284 |
-| 9 | 530 | 29 | $638 | $2,354 | $3,750 | -$31,396 |
-| 10 | 650 | 36 | $792 | $3,146 | $3,750 | -$34,354 |
-| 11 | 780 | 44 | $968 | $4,114 | $3,750 | -$37,136 |
-| 12 | 920 | 53 | $1,166 | $5,280 | $3,750 | -$39,636 |
+| 1 (Jul 2026) | 50 | 1 | $55 | $55 | $3,750 | -$3,728 |
+| 2 | 95 | 2 | $110 | $165 | $3,750 | -$7,434 |
+| 3 | 130 | 5 | $275 | $440 | $3,750 | -$11,074 |
+| 4 | 175 | 7 | $385 | $825 | $3,750 | -$14,670 |
+| 5 | 225 | 9 | $495 | $1,320 | $3,750 | -$18,222 |
+| 6 | 280 | 14 | $770 | $2,090 | $3,750 | -$21,664 |
+| 7 | 350 | 18 | $990 | $3,080 | $3,750 | -$25,018 |
+| 8 | 425 | 22 | $1,210 | $4,290 | $3,750 | -$28,284 |
+| 9 | 530 | 29 | $1,595 | $5,885 | $3,750 | -$31,396 |
+| 10 | 650 | 36 | $1,980 | $7,865 | $3,750 | -$34,354 |
+| 11 | 780 | 44 | $2,420 | $10,285 | $3,750 | -$37,136 |
+| 12 | 920 | 53 | $2,915 | $13,200 | $3,750 | -$39,636 |
 
-> **Cumulative Loss Year 1 ≈ -$39,600** (cần funding để cover)
+> **Cumulative Loss Year 1 ≈ -$30,000** (cần funding để cover)
 
 ---
 
@@ -265,15 +265,15 @@
 
 **MRR cần để breakeven:** $3,750
 
-**Số paid users cần:** $3,750 ÷ $22 (ARPU Y1) = **~170 paid users**
+**Số paid users cần:** $3,750 ÷ $55 (ARPU Y1) = **~68 paid users**
 
 Hoặc với ARPU Year 2 ($28): **$3,750 ÷ $28 = ~134 paid users**
 
 | Scenario | Paid users cần | Free users cần (3% conversion) | Thời gian dự kiến |
 |---|---:|---:|---|
-| **Conservative** (ARPU $22, burn $3,750) | 170 | 5,700 | **Tháng 20–24** (Q1-Q2/2028) |
-| **Base** (ARPU $28, burn $3,750) | 134 | 4,500 | **Tháng 16–18** (Q4/2027) |
-| **Optimistic** (ARPU $35, burn $3,750) | 107 | 3,600 | **Tháng 14–16** (Q3/2027) |
+| **Conservative** (ARPU $55, burn $3,750) | 68 | 2,200 | **Tháng 10–12** (Q4/2026) |
+| **Base** (ARPU $65, burn $3,750) | 58 | 1,900 | **Tháng 8–10** (Q1/2027) |
+| **Optimistic** (ARPU $80, burn $3,750) | 47 | 1,500 | **Tháng 6–8** (Q4/2026) |
 
 > **⚠️ Thực tế:** Khi scale lên, burn sẽ tăng (thêm người, thêm infra). Breakeven thực tế có thể muộn hơn 2-4 tháng so với bảng trên nếu tuyển thêm team.
 
@@ -281,8 +281,8 @@ Hoặc với ARPU Year 2 ($28): **$3,750 ÷ $28 = ~134 paid users**
 
 | Scenario | Burn/tháng | Paid users cần | Thời gian |
 |---|---:|---:|---|
-| Solo founder (hiện tại) | $800 | 36 | **Tháng 10-12** |
-| +1 engineer | $2,500 | 114 | **Tháng 15-18** |
+| Solo founder (hiện tại) | $800 | 15 | **Tháng 10-12** |
+| +1 engineer | $2,500 | 45 | **Tháng 15-18** |
 | Full team (plan) | $3,750 | 170 | **Tháng 20-24** |
 | Aggressive hiring | $6,000 | 273 | **Tháng 24-30** |
 
@@ -428,7 +428,7 @@ Hoặc với ARPU Year 2 ($28): **$3,750 ÷ $28 = ~134 paid users**
 | **Growth** | Free signups/tháng | 50 | 80 | 120 |
 | **Growth** | Paid users (cumulative) | 5 | 14 | 29 |
 | **Revenue** | MRR | $110 | $308 | $638 |
-| **Revenue** | ARPU | $22 | $22 | $22 |
+| **Revenue** | ARPU | $55 | $55 | $22 |
 | **Retention** | Monthly churn (paid) | <8% | <7% | <6% |
 | **Retention** | NPS | >55 | >58 | >60 |
 | **Engagement** | Plans created/user/tháng | 2.5 | 3.0 | 3.5 |

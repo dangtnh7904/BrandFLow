@@ -60,8 +60,8 @@ export default function AdminBusinessModel() {
           <div className="space-y-3">
             {[
               {t:'FREE', p:'0đ', d:'Solo founder, công cụ cơ bản.'},
-              {t:'PLUS', p:'499K', d:'SME nhỏ, 5 kế hoạch/tháng.'},
-              {t:'PRO', p:'1.49M', d:'SME trung bình, full agent network.'}
+              {t:'PLUS', p:'480K', d:'SME nhỏ, 5 kế hoạch/tháng.'},
+              {t:'PRO', p:'4.99M', d:'SME trung bình, full agent network.'}
             ].map(p => (
               <div key={p.t} className="flex items-center justify-between p-4 rounded-xl border border-slate-800 bg-slate-800/30">
                 <div>

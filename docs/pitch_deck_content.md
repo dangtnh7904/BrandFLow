@@ -178,8 +178,8 @@ User Input → 4-Stage AI Pipeline → Executive Dashboard
 | Tier | Giá/tháng | Target | Tính năng chính |
 |---|---|---|---|
 | **FREE** | 0đ | Dùng thử, solo founder | 2 file/request, 6 file/ngày, 3 URL/ngày, output cơ bản |
-| **PLUS** | 499K (~$20) | SME nhỏ, freelancer | 5 file/request, 30 file/ngày, 15 URL/ngày, Excel export, Content Lab |
-| **PRO** | 1.49M (~$60) | SME trung bình, agency nhỏ | 15 file/request, 120 file/ngày, 80 URL/ngày, full features, API access |
+| **PLUS** | 480K (~$19) | SME nhỏ, freelancer | 5 file/request, 30 file/ngày, 15 URL/ngày, Excel export, Content Lab |
+| **PRO** | 4.99M (~$199) | SME trung bình, agency nhỏ | 15 file/request, 120 file/ngày, 80 URL/ngày, full features, API access |
 | **Enterprise** | Custom | Agency, corporate | White-label, custom AI agents, SLA, dedicated support |
 
 **Unit Economics (dự kiến tại scale 1,000 paid users):**
@@ -214,7 +214,7 @@ User Input → 4-Stage AI Pipeline → Executive Dashboard
 | Kiểm duyệt chéo (debate system) | ❌ | ❌ | ❌ | ✅ |
 | Output Excel P&L, budget breakdown | ❌ | ❌ | ✅ | ✅ |
 | Thời gian hoàn thành | Phút (nhưng không structured) | Phút (chỉ content) | 2–4 tuần | **~10 phút** |
-| Giá | $20/tháng | $39–99/tháng | 15–200 triệu/dự án | **0–$60/tháng** |
+| Giá | $20/tháng | $39–99/tháng | 15–200 triệu/dự án | **0–$199/tháng** |
 | Localized cho VN | ❌ | ❌ | ✅ | ✅ |
 | Tự sinh nội dung bám Brand DNA | Có thể nhưng thủ công | ✅ (content only) | ❌ | ✅ |
 
@@ -320,7 +320,7 @@ User Input → 4-Stage AI Pipeline → Executive Dashboard
 
 **Path to Profitability:**
 - **Breakeven point:** ~170 paid users (MRR ≈ $3,750)
-- **Dự kiến đạt breakeven:** Tháng 18–20 (Q4/2027 – Q1/2028)
+- **Dự kiến đạt breakeven:** Tháng 12–14 (Q2/2027 – Q3/2027)
 - **Nếu bootstrapped (burn $800/tháng):** Breakeven chỉ cần **36 paid users** → tháng 10–12
 - **Gross margin tại 500 users:** ~87% (LLM cost chỉ chiếm ~$0.35/user)
 
@@ -338,7 +338,7 @@ User Input → 4-Stage AI Pipeline → Executive Dashboard
 |---|---|---|
 | LLM cost per kế hoạch (1 lần tạo) | **~$0.022** | 28K input + 49K output tokens qua 4 stages |
 | LLM cost per paid user/tháng | **~$0.18** | Avg 8 kế hoạch/tháng (gói PLUS) |
-| ARPU (Year 1) | **$22/tháng** | 80% PLUS ($20) + 20% PRO ($60) |
+| ARPU (Year 1) | **$55/tháng** | 80% PLUS ($19) + 20% PRO ($199) |
 | **Gross Margin** | **83–87%** | Benchmark AI SaaS: 50–60%. BrandFlow cao hơn nhờ Flash tier |
 | CAC (organic + content) | **$20–30** | Community-led, không chạy paid ads mạnh |
 | LTV (adj. 6% monthly churn) | **$132** | 16.7 tháng avg lifetime × $22 ARPU, discount 64% |

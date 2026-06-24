@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from workflow_graph import run_plan_wizard_contract, run_week1_orchestration_contract
+from app.workflows.workflow_graph import run_plan_wizard_contract, run_week1_orchestration_contract
 
 
 DATASET_PATH = (

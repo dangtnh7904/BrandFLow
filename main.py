@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request, Res
 from fastapi.responses import HTMLResponse
 from typing import Any, Dict, List
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import (
+from app.schemas.schemas import (
     PresetRequest,
     InterviewRequest,
     RawInputRequest,
@@ -22,22 +22,37 @@ from schemas import (
     PlanIntent,
     ExecutionRequest,
 )
-from memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
-from intake_agent import analyze_raw_input, check_required_info, extract_document_summary
-from workflow_graph import (
-    build_error_envelope,
-    run_plan_wizard_contract,
-    run_pipeline,
-    run_refinement_pipeline,
-    run_week1_orchestration_contract,
-)
-from access_audit import VisitorAuditStore
-from document_processor import DocumentIngestor
+# ── AI Pipeline imports (optional – may fail if langchain deps missing) ──
+_AI_PIPELINE_AVAILABLE = False
+try:
+    from app.services.memory_rag import inject_industry_presets, generate_guideline_from_qa, analyze_and_extract_dna
+    from app.agents.intake.intake_agent import analyze_raw_input, check_required_info, extract_document_summary
+    from app.workflows.workflow_graph import (
+        build_error_envelope,
+        run_plan_wizard_contract,
+        run_pipeline,
+        run_refinement_pipeline,
+        run_week1_orchestration_contract,
+    )
+    from app.services.document_processor import DocumentIngestor
+    _AI_PIPELINE_AVAILABLE = True
+except ImportError as _import_err:
+    print(f"[WARN] AI pipeline modules unavailable: {_import_err}")
+    print("[WARN] Form CRUD and DB features will still work normally.")
+    # Fallback: vẫn thử import DocumentIngestor riêng lẻ (không phụ thuộc LangChain)
+    try:
+        from app.services.document_processor import DocumentIngestor
+    except ImportError:
+        DocumentIngestor = None  # type: ignore
+
+from app.core.access_audit import VisitorAuditStore
+from app.core.database import init_db as init_form_db
+from app.api.form_routes import router as form_router
 from pydantic import BaseModel
 import os
 import uuid
 import asyncio
-from mock_manager import parse_mock_md
+from app.core.mock_manager import parse_mock_md
 
 app = FastAPI(
     title="BrandFlow APIs",
@@ -45,12 +60,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Thêm CORS Middleware để cho phép Frontend (Vite/NextJS) gọi API
+# Cấu hình CORS chặt chẽ: Đóng chặt cửa, chỉ cho phép luồng chạy từ chính Frontend của bạn.
+# Trên Server Riêng, bạn mở file .env và thêm dòng: BRANDFLOW_FRONTEND_URLS=https://ten-mien-frontend-cua-ban.com
+raw_origins = os.environ.get("BRANDFLOW_FRONTEND_URLS", "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001")
+allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Trong thực tế nên để ["http://localhost:3000", "http://localhost:3001"]
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -86,8 +105,17 @@ AUDIT_ADMIN_TOKEN = os.environ.get("BRANDFLOW_AUDIT_ADMIN_TOKEN", "").strip()
 
 @app.on_event("startup")
 async def app_startup() -> None:
-    """Initialize local audit DB for visitor proof."""
+    """Initialize databases on startup."""
     VISITOR_AUDIT_STORE.init_db()
+    # Tạo bảng Users/Projects/FormData nếu chưa có
+    init_form_db()
+    print("✅ [DB] Form database initialized.")
+
+
+# ── Đăng ký Form Data CRUD Router ─────────────────────────────────
+from app.api.auth_routes import router as auth_router
+app.include_router(auth_router, prefix="/api/v1")
+app.include_router(form_router)
 
 
 @app.middleware("http")
@@ -721,6 +749,8 @@ async def test_upload_extract_only(
         raise HTTPException(status_code=400, detail="Không có file nào được tải lên.")
 
     try:
+        if DocumentIngestor is None:
+            raise HTTPException(status_code=503, detail="Dịch vụ xử lý tài liệu chưa sẵn sàng (thiếu thư viện AI).")
         temp_dir = "./temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
         
@@ -735,15 +765,18 @@ async def test_upload_extract_only(
                 content = await file.read()
                 buffer.write(content)
                 
-            raw_text = ingestor.ingest_file(temp_file_path, force_ai=force_ai)
-            cleaned_text = ingestor.clean_text(raw_text)
-            
-            results[file.filename] = {
-                "cleaned_text": cleaned_text
-            }
-            
-            if os.path.exists(temp_file_path):
-                os.remove(temp_file_path)
+            try:
+                raw_text = ingestor.ingest_file(temp_file_path, force_ai=force_ai)
+                cleaned_text = ingestor.clean_text(raw_text)
+                
+                results[file.filename] = {
+                    "cleaned_text": cleaned_text
+                }
+            finally:
+                # Bảo mật TUYỆT ĐỐI: Dù AI đọc file thành công hay bị Crash,
+                # file mật của công ty luôn luôn tiêu hủy.
+                if os.path.exists(temp_file_path):
+                    os.remove(temp_file_path)
                 
         return {"status": "success", "data": results}
         
@@ -762,6 +795,8 @@ def test_url_extract_only(request: UrlRequestCustom):
         raise HTTPException(status_code=400, detail="Không có URL nào được gửi lên.")
 
     try:
+        if DocumentIngestor is None:
+            raise HTTPException(status_code=503, detail="Dịch vụ xử lý tài liệu chưa sẵn sàng (thiếu thư viện AI).")
         ingestor = DocumentIngestor()
         results = {}
         for url in request.urls:
@@ -782,6 +817,8 @@ def onboarding_upload_url(request: UrlRequestCustom):
     if not request.urls:
         raise HTTPException(status_code=400, detail="Không có URL nào gửi lên.")
     try:
+        if DocumentIngestor is None:
+            raise HTTPException(status_code=503, detail="Dịch vụ xử lý tài liệu chưa sẵn sàng (thiếu thư viện AI).")
         ingestor = DocumentIngestor()
         count = 0
         for url in request.urls:
@@ -801,6 +838,8 @@ async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str 
         raise HTTPException(status_code=400, detail="Không có file nào được tải lên.")
 
     try:
+        if DocumentIngestor is None:
+            raise HTTPException(status_code=503, detail="Dịch vụ xử lý tài liệu chưa sẵn sàng (thiếu thư viện AI).")
         temp_dir = "./temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
         ingestor = DocumentIngestor(tenant_id=tenant_id)
@@ -813,13 +852,15 @@ async def onboarding_upload(files: List[UploadFile] = File(...), tenant_id: str 
                 content = await file.read()
                 buffer.write(content)
             
-            # 1. Bóc tách
-            raw_text = ingestor.ingest_file(temp_file_path)
-            # 2. Lưu vào ChromaDB
-            ingestor.process_and_store_text(raw_text=raw_text, filename=file.filename, category="brand_guidelines")
-
-            if os.path.exists(temp_file_path):
-                os.remove(temp_file_path)
+            try:
+                # 1. Bóc tách tài liệu
+                raw_text = ingestor.ingest_file(temp_file_path)
+                # 2. Lưu vào ChromaDB phân mảnh theo Từng Khách hàng (Isolate Tenant DB)
+                ingestor.process_and_store_text(raw_text=raw_text, filename=file.filename, category="brand_guidelines")
+            finally:
+                # Bảo mật TUYỆT ĐỐI Zero-Data Retention
+                if os.path.exists(temp_file_path):
+                    os.remove(temp_file_path)
                 
         return {"status": "success", "message": f"Đã lưu thành công {len(files)} tài liệu vào ChromaDB."}
     except Exception as e:
@@ -834,9 +875,10 @@ async def onboarding_extract_summary(files: List[UploadFile] = File(...), tenant
         raise HTTPException(status_code=400, detail="Không có file nào được tải lên.")
 
     try:
+        if DocumentIngestor is None:
+            raise HTTPException(status_code=503, detail="Dịch vụ xử lý tài liệu chưa sẵn sàng (thiếu thư viện AI).")
         temp_dir = "./temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
-        from document_processor import DocumentIngestor
         ingestor = DocumentIngestor(tenant_id=tenant_id)
         
         combined_text = ""
@@ -848,11 +890,12 @@ async def onboarding_extract_summary(files: List[UploadFile] = File(...), tenant
                 content = await file.read()
                 buffer.write(content)
             
-            raw_text = ingestor.ingest_file(temp_file_path)
-            combined_text += raw_text + "\n"
-            
-            if os.path.exists(temp_file_path):
-                os.remove(temp_file_path)
+            try:
+                raw_text = ingestor.ingest_file(temp_file_path)
+                combined_text += raw_text + "\n"
+            finally:
+                if os.path.exists(temp_file_path):
+                    os.remove(temp_file_path)
                 
         # Phân tích qua LLM Gemini
         summary_data = extract_document_summary(combined_text)
@@ -1264,6 +1307,13 @@ async def process_intake(request: RawInputRequest):
             "plan": result["final_plan"],
             "agent_logs": result["agent_logs"]
         }
+    except TimeoutError as e:
+        print(f"🔴 [INTAKE] Timeout pipeline: {e}")
+        raise HTTPException(status_code=504, detail={
+            "status": "error",
+            "message": "Yeu cau AI qua thoi gian cho phep. Vui long thu lai.",
+            "debug_info": str(e)
+        })
     except Exception as e:
         print(f"🔴 [INTAKE] Lỗi hệ thống nghiêm trọng: {e}")
         # Trả về payload JSON chuẩn để Frontend xử lý được (tắt loading, hiện thông báo lỗi)
@@ -1272,6 +1322,48 @@ async def process_intake(request: RawInputRequest):
             "message": "Hệ thống AI đang quá tải hoặc gặp sự cố, vui lòng thử lại sau giây lát.",
             "debug_info": str(e)
         })
+
+class AnalyzeGapsRequest(BaseModel):
+    document_text: str
+
+@app.post("/api/v1/planning/analyze-gaps")
+async def process_analyze_gaps(request: AnalyzeGapsRequest):
+    """
+    Bước 1: Phân tích văn bản, tìm khoảng trống (Gaps) và sinh câu hỏi cho User.
+    """
+    try:
+        from app.services.ai_form_generator import analyze_gaps
+        result = analyze_gaps(request.document_text)
+        return {"status": "success", "data": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class GenerateFormsRequest(BaseModel):
+    document_text: str
+    gap_answers: Dict[str, str]
+    project_id: str
+    user_id: str
+
+@app.post("/api/v1/planning/generate-forms")
+async def process_generate_forms(request: GenerateFormsRequest):
+    """
+    Bước 2 & 3: Lấy văn bản tổng + Câu trả lời User -> Generate toàn bộ 23 Form data -> Lưu DB.
+    """
+    try:
+        from app.services.ai_form_generator import generate_all_forms, save_forms_to_db
+        # 生成 Data
+        forms_data = generate_all_forms(request.document_text, request.gap_answers)
+        
+        # Lưu Database
+        saved_count = save_forms_to_db(request.project_id, request.user_id, forms_data)
+        
+        return {
+            "status": "success", 
+            "message": f"Đã sinh và lưu {saved_count} form vào database.",
+            "data": forms_data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/v1/planning/refine")
 async def process_refine(request: RefineRequest):
@@ -1295,6 +1387,13 @@ async def process_refine(request: RefineRequest):
             "plan": result["final_plan"],
             "agent_logs": result["agent_logs"]
         }
+    except TimeoutError as e:
+        print(f"🔴 [REFINE API] Timeout pipeline: {e}")
+        raise HTTPException(status_code=504, detail={
+            "status": "error",
+            "message": "Yeu cau AI qua thoi gian cho phep. Vui long thu lai.",
+            "debug_info": str(e)
+        })
     except Exception as e:
         print(f"🔴 [REFINE API] Lỗi xử lý feedback: {e}")
         raise HTTPException(status_code=500, detail={
@@ -1331,7 +1430,8 @@ async def process_micro_execute(request: MicroExecuteRequest):
 def get_db_stats():
     """Lấy thống kê số lượng bản ghi trong database."""
     try:
-        from document_processor import DocumentIngestor
+        if DocumentIngestor is None:
+            return {"status": "error", "message": "DocumentIngestor chưa sẵn sàng (thiếu thư viện AI).", "count": 0}
         ingestor = DocumentIngestor()
         from langchain_chroma import Chroma
         vectorstore = Chroma(
@@ -1342,6 +1442,48 @@ def get_db_stats():
         return {"status": "success", "count": vectorstore._collection.count()}
     except Exception as e:
         return {"status": "error", "message": str(e), "count": 0}
+
+# =====================================================================
+# HỆ THỐNG ASYNC POLLING (CHỊU TẢI 10K CCU VỚI CELERY + REDIS)
+# =====================================================================
+from pydantic import BaseModel
+
+class AsyncPlanRequest(BaseModel):
+    plan_hash: str
+    answers: dict = {}
+
+@app.post("/api/v1/tasks/dispatch-plan")
+def dispatch_async_task(request: AsyncPlanRequest):
+    """
+    Thay vì đợi AI chạy 30s-1m có thể đứt request, 
+    nhảy luôn vào hàng đợi Redis và nhả ID ra cho Frontend ngay tức thì.
+    """
+    try:
+        from celery_worker import execute_heavy_ai_plan
+        task = execute_heavy_ai_plan.delay({"plan_hash": request.plan_hash, "answers": request.answers})
+        return {"status": "success", "task_id": task.id, "message": "Đã xếp hàng vào Background Queue."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lưu ý: Bạn chưa chạy Redis/Celery. {str(e)}")
+
+@app.get("/api/v1/tasks/{task_id}/status")
+def get_task_status(task_id: str):
+    """
+    Frontend dùng ID để hỏi thăm (Polling) 3 giây / lần.
+    """
+    try:
+        from celery_worker import celery
+        task = celery.AsyncResult(task_id)
+        if task.state == 'PENDING':
+            return {"task_status": "pending", "progress": 0, "message": "Task đang chờ Worker bốc để xử lý."}
+        elif task.state == 'PROGRESS':
+            return {"task_status": "in_progress", "progress": task.info.get('progress', 0), "message": task.info.get('message', '')}
+        elif task.state == 'SUCCESS':
+            return {"task_status": "completed", "result": task.result}
+        elif task.state == 'FAILURE':
+            return {"task_status": "failed", "error": str(task.info)}
+        return {"task_status": task.state, "info": str(task.info)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

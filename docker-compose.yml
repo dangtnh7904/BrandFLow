@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # 1. MESSAGE BROKER: Cầu nối giao tiếp (Trái tim của hệ thống chịu tải)
+  # Nhận 10.000 Requests và bắt chúng xếp hàng lấy số
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: brandflow_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+
+  # ==========================================
+  # 2. API WEB SERVER: Bức tường lửa hứng kết nối Frontend
+  # Chỉ làm đúng 1 việc: Nhận lệnh -> Ném vào Redis -> Trả TaskID -> Chấm dứt kết nối.
+  # Do không phải đợi AI, 1 Server Gunicorn nhẹ hều có thể hứng hàng triệu User.
+  # ==========================================
+  api:
+    build: .
+    container_name: brandflow_api
+    ports:
+      - "8000:8000"
+    environment:
+      # Biến kết nối tới trạm điều phối
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      # Nếu cấu hình Frontend URL, nạp lại đây
+      # - BRANDFLOW_FRONTEND_URLS=http://localhost:3000
+    depends_on:
+      - redis
+    # Sử dụng 8 Workers chia luồng
+    command: ["gunicorn", "main:app", "-w", "8", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+    restart: always
+
+  # ==========================================
+  # 3. CELERY WORKERS: Những con trâu cày cuốc (AI Executors)
+  # Chúng đứng sau rình ở Redis, cứ có Task rút ra 1 cái để nuôi cấy mầm AI.
+  # Nếu thiếu sức mạnh, bạn chỉ cần scale worker lên 2, 3, 10 Node (cắm ở Server khác)
+  # mà không cần viết lại mã nguồn!
+  # ==========================================
+  worker:
+    build: .
+    container_name: brandflow_worker
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      # Nhét bộ thẻ từ OpenAI API Key / Thẻ Audit vào đây v.v..
+    depends_on:
+      - redis
+    # Khởi động công nhân bốc vác, cho phép chạy 4 Job AI đồng thời trên Server này
+    command: ["celery", "-A", "celery_worker.celery", "worker", "--loglevel=info", "--concurrency=4"]
+    restart: always
+
+volumes:
+  redis_data:

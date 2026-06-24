@@ -1,4 +1,4 @@
-from trace_logger import TraceLogger
+from app.core.trace_logger import TraceLogger
 
 
 def test_trace_logger_creates_files(tmp_path):

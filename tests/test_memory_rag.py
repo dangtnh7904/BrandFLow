@@ -2,8 +2,16 @@ import pytest
 from unittest.mock import patch
 import chromadb
 from langchain_chroma import Chroma
-from langchain_core.embeddings import FakeEmbeddings
-from langchain_core.messages import AIMessage
+class AIMessage:
+    def __init__(self, content):
+        self.content = content
+class FakeEmbeddings:
+    def __init__(self, size=128):
+        self.size = size
+    def embed_documents(self, texts):
+        return [[0.1] * self.size for _ in texts]
+    def embed_query(self, text):
+        return [0.1] * self.size
 
 from app.services.memory_rag import extract_and_save_rule, get_relevant_guidelines
 
@@ -23,7 +31,7 @@ def in_memory_vectorstore():
     )
     
     # Patch hàm get_vectorstore để hệ thống dùng DB tạm thời này
-    with patch("memory_rag.get_vectorstore", return_value=test_store):
+    with patch("app.services.memory_rag.get_vectorstore", return_value=test_store):
         yield test_store
 
 @patch("memory_rag.ChatOllama.invoke")

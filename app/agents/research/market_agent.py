@@ -3,7 +3,7 @@ import json
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.tools import DuckDuckGoSearchRun
+
 from pydantic import BaseModel, Field
 
 class MarketResearchOutput(BaseModel):
@@ -16,8 +16,11 @@ class MarketAgent:
     def __init__(self):
         self.llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2, max_retries=1, timeout=120.0)
         self.output_parser = JsonOutputParser(pydantic_object=MarketResearchOutput)
-        self.search_tool = DuckDuckGoSearchRun()
-        
+        try:
+            from langchain_community.tools import DuckDuckGoSearchRun
+            self.search_tool = DuckDuckGoSearchRun()
+        except ImportError:
+            self.search_tool = None
         self.prompt_template = ChatPromptTemplate.from_messages([
             ("system", 
              """Bạn là Giám đốc Nghiên cứu Thị trường (Market Research Director) cấp cao.

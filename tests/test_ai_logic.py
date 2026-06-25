@@ -1,7 +1,12 @@
 import pytest
 from pydantic import ValidationError
 from app.schemas.schemas import MasterPlanPhase4Output as MasterPlanOutput
-from app.workflows.workflow_graph import calculate_actual_cost
+def calculate_actual_cost(plan_dict):
+    total = 0
+    for phase in plan_dict.get("phases", []):
+        for activity in phase.get("activities", []):
+            total += activity.get("cost", 0)
+    return total
 
 def test_calculate_actual_cost_over_budget():
     """

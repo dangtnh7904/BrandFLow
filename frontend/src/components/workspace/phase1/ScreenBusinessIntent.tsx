@@ -83,6 +83,7 @@ export default function ScreenBusinessIntent({ onNext }: { onNext: () => void })
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+            id="mode-budget-first"
             onClick={() => setMode('budget_first')}
             className={`relative group flex flex-col p-7 rounded-2xl cursor-pointer transition-all duration-300 border backdrop-blur-xl overflow-hidden ${
               mode === 'budget_first'
@@ -174,6 +175,7 @@ export default function ScreenBusinessIntent({ onNext }: { onNext: () => void })
                       {BUDGET_PRESETS.map((p) => (
                         <button
                           key={p.value}
+                          id={`btn-budget-${p.value}`}
                           onClick={() => { setBudget(p.value); setCustomBudget(''); }}
                           className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                             budget === p.value
@@ -268,6 +270,7 @@ export default function ScreenBusinessIntent({ onNext }: { onNext: () => void })
 
               {/* Proceed Button */}
               <motion.button
+                id="btn-proceed-intent"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
@@ -289,3 +292,4 @@ export default function ScreenBusinessIntent({ onNext }: { onNext: () => void })
     </div>
   );
 }
+

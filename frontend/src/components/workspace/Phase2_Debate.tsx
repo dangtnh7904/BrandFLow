@@ -35,30 +35,50 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
 
   // Hiệu ứng "gõ chữ" / replay từ API logs
   useEffect(() => {
+    let isMounted = true;
+    const initDebate = async () => {
+      setIsFetching(true);
+      // Call API
+      await runDebateAndPlanning();
+      if (isMounted) setIsFetching(false);
+    };
+    
+    if (!debateLogs || debateLogs.length === 0) {
+      initDebate();
+    } else {
+      setIsFetching(false);
+    }
+    return () => { isMounted = false; };
+  }, []);
+
+  useEffect(() => {
     if (isFetching || !debateLogs || debateLogs.length === 0) return;
     
-    // Nếu messages đã load xong rồi thì không chạy lại
-    if (messages.length === debateLogs.length) return;
+    let i = 0;
+    const isDemo = typeof window !== 'undefined' && (window as any).__DEMO_MODE__;
+    const intervalTime = isDemo ? 500 : 1800;
+    const lockDelay = isDemo ? 1000 : 1500;
 
-    let i = messages.length;
     const interval = setInterval(() => {
       if (i < debateLogs.length) {
-        // Ánh xạ `role` từ backend hoặc dùng default
         const log = debateLogs[i];
-        // Đôi khi backend gửi role = 'warning' / 'rejected' ở thuộc tính khác, ta map tay
         const type = (log.message || '').toLowerCase().includes("cảnh báo") ? 'warning' : 'proposal';
         
-        setMessages(prev => [...prev, {
-          agent: log.agent || 'SYSTEM',
-          type: log.type || type,
-          text: log.message || ''
-        }]);
+        setMessages(prev => {
+          // avoid duplicates if react double invokes
+          if (prev.length > i) return prev;
+          return [...prev, {
+            agent: log.agent || 'SYSTEM',
+            type: log.type || type,
+            text: log.message || ''
+          }];
+        });
         i++;
       } else {
         clearInterval(interval);
-        setTimeout(() => setIsLocked(true), 1500);
+        setTimeout(() => setIsLocked(true), lockDelay);
       }
-    }, 1800); 
+    }, intervalTime); 
     
     return () => clearInterval(interval);
   }, [isFetching, debateLogs]);
@@ -196,7 +216,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
             </p>
             
             <button 
-              onClick={onNext}
+              id='btn-next-phase2' onClick={onNext}
               className="px-10 py-4 rounded-xl gradient-ai-bg font-bold shadow-xl hover:shadow-cyan-500/20 transition-all transform hover:-translate-y-1 text-lg flex items-center justify-center mx-auto"
             >
               Cấp Quyền Thực Thi Chiến Lược
@@ -208,3 +228,4 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
     </div>
   );
 }
+

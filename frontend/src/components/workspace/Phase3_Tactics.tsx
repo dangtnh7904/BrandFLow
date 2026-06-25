@@ -1,279 +1,173 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Calculator, ArrowLeft, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-const TASKS_EN = [
- { id: 't1', name: 'Setup LinkedIn Insights Tag', month: 1, duration: 1, type: 'setup', pct: 5 },
- { id: 't2', name: 'Publish Q3 Whitepaper', month: 1, duration: 2, type: 'content', pct: 35 },
- { id: 't3', name: 'B2B Retargeting Ads', month: 2, duration: 2, type: 'ads', pct: 35 },
- { id: 't4', name: 'SEO & AEO Onpage Optimization', month: 1, duration: 3, type: 'seo', pct: 15 },
- { id: 't5', name: 'Risk Contingency Fund', month: 1, duration: 3, type: 'contingency', pct: 10 }
-];
-
-const TASKS_VI = [
- { id: 't1', name: 'Setup LinkedIn Insights Tag', month: 1, duration: 1, type: 'setup', pct: 5 },
- { id: 't2', name: 'Phát hành Whitepaper Q3', month: 1, duration: 2, type: 'content', pct: 35 },
- { id: 't3', name: 'Chạy Ads Retargeting B2B', month: 2, duration: 2, type: 'ads', pct: 35 },
- { id: 't4', name: 'SEO & AEO Onpage Optimization', month: 1, duration: 3, type: 'seo', pct: 15 },
- { id: 't5', name: 'Quỹ Dự phòng rủi ro', month: 1, duration: 3, type: 'contingency', pct: 10 }
-];
-
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Bot, PenSquare, Palette, Share2, Calculator, CheckCircle2, Zap, ArrowRight, Activity, Terminal } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useFormStore } from '@/store/useFormStore';
-
-const SlotMachineTicker = ({ exactValue, isCalculating, baseBudget }: { exactValue: string, isCalculating: boolean, baseBudget: number }) => {
- const [displayValue, setDisplayValue] = useState('---');
-
- React.useEffect(() => {
- if (isCalculating) {
- let animationFrameId: number;
- const tick = () => {
- // Generate a random number around the base budget scale to simulate crunching
- const randomNum = Math.floor(Math.random() * baseBudget);
- setDisplayValue(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(randomNum));
- // Throttle slightly to make it readable as a matrix/slot roll
- setTimeout(() => {
- animationFrameId = requestAnimationFrame(tick);
- }, 30);
- };
- animationFrameId = requestAnimationFrame(tick);
- return () => cancelAnimationFrame(animationFrameId);
- } else if (exactValue) {
- setDisplayValue(exactValue);
- }
- }, [isCalculating, exactValue, baseBudget]);
-
- return (
- <span className={`font-mono transition-all duration-200 inline-block ${isCalculating ? 'text-indigo-400 opacity-80 scale-105' : 'text-blue-600'}`}>
- {displayValue}
- </span>
- );
-};
 
 export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNext: () => void, onBack: () => void, globalBudget: string }) {
- const { language, t } = useLanguage();
- const { tacticsPlan } = useFormStore();
- 
- const dynamicTasks = React.useMemo(() => {
-   if (!tacticsPlan || !tacticsPlan.activity_and_financial_breakdown) {
-     return language === 'vi' ? TASKS_VI : TASKS_EN;
-   }
-   
-   const breakdown = tacticsPlan.activity_and_financial_breakdown;
-   const tasks: any[] = [];
-   let totalCost = 0;
-   
-   breakdown.forEach((phase: any) => {
-     (phase.activities || []).forEach((act: any) => {
-       totalCost += Number(act.cost_vnd) || 0;
-     });
-   });
-   
-   if (totalCost === 0) return language === 'vi' ? TASKS_VI : TASKS_EN;
-   
-   let index = 1;
-   breakdown.forEach((phase: any, pIdx: number) => {
-     (phase.activities || []).forEach((act: any) => {
-       const cost = Number(act.cost_vnd) || 0;
-       const pct = Math.round((cost / totalCost) * 100);
-       tasks.push({
-         id: `t${index}`,
-         name: act.activity_name || `Hoạt động ${index}`,
-         month: (pIdx % 3) + 1,
-         duration: 1 + (index % 2),
-         type: ['setup', 'content', 'ads', 'seo', 'contingency'][index % 5],
-         pct: pct,
-         exact_cost: cost
-       });
-       index++;
-     });
-   });
-   
-   return tasks.slice(0, 8); // Giới hạn 8 task để UI không bị quá dài
- }, [tacticsPlan, language]);
+  const { language } = useLanguage();
+  const [activePanel, setActivePanel] = useState(0); // 0: Content, 1: Design, 2: Agent, 3: Tactics
+  const [typedText, setTypedText] = useState("");
 
- const TASKS = dynamicTasks;
- const [exactCosts, setExactCosts] = useState<Record<string, string>>({});
- const [isCalculating, setIsCalculating] = useState(false);
- const [isCalculated, setIsCalculated] = useState(false);
- const [flash, setFlash] = useState(false);
+  const contentMock = {
+    headline: "CÓ NHỮNG NGÀY CHỈ THÈM MỘT BÁT CANH CUA RAU ĐAY...",
+    body: "Thành phố dạo này hay đổ mưa chiều. Những lúc kẹt xe giữa dòng người hối hả, bạn có chợt thấy sống mũi cay cay khi nhớ về mùi khói bếp thân thuộc?\n\nỞ Bếp Nhà Mộc, chúng tôi không có những món sơn hào hải vị xa hoa. Chúng tôi chỉ có:\n✨ Nồi cá lóc kho tộ keo sệt, đậm đà vị mắm nhỉ.\n✨ Bát canh cua đồng nấu rau đay mồng tơi ngọt thanh, mát ruột.\n✨ Niêu cơm gạo lứt dẻo bùi, ủ ấm trong lớp lá chuối.\n\nHôm nay, gác lại những bộn bề, mời bạn ghé Bếp, ngồi xuống chiếc ghế gỗ sờn, nghe một bản nhạc Trịnh và thưởng thức mâm cơm 'như mẹ nấu'.",
+    tiktok: "Góc quay POV mở cánh cửa gỗ bước vào quán. Ánh sáng vàng ấm, không gian ngập tràn cây xanh và đồ gốm.\nVoiceover: Níu Sài Gòn làm bạn mệt quá, thì đây là nơi mình thường đến để trốn."
+  };
 
- const handleCalculate = () => {
- setIsCalculating(true);
- setIsCalculated(false);
- setTimeout(() => {
- const budgetNum = parseInt(globalBudget) || 100000000;
- const newCosts: Record<string, string> = {};
- 
- TASKS.forEach(t => {
- const cost = t.exact_cost !== undefined ? t.exact_cost : (budgetNum * (t.pct / 100));
- newCosts[t.id] = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(cost);
- });
- 
- setExactCosts(newCosts);
- setIsCalculating(false);
- setIsCalculated(true);
- 
- // Trigger snap flash over the table area
- setFlash(true);
- setTimeout(() => setFlash(false), 500);
- }, 1500);
- };
+  const designMock = {
+    primaryColors: ["#4A5D23", "#8B4513", "#F5DEB3"],
+    archetype: "The Caregiver & The Innocent",
+    keywords: ["Mộc mạc", "Ấm áp", "Chữa lành", "Di sản", "Xanh"]
+  };
 
- const getGanttColor = (type: string) => {
- switch(type) {
- case 'setup': return 'bg-zinc-500';
- case 'content': return 'bg-purple-500';
- case 'ads': return 'bg-cyan-500';
- case 'seo': return 'bg-blue-500';
- case 'contingency': return 'bg-orange-500';
- default: return 'bg-linear-surface/20';
- }
- };
+  // Typing effect for Content Lab
+  useEffect(() => {
+    if (activePanel === 0) {
+      const fullText = contentMock.headline + "\n\n" + contentMock.body;
+      let i = 0;
+      setTypedText("");
+      const interval = setInterval(() => {
+        setTypedText(prev => prev + fullText.charAt(i));
+        i++;
+        if (i >= fullText.length) clearInterval(interval);
+      }, 10);
+      return () => clearInterval(interval);
+    }
+  }, [activePanel]);
 
- const budgetNum = parseInt(globalBudget) || 100000000;
+  // Auto transition for demo purposes
+  useEffect(() => {
+    if (window && (window as any).__DEMO_MODE__) {
+      const timers = [
+        setTimeout(() => setActivePanel(1), 500), // Switch to Design after 500ms
+        setTimeout(() => setActivePanel(2), 900), // Switch to Agent after 900ms
+        setTimeout(() => setActivePanel(3), 1300), // Switch to Tactics after 1300ms
+      ];
+      return () => timers.forEach(clearTimeout);
+    }
+  }, []);
 
- return (
- <div className="w-full h-full overflow-y-auto relative">
- <div className="flex flex-col p-4 md:p-8 max-w-6xl mx-auto w-full min-h-full">
- {/* Screen Flash Overlay */}
- {flash && (
- <motion.div 
- initial={{ opacity: 0.8 }}
- animate={{ opacity: 0 }}
- transition={{ duration: 0.5, ease: "easeOut" }}
- className="absolute inset-0 bg-blue-100 z-50 pointer-events-none mix-blend-overlay"
- />
- )}
 
- <button onClick={onBack} className="absolute left-4 md:left-8 top-4 md:top-8 text-linear-text-muted hover:text-foreground transition-colors flex items-center text-sm bg-linear-surface px-3 py-1.5 rounded-lg border border-linear-border shadow-sm z-10">
- <ArrowLeft className="w-4 h-4 mr-1" /> <span className="hidden sm:inline">Back</span>
- </button>
+  const tabs = [
+    { id: 0, title: "Content Lab", icon: PenSquare, color: "text-pink-500" },
+    { id: 1, title: "Design Studio", icon: Palette, color: "text-purple-500" },
+    { id: 2, title: "Personal Agent", icon: Bot, color: "text-cyan-500" },
+    { id: 3, title: "Tactics & Gantt", icon: Activity, color: "text-emerald-500" }
+  ];
 
- <div className="mb-8 text-center mt-8">
- <h2 className="text-3xl font-bold text-foreground mb-3">{t('workspace_phase3.title' as any) as string}</h2>
- <p className="text-foreground font-medium">{t('workspace_phase3.desc' as any) as string}</p>
- </div>
+  return (
+    <div className="h-full w-full flex flex-col p-6 max-w-7xl mx-auto z-10 relative">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+            Tactical Execution Hub
+          </h2>
+          <p className="text-linear-text-muted mt-1">Hệ thống Multi-Agent đang tự động xây dựng toàn bộ tài nguyên</p>
+        </div>
+        <button id="btn-next-phase3" onClick={onNext} className="px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold flex items-center transition-all shadow-lg shadow-blue-500/20">
+          Chuyển sang Execution <ArrowRight className="ml-2 w-4 h-4" />
+        </button>
+      </div>
 
- <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
- {/* Gantt Chart UI */}
- <div className="bento-card bg-linear-surface shadow-sm border border-linear-border overflow-hidden">
- <h3 className="text-lg font-bold text-foreground mb-6">{t('workspace_phase3.touchpoints' as any) as string}</h3>
- 
- <div className="w-full overflow-x-auto pb-4">
- <div className="min-w-[500px]">
- <div className="grid grid-cols-4 text-[10px] md:text-xs font-bold text-foreground uppercase tracking-wider mb-4 border-b border-linear-border pb-2">
- <div className="col-span-1">{t('workspace_phase3.task' as any) as string}</div>
- <div className="text-center">{t('workspace_phase3.m1' as any) as string}</div>
- <div className="text-center">{t('workspace_phase3.m2' as any) as string}</div>
- <div className="text-center">{t('workspace_phase3.m3' as any) as string}</div>
- </div>
+      <div className="flex space-x-4 mb-6">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActivePanel(tab.id)}
+            className={`flex items-center px-4 py-2 rounded-xl transition-all ${activePanel === tab.id ? 'bg-linear-surface border border-slate-600 shadow-md' : 'opacity-50 hover:opacity-100'}`}
+          >
+            <tab.icon className={`w-5 h-5 mr-2 ${tab.color}`} />
+            <span className="font-semibold text-foreground">{tab.title}</span>
+          </button>
+        ))}
+      </div>
 
- <div className="space-y-4">
- {TASKS.map(task => (
- <div key={task.id} className="grid grid-cols-4 items-center gap-2">
- <div className="col-span-1 text-xs text-foreground font-medium truncate pr-2" title={task.name}>{task.name}</div>
- <div className="col-span-3 grid grid-cols-3 gap-1 relative h-6 bg-background rounded-md overflow-hidden p-1 shadow-inner border border-linear-border">
- {/* Transparent grid lines */}
- <div className="border-r border-linear-border h-full"></div>
- <div className="border-r border-linear-border h-full"></div>
- <div className="h-full"></div>
- 
- {/* Gantt Bar */}
- <motion.div 
- initial={{ width: 0 }}
- animate={{ width: '100%' }}
- transition={{ duration: 1, delay: 0.2 }}
- className={`absolute top-1 bottom-1 rounded-sm ${getGanttColor(task.type)} shadow-sm opacity-90`}
- style={{ 
- left: `calc(${((task.month - 1) / 3) * 100}% + 4px)`, 
- width: `calc(${((task.duration) / 3) * 100}% - 8px)` 
- }}
- />
- </div>
- </div>
- ))}
- </div>
- </div>
- </div>
- </div>
+      <div className="flex-1 bg-linear-surface/40 backdrop-blur-md border border-linear-border rounded-3xl p-6 overflow-hidden relative shadow-2xl">
+        <AnimatePresence mode="wait">
+          {activePanel === 0 && (
+            <motion.div key="p0" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="h-full flex flex-col">
+              <div className="flex items-center mb-4 text-pink-400 font-mono text-sm">
+                <Terminal className="w-4 h-4 mr-2" /> [Agent: ContentStrategist] & [Agent: Copywriter] generating...
+              </div>
+              <div className="flex-1 bg-black/40 border border-slate-800 rounded-xl p-6 overflow-y-auto font-mono text-slate-300 whitespace-pre-wrap leading-relaxed">
+                {typedText}<span className="animate-pulse">_</span>
+              </div>
+            </motion.div>
+          )}
 
- {/* Budgeting Grid Math Hook */}
- <div className="bento-card flex flex-col bg-linear-surface shadow-sm border border-linear-border relative overflow-hidden">
- {/* Subtle math engine crunching glow effect */}
- {isCalculating && (
- <motion.div 
- initial={{ opacity: 0 }} 
- animate={{ opacity: 1 }} 
- className="absolute inset-0 border-2 border-indigo-400 shadow-[inset_0_0_20px_rgba(99,102,241,0.2)] rounded-3xl pointer-events-none" 
- />
- )}
+          {activePanel === 1 && (
+            <motion.div key="p1" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="h-full">
+              <div className="flex items-center mb-6 text-purple-400 font-mono text-sm">
+                <Terminal className="w-4 h-4 mr-2" /> [Agent: BrandDesigner] establishing visual identity...
+              </div>
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Primary Colors</h3>
+                    <div className="flex space-x-4">
+                      {designMock.primaryColors.map((color, i) => (
+                        <div key={i} className="flex flex-col items-center">
+                          <div className="w-16 h-16 rounded-2xl shadow-lg border border-slate-700" style={{backgroundColor: color}} />
+                          <span className="text-xs font-mono mt-2 text-slate-400">{color}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Brand Archetype</h3>
+                    <div className="px-4 py-3 bg-purple-500/10 border border-purple-500/20 rounded-xl text-purple-300 font-semibold">
+                      {designMock.archetype}
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-black/40 border border-slate-800 rounded-xl p-6 flex flex-wrap gap-2 content-start">
+                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 w-full">Moodboard Keywords</h3>
+                  {designMock.keywords.map((kw, i) => (
+                    <span key={i} className="px-3 py-1 bg-slate-800 rounded-full text-sm text-slate-300 border border-slate-700">{kw}</span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
 
- <div className="mb-4 md:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
- <h3 className="text-lg font-bold text-foreground">{t('workspace_phase3.alloc' as any) as string}</h3>
- <span className="text-xs bg-background border border-linear-border px-2 py-1 rounded-md text-foreground font-bold whitespace-nowrap self-start sm:self-auto">{t('workspace_phase3.total' as any) as string} {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(budgetNum)}</span>
- </div>
+          {activePanel === 2 && (
+            <motion.div key="p2" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:1.05}} className="h-full flex flex-col items-center justify-center">
+               <div className="relative w-48 h-48 mb-8">
+                 <div className="absolute inset-0 bg-cyan-500/20 rounded-full blur-[40px] animate-pulse" />
+                 <motion.div animate={{rotate:360}} transition={{duration:10, repeat:Infinity, ease:"linear"}} className="absolute inset-0 border-[4px] border-dashed border-cyan-500/50 rounded-full" />
+                 <motion.div animate={{rotate:-360}} transition={{duration:15, repeat:Infinity, ease:"linear"}} className="absolute inset-4 border-[2px] border-blue-500/50 rounded-full" />
+                 <div className="absolute inset-0 flex items-center justify-center">
+                   <Bot className="w-16 h-16 text-cyan-400" />
+                 </div>
+               </div>
+               <h3 className="text-2xl font-bold text-white mb-2">Bếp Nhà Mộc Agent Activated</h3>
+               <p className="text-slate-400 font-mono max-w-lg text-center">Persona injected. Tone & Manner: "Tâm tình, thủ thỉ, chân thành, dùng từ ngữ mang đậm chất văn học và hoài niệm." Ready for tasks.</p>
+            </motion.div>
+          )}
 
- <div className="flex-1 overflow-x-auto w-full">
- <table className="w-full min-w-[500px] text-sm text-left">
- <thead className="text-xs text-foreground font-bold uppercase border-b border-linear-border">
- <tr>
- <th className="py-3 px-2 font-medium">{t('workspace_phase3.task' as any) as string}</th>
- <th className="py-3 px-2 font-medium text-center">CFO %</th>
- <th className="py-3 px-2 font-medium text-right text-blue-600">Exact Cost (Math Engine)</th>
- </tr>
- </thead>
- <tbody>
- {TASKS.map(task => (
- <tr key={task.id} className="border-b border-linear-border hover:bg-linear-surface/80 transition-colors">
- <td className="py-3 px-2 text-foreground truncate max-w-[150px] font-medium">{task.name}</td>
- <td className="py-3 px-2 text-center font-bold text-blue-600">{task.pct}%</td>
- <td className="py-3 px-2 text-right font-bold h-10 align-middle">
- <SlotMachineTicker 
- exactValue={exactCosts[task.id]} 
- isCalculating={isCalculating} 
- baseBudget={budgetNum} 
- />
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
+          {activePanel === 3 && (
+            <motion.div key="p3" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="h-full flex flex-col">
+              <div className="flex items-center mb-6 text-emerald-400 font-mono text-sm">
+                <Terminal className="w-4 h-4 mr-2" /> [Agent: CMO & CFO] finalizing deployment tactics...
+              </div>
+              <div className="space-y-4">
+                {['Setup Zalo Mini App for Retention', 'Produce ASMR TikTok Series', 'Deploy Mindful Dining PR Articles'].map((task, i) => (
+                  <div key={i} className="p-4 bg-emerald-950/20 border border-emerald-900/50 rounded-xl flex items-center justify-between">
+                    <div className="flex items-center">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 mr-3" />
+                      <span className="font-semibold text-slate-200">{task}</span>
+                    </div>
+                    <span className="text-sm font-mono text-emerald-400">Month {i+1}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
- <div className="mt-6 flex flex-col space-y-3 z-10">
- <button 
- onClick={handleCalculate}
- className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center transition-all ${isCalculated ? 'bg-background border border-linear-border text-foreground hover:bg-linear-surface/80' : 'gradient-ai-bg shadow-sm hover:shadow-md'}`}
- >
- {isCalculating ? (
- <span className="animate-pulse flex items-center"><Calculator className="w-4 h-4 mr-2" /> {t('workspace_phase3.running' as any) as string}</span>
- ) : isCalculated ? (
- <><CheckCircle2 className="w-4 h-4 mr-2 text-blue-600" /> {t('workspace_phase3.recalculate' as any) as string}</>
- ) : (
- <><Calculator className="w-4 h-4 mr-2" /> {t('workspace_phase3.run_engine' as any) as string}</>
- )}
- </button>
-
- {isCalculated && (
- <motion.div 
- initial={{ opacity: 0, y: 10 }}
- animate={{ opacity: 1, y: 0 }}
- >
- <button 
- onClick={onNext}
- className="w-full py-3 rounded-xl gradient-ai-bg text-white font-bold flex items-center justify-center shadow-md hover:shadow-lg hover:scale-[1.02] transition-all"
- >
- {t('workspace_phase3.approve_btn' as any) as string} <ArrowRight className="w-4 h-4 ml-2" />
- </button>
- </motion.div>
- )}
- </div>
- </div>
- </div>
- </div>
- </div>
- );
+        </AnimatePresence>
+      </div>
+    </div>
+  );
 }

@@ -30,6 +30,14 @@ export default function DailyContentPage() {
     const fetchTrends = async () => {
       setIsLoadingTrends(true);
       try {
+        if (typeof window !== 'undefined' && (window as any).__DEMO_MODE__) {
+          if (isMounted) {
+            setTrends(["Tối ưu dòng tiền", "Thoát cảnh 'Khổ Chủ'", "Xây dựng đội ngũ", "AI cho SME"]);
+            setIsLoadingTrends(false);
+          }
+          return;
+        }
+
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
         
         const controller = new AbortController();
@@ -48,7 +56,10 @@ export default function DailyContentPage() {
         }
       } catch (err) {
         console.error("Failed to fetch trends", err);
-        if (isMounted) setTrends(["Tối ưu dòng tiền", "Thoát cảnh 'Khổ Chủ'", "Xây dựng đội ngũ", "AI cho SME"]);
+        if (isMounted) {
+          setTrends(["Tối ưu dòng tiền", "Thoát cảnh 'Khổ Chủ'", "Xây dựng đội ngũ", "AI cho SME"]);
+          setIsLoadingTrends(false);
+        }
       } finally {
         if (isMounted) setIsLoadingTrends(false);
       }

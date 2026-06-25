@@ -1,0 +1,127 @@
+/* vfx.css - High Tech Cinematic Effects for BrandFlow Demo */
+
+/* 1. Laser Scan (Phase 1) */
+.vfx-laser-scan {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: cyan;
+  box-shadow: 0 0 15px 5px rgba(0, 255, 255, 0.6);
+  animation: laserScan 3s ease-in-out infinite alternate;
+  z-index: 50;
+  pointer-events: none;
+}
+
+@keyframes laserScan {
+  0% { transform: translateY(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(80vh); opacity: 0; }
+}
+
+/* 2. Energy Sphere (Phase 3 DNA) */
+.vfx-energy-sphere {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  margin: -100px 0 0 -100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,92,246,0.8) 0%, rgba(6,182,212,0.4) 50%, transparent 80%);
+  box-shadow: 0 0 60px 20px rgba(139, 92, 246, 0.5), inset 0 0 40px 10px rgba(0, 255, 255, 0.8);
+  animation: pulseSphere 2s infinite ease-in-out;
+  z-index: 100;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+@keyframes pulseSphere {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 100px 40px rgba(139, 92, 246, 0.7), inset 0 0 60px 20px rgba(0, 255, 255, 0.9); }
+  100% { transform: scale(0.8); opacity: 0.6; }
+}
+
+/* 3. Matrix Data Stream (Phase 2 Debate & Background) */
+.vfx-matrix-stream {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: matrixScroll 10s linear infinite;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+}
+
+@keyframes matrixScroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 30px 300px; }
+}
+
+/* 4. Hologram Glitch (Transitions) */
+.vfx-hologram {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 255, 0.05),
+    rgba(0, 255, 255, 0.05) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  z-index: 99;
+  pointer-events: none;
+  animation: scanlines 5s linear infinite;
+}
+
+@keyframes scanlines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100vh); }
+}
+
+/* 5. Ripple Wave (Phase 6 Agent Deploy) */
+.vfx-ripple-wave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: rgba(16, 185, 129, 0.8);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  z-index: 90;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { box-shadow: 0 0 0 200px rgba(16, 185, 129, 0); opacity: 0; transform: translate(-50%, -50%) scale(10); }
+}
+
+/* Base camera transitions */
+.camera-start {
+  transform: scale(1.0) translateY(0px);
+  opacity: 1;
+}
+
+.camera-focus-debate {
+  transform: scale(1.05) translateY(-5%);
+  box-shadow: 0 0 100px rgba(16, 185, 129, 0.15);
+}
+
+.camera-flip-tactics {
+  transform: rotateY(-3deg) rotateX(2deg) scale(0.98);
+  box-shadow: -30px 30px 80px rgba(6, 182, 212, 0.15);
+}
+
+.camera-zoom-out-execution {
+  transform: rotateY(0deg) rotateX(0deg) scale(1.02);
+  box-shadow: 0 0 120px rgba(139, 92, 246, 0.2);
+}

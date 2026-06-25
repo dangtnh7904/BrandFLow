@@ -35,13 +35,14 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToNext }: { onGoToHub
      setLoadingTextIndex((prev) => (prev + 1) % loadingTexts.length);
    }, 800);
 
+   const isDemo = typeof window !== 'undefined' && (window as any).__DEMO_MODE__;
    const checkInterval = setInterval(() => {
-     if (minTimePassed && intakeAnalysis) {
+     if ((minTimePassed && intakeAnalysis) || isDemo) {
        setLoading(false);
        clearInterval(checkInterval);
        clearInterval(interval);
      }
-   }, 500);
+   }, 100);
 
    // Tự động thoát loading nếu quá 60s
    const timeoutFallback = setTimeout(() => {
@@ -345,7 +346,7 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToNext }: { onGoToHub
  className="flex flex-col sm:flex-row items-center justify-end gap-4 mt-8 pt-8 border-t border-linear-border/50"
  >
   <button 
-  onClick={onGoToNext}
+  id='btn-next-phase3-dashboard' onClick={onGoToNext}
   className="group relative px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-1 w-full sm:w-auto justify-center overflow-hidden"
   >
   {/* Shine effect */}

@@ -268,6 +268,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
       const { brandDNA } = get();
 
       // Gọi API thật (chuyển sang POST để gửi brand_dna)
+      if (typeof window !== 'undefined' && (window as any).__DEMO_MODE__) {
+        throw new Error("Force Demo Mode Fallback");
+      }
       const apiCall = fetch(`${API_URL}/api/v1/research/market`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
@@ -319,6 +322,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
         business_intent: businessIntent
       };
 
+      if (typeof window !== 'undefined' && (window as any).__DEMO_MODE__) {
+        throw new Error("Force Demo Mode Fallback");
+      }
       const res = await fetch(`${API_URL}/api/v1/planning/intake`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
@@ -337,24 +343,24 @@ export const useFormStore = create<FormStore>((set, get) => ({
     } catch (error) {
       console.error("Debate API failed:", error);
       const fallbackLogs = [
-        { agent: "CMO", role: "Giám đốc Marketing", message: "Chào các vị lãnh đạo và khách hàng! Giám đốc Marketing xin phép trình bày tóm tắt kế hoạch 'Thơm Khói Bếp - Chữa Lành Tâm Hồn'.\n\nChiến dịch sẽ đi qua 3 giai đoạn: Khơi Hương (Teasing), Tỏa Trà (Traffic), và Lưu Phai (Loyalty). Trọng tâm lớn nhất nằm ở tháng 6, chúng ta sẽ mạnh tay book 3 Mega-TikToker tới thưởng trà và làm video review. Mức đầu tư cho riêng hạng mục KOL này là 30 triệu đồng. Tổng ngân sách tôi xin duyệt là 355,000,000 VND. Mọi người có ý kiến gì không?" },
-        { agent: "SYSTEM", role: "Hệ thống Kiểm toán", message: "Cảnh báo tự động: Hệ thống ghi nhận ngân sách Marketing đề xuất đã cao hơn so với hạn mức hiện tại. Cần các sếp và đại diện khách hàng vào phiên tòa phản biện để điều chỉnh lại cấu trúc vốn." },
-        { agent: "CFO", message: "> \"Tổng ngân sách 350 triệu VNĐ cho 1 quý là một khoản đầu tư đáng kể đối với một SME quy mô doanh thu 1.2 tỷ/tháng. Tôi đánh giá cao việc có ngân sách cho Performance Marketing để thu dòng tiền ngay (60 triệu). Tuy nhiên, 80 triệu cho Brand Film ở Giai đoạn 1 là rủi ro dòng tiền lớn (Sunk cost) khi chưa thấy chuyển đổi. Tôi đề nghị chia nhỏ ngân sách Media ra: 40 triệu cho Video Hero (chất lượng cao) và 40 triệu dùng để boost Ads cho video đó, thay vì dồn hết vào sản xuất.\"" },
-        { agent: "CMO", message: "> \"CFO có lý về dòng tiền. Nhưng bài toán của Bếp Nhà Mộc hiện tại là 'Perceived Value' (Giá trị cảm nhận) đang quá thấp. Nếu không có một cú 'Big Bang' về mặt hình ảnh (Hero Video) đủ chất lượng 'Cinematic' để đánh vào cảm xúc, chúng ta không thể thuyết phục khách hàng Gen Y/Z trả mức giá cao hơn 15% cho menu mới. Tuy nhiên, tôi đồng ý phương án cắt giảm chi phí sản xuất xuống 50 triệu bằng cách tận dụng nguồn lực In-house của Agency, và dành 30 triệu để phân phối (Distribution) trên TikTok/Reels.\"" },
-        { agent: "COO", message: "> \"Các anh lo chạy Marketing kéo khách tới đông (Traffic Generation), nhưng tôi lo hệ thống vận hành sập. Nhà bếp hiện tại chỉ chịu tải được 120 khách/cùng thời điểm. Nếu KOLs làm clip viral, cuối tuần lượng khách đổ về có thể vượt 200. Trải nghiệm tồi sẽ giết chết thương hiệu nhanh hơn cả việc không làm Marketing. Tôi yêu cầu tích hợp tính năng 'Quản lý đặt bàn Real-time' vào Zalo Mini App ngay từ Giai đoạn 2, giới hạn Booking để giữ chất lượng 'Mindful Dining', không để quán ồn ào như cái chợ.\"" },
-        { agent: "CEO", message: "> \"Tuyệt vời, một phiên tranh biện sâu sắc. Quyết định như sau:\n> 1. Đồng ý phương án của CMO/CFO: Tối ưu chi phí sản xuất Brand Film xuống 50M, dành 30M đẩy Ads.\n> 2. Ưu tiên của COO là hoàn toàn chính xác. Trải nghiệm 'chữa lành' không thể ồn ào. Chúng ta sẽ áp dụng chiến lược 'Scarcity Marketing' (Marketing khan hiếm) - chỉ nhận tối đa 100 khách/buổi thông qua Booking Zalo Mini App. Điều này vừa giải quyết bài toán vận hành, vừa đẩy định vị thương hiệu lên mức 'Độc quyền' (Exclusive).\n> BrandFlow, hãy chốt bản kế hoạch này và chuyển qua Design Studio triển khai Visuals!\"" }
+        { agent: "CMO", role: "Giám đốc Marketing", message: "Chào các vị lãnh đạo. Tôi xin trình bày bản chiến lược tái định vị 'Thơm Khói Bếp - Chữa Lành Tâm Hồn'. Dựa trên AI Insight, CAC (Chi phí thu hút khách hàng mới) của chúng ta đang quá cao do lạm dụng giảm giá, trong khi LTV (Giá trị vòng đời) lại thấp. Chiến dịch này sẽ đánh thẳng vào phân khúc 'Mindful Dining' để nâng Perceived Value (Giá trị cảm nhận). Đề xuất ngân sách Phase 1 & 2 là 355 triệu VNĐ, tập trung vào Cinematic Hero Video và Booking 30 KOLs/Food Reviewer mảng Lifestyle để kích hoạt luồng thảo luận." },
+        { agent: "SYSTEM", role: "Hệ thống Kiểm toán", message: "⚠️ CẢNH BÁO ROI: Phân bổ ngân sách Media chiếm tới 65% tổng ngân sách khởi điểm. Mức độ rủi ro dòng tiền: CAO. Yêu cầu CFO và COO tham gia điều phối." },
+        { agent: "CFO", role: "Giám đốc Tài chính", message: "Tôi đồng ý cần một chiến dịch Rebranding mạnh tay, nhưng mức 80 triệu cho Cinematic Video là Sunk Cost (Chi phí chìm) quá lớn trong bối cảnh biên lợi nhuận chỉ 15%. Để tối ưu IRR (Tỷ suất hoàn vốn nội bộ), tôi yêu cầu cắt giảm ngân sách Production xuống 50 triệu, dồn 30 triệu chênh lệch sang Performance Ads (Chạy quảng cáo chuyển đổi) để đảm bảo có dòng tiền ngắn hạn bù đắp." },
+        { agent: "CMO", role: "Giám đốc Marketing", message: "Chấp nhận điều chỉnh của CFO. Chúng ta sẽ áp dụng phương án In-house Production kết hợp User-Generated Content (UGC) để tiết kiệm chi phí mà vẫn giữ được tính Authentic (Chân thực) của thương hiệu. 30 triệu bổ sung vào Performance Ads sẽ nhắm mục tiêu (Targeting) tới tệp khách hàng văn phòng (Gen Y) bán kính 3km để đẩy mạnh Business Lunch." },
+        { agent: "COO", role: "Giám đốc Vận hành", message: "Khoan đã. Nếu các anh đổ Traffic ồ ạt vào cuối tuần, với capacity (công suất) tối đa 120 pax/lượt, bếp sẽ vỡ trận và thời gian chờ (Waiting time) vượt quá 25 phút. Trải nghiệm 'chữa lành' sẽ biến thành thảm họa. Tôi yêu cầu tích hợp Zalo Mini App Booking để phân luồng khách hàng (Traffic Routing) và giới hạn 100 pax/buổi. Chất lượng dịch vụ phải đi trước chiến dịch Marketing." },
+        { agent: "CEO", role: "Tổng Giám đốc", message: "Quyết định cuối cùng (Final Verdict):\n\n1. Duyệt cấu trúc ngân sách mới của CFO: Giảm Production, tăng Performance Ads để đảm bảo Cashflow.\n2. Đồng thuận tuyệt đối với COO: Triển khai mô hình 'Scarcity Marketing' (Khan hiếm) qua hệ thống Booking bắt buộc (Reservation Only) ở khung giờ cao điểm để giữ vững định vị 'Healing F&B'.\n\n@BrandFlow_Agent, hãy xuất bản Master Plan và đồng bộ Brand Guidelines ngay lập tức!" }
       ];
       
       const fallbackPlan = {
         executive_summary: {
           campaign_name: "Thơm Khói Bếp - Chữa Lành Tâm Hồn",
-          campaign_summary: "Chiến dịch Rebranding và Tăng trưởng 360 độ nhằm tái định vị Bếp Nhà Mộc từ 'quán ăn gia đình bình dân' lên phân khúc 'Mindful Dining' tầm trung-cao.",
+          campaign_summary: "Chiến dịch Rebranding & Growth Hacking 360 độ nhằm tái định vị Bếp Nhà Mộc từ 'quán ăn gia đình' sang mô hình 'Mindful Dining' trung-cao cấp, nhắm tới tệp khách hàng Gen Y/Z thành thị.",
           total_investment_vnd: 350000000
         },
         activity_and_financial_breakdown: [
-          { phase_name: "Giai đoạn 1: Nhen Lửa (Rebranding Launch & Teasing)", activities: [ { activity_name: "Sản xuất Cinematic Brand Film: 'Hương Vị Chữa Lành'", cost_vnd: 80000000 }, { activity_name: "Đồng bộ hóa Nhận diện Thị giác (Visual Identity Sync)", cost_vnd: 45000000 } ] },
-          { phase_name: "Giai đoạn 2: Bùng Vị (Traffic Generation & Menu Launch)", activities: [ { activity_name: "Chiến dịch 'Taste the Memories' với 30 Micro-Influencers", cost_vnd: 100000000 }, { activity_name: "Performance Marketing (Booking Lead Gen)", cost_vnd: 60000000 } ] },
-          { phase_name: "Giai đoạn 3: Giữ Lửa (Loyalty & Optimization)", activities: [ { activity_name: "Xây dựng Zalo Mini App Loyalty", cost_vnd: 35000000 }, { activity_name: "Triển khai Business Lunch Combo (Trưa Văn Phòng Cao Cấp)", cost_vnd: 30000000 } ] }
+          { phase_name: "Phase 1: Brand Revamp (Tái định vị & Kích hoạt)", activities: [ { activity_name: "Sản xuất Cinematic Video 'Hương Vị Chữa Lành' & UGC", cost_vnd: 50000000 }, { activity_name: "Tái thiết kế Hệ thống Nhận diện Thị giác (Visual Identity Sync)", cost_vnd: 45000000 } ] },
+          { phase_name: "Phase 2: Traffic Generation (Bùng nổ Thảo luận)", activities: [ { activity_name: "Chiến dịch KOC/KOL Review (30 Micro-Influencers mảng Lifestyle)", cost_vnd: 100000000 }, { activity_name: "Performance Ads (Lead Generation Booking)", cost_vnd: 60000000 } ] },
+          { phase_name: "Phase 3: Retention & O2O (Chuyển đổi & Giữ chân)", activities: [ { activity_name: "Xây dựng hệ thống Zalo Mini App & Loyalty Program", cost_vnd: 65000000 }, { activity_name: "Triển khai 'Corporate Lunch Combo' lấp đầy Off-peak", cost_vnd: 30000000 } ] }
         ]
       };
 
@@ -377,6 +383,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
         tenant_id: getUserId() || "anonymous"
       };
 
+      if (typeof window !== 'undefined' && (window as any).__DEMO_MODE__) {
+        throw new Error("Force Demo Mode Fallback");
+      }
       const res = await fetch(`${API_URL}/api/v1/research/extract-dna`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
@@ -399,14 +408,38 @@ export const useFormStore = create<FormStore>((set, get) => ({
       console.error("Error calling extract-dna API. Fallback to Mock Data:", e);
       const mockBrandDNA = {
         brand_name: "Bếp Nhà Mộc",
-        core_value: "Mộc mạc (Rustic), Gắn kết (Connection), Lành sạch (Wholesome)",
-        positioning: "Nơi chữa lành tâm hồn thị dân thông qua trải nghiệm Ẩm thực Việt di sản, trong không gian nhà gỗ mộc mạc và nguyên liệu 100% hữu cơ.",
-        brand_archetype: "The Caregiver (Người chăm sóc) & The Creator (Người sáng tạo)"
+        core_value: "Di sản (Heritage) - Mộc mạc (Rustic) - Lành sạch (Wholesome)",
+        positioning: "Không gian chữa lành tâm hồn thị dân qua trải nghiệm Ẩm thực Việt di sản nguyên bản, 100% nguyên liệu hữu cơ và không bột ngọt.",
+        brand_archetype: "The Caregiver (Người chăm sóc) & The Magician (Người kiến tạo sự an yên)"
       };
       const mockIntakeAnalysis = {
         expert_business_analysis: {
-          financial_health: "Cảnh báo Đỏ (Red Flag): Doanh thu đi ngang ở mức 1.2 tỷ/tháng trong 18 tháng qua. Biên lợi nhuận ròng chỉ đạt 15%.",
-          strategic_recommendation: "Bắt buộc phải Rebranding lên phân khúc 'Mindful Dining' (Ẩm thực chữa lành) tầm trung-cao."
+          financial_health: "🔴 Báo động (Red Flag): Doanh thu đi ngang 1.2 tỷ VNĐ/tháng (18 tháng qua). Biên lợi nhuận ròng 15% (dưới mức TB ngành 22%). Chỉ số CAC cao bất thường (250,000đ/New User) do lạm dụng Promotion Tactics.",
+          strategic_recommendation: "⚡ Khuyến nghị chiến lược (Urgent): Tái định vị (Rebranding) toàn diện từ 'Quán nhậu bình dân' sang mô hình 'Mindful Dining' tầm trung-cao. Khai thác tệp Gen Y/Z (thu nhập khá) để tối ưu hóa LTV."
+        },
+        strategic_marketing_audit: {
+          trust_score: 82,
+          competitive_positioning: "Nền tảng sản phẩm xuất sắc nhưng đang bị mắc kẹt ở phân khúc bình dân (Red Ocean). Tiềm năng lớn để độc chiếm ngách 'Healing F&B' (Blue Ocean) nếu cải tổ Visual Identity.",
+          core_competences: [
+            "Hệ sinh thái cung ứng khép kín 100% Organic",
+            "Công thức di sản 3 đời (Cam kết No MSG)",
+            "Kiến trúc không gian nhà gỗ cổ bản địa có giá trị check-in cao"
+          ],
+          marketing_objectives: [
+            "Tái định vị (Rebranding) & Nâng cấp Brand Identity",
+            "Tăng tỷ lệ lấp đầy (Occupancy Rate) khung giờ off-peak bằng Corporate Lunch",
+            "Tối ưu CAC (Customer Acquisition Cost) xuống dưới 150,000đ thông qua Viral Organic"
+          ],
+          macro_environment_pestle: [
+            "Trend 'Mindful Dining' & 'Eat Clean' tăng 45% YoY",
+            "Nhu cầu không gian chữa lành (Healing Space) của thị dân",
+            "Mô hình O2O (Online-to-Offline) qua Zalo Mini App bùng nổ"
+          ]
+        },
+        visual_brand_dna: {
+          visual_archetype: "Rustic, Healing, Minimalist Heritage",
+          primary_colors: ["#8B5A2B", "#556B2F", "#F5DEB3"],
+          moodboard_keywords: ["Gỗ mộc", "Thiên nhiên", "An tĩnh", "Di sản", "Thủ công"]
         }
       };
       set({ brandDNA: mockBrandDNA, intakeAnalysis: mockIntakeAnalysis });
@@ -414,3 +447,6 @@ export const useFormStore = create<FormStore>((set, get) => ({
     }
   }
 }));
+
+
+

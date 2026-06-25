@@ -153,7 +153,7 @@ export default function Screen4_ObjectiveSetting({ onBack, onGoToWorkspace }: { 
         {/* Bottom CTA */}
         <div className="mt-10 pt-6 border-t border-linear-border flex justify-end">
           <button 
-            onClick={handleContinue}
+            id='btn-next-phase4-objective' onClick={handleContinue}
             disabled={!objectives || !budget}
             className="group relative px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] hover:-translate-y-1 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none overflow-hidden"
           >

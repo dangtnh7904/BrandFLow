@@ -36,22 +36,24 @@ export default function PitchDeckSlides() {
     <SlideGoToMarket key="gtm" />,
     <SlideRoadmap key="roadmap" />,
     <SlideTeam key="team" />,
+    <SlideExit key="exit" />,
     <SlideAsk key="ask" />
   ];
 
   const pitchScripts = [
-    "Xin chào các nhà đầu tư. Tôi là [Tên bạn], Founder của BrandFlow. Chúng tôi mang đến một giải pháp giúp các doanh nghiệp lập chiến lược marketing cấp độ chuyên gia chỉ trong 10 phút, không cần thuê CMO, và không cần phụ thuộc vào agency.",
-    "Hãy nhìn vào thực tế thị trường hiện nay. 98% doanh nghiệp ở Việt Nam là các doanh nghiệp vừa và nhỏ (SME). Nỗi đau lớn nhất của họ là 'mù marketing'. Họ không có đủ ngân sách 30-50 triệu mỗi tháng để thuê một agency bài bản. Nếu tự làm, họ đốt tiền chạy quảng cáo vô tội vạ vì thiếu tư duy chiến lược. Những công cụ AI hiện tại như ChatGPT thì chỉ giỏi viết content, nhưng lại quá 'nông' để thiết kế một bản kế hoạch kinh doanh có hệ thống.",
-    "Đó là lý do BrandFlow ra đời. Chúng tôi mô phỏng lại toàn bộ quy trình làm việc của một team marketing chuyên nghiệp. Với BrandFlow, quá trình định vị thương hiệu và lập kế hoạch chiến thuật - vốn mất 2 đến 4 tuần của agency - nay được rút gọn xuống chỉ còn 10 phút. Chúng tôi giải quyết triệt để điểm yếu của AI bằng cấu trúc *Kiểm duyệt chéo (Mandatory Debate)* và *Math Engine*, giúp các con số ngân sách luôn chính xác tuyệt đối.",
-    "Tại sao chúng tôi làm điều này bây giờ? Chi phí xử lý của AI đã giảm 10 lần trong vòng 1 năm qua, tạo ra một thời điểm vàng. Thị trường công cụ Marketing cho SME tại Đông Nam Á đạt quy mô hơn 300 triệu USD, nhưng hiện tại chưa có một nền tảng chuyên biệt nào được thiết kế tối ưu, hiểu rõ ngôn ngữ và hành vi của người Việt như BrandFlow.",
-    "Sản phẩm của chúng tôi không nằm trên giấy. Nó đã được xây dựng và đang hoạt động. Khác với một chatbot thông thường, BrandFlow sở hữu kiến trúc 4 bước rõ ràng: Từ phân tích dữ liệu, tranh luận chiến lược, lập ngân sách cho tới thực thi nội dung. Nền tảng tự động xuất ra 19 biểu mẫu quản trị chuẩn mực, từ SWOT, định vị thương hiệu đến biểu đồ phân bổ ngân sách.",
-    "Dù chỉ mới ra mắt phiên bản Private Beta vào tháng 5 vừa qua, chúng tôi đã thu hút hơn 45 người dùng đầu tiên. Họ đã tạo ra hơn 120 bản kế hoạch thực tế, với thời gian trung bình chỉ 8 phút cho một bản. Quan trọng hơn, chỉ số đo lường sự hài lòng (NPS) của chúng tôi đạt 62, một con số rất tích cực trong mảng B2B.",
-    "Chúng tôi áp dụng mô hình SaaS Freemium. Khách hàng cá nhân có thể trải nghiệm miễn phí, trong khi các SME sẽ trả mức phí dao động từ 500 ngàn đến 1.5 triệu đồng mỗi tháng. Với chi phí vận hành AI (LLM cost) rất thấp, biên lợi nhuận gộp của chúng tôi duy trì ở mức ấn tượng, từ 83 đến 88%.",
-    "Nhiều người hỏi, điều gì ngăn khách hàng dùng luôn ChatGPT? Câu trả lời nằm ở 5 rào cản bảo vệ (Moats) của BrandFlow. Chúng tôi có luồng công việc chuyên biệt cho marketing, có cơ chế AI tranh luận độc quyền, có bộ tính toán toán học độc lập, vòng lặp dữ liệu lớn, và sự am hiểu sâu sắc về thị trường nội địa. Đây là những thứ mà một mô hình ngôn ngữ chung chung không bao giờ làm được.",
-    "Về kế hoạch tiếp cận thị trường, chúng tôi không tốn tiền chạy quảng cáo đại trà. Chúng tôi sử dụng chiến lược Product-Led Growth - cấp công cụ miễn phí cho các cộng đồng khởi nghiệp và sinh viên để tạo hiệu ứng truyền miệng. Sau đó, BrandFlow sẽ kết hợp với các trung tâm đào tạo doanh nghiệp và các nền tảng thương mại điện tử để bán chéo sản phẩm.",
-    "Nhìn về tương lai, trong 12 tháng tới, mục tiêu của chúng tôi là đạt 1,000 người dùng trả phí. Sang năm thứ hai, BrandFlow sẽ mở rộng ra thị trường Đông Nam Á thông qua hệ thống đại lý đa quốc gia (White-label) và phát triển các mạng lưới Agent chuyên biệt cho từng nền tảng như TikTok, Shopee.",
-    "Tôi rất tự hào về đội ngũ của mình. Chúng tôi là sự kết hợp giữa các kỹ sư AI dạn dày kinh nghiệm và các chuyên gia marketing từng thực chiến tại nhiều startup và agency lớn. Chúng tôi sở hữu lợi thế 'unfair advantage' trong việc kết hợp công nghệ lõi và tư duy kinh doanh.",
-    "Để đạt được mục tiêu đó, hôm nay chúng tôi tìm kiếm [Số tiền gọi vốn] cho vòng Pre-Seed. Nguồn vốn này sẽ cung cấp cho chúng tôi [Số tháng] runway, tập trung 60% vào nâng cấp hạ tầng AI, 40% vào chi phí phát triển khách hàng. BrandFlow không chỉ là một công cụ, chúng tôi là tương lai của quy trình làm việc tự động trong marketing. Xin cảm ơn các anh chị đã lắng nghe, và tôi rất sẵn lòng giải đáp mọi câu hỏi."
+    "Xin chào. Tôi là Đặng [Tên], Founder BrandFlow. Chúng tôi mang đến hệ thống AI giúp SME lập chiến lược marketing cấp CMO chỉ trong 10 phút.",
+    "98% SME Việt Nam 'mù marketing'. Thuê agency tốn 30-200 triệu quá đắt. Tự chạy thì đốt tiền. Dùng ChatGPT thì output nông, không đo lường được tài chính.",
+    "BrandFlow ra đời để tự động hóa quy trình 4 tuần của agency xuống còn 10 phút. AI của chúng tôi biết tự tranh luận và tính toán ngân sách bằng Math Engine riêng.",
+    "Chi phí AI vừa giảm 10 lần. SME đang khát công cụ chuyển đổi số. Đây là thị trường 300 triệu USD đang bị bỏ ngỏ bởi các giải pháp chung chung.",
+    "Sản phẩm đã chạy thực tế. Kiến trúc 4 bước: Phân tích, Tranh luận, Tính toán và Thực thi. Đầu ra là 19 biểu mẫu quản trị chuẩn mực (SWOT, P&L).",
+    "Traction của chúng tôi: Chỉ trong 45 ngày Beta, hơn 100 doanh nghiệp sử dụng, tạo 120 bản kế hoạch. Retention 40%. Đây là bàn đạp dự phóng MRR $15K trong 12 tháng.",
+    "Mô hình SaaS siêu lợi nhuận. Giá gói từ $20-$60. Nhờ tối ưu LLM, chi phí cực thấp, biên lợi nhuận gộp lên tới 85%, LTV/CAC lớn hơn 10 lần.",
+    "Big Tech (OpenAI, Google) làm Horizontal AI. BrandFlow làm Deep Vertical AI. Chúng tôi khóa chân người dùng bằng Workflow khép kín và Data Flywheel. Không dễ bị copy.",
+    "Go-to-Market: Dùng Product-Led Growth thay vì đốt tiền ads. Phát hành Free Tools tạo viral loop, sau đó mở rộng bán chéo qua Shopify, Haravan.",
+    "Lộ trình: Đạt 1,000 paid users và MRR $15K ngay trong năm đầu. Sang năm 2027, tung bản Enterprise và scale ra Đông Nam Á.",
+    "Đội ngũ kết hợp hoàn hảo giữa Core Tech dạn dày kinh nghiệm AI và Domain Knowledge từ các CMO thực chiến. Một 'unfair advantage' rõ ràng.",
+    "Mục tiêu thoái vốn: Trở thành đích ngắm M&A của HubSpot hoặc Global Agency trong 3-5 năm tới. Định giá kỳ vọng 15 triệu USD, ROI 10x cho nhà đầu tư.",
+    "Hôm nay, chúng tôi gọi 150.000 USD vòng Pre-Seed để kéo dài runway 15 tháng và mở rộng thị trường. BrandFlow chính là tương lai tự động hóa marketing. Xin cảm ơn."
   ];
 
   const next = () => setCurrentSlide(prev => (prev + 1) % slides.length);
@@ -186,9 +188,9 @@ function SlideProblem() {
         
         <div className="col-span-7 space-y-6">
           {[
-            { num: '01', title: 'Khoảng trống năng lực (Resource Gap)', desc: 'Ngân sách không đủ cho đội ngũ In-house chuyên sâu hoặc CMO. Tự thực thi thiếu framework dẫn đến ROI thấp.', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=500&auto=format&fit=crop' },
-            { num: '02', title: 'Mô hình Agency thiếu linh hoạt', desc: 'Chi phí đắt đỏ (30-200M/chiến dịch), chu kỳ hoạch định kéo dài (2-4 tuần). Khó thích ứng nhanh với biến động thị trường.', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=500&auto=format&fit=crop' },
-            { num: '03', title: 'Sự phân mảnh của GenAI thế hệ đầu', desc: 'Các LLMs cơ bản chỉ tập trung tạo nội dung (Content). Thiếu tư duy chiến lược hệ thống và kiểm soát rủi ro tài chính.', img: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=500&auto=format&fit=crop' }
+            { num: '01', title: 'Resource Gap', desc: 'SME không đủ tiền thuê CMO. Tự làm thì đốt tiền, ROI thấp.', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=500&auto=format&fit=crop' },
+            { num: '02', title: 'Agency Quá Đắt & Chậm', desc: 'Mất 2-4 tuần hoạch định, chi phí lên tới 200 triệu/chiến dịch.', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=500&auto=format&fit=crop' },
+            { num: '03', title: 'GenAI Quá Nông', desc: 'ChatGPT chỉ giỏi viết bài. Không có tư duy chiến lược và quản trị dòng tiền.', img: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=500&auto=format&fit=crop' }
           ].map((item, i) => (
             <motion.div variants={fadeUp} key={i} className="flex gap-6 items-center bg-white/[0.02] border border-white/5 p-6 rounded-3xl hover:bg-white/[0.05] hover:border-white/10 transition-all group overflow-hidden relative">
               <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-20 group-hover:opacity-40 transition-opacity mix-blend-overlay">
@@ -230,9 +232,9 @@ function SlideSolution() {
         
         <div className="col-span-7 grid grid-cols-1 gap-6">
           {[
-            { icon: Layers, title: 'Multi-Agent Pipeline', desc: 'Chuỗi 5 AI Agents đóng vai trò CMO, CFO, Design và Content hoạt động đồng bộ nối tiếp nhau, tạo ra Output hoàn chỉnh.', img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=500&auto=format&fit=crop' },
-            { icon: Shield, title: 'Cross-Audit (Thẩm định chéo)', desc: 'Cơ chế tranh biện bắt buộc giữa các mô hình đảm bảo tính logic chặt chẽ, loại bỏ hoàn toàn cảm tính trong ra quyết định.', img: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=500&auto=format&fit=crop' },
-            { icon: Code, title: 'Anti-Hallucination Finance', desc: 'Tích hợp Math Engine độc lập bằng Python để nội suy và tính toán dòng tiền, P&L, đảm bảo tính khả thi tài chính 100%.', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=500&auto=format&fit=crop' }
+            { icon: Layers, title: 'Multi-Agent Pipeline', desc: '5 AI Agents (CMO, CFO, Content) chạy đồng bộ, thay thế cả 1 phòng Marketing.', img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=500&auto=format&fit=crop' },
+            { icon: Shield, title: 'Mandatory Debate', desc: 'Tranh biện bắt buộc giữa các Agents giúp triệt tiêu ảo giác (hallucination) của AI.', img: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=500&auto=format&fit=crop' },
+            { icon: Code, title: 'Math Engine Độc Lập', desc: 'Tự động nội suy ngân sách P&L chính xác 100%, không bịa số liệu.', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=500&auto=format&fit=crop' }
           ].map((item, i) => (
             <motion.div variants={fadeUp} key={i} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex gap-6 hover:bg-white/10 transition-all duration-500 overflow-hidden relative group">
               {/* Image Blur Background inside card */}
@@ -312,10 +314,10 @@ function SlideTraction() {
           <TrendingUp className="w-10 h-10 text-amber-400" />
         </motion.div>
         <motion.h2 variants={fadeUp} className="text-6xl font-black text-white tracking-tighter mb-4">
-          Market Validation
+          Market Validation & Bàn Đạp Tăng Trưởng
         </motion.h2>
         <motion.div variants={fadeUp} className="text-amber-400/80 font-bold tracking-[0.3em] uppercase text-xl">
-          Private Beta — 45 Ngày
+          Từ 45 Ngày Beta ➔ Dự phóng MRR $15K trong 12 tháng
         </motion.div>
       </motion.div>
       
@@ -356,7 +358,7 @@ function SlideMarket() {
             Cơ Hội <br/> Thị Trường Tỷ Đô.
           </h2>
           <p className="text-white/60 text-xl leading-relaxed mb-8">
-            Quy mô thị trường MarTech đang tăng trưởng theo cấp số nhân. Thời điểm chín muồi (Timing) với chi phí xử lý AI giảm 10x tạo cơ hội vàng để chiếm lĩnh thị trường Đông Nam Á.
+            Thị trường MarTech tăng trưởng bùng nổ. Chi phí xử lý AI vừa giảm 10 lần, tạo "Timing vàng" để chiếm lĩnh thị trường Đông Nam Á.
           </p>
         </motion.div>
         
@@ -425,14 +427,18 @@ function SlideBusinessModel() {
           ))}
         </div>
 
-        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-12 max-w-4xl mx-auto pt-10 border-t border-white/10 text-center">
+        <motion.div variants={fadeUp} className="grid grid-cols-3 gap-8 max-w-5xl mx-auto pt-10 border-t border-white/10 text-center">
           <div>
-            <div className="text-sm text-emerald-400 uppercase font-black mb-4 tracking-widest">Biên Lợi Nhuận Gộp (Gross Margin)</div>
-            <div className="text-[4rem] font-black text-white tracking-tighter leading-none">83<span className="text-5xl text-white/40">-88%</span></div>
+            <div className="text-sm text-emerald-400 uppercase font-black mb-4 tracking-widest">Biên Lợi Nhuận Gộp</div>
+            <div className="text-[4rem] font-black text-white tracking-tighter leading-none">85<span className="text-5xl text-white/40">%</span></div>
           </div>
           <div>
-            <div className="text-sm text-emerald-400 uppercase font-black mb-4 tracking-widest">Chi phí AI / User / Tháng</div>
-            <div className="text-[4rem] font-black text-white tracking-tighter leading-none"><span className="text-5xl text-white/40">&lt;</span> $1.2<span className="text-3xl text-white/40">/mo</span></div>
+            <div className="text-sm text-emerald-400 uppercase font-black mb-4 tracking-widest">LTV/CAC Ratio</div>
+            <div className="text-[4rem] font-black text-white tracking-tighter leading-none"><span className="text-5xl text-white/40">&gt;</span> 10<span className="text-3xl text-white/40">x</span></div>
+          </div>
+          <div>
+            <div className="text-sm text-emerald-400 uppercase font-black mb-4 tracking-widest">Target LTV</div>
+            <div className="text-[4rem] font-black text-white tracking-tighter leading-none"><span className="text-5xl text-white/40">$</span>400</div>
           </div>
         </motion.div>
       </motion.div>
@@ -454,16 +460,16 @@ function SlideMoats() {
             Lợi Thế <br/> Cạnh Tranh <br/><span className="text-purple-500">Unfair Moats.</span>
           </h2>
           <p className="text-white/50 text-xl leading-relaxed">
-            Chúng tôi không xây dựng một "ChatGPT Wrapper". BrandFlow sở hữu 4 lớp rào cản công nghệ và mô hình ngăn chặn đối thủ.
+            BrandFlow không dễ bị đào thải bởi thị trường AI hay Big Tech. Trong khi Big Tech (OpenAI, Google) tập trung vào Horizontal AI chung chung, chúng tôi xây dựng <strong>Deep Vertical AI</strong> gắn liền với Workflow khép kín của doanh nghiệp.
           </p>
         </motion.div>
         
         <div className="col-span-7 grid grid-cols-2 gap-8">
           {[
-            { i: Layers, t: 'Vertical Workflow', d: 'Kiến trúc quy trình đóng gói riêng cho Marketing B2B, không phải một UI chat chung chung.' },
-            { i: Brain, t: 'Mandatory Debate', d: 'Thuật toán tranh biện bắt buộc giữa các Agent, triệt tiêu 95% ảo giác giá trị của AI.' },
-            { i: Code, t: 'Proprietary Math', d: 'Động cơ nội suy tài chính P&L bằng engine độc lập, đảm bảo ROI thực tế.' },
-            { i: Database, t: 'Data Flywheel', d: 'Càng dùng nhiều, Brand DNA Vault của khách hàng càng trở thành tài sản khó từ bỏ.' }
+            { i: Layers, t: 'Vertical Workflow', d: 'Workflow khép kín chuyên sâu cho Marketing, không phải Chatbot chung chung.' },
+            { i: Brain, t: 'Mandatory Debate', d: 'Cơ chế tranh biện chéo tự động triệt tiêu 95% ảo giác (hallucination).' },
+            { i: Code, t: 'Proprietary Math', d: 'Engine tài chính độc lập tính dòng tiền chuẩn xác, đảm bảo ROI.' },
+            { i: Database, t: 'Data Flywheel', d: 'Khóa chân người dùng (Lock-in) bằng kho lưu trữ Brand DNA Vault.' }
           ].map((item, i) => (
             <motion.div variants={fadeUp} key={i} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 hover:bg-purple-500/10 hover:border-purple-500/30 transition-all duration-500 group">
               <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-colors">
@@ -502,11 +508,11 @@ function SlideGoToMarket() {
           <ul className="space-y-6 text-white/70">
             <li className="flex items-start gap-4">
               <CheckCircle2 className="w-8 h-8 text-cyan-400 shrink-0" /> 
-              <span className="text-lg leading-relaxed">Cung cấp bộ công cụ Free Tools (Brand DNA Scanner) tạo viral loop mạnh mẽ trong giới SME.</span>
+              <span className="text-lg leading-relaxed">Phát hành Free Tools (Brand DNA Scanner) tạo Viral Loop.</span>
             </li>
             <li className="flex items-start gap-4">
               <CheckCircle2 className="w-8 h-8 text-cyan-400 shrink-0" /> 
-              <span className="text-lg leading-relaxed">Hợp tác cấp phát miễn phí cho các tổ chức khởi nghiệp, vườn ươm, và trường đại học.</span>
+              <span className="text-lg leading-relaxed">Cấp phát miễn phí qua vườn ươm khởi nghiệp.</span>
             </li>
           </ul>
         </motion.div>
@@ -517,11 +523,11 @@ function SlideGoToMarket() {
           <ul className="space-y-6 text-white/70">
             <li className="flex items-start gap-4">
               <CheckCircle2 className="w-8 h-8 text-blue-400 shrink-0" /> 
-              <span className="text-lg leading-relaxed">Tích hợp bán chéo (Cross-sell) qua hệ sinh thái E-commerce (Shopify, Haravan, KiotViet).</span>
+              <span className="text-lg leading-relaxed">Cross-sell qua hệ sinh thái SaaS (Haravan, KiotViet).</span>
             </li>
             <li className="flex items-start gap-4">
               <CheckCircle2 className="w-8 h-8 text-blue-400 shrink-0" /> 
-              <span className="text-lg leading-relaxed">Xây dựng Affiliate network mạnh mẽ thông qua các KOLs/Experts trong mảng Marketing.</span>
+              <span className="text-lg leading-relaxed">Xây dựng Affiliate network với các KOLs/Experts.</span>
             </li>
           </ul>
         </motion.div>
@@ -546,7 +552,7 @@ function SlideRoadmap() {
             <div className="w-1/2 pr-16 text-right">
               <div className="text-emerald-500 font-black text-xl mb-2 tracking-widest uppercase">Q3 - 2026</div>
               <h4 className="text-4xl font-black text-white mb-4">Product/Market Fit</h4>
-              <p className="text-white/50 text-lg leading-relaxed">Ra mắt bản Commercial. Đạt 1,000 người dùng trả phí đầu tiên (MRR $5K).</p>
+              <p className="text-white/50 text-lg leading-relaxed">Đạt 1,000 paid users, MRR $15K. Đạt điểm Product-Market Fit.</p>
             </div>
             <div className="w-8 h-8 rounded-full bg-emerald-500 border-[6px] border-[#030712] z-10 relative shadow-[0_0_30px_rgba(16,185,129,1)]" />
             <div className="w-1/2 pl-16" />
@@ -558,7 +564,7 @@ function SlideRoadmap() {
             <div className="w-1/2 pl-16 text-left">
               <div className="text-emerald-500/80 font-black text-xl mb-2 tracking-widest uppercase">Q4 - 2026</div>
               <h4 className="text-4xl font-black text-white mb-4">Ecosystem Expansion</h4>
-              <p className="text-white/50 text-lg leading-relaxed">Mở API Access. Tích hợp trực tiếp luồng triển khai với Facebook Ads & Google Ads API.</p>
+              <p className="text-white/50 text-lg leading-relaxed">Mở API. Tích hợp thực thi trực tiếp với Facebook/Google Ads.</p>
             </div>
           </motion.div>
           
@@ -566,7 +572,7 @@ function SlideRoadmap() {
             <div className="w-1/2 pr-16 text-right">
               <div className="text-white/40 font-black text-xl mb-2 tracking-widest uppercase">Q1+Q2 - 2027</div>
               <h4 className="text-4xl font-black text-white/80 mb-4">Series A & SEA Scale</h4>
-              <p className="text-white/40 text-lg leading-relaxed">Phát hành bản White-label Enterprise. Đạt MRR $50K. Bắt đầu mở rộng thị trường Đông Nam Á.</p>
+              <p className="text-white/40 text-lg leading-relaxed">Ra mắt White-label Enterprise. Scale thị trường Đông Nam Á.</p>
             </div>
             <div className="w-8 h-8 rounded-full bg-[#030712] border-[6px] border-white/20 z-10 relative" />
             <div className="w-1/2 pl-16" />
@@ -689,6 +695,58 @@ function SlideAsk() {
             </div>
           </motion.div>
         </motion.div>
+      </motion.div>
+    </div>
+  );
+}
+
+function SlideExit() {
+  return (
+    <div className="w-full h-full flex flex-col justify-center px-32 relative bg-[#030712] overflow-hidden">
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-rose-600/10 blur-[150px] rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+      
+      <motion.div variants={staggerContainer} initial="hidden" animate="show" className="grid grid-cols-12 gap-20 relative z-10 items-center">
+        <motion.div variants={fadeUp} className="col-span-5 relative">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-rose-500/20 to-red-600/5 border border-rose-500/30 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(225,29,72,0.2)]">
+            <Target className="w-10 h-10 text-rose-500" />
+          </div>
+          <h2 className="text-6xl font-black text-white tracking-tighter mb-6 leading-tight">
+            Kế Hoạch <br/> Thoái Vốn <br/><span className="text-rose-500">(Exit Planning).</span>
+          </h2>
+          <p className="text-white/50 text-xl leading-relaxed">
+            Mục tiêu rõ ràng trong 3-5 năm tới: Trở thành mục tiêu M&A chiến lược của các Big Tech SaaS hoặc Global Agency khi họ cần tích hợp hệ sinh thái Vertical AI.
+          </p>
+        </motion.div>
+        
+        <div className="col-span-7 space-y-6">
+          <motion.div variants={fadeUp} className="flex gap-6 items-center bg-white/[0.02] border border-white/5 p-6 rounded-3xl hover:bg-white/[0.05] hover:border-white/10 transition-all group overflow-hidden relative">
+            <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 font-black shrink-0 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-lg z-10">
+              <Network className="w-8 h-8" />
+            </div>
+            <div className="z-10 pr-10">
+              <h4 className="text-xl font-bold text-white mb-2 tracking-tight">M&A bởi SaaS CRM/Marketing (HubSpot, Salesforce)</h4>
+              <p className="text-white/50 text-sm leading-relaxed">Các nền tảng ngang (Horizontal SaaS) luôn có nhu cầu M&A các công cụ dọc (Vertical AI) chuyên sâu để khóa chân người dùng SME trong hệ sinh thái của họ.</p>
+            </div>
+          </motion.div>
+          <motion.div variants={fadeUp} className="flex gap-6 items-center bg-white/[0.02] border border-white/5 p-6 rounded-3xl hover:bg-white/[0.05] hover:border-white/10 transition-all group overflow-hidden relative">
+            <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 font-black shrink-0 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-lg z-10">
+              <Globe2 className="w-8 h-8" />
+            </div>
+            <div className="z-10 pr-10">
+              <h4 className="text-xl font-bold text-white mb-2 tracking-tight">M&A bởi Global Agency Networks (WPP, Dentsu)</h4>
+              <p className="text-white/50 text-sm leading-relaxed">Các tập đoàn Agency truyền thống đang chịu sức ép chuyển đổi số nặng nề. Thâu tóm BrandFlow giúp họ ngay lập tức sở hữu công nghệ AI Planning độc quyền.</p>
+            </div>
+          </motion.div>
+          <motion.div variants={fadeUp} className="flex gap-6 items-center bg-white/[0.02] border border-white/5 p-6 rounded-3xl hover:bg-white/[0.05] hover:border-white/10 transition-all group overflow-hidden relative">
+            <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 font-black shrink-0 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-lg z-10">
+              <Crown className="w-8 h-8" />
+            </div>
+            <div className="z-10 pr-10">
+              <h4 className="text-xl font-bold text-white mb-2 tracking-tight">Valuation Target: $15.0M+ (Series A/B)</h4>
+              <p className="text-white/50 text-sm leading-relaxed">Với chỉ số LTV/CAC vượt trội (&gt;10x) và Gross Margin biên độ cao (85%), doanh nghiệp dự kiến đạt định giá 15 triệu USD, mang lại ROI 10x cho nhà đầu tư vòng Pre-Seed.</p>
+            </div>
+          </motion.div>
+        </div>
       </motion.div>
     </div>
   );

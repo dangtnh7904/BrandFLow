@@ -112,6 +112,7 @@ export default function ScreenFeatureSelector({ onBack, onGoToCampaign }: Props)
         {FEATURES.map((feature, idx) => (
           <motion.button
             key={feature.id}
+            id={`feature-${feature.id}`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.08 }}

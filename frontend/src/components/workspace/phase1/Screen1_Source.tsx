@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UploadCloud, Link as LinkIcon, FileText, CheckCircle2, Globe, Share2, Plus, X, ShieldCheck, Lock, Server, Loader2, AlertCircle, ChevronDown, ChevronUp, MessageSquarePlus, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
+import { UploadCloud, Link as LinkIcon, FileText, CheckCircle2, Globe, Share2, Plus, X, ShieldCheck, Lock, Server, Loader2, AlertCircle, ChevronDown, ChevronUp, MessageSquarePlus, CheckCircle, XCircle, HelpCircle, Eye, FileDigit } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFormStore } from '@/store/useFormStore';
 import { clsx, type ClassValue } from 'clsx';
@@ -27,6 +27,7 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'partial' | 'error'>('idle');
   const [uploadMessage, setUploadMessage] = useState('');
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
 
   // Web crawl states
   const [crawlStatus, setCrawlStatus] = useState<'idle' | 'crawling' | 'success' | 'partial' | 'error'>('idle');
@@ -212,6 +213,19 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
     setUploadStatus('uploading');
     setUploadMessage('');
     try {
+      if (window && (window as any).__DEMO_MODE__) {
+        await new Promise(r => setTimeout(r, 1000));
+        setUploadStatus('success');
+        setUploadMessage('AI Extraction Complete.');
+        setExtractedAnswers({
+          "Tên doanh nghiệp": "Bếp Nhà Mộc",
+          "Lĩnh vực": "F&B",
+          "Mục tiêu": "Tăng doanh số 30%"
+        });
+        setCompleteness({ missing_fields: [], completeness_score: 1.0, status: "ready_to_plan", gap_questions: [] });
+        return;
+      }
+
       const formData = new FormData();
       selectedFiles.forEach(f => formData.append('files', f));
       formData.append('tenant_id', 'default');
@@ -322,7 +336,8 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
             return (
               <motion.div
                 key={card.id}
-                initial={{ opacity: 0, y: 20 }}
+                  id={`card-${card.id}`}
+                  initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 onClick={() => toggleSource(card.id)}
@@ -380,6 +395,17 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
                   onChange={handleFileInputChange}
                 />
 
+                        {/* MOCK FILE INJECTOR */}
+                        {typeof window !== 'undefined' && (window as any).__DEMO_MODE__ && (
+                          <button 
+                            id="demo-inject-file" 
+                            className="hidden" 
+                            onClick={() => setSelectedFiles([new File(["mock content"], "bep_nha_moc_intake.pdf", { type: "application/pdf" })])}
+                          >
+                            Inject
+                          </button>
+                        )}
+
                 {/* Drop Zone */}
                 <div
                   className={cn(
@@ -429,21 +455,31 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
                           : `${selectedFiles.length} file(s) selected`}
                       </p>
 
-                      {selectedFiles.map((file, idx) => (
+                      
+
+
+                        {selectedFiles.map((file, idx) => (
                         <motion.div
                           key={`${file.name}-${idx}`}
+                          id="demo-injected-file-row"
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: 10 }}
                           transition={{ delay: idx * 0.05 }}
-                          className="flex items-center gap-3 p-3 rounded-xl bg-linear-surface/70 border border-linear-border hover:border-cyan-500/30 transition-all"
+                          onClick={() => setPreviewFile(file)}
+                          className="flex items-center gap-3 p-3 rounded-xl bg-linear-surface/70 border border-linear-border hover:border-cyan-500/30 transition-all cursor-pointer group"
                         >
                           <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shrink-0">
                             <span className="text-[9px] font-black text-cyan-400">{getFileExt(file.name)}</span>
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
-                            <p className="text-xs text-linear-text-muted">{formatFileSize(file.size)}</p>
+                            <p className="text-xs text-linear-text-muted flex items-center gap-2">
+                              {formatFileSize(file.size)}
+                              <span className="opacity-0 group-hover:opacity-100 transition-opacity text-cyan-400 flex items-center gap-1">
+                                <Eye className="w-3 h-3" /> Preview
+                              </span>
+                            </p>
                           </div>
                           {uploadStatus === 'success'
                             ? <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -463,7 +499,8 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
                         <motion.button
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          onClick={(e) => { e.stopPropagation(); handleUpload(); }}
+                          id="btn-do-upload"
+                            onClick={(e) => { e.stopPropagation(); handleUpload(); }}
                           disabled={uploadStatus === 'uploading'}
                           className={cn(
                             "w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2",
@@ -900,7 +937,9 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
             className="w-full max-w-md mt-auto pt-8 pb-4 flex flex-col items-center gap-3"
           >
             <button
-              onClick={handleProceed}
+              id="btn-proceed-phase1"
+              id="btn-proceed-phase1"
+                onClick={handleProceed}
               disabled={selectedSources.length === 0}
               className={cn(
                 "w-full py-4 rounded-xl font-bold shadow-lg transition-all duration-300 transform",
@@ -920,6 +959,79 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
           </motion.div>
         </div>
       </div>
+      
+      {/* File Preview Modal */}
+      <AnimatePresence>
+        {previewFile && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+            onClick={() => setPreviewFile(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-4xl h-[85vh] bg-linear-surface border border-linear-border rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+            >
+              <div className="flex items-center justify-between p-4 border-b border-linear-border bg-black/40">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                    <FileDigit className="w-5 h-5 text-cyan-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground text-sm">{previewFile.name}</h3>
+                    <p className="text-xs text-linear-text-muted">{formatFileSize(previewFile.size)} - Document Preview</p>
+                  </div>
+                </div>
+                <button
+                  id="btn-close-preview"
+                  onClick={() => setPreviewFile(null)}
+                  className="w-8 h-8 rounded-full bg-linear-surface border border-linear-border flex items-center justify-center text-linear-text-muted hover:text-white hover:bg-red-500/20 hover:border-red-500/50 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div id="preview-scroll-container" className="flex-1 overflow-y-auto p-6 bg-slate-900/50 custom-scrollbar text-slate-300 font-mono text-xs leading-relaxed whitespace-pre-wrap">
+{`# Bếp Nhà Mộc - Business Profile & Strategy Document 2026
+
+## 1. Executive Summary
+Bếp Nhà Mộc là thương hiệu F&B theo mô hình Casual Dining, tập trung vào các món ăn truyền thống Việt Nam với điểm nhấn là nguyên liệu hữu cơ (Organic) và không sử dụng bột ngọt (No MSG). Trải qua 3 thế hệ phát triển từ một quán ăn gia đình nhỏ, Bếp Nhà Mộc hiện đang sở hữu 2 chi nhánh tại trung tâm thành phố.
+
+## 2. Current Business Health & Metrics
+- **Revenue**: Đạt trung bình 1.2 tỷ VNĐ/tháng (Đi ngang trong 18 tháng qua).
+- **Profit Margin**: 15% (Đang thấp hơn mức trung bình ngành F&B là 22% do chi phí nguyên liệu hữu cơ cao và tỷ lệ lấp đầy chưa tối ưu).
+- **Customer Acquisition Cost (CAC)**: Khoảng 250,000 VNĐ/khách mới.
+- **Occupancy Rate**: 
+  - Khung giờ cao điểm cuối tuần: 80-90%
+  - Khung giờ trong tuần (Trưa/Tối): 35-40%
+
+## 3. Core Values & USP (Unique Selling Propositions)
+- Chuỗi cung ứng khép kín "Từ Nông Trại đến Bàn Ăn", 100% nguyên liệu đạt chuẩn VietGAP & Organic.
+- Công thức ẩm thực di sản 3 đời, cam kết không sử dụng hóa chất tạo vị.
+- Kiến trúc không gian quán là nhà gỗ cổ Bắc Bộ nguyên bản được phục dựng, tạo giá trị "chữa lành" và "hoài niệm".
+
+## 4. Problem Statement & Challenges
+- **Lão hóa tệp khách hàng**: Khách hàng trung thành hiện tại chủ yếu là nhóm người lớn tuổi (>45 tuổi). Khó tiếp cận Gen Y và Gen Z (nhóm có thu nhập cao và sẵn sàng chi trả cho trải nghiệm).
+- **Định vị thương hiệu mờ nhạt**: Thường bị khách hàng đánh đồng với các "quán nhậu bình dân" hoặc "quán cơm phần", làm giảm giá trị cảm nhận (Perceived Value) dù chất lượng món ăn rất cao.
+- **Missing Digital Presence**: Bao bì Take-away sơ sài, hình ảnh trên mạng xã hội thiếu chuyên nghiệp, không tối ưu hóa cho các nền tảng Delivery (ShopeeFood, GrabFood).
+
+## 5. Strategic Objectives for 2026
+- Tái định vị thương hiệu thành "Nhà hàng trải nghiệm ẩm thực Chữa Lành", nhắm đến tệp khách hàng trẻ.
+- Tăng trưởng doanh thu 35% trong 12 tháng tới.
+- Cải thiện Profit Margin lên 20% thông qua việc ra mắt các combo "Corporate Lunch" cao cấp để lấp đầy khung giờ vắng khách.
+- Xây dựng Brand Guideline hoàn chỉnh và đồng bộ hóa bao bì nhận diện thương hiệu.
+
+*...[End of Preview]...*`}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+

@@ -123,6 +123,20 @@ core_module.output_parsers = output_parsers_module
 core_module.prompts = prompts_module
 core_module.documents = documents_module
 
+messages_module = _ensure_module("langchain_core.messages")
+tools_module = _ensure_module("langchain_core.tools")
+
+class _DummyMessage:
+    def __init__(self, *args, **kwargs): pass
+
+messages_module.HumanMessage = _DummyMessage
+messages_module.SystemMessage = _DummyMessage
+messages_module.AIMessage = _DummyMessage
+tools_module.Tool = _DummyMessage
+
+core_module.messages = messages_module
+core_module.tools = tools_module
+
 import main
 from app.core.access_audit import VisitorAuditStore
 from main import app

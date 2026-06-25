@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from app.agents.planner.agents_core import MasterPlanOutput
+from app.schemas.schemas import MasterPlanPhase4Output as MasterPlanOutput
 from app.workflows.workflow_graph import calculate_actual_cost
 
 def test_calculate_actual_cost_over_budget():

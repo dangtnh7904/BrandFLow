@@ -1,6 +1,6 @@
-﻿import pytest
+import pytest
 from pydantic import ValidationError
-from app.agents.planner.agents_core import CustomerReview
+from app.schemas.schemas import CustomerReviewerOutput as CustomerReview
 
 
 def test_customer_review_requires_score():

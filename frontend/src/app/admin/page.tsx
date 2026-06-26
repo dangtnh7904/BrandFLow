@@ -7,10 +7,11 @@ import {
   Shield, Users, Activity, Loader2, RefreshCw, X, Clock, Package,
   TrendingUp, Zap, Globe2, BarChart3, Target, Rocket, 
   Brain, DollarSign, ArrowUpRight, ArrowDownRight, Layers,
-  LineChart, PieChart, Cpu, Sparkles, Award, CalendarDays,
+  LineChart, PieChart as PieChartIcon, Cpu, Sparkles, Award, CalendarDays,
   UserPlus, Repeat, Crown, Timer, Code
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
@@ -127,9 +128,21 @@ export default function AdminDashboard() {
       if (token === 'mock_admin_token') {
         setSummary({ unique_visitors: 112, total_visits: 4581, active_accounts: 107 });
         setVisitors([
-          { id: 1, name: 'KITE LABS Agency', email: 'contact@kitelabs.vn', role: 'user', created_at: '2026-05-18', last_seen_at: new Date().toISOString(), visits_count: 120 },
-          { id: 2, name: 'AMEKA Digital', email: 'hello@ameka.vn', role: 'user', created_at: '2026-05-20', last_seen_at: new Date().toISOString(), visits_count: 106 },
-          { id: 3, name: 'SME User #3', email: 'demo3@example.com', role: 'user', created_at: '2026-06-15', last_seen_at: new Date().toISOString(), visits_count: 36 },
+          { id: 1, name: 'Cty TNHH Quốc Tế BAK Việt Nam', email: 'bakinternationalvn@gmail.com', role: 'user', created_at: '2026-05-18', last_seen_at: new Date().toISOString(), visits_count: 120 },
+          { id: 2, name: 'Cty TNHH Dành Cho Bé Yêu', email: 'danhchobeyeu.vn@gmail.com', role: 'user', created_at: '2026-05-20', last_seen_at: new Date(Date.now() - 3600000).toISOString(), visits_count: 106 },
+          { id: 3, name: 'Cty TNHH Mỹ phẩm thiên nhiên Lam Thảo', email: 'lamthaocosmetics@gmail.com', role: 'user', created_at: '2026-06-01', last_seen_at: new Date(Date.now() - 7200000).toISOString(), visits_count: 54 },
+          { id: 4, name: 'Cty TNHH Đầu tư & TM Dược phẩm Mỹ Anh', email: 'myanhpharma@gmail.com', role: 'user', created_at: '2026-06-05', last_seen_at: new Date(Date.now() - 86400000).toISOString(), visits_count: 42 },
+          { id: 5, name: 'Cty TNHH Thương mại Sản xuất Mỹ phẩm Việt', email: 'myphamviet.mfg@gmail.com', role: 'user', created_at: '2026-05-22', last_seen_at: new Date(Date.now() - 172800000).toISOString(), visits_count: 35 },
+          { id: 6, name: 'Cty TNHH Mỹ phẩm Sạch Lành Tính', email: 'lanhtinhbeauty@gmail.com', role: 'user', created_at: '2026-06-10', last_seen_at: new Date(Date.now() - 259200000).toISOString(), visits_count: 12 },
+          { id: 7, name: 'Cty TNHH Dược mỹ phẩm Skinfresh', email: 'skinfresh.vn@gmail.com', role: 'user', created_at: '2026-06-15', last_seen_at: new Date(Date.now() - 345600000).toISOString(), visits_count: 8 },
+          { id: 8, name: 'Cty TNHH Nature Story Việt Nam', email: 'naturestory.hr@gmail.com', role: 'user', created_at: '2026-05-25', last_seen_at: new Date(Date.now() - 432000000).toISOString(), visits_count: 67 },
+          { id: 9, name: 'Cty TNHH Sản xuất Mỹ phẩm Daily Care', email: 'dailycare.mfg@gmail.com', role: 'user', created_at: '2026-06-02', last_seen_at: new Date(Date.now() - 518400000).toISOString(), visits_count: 24 },
+          { id: 10, name: 'Cty TNHH Mỹ phẩm & Thẩm mỹ viện An Nhiên', email: 'annhienbeauty.vn@gmail.com', role: 'user', created_at: '2026-06-18', last_seen_at: new Date(Date.now() - 604800000).toISOString(), visits_count: 5 },
+          { id: 11, name: 'Cty TNHH Dược mỹ phẩm Green Lab', email: 'greenlab.vietnam@gmail.com', role: 'user', created_at: '2026-05-28', last_seen_at: new Date(Date.now() - 864000000).toISOString(), visits_count: 48 },
+          { id: 12, name: 'Cty TNHH Quốc tế Sen Vàng Beauty', email: 'senvangbeauty@gmail.com', role: 'user', created_at: '2026-06-20', last_seen_at: new Date(Date.now() - 1209600000).toISOString(), visits_count: 3 },
+          { id: 13, name: 'Cty TNHH Xuất nhập khẩu Mỹ phẩm Tây Đô', email: 'taydocosmetics@gmail.com', role: 'user', created_at: '2026-05-15', last_seen_at: new Date(Date.now() - 1728000000).toISOString(), visits_count: 89 },
+          { id: 14, name: 'Cty TNHH Mỹ phẩm thảo dược Mộc Miên', email: 'mocmien.nature@gmail.com', role: 'user', created_at: '2026-06-22', last_seen_at: new Date(Date.now() - 2592000000).toISOString(), visits_count: 1 },
+          { id: 15, name: 'Cty TNHH Dược mỹ phẩm Organic Việt Nam', email: 'organicvn.pharma@gmail.com', role: 'user', created_at: '2026-05-10', last_seen_at: new Date(Date.now() - 5000000).toISOString(), visits_count: 115 },
         ]);
         setFunnelStats([
           { stage: 'Đăng ký dùng thử', count: 112 },
@@ -315,7 +328,7 @@ export default function AdminDashboard() {
                     sparkData={dailyGrowthSorted.map(d => d.active_users)} />
                   <KPICard icon={Zap} label="DN Active (Còn dùng)" value={(engagement?.returning_users || 107).toString()} color="#10B981"
                     trend="95.5% retention" trendUp={true}
-                    subtitle={`${5} DN rời đi`} />
+                    subtitle={`${engagement?.churned_users || 5} DN rời đi`} />
                   <KPICard icon={Timer} label="Dùng ≥ 1 Tháng" value={(engagement?.sticky_users_1m || 54).toString()} color="#8B5CF6"
                     trend="48.2% sticky" trendUp={true}
                     subtitle="54/112 DN" />
@@ -450,29 +463,34 @@ export default function AdminDashboard() {
                     <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-5">
                       <TrendingUp className="w-4 h-4 text-emerald-400" /> Cumulative User Growth (Real Data)
                     </h3>
-                    <div className="flex items-end gap-3 h-[180px]">
-                      {growth.cumulative_users.map((d: any, i: number) => {
-                        const maxT = Math.max(...growth.cumulative_users.map((x: any) => x.total), 1);
-                        const pct = (d.total / maxT) * 100;
-                        return (
-                          <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                            <span className="text-[10px] font-black text-foreground">{d.total}</span>
-                            <motion.div initial={{ height: 0 }} animate={{ height: `${Math.max(pct, 4)}%` }}
-                              transition={{ duration: 0.6, delay: i * 0.08 }}
-                              className="w-full rounded-t-lg bg-gradient-to-t from-emerald-600 to-emerald-400" />
-                            <span className="text-[8px] text-linear-text-muted font-mono">{d.day?.slice(5)}</span>
-                          </div>
-                        );
-                      })}
+                    <div className="h-[250px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={growth.cumulative_users} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                          <XAxis dataKey="day" stroke="#94A3B8" fontSize={10} tickFormatter={(val) => val.substring(5)} />
+                          <YAxis stroke="#94A3B8" fontSize={10} />
+                          <RechartsTooltip 
+                            contentStyle={{ backgroundColor: '#0F172A', borderColor: '#1E293B', borderRadius: '8px' }}
+                            itemStyle={{ color: '#10B981' }}
+                          />
+                          <Area type="monotone" dataKey="total" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorUsers)" />
+                        </AreaChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
                 )}
 
-                {/* Tier Conversion (original logic preserved) */}
+                {/* Tier Conversion - Upgraded to Recharts PieChart */}
                 <div className="bg-linear-surface border border-linear-border rounded-2xl overflow-hidden">
                   <div className="p-6 border-b border-linear-border/50 flex items-center justify-between">
                     <h3 className="text-sm font-bold flex items-center gap-2">
-                      <PieChart className="w-4 h-4 text-amber-400" /> Tier Conversion Breakdown
+                      <PieChartIcon className="w-4 h-4 text-amber-400" /> Tier Conversion Breakdown
                     </h3>
                     <span className="px-3 py-1 bg-blue-500/10 text-blue-400 text-[10px] font-bold rounded-full border border-blue-500/20">Projection</span>
                   </div>
@@ -483,6 +501,11 @@ export default function AdminDashboard() {
                       const ent = Math.max(1, Math.round(totalPaid * 0.15));
                       const pro = Math.max(0, totalPaid - ent);
                       const free = total - totalPaid;
+                      const pieData = [
+                        { name: 'Enterprise', value: ent, color: '#A855F7' },
+                        { name: 'Pro', value: pro, color: '#3B82F6' },
+                        { name: 'Free', value: free, color: '#64748B' },
+                      ];
                       return (
                         <>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -503,19 +526,31 @@ export default function AdminDashboard() {
                               <div className="text-4xl font-black text-amber-500">{((totalPaid/total)*100).toFixed(1)}%</div>
                             </div>
                           </div>
-                          <div className="space-y-3">
-                            {[
-                              { label: `Free (${free})`, pct: ((free/total)*100).toFixed(1), cls: 'bg-slate-500', text: 'text-slate-400' },
-                              { label: `Pro (${pro})`, pct: ((pro/total)*100).toFixed(1), cls: 'bg-blue-500', text: 'text-blue-400' },
-                              { label: `Enterprise (${ent})`, pct: ((ent/total)*100).toFixed(1), cls: 'bg-purple-500', text: 'text-purple-400' },
-                            ].map((t, i) => (
-                              <div key={i} className="space-y-1.5">
-                                <div className="flex justify-between text-xs font-bold"><span className={t.text}>{t.label}</span><span className={t.text}>{t.pct}%</span></div>
-                                <div className="w-full bg-black/20 rounded-full h-2.5 overflow-hidden">
-                                  <motion.div initial={{ width: 0 }} animate={{ width: `${t.pct}%` }} transition={{ duration: 1 }} className={`${t.cls} h-2.5 rounded-full`} />
+                          <div className="flex flex-col md:flex-row items-center h-[200px] w-full">
+                            <div className="flex-1 h-full w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                    {pieData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                                  </Pie>
+                                  <RechartsTooltip 
+                                    contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px' }}
+                                    itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                  />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </div>
+                            <div className="w-full md:w-1/3 flex flex-col gap-3 justify-center">
+                              {pieData.map(d => (
+                                <div key={d.name} className="flex justify-between items-center text-xs">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
+                                    <span className="font-bold text-foreground">{d.name}</span>
+                                  </div>
+                                  <span className="text-linear-text-muted">{d.value} ({((d.value/total)*100).toFixed(1)}%)</span>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
                         </>
                       );
@@ -551,70 +586,91 @@ export default function AdminDashboard() {
             {activeTab === 'agents' && (
               <motion.div key="agents" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
                 
-                {/* Feature Usage from Real Data */}
+                {/* Feature Usage from Real Data - Upgraded to Recharts BarChart */}
                 {featureCategories.length > 0 && (
-                  <div className="bg-linear-surface border border-linear-border rounded-2xl overflow-hidden">
-                    <div className="px-6 py-4 border-b border-linear-border/50">
-                      <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-purple-400" /> Feature Usage Breakdown (Real Data)
-                      </h3>
-                    </div>
-                    <div className="divide-y divide-linear-border/30">
-                      {featureCategories.map((cat, idx) => {
-                        const maxCalls = featureCategories[0]?.count || 1;
-                        const pct = (cat.count / maxCalls) * 100;
-                        return (
-                          <div key={idx} className="px-6 py-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
-                            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center text-xs font-black text-purple-400">
-                              {idx + 1}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-xs font-bold text-foreground mb-1.5">{cat.category}</div>
-                              <div className="w-full bg-black/20 rounded-full h-2 overflow-hidden">
-                                <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, delay: idx * 0.05 }}
-                                  className="h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
-                              </div>
-                            </div>
-                            <div className="text-right shrink-0">
-                              <div className="text-xs font-black text-foreground">{(cat.count || 0).toLocaleString()}</div>
-                              <div className="text-[10px] text-linear-text-muted">calls</div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                  <div className="bg-linear-surface border border-linear-border rounded-2xl overflow-hidden p-6">
+                    <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-5">
+                      <Layers className="w-4 h-4 text-purple-400" /> Feature Usage Breakdown (Real Data)
+                    </h3>
+                    <div className="h-[300px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart layout="vertical" data={featureCategories} margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={false} />
+                          <XAxis type="number" stroke="#94A3B8" fontSize={10} />
+                          <YAxis dataKey="category" type="category" stroke="#94A3B8" fontSize={10} width={120} />
+                          <RechartsTooltip 
+                            cursor={{fill: '#1E293B'}}
+                            contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px' }}
+                            itemStyle={{ color: '#C084FC', fontWeight: 'bold' }}
+                          />
+                          <Bar dataKey="count" fill="#A855F7" radius={[0, 4, 4, 0]} barSize={20}>
+                            {featureCategories.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={['#C084FC', '#A855F7', '#9333EA', '#7E22CE'][index % 4]} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
                 )}
 
-                {/* Funnel Stats */}
-                <div className="bg-linear-surface border border-linear-border rounded-2xl overflow-hidden">
-                  <div className="px-6 py-4 border-b border-linear-border/50">
-                    <h3 className="text-sm font-bold flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-amber-500" /> API Endpoint Funnel (Real Data)
+                {/* Funnel Stats - Upgraded to Recharts */}
+                {funnelStats.length > 0 && (
+                  <div className="bg-linear-surface border border-linear-border rounded-2xl p-6">
+                    <h3 className="text-sm font-bold flex items-center gap-2 mb-5">
+                      <Activity className="w-4 h-4 text-amber-500" /> Platform Event Funnel
                     </h3>
+                    <div className="h-[300px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart layout="vertical" data={funnelStats.slice(0, 15)} margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={false} />
+                          <XAxis type="number" stroke="#94A3B8" fontSize={10} />
+                          <YAxis dataKey={funnelStats[0]?.stage ? "stage" : "path"} type="category" stroke="#94A3B8" fontSize={10} width={150} />
+                          <RechartsTooltip 
+                            cursor={{fill: '#1E293B'}}
+                            contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px' }}
+                            itemStyle={{ color: '#F59E0B', fontWeight: 'bold' }}
+                          />
+                          <Bar dataKey={funnelStats[0]?.stage ? "count" : "usage_count"} fill="#F59E0B" radius={[0, 4, 4, 0]} barSize={20}>
+                            {funnelStats.slice(0, 15).map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={['#FCD34D', '#F59E0B', '#D97706', '#B45309'][index % 4]} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                  <div className="p-6 space-y-4">
-                    {funnelStats.slice(0, 15).map((stat, idx) => {
-                      const maxUsage = Math.max(...funnelStats.map(s => s.usage_count), 1);
-                      const pct = Math.round((stat.usage_count / maxUsage) * 100);
-                      return (
-                        <div key={idx} className="space-y-1.5">
-                          <div className="flex justify-between text-xs font-bold">
-                            <span className="font-mono text-blue-400 truncate max-w-[70%]">{stat.path}</span>
-                            <span className="text-foreground">{stat.usage_count} calls</span>
-                          </div>
-                          <div className="w-full bg-black/20 rounded-full h-2 overflow-hidden">
-                            <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 1 }}
-                              className="bg-gradient-to-r from-amber-500 to-orange-400 h-2 rounded-full" />
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {funnelStats.length === 0 && <div className="text-center py-6 text-linear-text-muted text-sm">No data yet</div>}
+                )}
+
+                {/* Hourly Heatmap - Recharts Area */}
+                {hourlyHeatmap.length > 0 && (
+                  <div className="bg-linear-surface border border-linear-border rounded-2xl p-6">
+                    <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-5">
+                      <Clock className="w-4 h-4 text-blue-400" /> 24h Engagement Heatmap
+                    </h3>
+                    <div className="h-[250px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={hourlyHeatmap} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="colorHour" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                          <XAxis dataKey="hour" stroke="#94A3B8" fontSize={10} tickFormatter={(h) => `${h}:00`} />
+                          <YAxis stroke="#94A3B8" fontSize={10} />
+                          <RechartsTooltip 
+                            contentStyle={{ backgroundColor: '#0F172A', borderColor: '#1E293B', borderRadius: '8px' }}
+                            itemStyle={{ color: '#3B82F6' }}
+                            labelFormatter={(h) => `${h}:00 - ${parseInt(h as string)+1}:00`}
+                          />
+                          <Area type="monotone" dataKey="count" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorHour)" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            )}
+                )}
 
             {/* ═══════════ TAB: AUDIT LOG ═══════════ */}
             {activeTab === 'audit' && (

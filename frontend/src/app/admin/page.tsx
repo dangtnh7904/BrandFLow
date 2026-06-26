@@ -167,9 +167,9 @@ export default function AdminDashboard() {
           { hour: 21, count: 25 }, { hour: 22, count: 12 }, { hour: 23, count: 5 },
         ]);
         setFeatureCategories([
-          { category: 'AI Interview', users_count: 103 },
-          { category: 'Strategy Planning', users_count: 85 },
-          { category: 'Design Studio', users_count: 62 }
+          { category: 'AI Interview', count: 103 },
+          { category: 'Strategy Planning', count: 85 },
+          { category: 'Design Studio', count: 62 }
         ]);
         setEngagement({ 
           new_today: 4, 
@@ -438,9 +438,9 @@ export default function AdminDashboard() {
                     <KPICard icon={UserPlus} label="New Users (This Week)" value={growth.new_users_this_week.toString()} color="#10B981"
                       trend={`${growth.wow_user_growth_pct > 0 ? '+' : ''}${growth.wow_user_growth_pct}% WoW`} trendUp={growth.wow_user_growth_pct > 0} />
                     <KPICard icon={UserPlus} label="New Users (Last Week)" value={growth.new_users_last_week.toString()} color="#64748B" />
-                    <KPICard icon={Activity} label="Visits (This Week)" value={growth.visits_this_week.toLocaleString()} color="#06B6D4"
+                    <KPICard icon={Activity} label="Visits (This Week)" value={(growth.visits_this_week || 0).toLocaleString()} color="#06B6D4"
                       trend={`${growth.wow_visit_growth_pct > 0 ? '+' : ''}${growth.wow_visit_growth_pct}% WoW`} trendUp={growth.wow_visit_growth_pct > 0} />
-                    <KPICard icon={Activity} label="Visits (Last Week)" value={growth.visits_last_week.toLocaleString()} color="#64748B" />
+                    <KPICard icon={Activity} label="Visits (Last Week)" value={(growth.visits_last_week || 0).toLocaleString()} color="#64748B" />
                   </div>
                 )}
 
@@ -576,7 +576,7 @@ export default function AdminDashboard() {
                               </div>
                             </div>
                             <div className="text-right shrink-0">
-                              <div className="text-xs font-black text-foreground">{cat.count.toLocaleString()}</div>
+                              <div className="text-xs font-black text-foreground">{(cat.count || 0).toLocaleString()}</div>
                               <div className="text-[10px] text-linear-text-muted">calls</div>
                             </div>
                           </div>

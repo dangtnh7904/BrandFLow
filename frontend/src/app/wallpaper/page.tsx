@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Sparkles, Linkedin, Target, Activity } from 'lucide-react';
+import { Sparkles, Globe, Target, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function WallpaperPage() {
@@ -60,7 +60,7 @@ export default function WallpaperPage() {
               />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-xl shadow-lg flex items-center justify-center border-4 border-white p-1">
                 <div className="w-full h-full bg-[#0A66C2] rounded-lg flex items-center justify-center">
-                  <Linkedin className="w-5 h-5 text-white" />
+                  <Globe className="w-5 h-5 text-white" />
                 </div>
               </div>
             </div>

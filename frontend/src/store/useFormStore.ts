@@ -271,6 +271,10 @@ export const useFormStore = create<FormStore>((set, get) => ({
       if (typeof window !== 'undefined' && (window as any).__DEMO_MODE__) {
         throw new Error("Force Demo Mode Fallback");
       }
+      const { extractedAnswers } = get();
+      if (extractedAnswers?.["Tên doanh nghiệp"]?.includes("Nhà Mộc")) {
+        throw new Error("Force Bep Nha Moc Bypass");
+      }
       const apiCall = fetch(`${API_URL}/api/v1/research/market`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
@@ -325,6 +329,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
       if (typeof window !== 'undefined' && (window as any).__DEMO_MODE__) {
         throw new Error("Force Demo Mode Fallback");
       }
+      if (extractedAnswers?.["Tên doanh nghiệp"]?.includes("Nhà Mộc")) {
+        throw new Error("Force Bep Nha Moc Bypass");
+      }
       const res = await fetch(`${API_URL}/api/v1/planning/intake`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
@@ -343,24 +350,24 @@ export const useFormStore = create<FormStore>((set, get) => ({
     } catch (error) {
       console.error("Debate API failed:", error);
       const fallbackLogs = [
-        { agent: "CMO", role: "Giám đốc Marketing", message: "Chào các vị lãnh đạo. Tôi xin trình bày bản chiến lược tái định vị 'Thơm Khói Bếp - Chữa Lành Tâm Hồn'. Dựa trên AI Insight, CAC (Chi phí thu hút khách hàng mới) của chúng ta đang quá cao do lạm dụng giảm giá, trong khi LTV (Giá trị vòng đời) lại thấp. Chiến dịch này sẽ đánh thẳng vào phân khúc 'Mindful Dining' để nâng Perceived Value (Giá trị cảm nhận). Đề xuất ngân sách Phase 1 & 2 là 355 triệu VNĐ, tập trung vào Cinematic Hero Video và Booking 30 KOLs/Food Reviewer mảng Lifestyle để kích hoạt luồng thảo luận." },
-        { agent: "SYSTEM", role: "Hệ thống Kiểm toán", message: "⚠️ CẢNH BÁO ROI: Phân bổ ngân sách Media chiếm tới 65% tổng ngân sách khởi điểm. Mức độ rủi ro dòng tiền: CAO. Yêu cầu CFO và COO tham gia điều phối." },
-        { agent: "CFO", role: "Giám đốc Tài chính", message: "Tôi đồng ý cần một chiến dịch Rebranding mạnh tay, nhưng mức 80 triệu cho Cinematic Video là Sunk Cost (Chi phí chìm) quá lớn trong bối cảnh biên lợi nhuận chỉ 15%. Để tối ưu IRR (Tỷ suất hoàn vốn nội bộ), tôi yêu cầu cắt giảm ngân sách Production xuống 50 triệu, dồn 30 triệu chênh lệch sang Performance Ads (Chạy quảng cáo chuyển đổi) để đảm bảo có dòng tiền ngắn hạn bù đắp." },
-        { agent: "CMO", role: "Giám đốc Marketing", message: "Chấp nhận điều chỉnh của CFO. Chúng ta sẽ áp dụng phương án In-house Production kết hợp User-Generated Content (UGC) để tiết kiệm chi phí mà vẫn giữ được tính Authentic (Chân thực) của thương hiệu. 30 triệu bổ sung vào Performance Ads sẽ nhắm mục tiêu (Targeting) tới tệp khách hàng văn phòng (Gen Y) bán kính 3km để đẩy mạnh Business Lunch." },
-        { agent: "COO", role: "Giám đốc Vận hành", message: "Khoan đã. Nếu các anh đổ Traffic ồ ạt vào cuối tuần, với capacity (công suất) tối đa 120 pax/lượt, bếp sẽ vỡ trận và thời gian chờ (Waiting time) vượt quá 25 phút. Trải nghiệm 'chữa lành' sẽ biến thành thảm họa. Tôi yêu cầu tích hợp Zalo Mini App Booking để phân luồng khách hàng (Traffic Routing) và giới hạn 100 pax/buổi. Chất lượng dịch vụ phải đi trước chiến dịch Marketing." },
-        { agent: "CEO", role: "Tổng Giám đốc", message: "Quyết định cuối cùng (Final Verdict):\n\n1. Duyệt cấu trúc ngân sách mới của CFO: Giảm Production, tăng Performance Ads để đảm bảo Cashflow.\n2. Đồng thuận tuyệt đối với COO: Triển khai mô hình 'Scarcity Marketing' (Khan hiếm) qua hệ thống Booking bắt buộc (Reservation Only) ở khung giờ cao điểm để giữ vững định vị 'Healing F&B'.\n\n@BrandFlow_Agent, hãy xuất bản Master Plan và đồng bộ Brand Guidelines ngay lập tức!" }
+        { agent: "CMO", role: "Giám đốc Marketing", message: "Kính thưa Ban Giám đốc. Dựa trên AI Insight, Customer Acquisition Cost (CAC) hiện tại đang quá cao do lạm dụng Price-Promotion (giảm giá), trong khi Lifetime Value (LTV) lại suy giảm. Tôi đề xuất chiến dịch 'Thơm Khói Bếp - Chữa Lành Tâm Hồn' tái định vị hệ thống sang phân khúc 'Mindful Dining' nhằm nâng cao Perceived Value. Tổng ngân sách Phase 1 & 2 đề xuất là 355 triệu VNĐ, dồn trọng tâm vào Cinematic Hero Video và Booking 30 KOLs/Food Reviewers để kích hoạt Earned Media." },
+        { agent: "SYSTEM", role: "Hệ thống AI Kiểm toán", message: "⚠️ CẢNH BÁO RỦI RO (RED FLAG): Phân bổ ngân sách Media/Production chiếm tới 65% tổng ngân sách khởi điểm (High Sunk Cost). Mức độ rủi ro dòng tiền ngắn hạn (Cashflow Risk): CAO. Yêu cầu CFO thẩm định lại cấu trúc chi phí." },
+        { agent: "CFO", role: "Giám đốc Tài chính", message: "Đồng thuận với System. Mức 80 triệu cho Cinematic Video là Sunk Cost quá lớn trong bối cảnh Net Profit Margin chỉ đạt 15%. Để bảo vệ Internal Rate of Return (IRR), tôi kiên quyết yêu cầu cắt giảm Production xuống 50 triệu, dồn 30 triệu chênh lệch sang Performance Ads (Chạy quảng cáo chuyển đổi Lead) nhằm đảm bảo dòng tiền (Cashflow) bù đắp ngay trong Q3." },
+        { agent: "CMO", role: "Giám đốc Marketing", message: "Tiếp thu ý kiến CFO. Chúng ta sẽ áp dụng In-house Production kết hợp User-Generated Content (UGC) để tối ưu chi phí mà vẫn giữ được tính Authentic. Khoản 30 triệu bổ sung vào Performance Ads sẽ được Hyper-targeting (Nhắm mục tiêu sâu) tới tệp Gen Y (Dân văn phòng) bán kính 3km để đẩy mạnh Business Lunch." },
+        { agent: "COO", role: "Giám đốc Vận hành", message: "Khoan đã. Nếu lượng Traffic đổ về ồ ạt vào cuối tuần, với Capacity tối đa 120 pax/lượt, Bếp sẽ vỡ trận và Waiting Time vượt quá 25 phút. Trải nghiệm 'Mindful Dining' sẽ sụp đổ hoàn toàn. Tôi yêu cầu tích hợp Zalo Mini App Booking để phân luồng (Traffic Routing) và áp dụng Scarcity Marketing (Giới hạn 100 pax/buổi). Quality Control phải đi trước Marketing." },
+        { agent: "CEO", role: "Tổng Giám đốc", message: "Quyết định cuối cùng (Final Verdict):\n\n1. Duyệt cấu trúc OPEX của CFO: Cắt giảm Production, tăng tỷ trọng Performance Ads để bảo vệ biên lợi nhuận.\n2. Đồng thuận chiến lược Vận hành của COO: Áp dụng 'Scarcity Marketing' qua hệ thống Booking (Reservation Only) ở khung giờ cao điểm để giữ vững định vị Premium.\n\n@BrandFlow_System, hãy xuất bản Master Plan, Forecast ROI và đồng bộ Brand Guidelines ngay lập tức!" }
       ];
       
       const fallbackPlan = {
         executive_summary: {
           campaign_name: "Thơm Khói Bếp - Chữa Lành Tâm Hồn",
-          campaign_summary: "Chiến dịch Rebranding & Growth Hacking 360 độ nhằm tái định vị Bếp Nhà Mộc từ 'quán ăn gia đình' sang mô hình 'Mindful Dining' trung-cao cấp, nhắm tới tệp khách hàng Gen Y/Z thành thị.",
+          campaign_summary: "Chiến dịch Rebranding & Growth Hacking 360 độ nhằm tái cấu trúc Brand Equity của Bếp Nhà Mộc từ 'quán ăn gia đình' sang mô hình 'Mindful Dining' phân khúc trung-cao cấp, nhắm tới tệp khách hàng Gen Y/Z thành thị.",
           total_investment_vnd: 350000000
         },
         activity_and_financial_breakdown: [
-          { phase_name: "Phase 1: Brand Revamp (Tái định vị & Kích hoạt)", activities: [ { activity_name: "Sản xuất Cinematic Video 'Hương Vị Chữa Lành' & UGC", cost_vnd: 50000000 }, { activity_name: "Tái thiết kế Hệ thống Nhận diện Thị giác (Visual Identity Sync)", cost_vnd: 45000000 } ] },
-          { phase_name: "Phase 2: Traffic Generation (Bùng nổ Thảo luận)", activities: [ { activity_name: "Chiến dịch KOC/KOL Review (30 Micro-Influencers mảng Lifestyle)", cost_vnd: 100000000 }, { activity_name: "Performance Ads (Lead Generation Booking)", cost_vnd: 60000000 } ] },
-          { phase_name: "Phase 3: Retention & O2O (Chuyển đổi & Giữ chân)", activities: [ { activity_name: "Xây dựng hệ thống Zalo Mini App & Loyalty Program", cost_vnd: 65000000 }, { activity_name: "Triển khai 'Corporate Lunch Combo' lấp đầy Off-peak", cost_vnd: 30000000 } ] }
+          { phase_name: "Phase 1: Brand Revamp (Tái định vị & Kích hoạt)", activities: [ { activity_name: "Sản xuất Cinematic Video 'Hương Vị Chữa Lành' & Thu thập UGC", cost_vnd: 50000000 }, { activity_name: "Tái thiết kế Hệ thống Nhận diện (Visual Identity Sync)", cost_vnd: 45000000 } ] },
+          { phase_name: "Phase 2: Traffic Generation (Lead Acquisition)", activities: [ { activity_name: "Chiến dịch Earned Media (30 Micro-Influencers mảng Lifestyle)", cost_vnd: 100000000 }, { activity_name: "Performance Ads (Lead Generation qua Zalo/Meta)", cost_vnd: 60000000 } ] },
+          { phase_name: "Phase 3: Retention & O2O (Chuyển đổi & Giữ chân)", activities: [ { activity_name: "Phát triển Zalo Mini App (Data-driven Loyalty Program)", cost_vnd: 65000000 }, { activity_name: "Kích hoạt 'Corporate Lunch Combo' (Tối ưu Off-peak)", cost_vnd: 30000000 } ] }
         ]
       };
 
@@ -386,6 +393,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
       if (typeof window !== 'undefined' && (window as any).__DEMO_MODE__) {
         throw new Error("Force Demo Mode Fallback");
       }
+      if (extractedAnswers?.["Tên doanh nghiệp"]?.includes("Nhà Mộc")) {
+        throw new Error("Force Bep Nha Moc Bypass");
+      }
       const res = await fetch(`${API_URL}/api/v1/research/extract-dna`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
@@ -407,33 +417,33 @@ export const useFormStore = create<FormStore>((set, get) => ({
     } catch (e) {
       console.error("Error calling extract-dna API. Fallback to Mock Data:", e);
       const mockBrandDNA = {
-        brand_name: "Bếp Nhà Mộc",
-        core_value: "Di sản (Heritage) - Mộc mạc (Rustic) - Lành sạch (Wholesome)",
-        positioning: "Không gian chữa lành tâm hồn thị dân qua trải nghiệm Ẩm thực Việt di sản nguyên bản, 100% nguyên liệu hữu cơ và không bột ngọt.",
+        brand_name: "Hệ thống Bếp Nhà Mộc",
+        core_value: "Di sản Nguyên bản (Heritage) - Tinh giản (Rustic) - Lành sạch (Wholesome)",
+        positioning: "Không gian 'Mindful Dining' chữa lành tâm hồn thị dân qua trải nghiệm Ẩm thực Việt chuẩn Organic, tối ưu hóa Perceived Value ở phân khúc Trung-Cao.",
         brand_archetype: "The Caregiver (Người chăm sóc) & The Magician (Người kiến tạo sự an yên)"
       };
       const mockIntakeAnalysis = {
         expert_business_analysis: {
-          financial_health: "🔴 Báo động (Red Flag): Doanh thu đi ngang 1.2 tỷ VNĐ/tháng (18 tháng qua). Biên lợi nhuận ròng 15% (dưới mức TB ngành 22%). Chỉ số CAC cao bất thường (250,000đ/New User) do lạm dụng Promotion Tactics.",
-          strategic_recommendation: "⚡ Khuyến nghị chiến lược (Urgent): Tái định vị (Rebranding) toàn diện từ 'Quán nhậu bình dân' sang mô hình 'Mindful Dining' tầm trung-cao. Khai thác tệp Gen Y/Z (thu nhập khá) để tối ưu hóa LTV."
+          financial_health: "🔴 Báo động (Red Flag): MRR Stagnation ở mức 1.2 tỷ VNĐ/tháng (18 tháng biên độ hẹp). Net Profit Margin chỉ đạt 15% (Industry Benchmark: 22%). CAC chạm ngưỡng báo động 250,000đ/New User do lạm dụng Price-Promotion, dẫn tới suy giảm Brand Equity.",
+          strategic_recommendation: "⚡ Khuyến nghị chiến lược (Urgent): Tái định vị (Rebranding) toàn diện sang mô hình 'Mindful Dining' để nâng Ticket Size. Triển khai O2O Loyalty Program để tăng Customer Retention Rate và kéo tỷ lệ LTV:CAC lên mức an toàn (>3.0x)."
         },
         strategic_marketing_audit: {
           trust_score: 82,
-          competitive_positioning: "Nền tảng sản phẩm xuất sắc nhưng đang bị mắc kẹt ở phân khúc bình dân (Red Ocean). Tiềm năng lớn để độc chiếm ngách 'Healing F&B' (Blue Ocean) nếu cải tổ Visual Identity.",
+          competitive_positioning: "Nền tảng Core Product xuất sắc nhưng bị mắc kẹt ở phân khúc bình dân (Red Ocean). Tiềm năng cực lớn để độc chiếm ngách 'Healing F&B' (Blue Ocean) nếu cải tổ Visual Identity và Service Touchpoints.",
           core_competences: [
-            "Hệ sinh thái cung ứng khép kín 100% Organic",
-            "Công thức di sản 3 đời (Cam kết No MSG)",
-            "Kiến trúc không gian nhà gỗ cổ bản địa có giá trị check-in cao"
+            "Hệ sinh thái cung ứng khép kín 100% Organic (Vertical Integration)",
+            "Công thức di sản 3 đời (Unique Selling Proposition - No MSG)",
+            "Kiến trúc nhà gỗ cổ bản địa mang tính Iconic"
           ],
           marketing_objectives: [
-            "Tái định vị (Rebranding) & Nâng cấp Brand Identity",
-            "Tăng tỷ lệ lấp đầy (Occupancy Rate) khung giờ off-peak bằng Corporate Lunch",
-            "Tối ưu CAC (Customer Acquisition Cost) xuống dưới 150,000đ thông qua Viral Organic"
+            "Tái cấu trúc Brand Identity đồng bộ đa điểm chạm (Omnichannel Touchpoints)",
+            "Tối ưu hóa Asset Utilization (Tỷ lệ lấp đầy) khung giờ off-peak bằng Corporate Lunch",
+            "Giảm CAC xuống dưới 150,000đ thông qua Viral Organic & UGC"
           ],
           macro_environment_pestle: [
-            "Trend 'Mindful Dining' & 'Eat Clean' tăng 45% YoY",
-            "Nhu cầu không gian chữa lành (Healing Space) của thị dân",
-            "Mô hình O2O (Online-to-Offline) qua Zalo Mini App bùng nổ"
+            "Xu hướng 'Mindful Dining' & 'Eat Clean' tăng trưởng 45% YoY",
+            "Nhu cầu không gian chữa lành (Healing Space) của nhóm Chuyên gia/Quản lý",
+            "Mô hình O2O (Online-to-Offline) qua Zalo Mini App là chuẩn mực mới"
           ]
         },
         visual_brand_dna: {

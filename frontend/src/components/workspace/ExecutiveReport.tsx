@@ -9,76 +9,76 @@ const COLORS = ['#0f172a', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1'
 
 const DEMO_EXPERT_DATA = {
   "goal_setting": {
-    "mission_statement": "Kiến tạo Bếp Nhà Mộc thành 'Thánh địa Mindful Dining' tiên phong tại Sài Gòn — Nơi chữa lành tâm hồn thị dân thông qua nghệ thuật Ẩm thực Việt di sản. Mục tiêu trung hạn (3 năm): Trở thành chuỗi F&B 'Wellness Dining' đầu tiên tại Việt Nam có định giá Pre-Series A đạt ngưỡng 50 tỷ VNĐ.",
+    "mission_statement": "Tái cấu trúc Bếp Nhà Mộc trở thành chuỗi 'Mindful Dining' dẫn dắt phân khúc trung-cao cấp tại TP.HCM. Chuyển đổi định vị từ 'Nhà hàng truyền thống' sang 'Không gian trị liệu ẩm thực' (Food Therapy) nhằm tối ưu hóa Brand Premium và mở rộng biên lợi nhuận.",
     "core_competencies": [
-      { "competency": "Lợi thế Độc quyền (VRIO): Không gian kiến trúc nhà gỗ cổ truyền 100+ năm tuổi mang âm hưởng hoài niệm, rào cản gia nhập tuyệt đối.", "is_vrio": true },
-      { "competency": "Chuỗi cung ứng Vertical Integration: Hệ sinh thái nguyên liệu 100% Organic khép kín từ 12 nông trại địa phương đạt chứng nhận VietGAP.", "is_vrio": true },
-      { "competency": "Intellectual Property (IP) Thương hiệu: Bộ nhận diện 'Mộc' đã đăng ký bảo hộ sở hữu trí tuệ, 15+ công thức gia truyền mã hóa thành SOP.", "is_vrio": false },
-      { "competency": "First-Mover Advantage trong ngách 'Wellness Dining': Chưa có đối thủ trực tiếp nào kết hợp được Ẩm thực di sản + Không gian trị liệu.", "is_vrio": true }
+      { "competency": "Lợi thế Độc quyền (VRIO): Hệ thống kiến trúc nhà gỗ 100+ năm tuổi tạo rào cản gia nhập tuyệt đối, mang lại chỉ số Check-in Value và Earned Media tự nhiên cao.", "is_vrio": true },
+      { "competency": "Chuỗi cung ứng khép kín (Vertical Integration): 100% nguyên liệu Organic đạt chuẩn VietGAP, đảm bảo USP 'Không Bột Ngọt' nhất quán trên toàn chuỗi.", "is_vrio": true },
+      { "competency": "Intellectual Property (IP): Nhận diện thương hiệu 'Mộc' đã đăng ký bảo hộ, 15+ công thức di sản mã hóa thành SOP vận hành.", "is_vrio": false },
+      { "competency": "First-Mover Advantage: Đơn vị tiên phong khai thác ngách 'Wellness F&B' kết hợp văn hóa bản địa, lấp đầy Market Gap hiện tại.", "is_vrio": true }
     ],
     "objectives": {
       "financial_goals": [
-        "Vượt điểm hòa vốn trong Quý 1. Tăng trưởng Revenue từ 1.2 tỷ lên mốc 1.8 tỷ VNĐ/tháng (+50% MoM), đạt Gross Margin ≥ 65% và EBITDA Margin ≥ 18%.",
-        "Tối ưu hóa phễu khách hàng trung thành: Đẩy Retention Rate từ 15% lên mức tiêu chuẩn vàng 35%. MRR đạt 500 triệu VNĐ.",
-        "Xây dựng tệp First-Party Data: Thu thập tối thiểu 15,000 Qualified Leads trên Zalo Mini App."
+        "Tối ưu hóa Unit Economics: Đạt Gross Margin ≥ 68% và EBITDA Margin ≥ 22% trong Quý 3/2026. Đưa MRR (Monthly Recurring Revenue) lên mốc 2.5 tỷ VNĐ.",
+        "Kích hoạt Customer Loyalty: Đẩy Retention Rate lên mức kỷ lục 95.5% thông qua hệ thống Zalo O2O CRM.",
+        "Đa dạng hóa Revenue Streams: Khai thác 'Corporate Lunch Combo' để tối ưu hóa Asset Utilization (Tỷ lệ lấp đầy) khung giờ Off-peak."
       ],
       "marketing_goals": [
-        "Thống lĩnh Share of Voice (SOV ≥ 40%) trong ngách 'Ẩm thực chữa lành'. Đạt 5 triệu lượt Organic Reach. Engagement Rate trung bình ≥ 4.5%.",
-        "Định vị Top 3 điểm đến F&B 'Must-visit' khu vực Central HCMC. Google Reviews ≥ 4.8/5, TripAdvisor Top 10.",
-        "Đạt Net Promoter Score (NPS) ≥ 75. Tỷ lệ Referral chiếm ≥ 20% tổng Booking mới."
+        "Thống lĩnh Share of Voice (SOV) > 45% trong danh mục 'Ẩm thực chữa lành'. Engagement Rate mục tiêu ≥ 5.2%.",
+        "Tái định vị (Brand Repositioning): Lọt Top 3 'Must-visit F&B' dành cho giới chuyên gia/quản lý tại Central HCMC.",
+        "Net Promoter Score (NPS) đạt ≥ 82. Tỷ lệ Referral booking chiếm > 30%."
       ],
-      "cac_ltv_analysis": "Chiến lược Unit Economics: Khống chế CAC < 40,000 VNĐ. Đẩy LTV lên mức 12,500,000 VNĐ/khách. Tỷ lệ LTV:CAC = 312:1."
+      "cac_ltv_analysis": "Chỉ số LTV/CAC mục tiêu: 22.8x. Nén Customer Acquisition Cost (CAC) xuống mức tối đa 145,000 VNĐ, đồng thời đẩy Customer Lifetime Value (CLV) lên 3,300,000 VNĐ."
     },
     "red_lines": [
-      "Brand Equity Protection: Tuyệt đối không chạy đua 'Deep Discounting' hoặc Flash Sale. Chỉ áp dụng Value-Add.",
-      "Service Quality Ceiling: Tỷ lệ Table Turnover tối đa 2.5 vòng/buổi — hy sinh Revenue ngắn hạn để bảo toàn NPS.",
-      "Data Privacy Compliance: Tuân thủ nghiêm ngặt Nghị định 13/2023/NĐ-CP về Bảo vệ Dữ liệu."
+      "Brand Equity Protection: Tuyệt đối không sử dụng 'Deep Discounting' (Giảm giá sâu). Áp dụng chiến lược Value-Added (Tặng kèm giá trị).",
+      "Capacity Management: Giới hạn Table Turnover 2.0 vòng/buổi. Hy sinh doanh thu ngắn hạn để bảo toàn NPS và trải nghiệm 'Mindful'.",
+      "Data Governance: Tuân thủ 100% tiêu chuẩn bảo mật dữ liệu khách hàng theo Nghị định 13/2023/NĐ-CP."
     ]
   },
   "situation_audit": {
     "target_segments": [
       {
-        "segment_name": "Segment A: Urban Healers — Gen Z/Y Professionals (22-35 tuổi, thu nhập 15-40M)",
+        "segment_name": "Core Segment: Urban Executives & Professionals (Gen Y, Thu nhập 25M-60M)",
         "dmu_profiles": [
           {
-            "role": "Decider (Người ra quyết định)",
-            "pain_points": ["Hội chứng Burnout mãn tính", "Mất niềm tin vào nguồn gốc thực phẩm", "Decision Fatigue khi chọn quán ăn"],
-            "decision_drivers": ["Không gian Aesthetic giàu Storytelling", "Trải nghiệm cá nhân hóa tinh tế", "Social Proof mạnh (Reviews, KOLs)"]
+            "role": "Key Decision Maker (KDM)",
+            "pain_points": ["Áp lực công việc cao (Burnout)", "Mất niềm tin vào Vệ sinh ATTP công nghiệp", "Thiếu không gian cân bằng tâm trí (Third-place)"],
+            "decision_drivers": ["Aesthetic Architecture (Không gian chữa lành)", "Transparency (Minh bạch nguyên liệu)", "Word-of-Mouth từ giới tinh hoa (Peer Review)"]
           }
         ],
-        "value_proposition": "Food Therapy: Mâm cơm nhà chuẩn vị di sản trong không gian 100+ năm tuổi giúp xoa dịu áp lực phố thị.",
-        "data_sources": ["Nielsen Vietnam 2024", "Phân tích CRM nội bộ Q1/2025"]
+        "value_proposition": "Food Therapy: Nơi ẩn mình tinh tế giữa tâm mạch Sài Gòn, phục vụ mâm cơm di sản 100% Organic giúp chữa lành thân - tâm - trí.",
+        "data_sources": ["McKinsey Wellness Economy Report 2024", "Bếp Nhà Mộc CRM Data Q1/2026"]
       }
     ],
     "directional_policy": {
-      "market_attractiveness": "Rất Cao (8.2/10) — CAGR 22% ngành Wellness F&B.",
-      "business_strength": "Khá (6.8/10) — Concept sở hữu lõi văn hóa mạnh nhưng Nút thắt vận hành bếp cần tối ưu.",
-      "investment_decision": "Invest & Grow (Ô Star) — Bơm vốn mạnh tay vào Rebranding và Số hóa."
+      "market_attractiveness": "Rất Cao (8.5/10) — CAGR ngành Wellness F&B đạt 24.5%.",
+      "business_strength": "Trung Khá (7.0/10) — Core Product mạnh nhưng đang thiếu hụt hệ thống Data-driven Marketing.",
+      "investment_decision": "Scale-up (Mở rộng & Tối ưu hóa) — Tái cơ cấu dòng vốn OPEX vào Performance Marketing & O2O Loyalty."
     }
   },
   "strategy": {
-    "ansoff_matrix_choice": "Market Penetration kết hợp Product Development.",
-    "positioning_statement": "Blue Ocean Strategy: Chốn về duy nhất trao đi trải nghiệm 'Ẩm thực Việt Chữa Lành' tại khu vực Central HCMC.",
-    "expected_roi_justification": "Ngân sách 350M VNĐ là Đòn bẩy Tăng trưởng. Incremental Revenue dự kiến: +600M VNĐ/tháng. ROI 71.4% trong 60 ngày."
+    "ansoff_matrix_choice": "Market Penetration (Thâm nhập sâu) & Market Development (Mở rộng tệp khách hàng Corporate).",
+    "positioning_statement": "Blue Ocean Strategy: Dịch chuyển khỏi 'Red Ocean' quán ăn gia đình, kiến tạo ngách 'Mindful Dining' độc tôn tại Sài Gòn.",
+    "expected_roi_justification": "Ngân sách Marketing 350M VNĐ là Đòn bẩy Tăng trưởng chiến lược (Growth Lever). Dự kiến ROI đạt 185% sau 3 tháng, Break-even (Hòa vốn) chiến dịch ở Tuần thứ 5."
   },
   "tactics": {
     "tactics_7ps": [
-      { "p_name": "Product", "action_bullet": "Launch 'Thực Đơn Ký Ức' (Heritage Rotating Menu) và Business Lunch Combo.", "kpi": "Tăng 25% doanh thu khung giờ thấp điểm.", "budget_vnd": 30000000, "budget_allocation_percent": 8.6, "moscow_tag": "MUST_HAVE" },
-      { "p_name": "Price", "action_bullet": "Áp dụng Tiered Pricing và Dynamic Pricing nhẹ (+10% Peak Hours).", "kpi": "Average Check Size tăng +28%.", "budget_vnd": 0, "budget_allocation_percent": 0, "moscow_tag": "MUST_HAVE" },
-      { "p_name": "Promotion", "action_bullet": "Cinematic Brand Film & KOL Campaign đa nền tảng.", "kpi": "3M+ lượt xem Organic. 2000+ Bookings mới.", "budget_vnd": 150000000, "budget_allocation_percent": 42.8, "moscow_tag": "MUST_HAVE" },
-      { "p_name": "Place", "action_bullet": "Performance Ads tối ưu CPA và Local SEO Partnerships.", "kpi": "CAC < 40K VNĐ, ROAS ≥ 15x.", "budget_vnd": 90000000, "budget_allocation_percent": 25.7, "moscow_tag": "MUST_HAVE" },
-      { "p_name": "People", "action_bullet": "Mộc Academy: Service Mindset & Brand Storytelling Training.", "kpi": "Staff Turnover Rate < 15%/năm.", "budget_vnd": 20000000, "budget_allocation_percent": 5.7, "moscow_tag": "SHOULD_HAVE" },
-      { "p_name": "Physical Evidence", "action_bullet": "Visual Identity System: Bao bì Kraft, Đồng phục Linen.", "kpi": "Instagram Mentions ≥ 1,000/tháng.", "budget_vnd": 25000000, "budget_allocation_percent": 7.1, "moscow_tag": "SHOULD_HAVE" },
-      { "p_name": "Process", "action_bullet": "Zalo Mini App 'Mộc Loyalty' & Booking Automation.", "kpi": "Mini App Adoption ≥ 60%.", "budget_vnd": 35000000, "budget_allocation_percent": 10.0, "moscow_tag": "MUST_HAVE" }
+      { "p_name": "Product", "action_bullet": "Ra mắt 'Heritage Rotating Menu' & 'Executive Lunch Combo'.", "kpi": "Tăng 35% doanh thu Off-peak.", "budget_vnd": 30000000, "budget_allocation_percent": 8.6, "moscow_tag": "MUST_HAVE" },
+      { "p_name": "Price", "action_bullet": "Áp dụng Premium Pricing Strategy (+15% so với hiện tại) & Bundle Pricing.", "kpi": "Ticket Size tăng 22%.", "budget_vnd": 0, "budget_allocation_percent": 0, "moscow_tag": "MUST_HAVE" },
+      { "p_name": "Promotion", "action_bullet": "Cinematic Hero Video 'Chữa Lành' & Booking 30 Micro-KOLs (Lifestyle/Biz).", "kpi": "Earned Media Reach > 2M.", "budget_vnd": 150000000, "budget_allocation_percent": 42.8, "moscow_tag": "MUST_HAVE" },
+      { "p_name": "Place (Dist)", "action_bullet": "Hyper-local Performance Ads (Bán kính 3km) & Search Intent SEO.", "kpi": "ROAS (Return on Ad Spend) > 8.5x.", "budget_vnd": 90000000, "budget_allocation_percent": 25.7, "moscow_tag": "MUST_HAVE" },
+      { "p_name": "People", "action_bullet": "Chuẩn hóa SOP 'Omotenashi' (Phục vụ bằng cả trái tim) cho FOH.", "kpi": "Customer Satisfaction > 95%.", "budget_vnd": 20000000, "budget_allocation_percent": 5.7, "moscow_tag": "SHOULD_HAVE" },
+      { "p_name": "Physical Ev.", "action_bullet": "Nâng cấp Visual Identity System (Menu, Bao bì sinh học, Đồng phục Linen).", "kpi": "Brand Consistency Audit: Pass.", "budget_vnd": 25000000, "budget_allocation_percent": 7.1, "moscow_tag": "SHOULD_HAVE" },
+      { "p_name": "Process", "action_bullet": "Triển khai Zalo Mini App: CRM, Loyalty & Automation Booking.", "kpi": "O2O Conversion Rate > 25%.", "budget_vnd": 35000000, "budget_allocation_percent": 10.0, "moscow_tag": "MUST_HAVE" }
     ],
     "total_budget_used": 350000000,
-    "task_ready_checklist": ["Duyệt Storyboard Brand Film", "Ký HĐ KOLs", "Nghiệm thu Zalo App Sprint 1", "Chốt Mộc Academy Batch 1"]
+    "task_ready_checklist": ["Phê duyệt kịch bản Hero Video", "Ký kết Master Contract với 30 KOLs", "Release Zalo Mini App (BETA)", "Go-live SOP Vận hành mới"]
   },
   "cfo_risk": {
-    "cfo_comment": "Từ góc độ Tài chính: Đòn bẩy 350 triệu VNĐ hợp lý. Ép giảm ngân sách Brand Film từ 80M xuống 50M để bù cho Performance Ads. Đảm bảo Burn Rate kiểm soát.",
+    "cfo_comment": "Bản báo cáo này thể hiện tư duy Unit Economics sắc bén. Với CLV/CAC 22.8x và ROI dự kiến 185%, rủi ro tài chính được nén ở mức thấp. Ngân sách 350 triệu được phân bổ chặt chẽ giữa Branding (Build Trust) và Performance (Drive Revenue), đảm bảo Cashflow dương ngay trong kỳ đầu.",
     "risk_assessment": [
-      { "risk_scenario": "Rủi ro Truyền thông: Brand Film không tạo chuyển đổi do thuật toán.", "trigger_point_metric": "Booking qua App < 50 lượt sau 72h.", "contingency_plan_b": "Cắt Sunk-cost Boost video. Pivot toàn lực sang Performance Ads." },
-      { "risk_scenario": "Rủi ro Vận hành: Capacity Overflow vào Peak Days.", "trigger_point_metric": "Average Wait Time > 30 phút.", "contingency_plan_b": "Kích hoạt Scarcity Marketing: Đóng cổng Walk-in 100%, giảm Booking cap." }
+      { "risk_scenario": "Rủi ro Truyền thông: Thuật toán Social Media thay đổi làm giảm Organic Reach của Hero Video.", "trigger_point_metric": "Video Views < 100K trong 72h đầu tiên.", "contingency_plan_b": "Cắt 30% ngân sách Branding chuyển sang Retargeting Ads và Kích hoạt tệp Micro-KOL dự phòng." },
+      { "risk_scenario": "Rủi ro Vận hành: Hiện tượng Overcapacity (Vượt công suất) vào các ngày cuối tuần do hiệu ứng viral.", "trigger_point_metric": "Waiting Time (Thời gian chờ) vượt ngưỡng 25 phút.", "contingency_plan_b": "Kích hoạt 'Scarcity Marketing': Khóa cổng Walk-in, 100% Reservation Only để nâng tầm Exclusivity." }
     ]
   }
 };

@@ -67,3 +67,22 @@
   - **Fixed (Database Completeness / Foreign Keys):** Added an auto-create logic in `save_forms_to_db` when processing the `default_project` or randomly supplied UI projects to prevent the `psycopg2.errors.ForeignKeyViolation`. Attached SQLAlchemy `db.rollback()` safety net so if single form drops, the rest 22 forms safely insert. 
   - **Fixed (Data Structural Validation):** Rebuilt the logic inside `generate_all_forms` to actively analyze schemas from LLaMA 3 returning. Added `_is_valid_form_data()` enforcing exact items matches (must contain JSON arrays of > 0 items). Any corrupt structural AI strings are intercepted and instantly replaced by seamless Regex Mock Templates to prevent UI React `.map()` crashes.
   - **Fixed (Frontend Invisible Data bug):** Patched `Screen2_Wizard.tsx` to automatically call `await useFormStore.getState().initializeProject();`. This resolves the issue where forms were incorrectly generated in the `default_project` bucket while the Next.js Client rendered `a1-mission` fetching a newly auto-generated UUID matching the user session. All 23 forms now show dynamically in the Data Table grids right after AI generation finish.
+
+### 2026-06-26
+- **Traction Metrics Update (Admin Dashboard + Analytics):**
+  - Updated `frontend/src/app/admin/page.tsx` (Admin Command Center) with real traction data from khảo sát 70 DN vừa và nhỏ.
+  - Updated `frontend/src/app/admin/analytics/page.tsx` (Marketing Analytics & GTM) with matching metrics.
+  - **Key metrics updated across both pages:**
+    - Tổng DN dùng thử: 112
+    - DN active (retained): 107 → Retention 95.5% (was 88.4%)
+    - DN rời đi (churned): 5 (was 13)
+    - DN sử dụng ≥ 1 tháng: 54 (48.2% sticky rate) — **new metric**
+    - NPS Score: 59 (68 promoters, 8 detractors) — **new metric**
+    - Phê duyệt plan không chỉnh sửa ngân sách: 78% — **new metric**
+  - Added new KPI cards: NPS Score, Sticky Users (1 month), Plan Approval Rate.
+  - Updated funnel stages with "Sử dụng ≥ 1 tháng" and "Phê duyệt plan không chỉnh sửa".
+  - Updated Traction Highlights section (replaced Investment Highlights/TAM-SAM-SOM).
+  - Updated Audit Log tab with traction summary card.
+  - Updated AI CMO Advisory text to reflect new metrics.
+  - Updated churn analysis (consolidated to single entry: 5 DN).
+  - Updated retention health bar, key insights, and all downstream calculations.

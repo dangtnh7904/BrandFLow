@@ -25,6 +25,11 @@
 **🗣️ Lời dẫn:** 
 *"Như anh/chị thấy, AI đã lọc ra chính xác: Doanh nghiệp là hệ thống F&B Bếp Nhà Mộc. Vấn đề đang gặp phải là chi phí thu hút khách hàng (CAC) tăng 42%. Mục tiêu là nén CAC xuống dưới 145K và tăng trưởng doanh thu định kỳ (MRR) lên 2.5 Tỷ."*
 
+### Bước 4: Cấu hình Ngân sách bằng AI (AI Budget Recommendations)
+👉 **Hành động:** Chuyển sang màn hình **Thiết lập Mục tiêu & Ngân sách**. Bấm vào nút `Áp dụng Gói này (Apply)` ở Gói "Package 1: Aggressive Scale (350M VNĐ)" bên cột phải.
+**🗣️ Lời dẫn:** 
+*"Phần đỉnh cao nhất của Onboarding là đây. Dựa trên dữ liệu vừa đọc, AI CMO tự động mớm sẵn 2 gói ngân sách cho Bếp Nhà Mộc. Một gói 150 Triệu tập trung giữ chân khách (Retention), và một gói 350 Triệu đánh thâm nhập thị trường (Aggressive Scale). CEO chỉ cần bấm 1 chạm, toàn bộ mục tiêu phức tạp và ngân sách sẽ tự động điền vào Form mà không cần gõ một chữ nào."*
+
 ---
 
 ## 🎬 GIAI ĐOẠN 2: TACTICAL GANTT CHART (Phase 3 - Bảng tiến độ Chiến thuật)

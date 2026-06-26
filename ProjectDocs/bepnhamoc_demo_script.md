@@ -20,15 +20,15 @@
 **🗣️ Lời dẫn trong lúc chờ (1.5s delay):** 
 *"Hệ thống Multi-Agent của chúng em hiện tại đang quét hàng chục trang dữ liệu thô từ file Word này. AI sẽ tự động bóc tách đâu là nỗi đau của khách hàng (Pain Points), đâu là mục tiêu tài chính, và đâu là lợi thế cạnh tranh cốt lõi."*
 
-### Bước 3: Hiển thị kết quả bóc tách (Extraction Result)
-👉 **Hành động:** Chỉ vào màn hình kết quả xanh lá cây hiện ra.
+### Bước 3: Show-off Bảng Phân Tích Brand DNA (Mới)
+👉 **Hành động:** Ngay sau khi trích xuất xong, màn hình sẽ tự động chuyển sang Bảng điều khiển **Brand DNA**. Chỉ vào biểu đồ nhện (Radar Chart) và các thẻ phân tích.
 **🗣️ Lời dẫn:** 
-*"Như anh/chị thấy, AI đã lọc ra chính xác: Doanh nghiệp là hệ thống F&B Bếp Nhà Mộc. Vấn đề đang gặp phải là chi phí thu hút khách hàng (CAC) tăng 42%. Mục tiêu là nén CAC xuống dưới 145K và tăng trưởng doanh thu định kỳ (MRR) lên 2.5 Tỷ."*
+*"Nhưng đó chưa phải là tất cả. BrandFlow lập tức dùng dữ liệu đó để vẽ ra một bảng X-quang toàn diện về Bếp Nhà Mộc. Anh/chị có thể thấy AI phân tích VRIO, chấm điểm sức mạnh cạnh tranh, và định vị lõi là 'Food Therapy' (Ẩm thực chữa lành). Không một thực tập sinh nào làm được điều này trong vài phút."*
 
 ### Bước 4: Cấu hình Ngân sách bằng AI (AI Budget Recommendations)
-👉 **Hành động:** Chuyển sang màn hình **Thiết lập Mục tiêu & Ngân sách**. Bấm vào nút `Áp dụng Gói này (Apply)` ở Gói "Package 1: Aggressive Scale (350M VNĐ)" bên cột phải.
+👉 **Hành động:** Bấm `Tiếp tục` từ màn hình Brand DNA để sang màn hình **Thiết lập Mục tiêu & Ngân sách**. Bấm vào nút `Áp dụng Gói này (Apply)` ở Gói "Gói 1: Aggressive Scale (350M VNĐ)" bên cột phải.
 **🗣️ Lời dẫn:** 
-*"Phần đỉnh cao nhất của Onboarding là đây. Dựa trên dữ liệu vừa đọc, AI CMO tự động mớm sẵn 2 gói ngân sách cho Bếp Nhà Mộc. Một gói 150 Triệu tập trung giữ chân khách (Retention), và một gói 350 Triệu đánh thâm nhập thị trường (Aggressive Scale). CEO chỉ cần bấm 1 chạm, toàn bộ mục tiêu phức tạp và ngân sách sẽ tự động điền vào Form mà không cần gõ một chữ nào."*
+*"Phần đỉnh cao nhất của Onboarding là đây. Dựa trên bản DNA vừa rồi, AI CMO tự động mớm sẵn 2 gói ngân sách phù hợp nhất cho Bếp Nhà Mộc. Một gói 150 Triệu tập trung giữ chân khách, và một gói 350 Triệu đánh thâm nhập thị trường Corporate Lunch. CEO chỉ cần bấm 1 chạm, toàn bộ mục tiêu phức tạp và ngân sách sẽ tự động điền vào Form mà không cần gõ một chữ nào."*
 
 ---
 

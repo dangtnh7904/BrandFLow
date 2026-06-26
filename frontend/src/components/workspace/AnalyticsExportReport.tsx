@@ -255,6 +255,68 @@ export default function AnalyticsExportReport() {
         </footer>
       </div>
 
+      {/* PAGE 3: AI MEDIA BUYER & AD OPTIMIZATION */}
+      <div className={`${pageClass} p-[15mm] flex flex-col`}>
+        <header className="border-b-2 border-slate-900 pb-3 mb-8 flex justify-between items-end shrink-0">
+          <div className="text-xl font-black text-slate-900 uppercase tracking-tight">BRANDFLOW</div>
+          <div className="text-slate-500 font-bold text-[10px] tracking-widest uppercase">03 / AI Media Buyer Execution</div>
+        </header>
+
+        <div className="flex-1 flex flex-col">
+          <section className="mb-10">
+            <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center">
+              <Zap className="w-4 h-4 mr-2" /> 6. Ad Creative Real-time Optimization (Live Status)
+            </h2>
+            <div className="border border-slate-200">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-900 text-white uppercase tracking-widest text-[9px]">
+                    <th className="py-3 px-4 font-black">Ad Creative Name</th>
+                    <th className="py-3 px-4 font-black text-center">AI Decision</th>
+                    <th className="py-3 px-4 font-black">Strategic Reasoning</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-slate-200">
+                    <td className="py-3 px-4 font-bold text-slate-900">Hero Video: "Chữa Lành"</td>
+                    <td className="py-3 px-4 text-center"><span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-sm font-black text-[9px] uppercase tracking-widest">SCALE</span></td>
+                    <td className="py-3 px-4 text-slate-600">ROAS 3.2, CPA thấp hơn kỳ vọng 15%. Nên dồn thêm 20% ngân sách để vít scale.</td>
+                  </tr>
+                  <tr className="border-b border-slate-200">
+                    <td className="py-3 px-4 font-bold text-slate-900">Carousel: Menu Organic</td>
+                    <td className="py-3 px-4 text-center"><span className="bg-red-100 text-red-800 px-2 py-1 rounded-sm font-black text-[9px] uppercase tracking-widest">KILL</span></td>
+                    <td className="py-3 px-4 text-slate-600">CTR tụt thê thảm dưới 0.8%, CPA vượt ngưỡng. Tắt ngay để bảo toàn ngân sách.</td>
+                  </tr>
+                  <tr className="border-b border-slate-200">
+                    <td className="py-3 px-4 font-bold text-slate-900">Image: Combo Trưa B2B</td>
+                    <td className="py-3 px-4 text-center"><span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-sm font-black text-[9px] uppercase tracking-widest">FATIGUE</span></td>
+                    <td className="py-3 px-4 text-slate-600">Tệp đã bắt đầu mòn. Nên thay đổi góc thiết kế (Visual Hook) giữ nguyên thông điệp.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center">
+              <ArrowRight className="w-4 h-4 mr-2" /> 7. Next Action Step
+            </h2>
+            <div className="bg-slate-50 border-l-4 border-slate-900 p-5 shadow-sm">
+              <p className="text-sm text-slate-900 font-bold mb-2">Shift 20% budget from Facebook to TikTok</p>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Chi phí trên TikTok đang cho thấy CAC thấp hơn Facebook 25% đối với tệp Gen Y (Core Segment). Đề nghị team Media chuyển 15 triệu VNĐ ngân sách ngay trong 48h tới.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        {/* Page footer */}
+        <footer className="border-t-2 border-slate-900 pt-3 mt-auto flex justify-between items-center text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+          <span>BrandFlow AI Media Buyer</span>
+          <span>Page 3 / 3</span>
+        </footer>
+      </div>
+
     </div>
   );
 }

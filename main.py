@@ -235,6 +235,10 @@ app.include_router(design_router)
 from app.api.content_lab import router as content_lab_router
 app.include_router(content_lab_router, prefix="/api/content-lab", tags=["Content Lab"])
 
+# ── Đăng ký Analytics / Media Buyer Router ────────────────────────
+from app.api.analytics_routes import router as analytics_router
+app.include_router(analytics_router)
+
 
 # ═══════════════════════════════════════════════════════════════════
 # NEW ENDPOINTS: Planning History + Security (GDPR) + Tier Info

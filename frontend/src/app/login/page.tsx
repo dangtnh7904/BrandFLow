@@ -46,7 +46,7 @@ function LoginForm() {
       localStorage.setItem('brandflow_token', data.access_token);
       localStorage.setItem('brandflow_user_id', data.user_id);
       localStorage.setItem('brandflow_email', data.email);
-      localStorage.setItem('brandflow_is_admin', data.is_admin);
+      localStorage.setItem('brandflow_is_admin', data.is_admin === true || data.is_admin === 'true' ? 'true' : 'false');
       localStorage.removeItem('bf_ws_stage');
 
       window.location.href = '/onboarding';
@@ -147,7 +147,7 @@ function LoginForm() {
       localStorage.setItem('brandflow_token', data.access_token);
       localStorage.setItem('brandflow_user_id', data.user_id);
       localStorage.setItem('brandflow_email', data.email);
-      localStorage.setItem('brandflow_is_admin', data.is_admin);
+      localStorage.setItem('brandflow_is_admin', data.is_admin === true || data.is_admin === 'true' ? 'true' : 'false');
 
       localStorage.removeItem('bf_ws_stage');
       localStorage.removeItem('bf_phase1_screen');

@@ -4,22 +4,34 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, PenSquare, Palette, Share2, Calculator, CheckCircle2, Zap, ArrowRight, Activity, Terminal } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFormStore } from '@/store/useFormStore';
 
 export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNext: () => void, onBack: () => void, globalBudget: string }) {
   const { language } = useLanguage();
   const [activePanel, setActivePanel] = useState(0); // 0: Content, 1: Design, 2: Agent, 3: Tactics
   const [typedText, setTypedText] = useState("");
 
-  const contentMock = {
+  const { brandDNA, wizardAnswers } = useFormStore();
+  const isBepNhaMoc = brandDNA?.brand_name?.includes('Nhà Mộc') || wizardAnswers?.company_name?.includes('Nhà Mộc');
+
+  const contentMock = isBepNhaMoc ? {
     headline: "CÓ NHỮNG NGÀY CHỈ THÈM MỘT BÁT CANH CUA RAU ĐAY...",
     body: "Thành phố dạo này hay đổ mưa chiều. Những lúc kẹt xe giữa dòng người hối hả, bạn có chợt thấy sống mũi cay cay khi nhớ về mùi khói bếp thân thuộc?\n\nỞ Bếp Nhà Mộc, chúng tôi không có những món sơn hào hải vị xa hoa. Chúng tôi chỉ có:\n✨ Nồi cá lóc kho tộ keo sệt, đậm đà vị mắm nhỉ.\n✨ Bát canh cua đồng nấu rau đay mồng tơi ngọt thanh, mát ruột.\n✨ Niêu cơm gạo lứt dẻo bùi, ủ ấm trong lớp lá chuối.\n\nHôm nay, gác lại những bộn bề, mời bạn ghé Bếp, ngồi xuống chiếc ghế gỗ sờn, nghe một bản nhạc Trịnh và thưởng thức mâm cơm 'như mẹ nấu'.",
     tiktok: "Góc quay POV mở cánh cửa gỗ bước vào quán. Ánh sáng vàng ấm, không gian ngập tràn cây xanh và đồ gốm.\nVoiceover: Níu Sài Gòn làm bạn mệt quá, thì đây là nơi mình thường đến để trốn."
+  } : {
+    headline: "GIẢI PHÁP TỐI ƯU CHO DOANH NGHIỆP CỦA BẠN",
+    body: "Khám phá cách dịch vụ của chúng tôi có thể giúp bạn tiết kiệm 40% chi phí vận hành trong khi vẫn duy trì chất lượng vượt trội.\n\nSứ mệnh của chúng tôi là mang lại giá trị bền vững cho khách hàng.",
+    tiktok: "Video hướng dẫn nhanh cách sử dụng sản phẩm."
   };
 
-  const designMock = {
+  const designMock = isBepNhaMoc ? {
     primaryColors: ["#4A5D23", "#8B4513", "#F5DEB3"],
     archetype: "The Caregiver & The Innocent",
     keywords: ["Mộc mạc", "Ấm áp", "Chữa lành", "Di sản", "Xanh"]
+  } : {
+    primaryColors: ["#0EA5E9", "#1E293B", "#F8FAFC"],
+    archetype: "The Innovator & The Sage",
+    keywords: ["Hiện đại", "Tối giản", "Công nghệ", "Đột phá", "Tốc độ"]
   };
 
   // Typing effect for Content Lab
@@ -142,8 +154,8 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
                    <Bot className="w-16 h-16 text-cyan-400" />
                  </div>
                </div>
-               <h3 className="text-2xl font-bold text-white mb-2">Bếp Nhà Mộc Agent Activated</h3>
-               <p className="text-slate-400 font-mono max-w-lg text-center">Persona injected. Tone & Manner: "Tâm tình, thủ thỉ, chân thành, dùng từ ngữ mang đậm chất văn học và hoài niệm." Ready for tasks.</p>
+               <h3 className="text-2xl font-bold text-white mb-2">{isBepNhaMoc ? "Bếp Nhà Mộc Agent Activated" : "Brand Agent Activated"}</h3>
+               <p className="text-slate-400 font-mono max-w-lg text-center">{isBepNhaMoc ? "Persona injected. Tone & Manner: \"Tâm tình, thủ thỉ, chân thành, dùng từ ngữ mang đậm chất văn học và hoài niệm.\" Ready for tasks." : "Persona injected. Tone & Manner configured. Ready for tasks."}</p>
             </motion.div>
           )}
 
@@ -153,7 +165,15 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
                 <Terminal className="w-4 h-4 mr-2" /> [Agent: CMO & CFO] finalizing deployment tactics...
               </div>
               <div className="space-y-4">
-                {['Setup Zalo Mini App for Retention', 'Produce ASMR TikTok Series', 'Deploy Mindful Dining PR Articles'].map((task, i) => (
+                {(isBepNhaMoc ? [
+                  'Triển khai Zalo Mini App (Loyalty & O2O)', 
+                  'Sản xuất Cinematic Hero Video: Mùi Khói Bếp', 
+                  'Booking 30 Lifestyle/Biz Micro-KOLs'
+                ] : [
+                  'Setup Omni-channel Marketing Hub',
+                  'Produce Hero Launch Video',
+                  'Deploy Initial PR Articles'
+                ]).map((task, i) => (
                   <div key={i} className="p-4 bg-emerald-950/20 border border-emerald-900/50 rounded-xl flex items-center justify-between">
                     <div className="flex items-center">
                       <CheckCircle2 className="w-5 h-5 text-emerald-500 mr-3" />

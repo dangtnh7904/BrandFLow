@@ -4,10 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Calculator, Download, CheckCircle, Terminal } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFormStore } from '@/store/useFormStore';
 
 export default function Phase4_Execution({ onBack, onNext }: { onBack: () => void, onNext?: () => void }) {
   const { language } = useLanguage();
   const [step, setStep] = useState(0); 
+  const { brandDNA, wizardAnswers } = useFormStore();
+  const isBepNhaMoc = brandDNA?.brand_name?.includes('Nhà Mộc') || wizardAnswers?.company_name?.includes('Nhà Mộc');
 
   useEffect(() => {
     if (window && (window as any).__DEMO_MODE__) {
@@ -87,13 +90,13 @@ export default function Phase4_Execution({ onBack, onNext }: { onBack: () => voi
                  <h3 className="text-xl font-bold text-white mb-2">Target P&L Secured</h3>
                  <div className="flex justify-center items-center space-x-8 mt-6">
                    <div>
-                     <p className="text-slate-400 text-sm font-mono uppercase tracking-widest">Est. Revenue</p>
-                     <p className="text-3xl font-bold text-emerald-400 mt-1">1.8 Tỷ</p>
+                     <p className="text-slate-400 text-sm font-mono uppercase tracking-widest">Est. MRR</p>
+                     <p className="text-3xl font-bold text-emerald-400 mt-1">{isBepNhaMoc ? "2.5 Tỷ" : "1.8 Tỷ"}</p>
                    </div>
                    <div className="w-px h-12 bg-slate-700" />
                    <div>
-                     <p className="text-slate-400 text-sm font-mono uppercase tracking-widest">CAC / LTV</p>
-                     <p className="text-3xl font-bold text-blue-400 mt-1">1:4.2</p>
+                     <p className="text-slate-400 text-sm font-mono uppercase tracking-widest">CLV / CAC</p>
+                     <p className="text-3xl font-bold text-blue-400 mt-1">{isBepNhaMoc ? "22.8x" : "4.2x"}</p>
                    </div>
                  </div>
                </motion.div>

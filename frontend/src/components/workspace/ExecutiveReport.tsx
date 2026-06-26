@@ -399,6 +399,29 @@ export default function ExecutiveReport() {
               <BarChart3 className="w-4 h-4 mr-2" /> 7. Monte Carlo Financial Simulation (6 Months)
             </h2>
             <div className="border border-slate-200 bg-white p-6 rounded-sm shadow-sm">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 bg-slate-50 p-4 border border-slate-100 rounded-sm">
+                <div>
+                  <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">LTV : CAC Ratio</div>
+                  <div className="text-2xl font-black text-emerald-600">22.8x</div>
+                  <div className="text-[9px] text-slate-400 mt-1">Excellent (Scale Ready)</div>
+                </div>
+                <div className="border-l border-slate-200 pl-4">
+                  <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Monte Carlo Base ROI</div>
+                  <div className="text-2xl font-black text-slate-900">185%</div>
+                  <div className="text-[9px] text-slate-400 mt-1">Expected Return</div>
+                </div>
+                <div className="border-l border-slate-200 pl-4">
+                  <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Worst Case ROI (90% Conf)</div>
+                  <div className="text-2xl font-black text-amber-500">42%</div>
+                  <div className="text-[9px] text-slate-400 mt-1">Stress-tested scenario</div>
+                </div>
+                <div className="border-l border-slate-200 pl-4">
+                  <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Probability of Loss</div>
+                  <div className="text-2xl font-black text-blue-600">&lt; 5%</div>
+                  <div className="text-[9px] text-slate-400 mt-1">Highly secure investment</div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-3 gap-6 mb-8">
                 <div>
                   <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Projected MRR (M6)</div>

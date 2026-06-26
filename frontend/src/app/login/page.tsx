@@ -23,6 +23,7 @@ const providerLabels: Record<SocialProvider, string> = {
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -147,10 +148,14 @@ function LoginForm() {
     const endpoint = isRegister ? '/api/v1/auth/register' : '/api/v1/auth/login';
 
     try {
+      const payload = isRegister 
+        ? { email, password, invite_code: inviteCode || undefined }
+        : { email, password };
+
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify(payload)
       });
 
       const data = await res.json();
@@ -316,6 +321,23 @@ function LoginForm() {
                   />
                 </div>
               </div>
+
+              {isRegister && (
+                <div>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Hexagon className="h-4 w-4 text-slate-400" />
+                    </div>
+                    <input
+                      type="text"
+                      className="block w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-[#0B1120]/50 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm font-medium"
+                      placeholder="Mã Beta Invite (Tùy chọn)"
+                      value={inviteCode}
+                      onChange={(e) => setInviteCode(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <button

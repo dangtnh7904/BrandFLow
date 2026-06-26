@@ -157,15 +157,105 @@ Tuyệt đối không trả lời ngoài JSON. Không thêm backticks.
 
 PLATFORM_GUIDELINES = {
     "Facebook": """
-FACEBOOK-SPECIFIC OPTIMIZATION:
-- Dòng đầu tiên là HOOK (hiển thị trước "Xem thêm") — tối đa 3 dòng, 125 ký tự
-- Paragraph ngắn (2-3 câu), xuống dòng thường xuyên để dễ đọc trên mobile
-- Emoji chiến lược: dùng ở đầu paragraph để tạo visual hierarchy, KHÔNG spam
-- Story-driven: Facebook ưu tiên nội dung kể chuyện cá nhân/brand story
-- Tối ưu cho engagement: câu hỏi mở cuối bài để tăng comment
-- Hashtag: 3-5 tags, đặt cuối bài, mix #niche + #broad
-- Length sweet spot: 150-300 từ (đủ sâu để save, đủ ngắn để đọc hết)
-- Gợi ý dùng Carousel hoặc Video nếu phù hợp
+═══ FACEBOOK CONTENT INTELLIGENCE (Cập nhật 2025-2026) ═══
+
+THUẬT TOÁN HIỆN TẠI (Meta Ranking Signals):
+- Meaningful Social Interactions (MSI): Ưu tiên bài có COMMENT DÀI và SHARE kèm caption. Like đơn thuần gần như không có tác dụng.
+- Dwell Time: Thuật toán đo thời gian người dùng DỪNG LẠI đọc bài. Bài dài + hay = rank cao hơn bài ngắn + viral rẻ tiền.
+- Original Content Bonus: Facebook phạt nặng bài copy/repost. Nội dung gốc (Original) được boost ~30% reach.
+- Video Native: Video upload trực tiếp lên FB có reach gấp 3-5x so với link YouTube.
+
+CHÍNH SÁCH NỘI DUNG (2025-2026):
+- KHÔNG dùng engagement bait ("Tag 3 bạn", "Share để nhận quà") → bị phạt reach.
+- KHÔNG dùng clickbait trắng trợn hoặc tiêu đề gây hiểu lầm → shadow ban.
+- CẨN TRỌNG với health claims, financial advice, political content → cần disclaimer.
+- Hình ảnh có >20% text bị giảm reach quảng cáo (vẫn ảnh hưởng reach tự nhiên).
+
+CẤU TRÚC BÀI ĐĂNG TỐI ƯU:
+1. HOOK (Dòng 1-2): Xuất hiện trước nút "Xem thêm" — TỐI ĐA 125 ký tự. Phải tạo Curiosity Gap hoặc Bold Statement.
+2. BODY: Paragraph ngắn 2-3 câu, xuống dòng thường xuyên. Dùng emoji ĐẦU paragraph làm visual marker (không spam giữa câu).
+3. CTA: Đặt CTA ở giữa bài (micro-CTA) VÀ cuối bài. CTA hỏi ý kiến > CTA bán hàng.
+4. HASHTAG: 3-5 tags, đặt CUỐI cùng. Mix: 1 branded + 2 niche + 2 broad.
+
+KHUNG GIỜ VÀNG (Việt Nam):
+- B2C: 11:30-13:00 (giờ nghỉ trưa), 20:00-22:00 (tối)
+- B2B: 8:00-9:30, 14:00-15:00
+
+SWEET SPOT: 150-350 từ cho text post. 60-90s cho video. Carousel 5-7 slides.
+""",
+    "TikTok": """
+═══ TIKTOK CONTENT INTELLIGENCE (Cập nhật 2025-2026) ═══
+
+THUẬT TOÁN FOR YOU PAGE (FYP):
+- Watch Time Ratio: Chỉ số #1. Video được xem >75% thời lượng = viral signal mạnh nhất. 
+- Rewatch Rate: Nếu người xem QUAY LẠI xem lần 2 → boost cực mạnh. Tạo "Easter Egg" hoặc chi tiết ẩn để kích thích rewatch.
+- Share-to-View Ratio: Chia sẻ qua DM (tin nhắn riêng) có trọng số CAO HƠN share công khai.
+- Comment Depth: Bình luận dài + có reply thread = strong signal. Hỏi câu hỏi tranh luận để kích thích.
+- Batch Distribution: TikTok test video với 200-500 người xem trước. Nếu metrics tốt → push lên 10K → 100K → triệu.
+
+CHÍNH SÁCH NỘI DUNG (Community Guidelines 2025):
+- KHÔNG dùng từ nhạy cảm trực tiếp: "chết", "tự tử", "bạo lực", "ma túy" → dùng từ thay thế hoặc emoji che.
+- KHÔNG mention "link in bio" bằng text → dùng gesture chỉ tay lên bio.
+- CẨN TRỌNG: Video có watermark nền tảng khác (IG Reels, YT Shorts) bị giảm reach nghiêm trọng.
+- Health/Finance claims cần disclaimer rõ ràng.
+- Nhạc có bản quyền: Dùng thư viện TikTok Commercial Sounds cho Business accounts.
+
+CẤU TRÚC SCRIPT TỐI ƯU (cho video 30-90 giây):
+1. HOOK (0-3 giây): Câu mở đầu PHẢI dừng scroll NGAY LẬP TỨC. Patterns hiệu quả:
+   - "Đừng [hành động phổ biến] nếu bạn chưa biết điều này..."
+   - "POV: Bạn là [persona] và [tình huống bất ngờ]"  
+   - "3 sai lầm khiến [vấn đề] mà 90% người mắc phải"
+   - "[Số liệu shock] — và đây là lý do..."
+2. BUILD-UP (3-20 giây): Escalate từng ý. Mỗi câu 5-8 từ. Chuyển cảnh/góc quay mỗi 3-5s để duy trì attention.
+3. PAYOFF (20-25 giây): Deliver giá trị chính. Moment "aha" hoặc reveal.
+4. KICKER (cuối): Twist bất ngờ HOẶC loop lại hook để kích thích REWATCH. "Wait for it" hoặc kết thúc ngay giữa câu để người xem phải xem lại.
+
+CAPTION: 1-2 câu ngắn. Có thể dùng caption để BỔ SUNG context cho video (không lặp lại nội dung video).
+HASHTAG: 4-6 tags. #FYP/#xuhuong (1) + trending topic (1-2) + niche (2-3). KHÔNG spam >10 tags.
+
+KHUNG GIỜ VÀNG (Việt Nam): 6:00-8:00, 12:00-14:00, 19:00-23:00
+SWEET SPOT: Video 30-60 giây (tối ưu cho Rewatch). Series dạng Part 1-2-3 để boost Follow.
+""",
+    "Instagram": """
+═══ INSTAGRAM CONTENT INTELLIGENCE (Cập nhật 2025-2026) ═══
+
+THUẬT TOÁN INSTAGRAM (Ranking Signals theo format):
+- FEED POST: Interest (AI dự đoán user thích nội dung này không), Recency, Relationship (tương tác trước đó).
+- REELS: Audio trending, Watch completion rate, Share via DM (signal #1 cho Reels).
+- STORIES: Tapping Forward rate (càng ÍT tap forward = story càng hay). Reply rate. Poll/Quiz interactions.
+- CAROUSEL: Swipe-through rate. Carousel có engagement rate CAO HƠN 3x so với single image post.
+
+CHÍNH SÁCH NỘI DUNG (2025-2026):
+- Reels có watermark TikTok bị giảm reach NGHIÊM TRỌNG. Luôn upload video gốc (không watermark).
+- "Engagement bait" bị phạt: Tránh "Double tap nếu bạn đồng ý", "Tag người bạn yêu".
+- KHÔNG dùng hashtag bị banned (kiểm tra trước). Hashtag bị ban = shadow ban cả tài khoản.
+- Alt text cho ảnh giúp tăng SEO và reach cho người dùng accessibility.
+
+CẤU TRÚC NỘI DUNG TỐI ƯU:
+
+A) CAROUSEL POST (Format có ROI cao nhất):
+   - Slide 1: HOOK visual — text lớn, bold, contrast cao. Câu hỏi hoặc statement gây tò mò.
+   - Slide 2-8: Mỗi slide = 1 ý duy nhất. Text ngắn + visual hỗ trợ. Tạo flow "kéo phải để xem tiếp".
+   - Slide cuối: CTA + branding. "Save 📌 để đọc lại" hoặc "Share cho bạn bè cần".
+   - Caption: 150-250 từ. Hook line đầu tiên trước "...more".
+
+B) REELS (cho reach mới):
+   - Tương tự TikTok nhưng KHÔNG dùng trending sound TikTok → dùng Instagram Audio Library.
+   - Cover image quan trọng (hiển thị trên Profile Grid).
+   - 15-30 giây optimal cho Explore page.
+
+C) STORIES (cho engagement với followers hiện tại):
+   - Dùng Interactive stickers: Poll, Quiz, Slider, Question Box.
+   - Behind-the-scenes, Day-in-the-life → tạo kết nối cá nhân.
+   - CTA: Swipe-up (>10K followers) hoặc Link sticker.
+
+HASHTAG STRATEGY (IG-specific):
+- Tổng 8-15 hashtags (không nên >20, dễ bị flag là spam).
+- Công thức: 3 broad (>500K posts) + 5 medium (50K-500K) + 5 niche (<50K) + 2 branded.
+- Đặt trong CAPTION (không trong comment — IG đã thay đổi thuật toán 2024).
+
+KHUNG GIỜ VÀNG (Việt Nam): 7:00-9:00, 12:00-14:00, 19:00-21:00
+SWEET SPOT: Carousel 7-10 slides. Reels 15-30s. Caption 150-250 từ.
 """,
     "LinkedIn": """
 LINKEDIN-SPECIFIC OPTIMIZATION:
@@ -175,31 +265,8 @@ LINKEDIN-SPECIFIC OPTIMIZATION:
 - List format với emoji ✅ hoặc → hiệu quả cao trên LinkedIn
 - Storytelling framework: "I used to think X. Then Y happened. Now I believe Z."
 - Hashtag: 3-5 professional tags, đặt cuối bài
-- Mention người/công ty liên quan để tăng reach
-- Length sweet spot: 200-400 từ (thought leadership cần depth)
+- Length sweet spot: 200-400 từ
 - Kết bài bằng câu hỏi mời góp ý/thảo luận
-""",
-    "TikTok": """
-TIKTOK-SPECIFIC OPTIMIZATION:
-- Script format: viết dưới dạng SCRIPT nói (không phải bài viết)
-- Hook 1 giây đầu: câu nói shock/controversy/tò mò
-- Pacing nhanh: mỗi câu 5-10 từ, chuyển ý liên tục
-- "Wait for it" moments: tạo suspense khiến xem hết video
-- Trend integration: reference trending sounds, formats, challenges
-- CTA cuối: "Follow để xem part 2" hoặc "Save lại khi cần"
-- Caption ngắn 1-2 câu + hashtags trending
-- Hashtag: 5-7 tags, mix #FYP + #trending + #niche + #viral
-- Ngôn ngữ Gen Z nếu target trẻ, professional nếu B2B
-""",
-    "Instagram": """
-INSTAGRAM-SPECIFIC OPTIMIZATION:
-- Caption hook: 1 câu mạnh trước "...more"
-- Carousel-friendly: chia content thành slides nếu dạng tips/guide
-- Storytelling visual: mỗi paragraph = 1 concept visual
-- Hashtag strategy: 15-20 tags, mix #broad (>1M) + #medium (100K-1M) + #niche (<100K)
-- CTA: "Save 📌 để đọc lại" (tăng algorithm score)
-- Bio link mention nếu có landing page
-- Length: 150-250 từ (Instagram users ít kiên nhẫn đọc dài)
 """,
     "Zalo": """
 ZALO OA-SPECIFIC OPTIMIZATION:
@@ -207,9 +274,7 @@ ZALO OA-SPECIFIC OPTIMIZATION:
 - Ngắn gọn, đi thẳng vào vấn đề (Zalo users ít kiên nhẫn)
 - CTA rõ ràng: "Nhắn tin ngay", "Gọi hotline", "Xem tại đây"
 - Ưu tiên nội dung khuyến mãi, tin tức nóng, tips nhanh
-- Emoji vừa phải, không quá formal
 - Length: 100-200 từ
-- Dùng button CTA nếu có
 """,
 }
 

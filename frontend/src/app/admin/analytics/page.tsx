@@ -758,7 +758,7 @@ export default function MarketingAnalyticsPage() {
                       <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}M`} />
                       <RechartsTooltip 
                         contentStyle={{ backgroundColor: '#0F172A', borderColor: '#1E293B', borderRadius: '12px' }}
-                        formatter={(value: any, name: string) => [`${value} Triệu VNĐ`, name === 'actual' ? 'Thực tế' : 'Dự báo']}
+                        formatter={(value: any, name: any) => [`${value} Triệu VNĐ`, name === 'actual' ? 'Thực tế' : 'Dự báo']}
                       />
                       <Bar dataKey="actual" fill="url(#colorActual)" radius={[6, 6, 0, 0]} maxBarSize={40} />
                       <Line type="monotone" dataKey="forecast" stroke="#A855F7" strokeWidth={3} strokeDasharray="5 5" dot={{ r: 4, fill: '#0F172A', stroke: '#A855F7', strokeWidth: 2 }} />

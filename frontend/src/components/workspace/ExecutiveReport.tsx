@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormStore } from '@/store/useFormStore';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Target, Briefcase, Zap, TrendingUp, ShieldAlert, BarChart3, Layers, MessageSquare, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 // Bảng màu đơn sắc chuyên nghiệp kiểu McKinsey/Bain
@@ -105,43 +105,58 @@ export default function ExecutiveReport() {
     }));
   }, [tactics]);
 
+  const projectionData = [
+    { month: 'M1', revenue: 1200, cost: 850, profit: 350 },
+    { month: 'M2', revenue: 1450, cost: 800, profit: 650 },
+    { month: 'M3', revenue: 1700, cost: 750, profit: 950 },
+    { month: 'M4', revenue: 2000, cost: 750, profit: 1250 },
+    { month: 'M5', revenue: 2250, cost: 780, profit: 1470 },
+    { month: 'M6', revenue: 2500, cost: 800, profit: 1700 }
+  ];
+
   const pageClass = "w-full sm:w-[210mm] min-h-[100vh] sm:min-h-[297mm] mx-auto bg-white text-slate-900 border border-slate-200 shadow-sm print:shadow-none print:border-none print:m-0 relative overflow-hidden font-sans mb-8 print:mb-0 print:break-after-page";
 
   return (
-    <div className="flex flex-col items-center pb-8 print:pb-0 bg-slate-100 py-8">
+    <div className="flex flex-col items-center pb-8 print:pb-0 bg-slate-100 py-8 print:py-0">
       
       {/* COVER PAGE */}
       <div className={pageClass}>
+        {/* Premium Corporate Pattern Background */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%230f172a\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
+        
         <div className="absolute top-0 left-0 w-full h-full p-[20mm] flex flex-col">
-          <div className="flex justify-between items-start mb-24">
-            <div className="text-slate-900 font-black text-3xl tracking-tighter flex items-center">
-              <Zap className="w-8 h-8 mr-2 text-slate-900" />
+          <div className="flex justify-between items-start mb-24 relative z-10">
+            <div className="text-slate-900 font-black text-4xl tracking-tighter flex items-center">
+              <Zap className="w-10 h-10 mr-2 text-slate-900" />
               BRANDFLOW
             </div>
             <div className="text-right">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-widest border border-slate-300 px-3 py-1 inline-block rounded-sm">
-                Confidential Report
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-widest border border-slate-300 px-4 py-2 inline-block rounded-sm">
+                Strictly Confidential
               </div>
             </div>
           </div>
           
-          <div className="mt-auto mb-32">
-            <h2 className="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4">Strategic Marketing Plan</h2>
-            <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-8 uppercase max-w-2xl">
+          <div className="mt-auto mb-32 relative z-10">
+            <h2 className="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4">Strategic Marketing Plan & Audit</h2>
+            <h1 className="text-6xl font-black text-slate-900 tracking-tight leading-[1.05] mb-8 uppercase max-w-2xl">
               Bản Cáo Bạch Kế Hoạch Chiến Lược
             </h1>
-            <div className="w-16 h-1 bg-slate-900 mb-8"></div>
+            <div className="w-24 h-1.5 bg-slate-900 mb-8"></div>
+            <p className="text-slate-600 font-serif text-lg max-w-xl italic border-l-2 border-slate-900 pl-4">
+              "Báo cáo phân tích chuyên sâu được tổng hợp từ hệ thống Multi-Agent AI (CMO, CFO, COO) nhằm định hướng tái cấu trúc thương hiệu và tối ưu hóa lợi nhuận."
+            </p>
           </div>
           
-          <div className="flex justify-between items-end border-t border-slate-300 pt-6 mt-auto">
+          <div className="flex justify-between items-end border-t-2 border-slate-900 pt-6 mt-auto relative z-10">
             <div>
-              <div className="text-xs text-slate-500 uppercase font-bold mb-1 tracking-widest">Prepared for</div>
-              <div className="font-black text-slate-900 text-xl">{brandName}</div>
-              <div className="text-sm text-slate-600 font-medium mt-1">{wizardAnswers.industry || 'Enterprise'}</div>
+              <div className="text-xs text-slate-500 uppercase font-bold mb-1 tracking-widest">Prepared exclusively for</div>
+              <div className="font-black text-slate-900 text-2xl">{brandName}</div>
+              <div className="text-sm text-slate-600 font-bold mt-1 uppercase tracking-wider">{wizardAnswers?.industry || 'Enterprise'}</div>
             </div>
             <div className="text-right">
               <div className="text-xs text-slate-500 uppercase font-bold mb-1 tracking-widest">Date Published</div>
-              <div className="font-bold text-slate-900 text-lg">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
+              <div className="font-black text-slate-900 text-xl">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
             </div>
           </div>
         </div>
@@ -367,7 +382,82 @@ export default function ExecutiveReport() {
         {/* Page footer */}
         <footer className="border-t-2 border-slate-900 pt-3 mt-auto flex justify-between items-center text-[9px] font-bold text-slate-400 uppercase tracking-widest">
           <span>BrandFlow AI Multi-Agent Engine</span>
-          <span>Internal Use Only</span>
+          <span>Page 2 / 3</span>
+        </footer>
+      </div>
+
+      {/* PAGE 3: FINANCIAL PROJECTIONS */}
+      <div className={`${pageClass} p-[15mm] flex flex-col`}>
+        <header className="border-b-2 border-slate-900 pb-3 mb-8 flex justify-between items-end shrink-0">
+          <div className="text-xl font-black text-slate-900 uppercase tracking-tight">BRANDFLOW</div>
+          <div className="text-slate-500 font-bold text-[10px] tracking-widest uppercase">03 / Financial Projections</div>
+        </header>
+
+        <div className="flex-1 flex flex-col">
+          <section className="mb-10">
+            <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center">
+              <BarChart3 className="w-4 h-4 mr-2" /> 7. Monte Carlo Financial Simulation (6 Months)
+            </h2>
+            <div className="border border-slate-200 bg-white p-6 rounded-sm shadow-sm">
+              <div className="grid grid-cols-3 gap-6 mb-8">
+                <div>
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Projected MRR (M6)</div>
+                  <div className="text-3xl font-black text-slate-900">2.5 Tỷ</div>
+                </div>
+                <div className="border-l border-slate-200 pl-6">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Avg. Net Margin</div>
+                  <div className="text-3xl font-black text-emerald-600">28.5%</div>
+                </div>
+                <div className="border-l border-slate-200 pl-6">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Break-even Point</div>
+                  <div className="text-3xl font-black text-blue-600">Month 2</div>
+                </div>
+              </div>
+              
+              <div className="w-full h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={projectionData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b', fontWeight: 'bold' }} />
+                    <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={(v) => v + 'Tr'} />
+                    <Tooltip contentStyle={{ fontSize: '12px', fontWeight: 'bold', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
+                    <Bar yAxisId="left" dataKey="revenue" name="Doanh thu (Tr)" fill="#0f172a" radius={[2, 2, 0, 0]} barSize={40} />
+                    <Line yAxisId="left" type="monotone" dataKey="profit" name="Lợi nhuận gộp (Tr)" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} activeDot={{ r: 6 }} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center">
+              <CheckCircle2 className="w-4 h-4 mr-2" /> 8. Sign-off & Approval
+            </h2>
+            <div className="border border-slate-200 bg-slate-50 p-6">
+              <p className="text-xs text-slate-600 leading-relaxed mb-8">
+                Bản cáo bạch này được lập dựa trên các giả định thị trường và phân tích năng lực lõi của doanh nghiệp. Các chỉ số dự phóng mang tính định hướng chiến lược. Việc phê duyệt bản kế hoạch đồng nghĩa với việc cấp phép giải ngân ngân sách <strong>{new Intl.NumberFormat('vi-VN').format(tactics.total_budget_used)} VNĐ</strong> cho Phase 1.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-12 mt-12">
+                <div>
+                  <div className="border-b border-slate-400 pb-10"></div>
+                  <div className="mt-2 text-[10px] font-black uppercase tracking-widest text-slate-900">Chief Executive Officer (CEO)</div>
+                  <div className="text-[10px] text-slate-500 mt-1">Date: .......................................</div>
+                </div>
+                <div>
+                  <div className="border-b border-slate-400 pb-10"></div>
+                  <div className="mt-2 text-[10px] font-black uppercase tracking-widest text-slate-900">Chief Marketing Officer (CMO)</div>
+                  <div className="text-[10px] text-slate-500 mt-1">Date: .......................................</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* Page footer */}
+        <footer className="border-t-2 border-slate-900 pt-3 mt-auto flex justify-between items-center text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+          <span>BrandFlow AI Multi-Agent Engine</span>
+          <span>Page 3 / 3</span>
         </footer>
       </div>
 

@@ -112,8 +112,10 @@ function LoginForm() {
     setLoading(true);
     setError('');
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     // HARDCODED ADMIN CHECK
-    if (email === 'admin@brandflow.ai' && password === '050622') {
+    if (normalizedEmail === 'admin@brandflow.ai' && password === '050622') {
       localStorage.setItem('brandflow_token', 'mock_admin_token');
       localStorage.setItem('brandflow_user_id', 'admin');
       localStorage.setItem('brandflow_email', 'admin@brandflow.ai');
@@ -128,7 +130,7 @@ function LoginForm() {
     }
 
     // HARDCODED DEMO CHECK: BẾP NHÀ MỘC
-    if (email === 'bepnhamoc@brandflow.ai' && password === 'demo') {
+    if (normalizedEmail === 'bepnhamoc@brandflow.ai' && password === 'demo') {
       localStorage.setItem('brandflow_token', 'mock_bepnhamoc_token');
       localStorage.setItem('brandflow_user_id', 'bepnhamoc_001');
       localStorage.setItem('brandflow_email', 'ceo@bepnhamoc.vn');

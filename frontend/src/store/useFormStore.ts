@@ -417,39 +417,41 @@ export const useFormStore = create<FormStore>((set, get) => ({
     } catch (e) {
       console.error("Error calling extract-dna API. Fallback to Mock Data:", e);
       const mockBrandDNA = {
-        brand_name: "Hệ thống Bếp Nhà Mộc",
-        core_value: "Di sản Nguyên bản (Heritage) - Tinh giản (Rustic) - Lành sạch (Wholesome)",
-        positioning: "Không gian 'Mindful Dining' chữa lành tâm hồn thị dân qua trải nghiệm Ẩm thực Việt chuẩn Organic, tối ưu hóa Perceived Value ở phân khúc Trung-Cao.",
-        brand_archetype: "The Caregiver (Người chăm sóc) & The Magician (Người kiến tạo sự an yên)"
+        brand_name: "Hệ thống Bếp Nhà Mộc (F&B Enterprise)",
+        core_value: "Di sản Nguyên bản (Authentic Heritage) - Ẩm thực Chữa lành (Food Therapy) - Sinh thái Khép kín (Closed-loop Ecology)",
+        positioning: "Định vị là 'Sanctuary Space' (Không gian Tôn nghiêm & Chữa lành) ngay giữa lòng đô thị. Tối ưu hóa Giá trị Cảm nhận (Perceived Value) để thống lĩnh phân khúc Casual Dining Trung-Cao cấp.",
+        brand_archetype: "The Magician (Người Kiến tạo Chuyển đổi) kết hợp The Caregiver (Người Chăm sóc Tận tụy)"
       };
       const mockIntakeAnalysis = {
         expert_business_analysis: {
-          financial_health: "🔴 Báo động (Red Flag): MRR Stagnation ở mức 1.2 tỷ VNĐ/tháng (18 tháng biên độ hẹp). Net Profit Margin chỉ đạt 15% (Industry Benchmark: 22%). CAC chạm ngưỡng báo động 250,000đ/New User do lạm dụng Price-Promotion, dẫn tới suy giảm Brand Equity.",
-          strategic_recommendation: "⚡ Khuyến nghị chiến lược (Urgent): Tái định vị (Rebranding) toàn diện sang mô hình 'Mindful Dining' để nâng Ticket Size. Triển khai O2O Loyalty Program để tăng Customer Retention Rate và kéo tỷ lệ LTV:CAC lên mức an toàn (>3.0x)."
+          financial_health: "🔴 Báo động Đỏ (High Risk): MRR (Doanh thu định kỳ) Stagnation ở mức 1.2 tỷ VNĐ/tháng. EBITDA Margin hiện tại chỉ đạt 12.5% (Thấp hơn 30% so với Industry Benchmark: 18%). Tỷ lệ Customer Acquisition Cost (CAC) đang vượt quá 250,000đ/User do lạm dụng Price-Promotion (Giảm giá sâu), dẫn đến xói mòn Lợi nhuận gộp.",
+          operational_bottlenecks: "⚠️ Nút thắt Vận hành (Bottleneck): Asset Utilization (Tỷ lệ lấp đầy bàn) mất cân bằng nghiêm trọng. Khung giờ Off-peak (Trưa các ngày trong tuần) chỉ đạt 22% capacity. Tỷ lệ Churn Rate (Khách rời bỏ) sau lần thử đầu tiên lên tới 68% do thiếu hệ thống CRM O2O bám đuổi.",
+          brand_equity_assessment: "📉 Suy giảm Giá trị Thương hiệu (Brand Dilution): Core Product (Sản phẩm lõi) cực kỳ xuất sắc nhờ quy trình Organic, nhưng Brand Perception (Cảm nhận thương hiệu) của khách hàng chỉ dừng ở mức 'Quán ăn bình dân'. Chưa khai thác được Premium Pricing Strategy.",
+          strategic_recommendation: "⚡ Khuyến nghị Cấp bách từ Ban Chiến lược: 1) Dừng ngay lập tức chiến dịch giảm giá đại trà. 2) Tung gói 'Corporate Lunch & Mindful Dining' để tối ưu hóa Off-peak Capacity. 3) Giải ngân 150M-350M để xây dựng Zalo Mini App (Loyalty) nhằm kéo LTV:CAC Ratio lên mức an toàn (>3.5x) và tạo rào cản cạnh tranh (Economic Moat)."
         },
         strategic_marketing_audit: {
-          trust_score: 82,
-          competitive_positioning: "Nền tảng Core Product xuất sắc nhưng bị mắc kẹt ở phân khúc bình dân (Red Ocean). Tiềm năng cực lớn để độc chiếm ngách 'Healing F&B' (Blue Ocean) nếu cải tổ Visual Identity và Service Touchpoints.",
+          trust_score: 94,
+          competitive_positioning: "Đang kẹt trong Red Ocean (Đại dương Đỏ) của ngành F&B truyền thống. Tuy nhiên, sở hữu 'Unfair Advantage' để dễ dàng Pivot sang Blue Ocean (Ngách Trị liệu Tâm lý & Ẩm thực) nếu chuẩn hóa được Visual Identity.",
           core_competences: [
-            "Hệ sinh thái cung ứng khép kín 100% Organic (Vertical Integration)",
-            "Công thức di sản 3 đời (Unique Selling Proposition - No MSG)",
-            "Kiến trúc nhà gỗ cổ bản địa mang tính Iconic"
+            "Chuỗi Cung ứng Khép kín 100% Organic (Vertical Integration)",
+            "Lợi thế Cạnh tranh Độc quyền (VRIO Framework): Công thức Không Bột Ngọt 3 Đời",
+            "Trải nghiệm 'Omotenashi' (Phục vụ bằng cả trái tim)"
           ],
           marketing_objectives: [
-            "Tái cấu trúc Brand Identity đồng bộ đa điểm chạm (Omnichannel Touchpoints)",
-            "Tối ưu hóa Asset Utilization (Tỷ lệ lấp đầy) khung giờ off-peak bằng Corporate Lunch",
-            "Giảm CAC xuống dưới 150,000đ thông qua Viral Organic & UGC"
+            "Tái định vị (Brand Repositioning) đồng bộ trên tất cả Omnichannel Touchpoints",
+            "Tăng trưởng MRR Khung giờ Off-peak thêm 45% trong Q3/2026",
+            "Chuyển đổi 30% khách hàng vãng lai thành Loyal Members thông qua Zalo O2O"
           ],
           macro_environment_pestle: [
-            "Xu hướng 'Mindful Dining' & 'Eat Clean' tăng trưởng 45% YoY",
-            "Nhu cầu không gian chữa lành (Healing Space) của nhóm Chuyên gia/Quản lý",
-            "Mô hình O2O (Online-to-Offline) qua Zalo Mini App là chuẩn mực mới"
+            "Trend 'Mindful Dining' & Phục hồi sức khỏe tâm thần tăng trưởng 52% YoY",
+            "Nhóm Gen Z và Millennials (Chiếm 60% sức mua) đang gặp hội chứng Burnout",
+            "Sự dịch chuyển dòng tiền sang trải nghiệm 'Affordable Luxury' (Xa xỉ vừa tầm)"
           ]
         },
         visual_brand_dna: {
-          visual_archetype: "Rustic, Healing, Minimalist Heritage",
-          primary_colors: ["#8B5A2B", "#556B2F", "#F5DEB3"],
-          moodboard_keywords: ["Gỗ mộc", "Thiên nhiên", "An tĩnh", "Di sản", "Thủ công"]
+          visual_archetype: "Rustic, Healing, Minimalist Heritage, Zen",
+          primary_colors: ["#2d3748", "#10b981", "#d97706"],
+          moodboard_keywords: ["Gỗ mộc An tĩnh", "Bóng đổ tự nhiên", "Cấu trúc Zen", "Chuyển động chậm", "Ánh sáng Ấm"]
         }
       };
       set({ brandDNA: mockBrandDNA, intakeAnalysis: mockIntakeAnalysis });

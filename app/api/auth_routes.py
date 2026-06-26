@@ -365,3 +365,38 @@ def upgrade_user_tier(user_id: str, req: UpgradeTierRequest, db: Session = Depen
     user.tier = req.tier
     db.commit()
     return {"status": "success", "message": f"Tài khoản {user.email} đã được nâng cấp lên hạng {req.tier}."}
+
+class AdminCreateUserRequest(BaseModel):
+    email: EmailStr
+    password: str
+    display_name: str
+    tier: str = "PRO"
+
+@router.post("/admin/users/create")
+def admin_create_user(req: AdminCreateUserRequest, db: Session = Depends(get_db), admin_id: str = Depends(get_admin_user)):
+    """Admin chủ động tạo tài khoản (Concierge Onboarding) cho doanh nghiệp."""
+    db_user = db.query(User).filter(User.email == req.email).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email này đã tồn tại trong hệ thống.")
+    
+    hashed_password = get_password_hash(req.password)
+    new_user = User(
+        email=req.email,
+        password_hash=hashed_password,
+        display_name=req.display_name,
+        tier=req.tier
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return {
+        "status": "success",
+        "message": f"Đã tạo thành công tài khoản {req.email} với hạng {req.tier}.",
+        "data": {
+            "id": new_user.id,
+            "email": new_user.email,
+            "tier": new_user.tier
+        }
+    }
+

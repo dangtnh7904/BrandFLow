@@ -702,19 +702,19 @@ export default function AdminDashboard() {
                     <table className="w-full text-sm text-left">
                       <thead className="text-[10px] uppercase bg-black/20 text-linear-text-muted">
                         <tr>
-                          <th className="px-6 py-3">Visitor Key</th>
-                          <th className="px-6 py-3">User Agent</th>
-                          <th className="px-6 py-3">Lượt</th>
-                          <th className="px-6 py-3">Gần Nhất</th>
+                          <th className="px-6 py-3">Tên Doanh Nghiệp</th>
+                          <th className="px-6 py-3">Email Đại Diện</th>
+                          <th className="px-6 py-3">Số Lượt Truy Cập</th>
+                          <th className="px-6 py-3">Hoạt Động Cuối</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-linear-border/30">
                         {visitors.map((v, idx) => (
                           <tr key={idx} onClick={() => setSelectedUser(v)} className="hover:bg-black/20 transition-colors cursor-pointer group">
-                            <td className="px-6 py-3 font-mono text-[11px] group-hover:text-blue-400 transition-colors">{v.visitor_key}</td>
-                            <td className="px-6 py-3 truncate max-w-[200px] text-xs" title={v.user_agent}>{v.user_agent || 'Unknown'}</td>
-                            <td className="px-6 py-3"><span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[11px] font-bold">{v.visits_count || 0}</span></td>
-                            <td className="px-6 py-3 text-linear-text-muted text-xs whitespace-nowrap">{v.last_seen_at ? new Date(v.last_seen_at + 'Z').toLocaleString() : 'N/A'}</td>
+                            <td className="px-6 py-3 text-xs font-bold text-foreground group-hover:text-amber-400 transition-colors">{v.name || v.visitor_key || 'Khách Vãng Lai'}</td>
+                            <td className="px-6 py-3 text-xs text-linear-text-muted truncate max-w-[200px]" title={v.email || v.user_agent}>{v.email || v.user_agent || 'N/A'}</td>
+                            <td className="px-6 py-3"><span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[11px] font-bold">{v.visits_count || 0}</span></td>
+                            <td className="px-6 py-3 text-linear-text-muted text-xs whitespace-nowrap">{v.last_seen_at ? new Date(v.last_seen_at).toLocaleString('vi-VN') : 'N/A'}</td>
                           </tr>
                         ))}
                         {visitors.length === 0 && <tr><td colSpan={4} className="px-6 py-8 text-center text-linear-text-muted">Chưa có dữ liệu truy cập</td></tr>}
@@ -737,8 +737,8 @@ export default function AdminDashboard() {
           >
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-xl font-bold flex items-center gap-2"><Users className="w-5 h-5 text-amber-500" /> Chi Tiết Phiên</h3>
-                <p className="font-mono text-sm text-linear-text-muted mt-1">{selectedUser.visitor_key}</p>
+                <h3 className="text-xl font-bold flex items-center gap-2"><Users className="w-5 h-5 text-amber-500" /> {selectedUser.name || 'Khách Vãng Lai'}</h3>
+                <p className="font-mono text-sm text-linear-text-muted mt-1">{selectedUser.email || selectedUser.visitor_key || 'Không có thông tin liên hệ'}</p>
               </div>
               <button onClick={() => setSelectedUser(null)} className="p-2 hover:bg-black/20 rounded-lg transition-colors text-linear-text-muted hover:text-white"><X className="w-5 h-5" /></button>
             </div>

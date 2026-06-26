@@ -945,7 +945,7 @@ async def home():
 
 
 @app.get("/api/v1/audit/visitors/summary")
-def get_audit_visitors_summary(_: str = Depends(get_admin_user)):
+def get_audit_visitors_summary(_ = Depends(_require_audit_admin_token)):
     """Thống kê tổng quan người đã vào app."""
     try:
         from app.core.database import SessionLocal
@@ -969,7 +969,7 @@ def get_audit_visitors_summary(_: str = Depends(get_admin_user)):
 
 
 @app.get("/api/v1/audit/visitors")
-def list_audit_visitors(limit: int = 100, _: str = Depends(get_admin_user)):
+def list_audit_visitors(limit: int = 100, _ = Depends(_require_audit_admin_token)):
     """Danh sách visitor đã truy cập (ưu tiên lượt gần nhất)."""
     try:
         return {
@@ -981,7 +981,7 @@ def list_audit_visitors(limit: int = 100, _: str = Depends(get_admin_user)):
 
 
 @app.get("/api/v1/audit/visits")
-def list_audit_visits(limit: int = 200, visitor_key: Optional[str] = None, _: str = Depends(get_admin_user)):
+def list_audit_visits(limit: int = 200, visitor_key: Optional[str] = None, _ = Depends(_require_audit_admin_token)):
     """Lịch sử truy cập theo event để làm minh chứng."""
     try:
         return {

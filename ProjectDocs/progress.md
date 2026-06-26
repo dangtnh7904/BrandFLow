@@ -86,3 +86,14 @@
   - Updated AI CMO Advisory text to reflect new metrics.
   - Updated churn analysis (consolidated to single entry: 5 DN).
   - Updated retention health bar, key insights, and all downstream calculations.
+
+- **Fixed Pytest Suite Failures:**
+  - Resolved 11 failing test cases in backend CI environment.
+  - Updated Pydantic schema missing fields in `test_ai_logic.py`.
+  - Converted async `test_exfiltration.py` and `test_api.py` to sync execution compatible with Github Actions lacking `pytest-asyncio`.
+  - Reverted the dependency injection back to `_require_audit_admin_token` for Audit APIs in `main.py` ensuring it properly blocks unauthorized CI scrape tests with HTTP 403.
+  - Fixed trace output directory mocking inside `test_trace_logger.py`.
+  - Fixed ModuleNotFoundError for `workflow_graph` and `memory_rag` in `test_api.py` and `test_memory_rag.py`.
+
+- **Fixed IDE Dependency Errors:**
+  - Ran `pip install -r requirements.txt` to install missing packages like `slowapi`, `loguru`, and `openai`, resolving red IDE warnings.

@@ -68,6 +68,8 @@ def test_pydantic_validation_missing_fields():
     errors = str(exc_info.value)
     
     # Assert lỗi Pydantic liên quan đến các trường bị thiếu
-    assert "executive_summary" in errors
-    assert "target_audience" in errors
-    assert "phases" in errors # List should have at least 1 item
+    assert "goal_setting" in errors
+    assert "situation_audit" in errors
+    assert "strategy" in errors
+    assert "tactics" in errors
+    assert "cfo_risk" in errors

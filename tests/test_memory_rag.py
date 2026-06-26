@@ -34,7 +34,7 @@ def in_memory_vectorstore():
     with patch("app.services.memory_rag.get_vectorstore", return_value=test_store):
         yield test_store
 
-@patch("memory_rag.ChatOllama.invoke")
+@patch("app.services.memory_rag.ChatOllama.invoke")
 def test_extract_and_save_rule_then_retrieve(mock_llm_invoke, in_memory_vectorstore):
     """
     Kiểm tra ChromaDB Learner: 

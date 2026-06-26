@@ -11,6 +11,7 @@ import {
   Megaphone, CalendarDays, Activity, UserPlus, Repeat,
   Clock, MapPin, Globe2, Shield, ArrowRight, Star, TrendingDown
 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line, ComposedChart, Cell, PieChart as RePieChart, Pie } from 'recharts';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TYPES
@@ -79,41 +80,6 @@ function Sparkline({ data, color, height = 32, width = 100 }: { data: number[]; 
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DONUT CHART
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-function DonutChart({ segments, size = 180 }: { segments: { label: string; value: number; color: string }[]; size?: number }) {
-  const total = segments.reduce((sum, s) => sum + s.value, 0);
-  const r = (size - 20) / 2;
-  const cx = size / 2;
-  const cy = size / 2;
-  const circumference = 2 * Math.PI * r;
-  let currentOffset = 0;
-
-  return (
-    <svg width={size} height={size} className="transform -rotate-90">
-      {segments.map((seg, i) => {
-        const pct = seg.value / total;
-        const dashLen = pct * circumference;
-        const dashOffset = -currentOffset;
-        currentOffset += dashLen;
-        return (
-          <motion.circle key={i}
-            cx={cx} cy={cy} r={r} fill="none"
-            stroke={seg.color} strokeWidth="24" strokeLinecap="round"
-            strokeDasharray={`${dashLen} ${circumference - dashLen}`}
-            strokeDashoffset={dashOffset}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: i * 0.15, duration: 0.5 }}
-          />
-        );
-      })}
-      <circle cx={cx} cy={cy} r={r - 20} fill="var(--surface)" />
-    </svg>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
    HORIZONTAL BAR
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -177,6 +143,12 @@ export default function MarketingAnalyticsPage() {
     dau: 86,
     wowGrowth: 18.7,
     peakHour: 14,
+    // C-Level Metrics
+    cac: 1250000,          // VND
+    ltv: 28500000,         // VND
+    ltvToCacRatio: 22.8,
+    mrr: 450000000,        // VND (Monthly Recurring Revenue Demo)
+    roi: 345,              // %
   };
 
   /* ─── KPI CARDS ─── */
@@ -528,6 +500,34 @@ export default function MarketingAnalyticsPage() {
                 ))}
               </div>
 
+              {/* C-Level Financial Metrics (Golden Metrics) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] border border-blue-500/30 p-6 rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.1)] relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl" />
+                  <div className="text-[11px] font-black uppercase text-blue-400 mb-2 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Customer Acquisition Cost (CAC)</div>
+                  <div className="text-4xl font-black text-white tracking-tighter">1.25M <span className="text-sm font-medium text-slate-400">VND</span></div>
+                  <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 w-max px-3 py-1 rounded-full border border-emerald-500/20">
+                    <TrendingDown className="w-3 h-3" /> Tối ưu -12% chi phí Ads
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] border border-purple-500/30 p-6 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.1)] relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
+                  <div className="text-[11px] font-black uppercase text-purple-400 mb-2 flex items-center gap-2"><Crown className="w-4 h-4" /> Customer Lifetime Value (CLV)</div>
+                  <div className="text-4xl font-black text-white tracking-tighter">28.5M <span className="text-sm font-medium text-slate-400">VND</span></div>
+                  <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 w-max px-3 py-1 rounded-full border border-emerald-500/20">
+                    <TrendingUp className="w-3 h-3" /> +15% sau Upsell B2B
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] border border-emerald-500/30 p-6 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.1)] relative overflow-hidden flex flex-col justify-center">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl" />
+                  <div className="text-[11px] font-black uppercase text-emerald-400 mb-2 flex items-center gap-2"><Activity className="w-4 h-4" /> Tỷ lệ CLV : CAC Ratio</div>
+                  <div className="text-5xl font-black text-emerald-400 tracking-tighter">22.8<span className="text-2xl text-emerald-600">x</span></div>
+                  <p className="text-[10px] text-slate-400 mt-2 font-medium">Ngưỡng xuất sắc (Benchmark là 3x). Mô hình siêu lợi nhuận (Hyper-growth).</p>
+                </div>
+              </div>
+
               {/* AI CMO Executive Summary */}
               <div className="bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 border border-blue-500/20 rounded-2xl p-6 md:p-8 relative overflow-hidden shadow-[inset_0_0_40px_rgba(59,130,246,0.05)]">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 blur-[80px] rounded-full pointer-events-none" />
@@ -721,6 +721,52 @@ export default function MarketingAnalyticsPage() {
                   ))}
                 </div>
               </div>
+
+              {/* MRR Growth & Forecast Chart */}
+              <div className="bg-linear-surface border border-linear-border rounded-2xl p-6 md:p-8 shadow-xl mt-8">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                  <div>
+                    <h3 className="text-lg font-black flex items-center gap-2"><TrendingUp className="w-5 h-5 text-emerald-400" /> Tăng trưởng Doanh thu (MRR) & Dự báo</h3>
+                    <p className="text-xs text-linear-text-muted mt-1">Dữ liệu doanh thu định kỳ hàng tháng và dự báo bằng AI dựa trên tỷ lệ giữ chân hiện tại (95.5%)</p>
+                  </div>
+                  <div className="flex items-center gap-4 bg-black/20 p-2 rounded-xl border border-linear-border">
+                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-blue-500" /><span className="text-[10px] font-bold">Thực tế</span></div>
+                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-purple-500/30 border border-purple-500 border-dashed" /><span className="text-[10px] font-bold">Dự báo AI</span></div>
+                  </div>
+                </div>
+                
+                <div className="w-full h-[350px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={[
+                      { month: 'T1', actual: 120, forecast: 120 },
+                      { month: 'T2', actual: 180, forecast: 180 },
+                      { month: 'T3', actual: 250, forecast: 250 },
+                      { month: 'T4', actual: 340, forecast: 340 },
+                      { month: 'T5', actual: 450, forecast: 450 }, // Hiện tại
+                      { month: 'T6', actual: null, forecast: 580 },
+                      { month: 'T7', actual: null, forecast: 750 },
+                      { month: 'T8', actual: null, forecast: 950 },
+                    ]} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+                      <defs>
+                        <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.2}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
+                      <XAxis dataKey="month" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}M`} />
+                      <RechartsTooltip 
+                        contentStyle={{ backgroundColor: '#0F172A', borderColor: '#1E293B', borderRadius: '12px' }}
+                        formatter={(value: any, name: string) => [`${value} Triệu VNĐ`, name === 'actual' ? 'Thực tế' : 'Dự báo']}
+                      />
+                      <Bar dataKey="actual" fill="url(#colorActual)" radius={[6, 6, 0, 0]} maxBarSize={40} />
+                      <Line type="monotone" dataKey="forecast" stroke="#A855F7" strokeWidth={3} strokeDasharray="5 5" dot={{ r: 4, fill: '#0F172A', stroke: '#A855F7', strokeWidth: 2 }} />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
             </motion.div>
           )}
 
@@ -730,19 +776,41 @@ export default function MarketingAnalyticsPage() {
 
               {/* Segment Distribution Overview */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Donut Chart */}
-                <div className="bg-linear-surface border border-linear-border rounded-2xl p-6 flex flex-col items-center">
-                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-6 self-start">
+                {/* Recharts Pie Chart */}
+                <div className="bg-linear-surface border border-linear-border rounded-2xl p-6 flex flex-col items-center shadow-lg relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full" />
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-2 self-start">
                     <PieChart className="w-4 h-4 text-purple-400" /> Phân bố theo ngành
                   </h3>
-                  <div className="relative">
-                    <DonutChart segments={segments.map(s => ({ label: s.name, value: s.count, color: s.color }))} size={200} />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-3xl font-black text-foreground">112</span>
-                      <span className="text-[10px] text-linear-text-muted font-medium">Doanh nghiệp</span>
+                  <div className="relative w-full h-[220px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RePieChart>
+                        <RechartsTooltip 
+                          contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '12px', fontSize: '12px', color: '#F8FAFC' }}
+                          itemStyle={{ color: '#E2E8F0', fontWeight: 'bold' }}
+                        />
+                        <Pie
+                          data={segments}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={70}
+                          outerRadius={90}
+                          paddingAngle={5}
+                          dataKey="count"
+                          stroke="none"
+                        >
+                          {segments.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} className="hover:opacity-80 transition-opacity cursor-pointer" />
+                          ))}
+                        </Pie>
+                      </RePieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-3xl font-black text-foreground drop-shadow-md">112</span>
+                      <span className="text-[10px] text-linear-text-muted font-bold uppercase tracking-widest">Doanh nghiệp</span>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 mt-6 w-full">
+                  <div className="grid grid-cols-2 gap-3 mt-4 w-full">
                     {segments.map((s, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color }} />

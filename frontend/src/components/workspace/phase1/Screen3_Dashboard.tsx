@@ -165,7 +165,7 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToNext }: { onGoToHub
  </div>
  </div>
  <div>
- <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-2">{language === 'vi' ? 'Đánh giá Vị thế (Executive Audit)' : 'Executive Status'}</h3>
+ <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-2">{language === 'vi' ? 'Thực trạng Doanh thu & Cạnh tranh (Market Reality)' : 'Revenue & Market Reality'}</h3>
  <p className="text-lg text-foreground leading-relaxed font-medium">
  {competitivePositioning}
  </p>

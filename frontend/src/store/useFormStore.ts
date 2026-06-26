@@ -431,7 +431,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
         },
         strategic_marketing_audit: {
           trust_score: 94,
-          competitive_positioning: "Đang kẹt trong Red Ocean (Đại dương Đỏ) của ngành F&B truyền thống. Tuy nhiên, sở hữu 'Unfair Advantage' để dễ dàng Pivot sang Blue Ocean (Ngách Trị liệu Tâm lý & Ẩm thực) nếu chuẩn hóa được Visual Identity.",
+          competitive_positioning: "Tỷ lệ khách quay lại (Retention) mảng Dine-in cao (42%) nhờ nguyên liệu Organic đắt đỏ. Tuy nhiên, doanh thu trưa các ngày trong tuần đang lãng phí (Off-peak dead zones) do chưa tiếp cận đúng tệp Dân văn phòng hạng A. Định vị 'quán ăn bình dân' hiện tại đang trói buộc giá bán (Ticket Size), gây áp lực lớn lên Biên lợi nhuận (Profit Margin).",
           core_competences: [
             "Chuỗi Cung ứng Khép kín 100% Organic (Vertical Integration)",
             "Lợi thế Cạnh tranh Độc quyền (VRIO Framework): Công thức Không Bột Ngọt 3 Đời",

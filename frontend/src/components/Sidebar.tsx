@@ -194,10 +194,10 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
         {/* ─── Main Navigation ─── */}
         <nav className="flex-1 px-3 pt-3 overflow-y-auto no-scrollbar min-h-0">
           
-          {isAdmin ? (
+          {isAdmin && (
             /* ADMIN ONLY NAVIGATION */
-            <div className="mb-4">
-              <h3 className="text-[9px] font-bold text-linear-text-muted uppercase tracking-widest px-3 mb-2">
+            <div className="mb-4 border-b border-linear-border/30 pb-4">
+              <h3 className="text-[9px] font-bold text-amber-500 uppercase tracking-widest px-3 mb-2">
                 {language === 'vi' ? 'Quản Trị Hệ Thống' : 'System Administration'}
               </h3>
               <ul className="space-y-0.5">
@@ -226,9 +226,10 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
                 })}
               </ul>
             </div>
-          ) : (
-            /* NORMAL USER NAVIGATION */
-            <>
+          )}
+
+          {/* NORMAL USER NAVIGATION */ }
+          <>
               {/* Core Tools */}
               <div className="mb-4">
                 <h3 className="text-[9px] font-bold text-linear-text-muted uppercase tracking-widest px-3 mb-2">
@@ -344,7 +345,6 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
                 </AnimatePresence>
               </div>
             </>
-          )}
         </nav>
 
         {/* Footer */}

@@ -4,19 +4,19 @@ Tài liệu này cung cấp 2 phiên bản kịch bản thuyết trình (Pitch S
 
 ---
 
-## 1. Bản Elevator Pitch (Thời lượng: 45 - 60 giây)
+## 1. Bản Elevator Pitch (Phiên bản C-Level / CMO | 45 - 60 giây)
 
-**[Hook - Thu hút sự chú ý]**
-Chào các anh chị. Hãy tưởng tượng một doanh nghiệp nhỏ (SME) muốn làm marketing bài bản. Họ có hai lựa chọn: Một là tự làm và loay hoay đốt tiền vì thiếu chuyên môn. Hai là thuê agency với chi phí lên tới hàng chục, thậm chí hàng trăm triệu đồng mỗi tháng. 
+**[Hook - Trực diện bài toán chi phí & ROI]**
+Chào các anh chị. Một CMO giỏi có thể mang lại doanh thu đột phá, nhưng chi phí chiêu mộ và rủi ro chiến lược lại quá lớn. Hiện nay, 98% SME tại Việt Nam đang "đốt tiền" quảng cáo một cách mù quáng vì thiếu một chiến lược lõi bài bản, hoặc phải trả hàng trăm triệu đồng mỗi tháng cho Agency.
 
-**[Problem & Solution - Vấn đề & Giải pháp]**
-98% doanh nghiệp Việt Nam là SME, và phần lớn họ đang chọn cách thứ nhất. Đó là lý do chúng tôi xây dựng **BrandFlow** - một AI Marketing Strategy Engine. BrandFlow đóng vai trò như một Giám đốc Marketing thực thụ. Thay vì mất 4 tuần làm việc với agency, người dùng chỉ cần dành 10 phút trả lời các câu hỏi cơ bản, hệ thống sẽ tự động xuất ra một bản kế hoạch marketing hoàn chỉnh.
+**[Solution - Trọng tâm Giải pháp]**
+Đó là lý do chúng tôi xây dựng **BrandFlow** – AI Marketing Strategy Engine đầu tiên đủ sức đảm nhận vai trò của một Giám đốc Marketing thực thụ. Thay vì mất 4 tuần chờ đợi Agency, BrandFlow tự động thiết kế toàn bộ chiến lược, phân bổ ngân sách và dự báo doanh thu chỉ trong đúng 10 phút.
 
-**[Secret Sauce - Điểm khác biệt]**
-Điều làm nên khác biệt của BrandFlow là cơ chế "kiểm duyệt chéo" giữa các AI Agent (đóng vai CMO, CFO và Khách hàng) cùng với một Math Engine đảm bảo ngân sách phân bổ chính xác tới từng đồng, loại bỏ hoàn toàn tình trạng AI bịa số liệu hay đưa ra kế hoạch viển vông.
+**[Secret Sauce - Công nghệ Lõi & Điểm khác biệt]**
+Điều khiến C-Level tin dùng BrandFlow không phải là AI viết content, mà là **cơ chế Kiểm duyệt chéo (Mandatory Debate)**. Các AI Agent (đóng vai CMO, CFO, Khách hàng) sẽ liên tục phản biện lẫn nhau, kết hợp cùng một **Math Engine** đảm bảo ngân sách được chia chính xác tới từng đồng. BrandFlow không "bịa" số liệu, chúng tôi tối ưu hóa lợi nhuận thực tế.
 
 **[Traction & Ask - Kết quả & Lời kêu gọi]**
-Dù mới ở giai đoạn Beta, chúng tôi đã có hơn 45 người dùng thử nghiệm và đạt tỷ lệ giữ chân 40%. Hôm nay, tôi ở đây để tìm kiếm [Số tiền gọi vốn] nhằm mở rộng hạ tầng và đẩy mạnh tăng trưởng trong 18 tháng tới. Tôi là [Tên bạn], Founder của BrandFlow. Rất mong được trao đổi sâu hơn với các anh chị!
+Sản phẩm đã chứng minh Product-Market Fit với 112 doanh nghiệp B2B/SME, đạt **tỷ lệ giữ chân (Retention) kỷ lục 95.5%** và giúp tối ưu tỷ lệ CLV/CAC lên ngưỡng xuất sắc 22.8x. Hôm nay, chúng tôi gọi vốn [Số tiền] cho vòng Pre-Seed để mở rộng hạ tầng AI và chiếm lĩnh thị trường. Tôi là Mạnh Đinh, Founder & CEO BrandFlow. Rất mong được trao đổi sâu hơn với các anh chị!
 
 ---
 

@@ -11,7 +11,7 @@ const PERF_DATA = [
   { metric: 'Khối lượng bán ra', y3: '50 tấn', y2: '85 tấn', y1: '150 tấn', reason: 'Nắm bắt xu hướng "healthy"' },
   { metric: 'Doanh thu thuần', y3: '15 tỷ VNĐ', y2: '25.5 tỷ VNĐ', y1: '45 tỷ VNĐ', reason: 'Mở rộng kênh đại lý' },
   { metric: 'Tỷ suất LN gộp (%)', y3: '35%', y2: '38%', y1: '42%', reason: 'Lợi thế quy mô (Scale)' },
-  { metric: 'Biên LN gộp', y3: '5.25 tỷ', y2: '9.69 tỷ', y1: '18.9 tỷ', reason: 'Tối ưu chi phí sản xuất' },
+  { metric: 'Biên LN gộp', y3: '5.25 tỷ', y2: '9.69 tỷ', y1: '18.9 tỷ', reason: 'Tối ưu chi phí vận hành bếp' },
 ];
 
 export default function PageA2Performance() {

@@ -9,7 +9,7 @@ import WizardNavigation from '@/components/b2b/WizardNavigation';
 import { Target, Compass, Globe, Clock, Users, Wrench } from 'lucide-react';
 
 const ACTION_DATA = [
-  { obj: 'Trực quan hóa công dụng lợi khuẩn', tactic: 'Sản xuất TVC hoạt hình: 1 Mascot duy nhất vươn tay chỉ trực diện vào đồ họa đường ruột đang tiêu hóa tốt.', owner: 'Creative Team', deadline: 'Tuần 3, Tháng 8', cost: '300,000,000' },
+  { obj: 'Trực quan hóa công dụng lợi khuẩn', tactic: 'vận hành bếp TVC hoạt hình: 1 Mascot duy nhất vươn tay chỉ trực diện vào đồ họa đường ruột đang tiêu hóa tốt.', owner: 'Creative Team', deadline: 'Tuần 3, Tháng 8', cost: '300,000,000' },
   { obj: 'Tăng tương tác điểm bán', tactic: 'Tổ chức booth dùng thử, chụp hình check-in cùng Mascot đơn.', owner: 'Trade Mkt', deadline: 'Tháng 9', cost: '150,000,000' },
 ];
 

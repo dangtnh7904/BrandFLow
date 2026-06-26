@@ -8,8 +8,8 @@ import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
 
 const PORT_DATA = [
-  { bcg: 'Ngôi sao (Star)', sbu: 'Sữa chua sấy lạnh', rev: '45 tỷ', target: '120 tỷ' },
-  { bcg: 'Bò sữa (Cash Cow)', sbu: 'Trái cây sấy dẻo', rev: '200 tỷ', target: '250 tỷ' },
+  { bcg: 'Ngôi sao (Star)', sbu: 'Thực đơn Chữa lành (Mindful Menu)', rev: '45 tỷ', target: '120 tỷ' },
+  { bcg: 'Bò sữa (Cash Cow)', sbu: 'Giao hàng O2O (Zalo Mini App) dẻo', rev: '200 tỷ', target: '250 tỷ' },
   { bcg: 'Dấu hỏi (Question)', sbu: 'Nước ép đóng chai', rev: '15 tỷ', target: '50 tỷ' },
 ];
 

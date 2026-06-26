@@ -10,7 +10,7 @@ import WizardNavigation from '@/components/b2b/WizardNavigation';
 const BUDGET_DATA = [
   { item: 'Quảng cáo số (Ads)', past: '800 triệu', now: '1.2 tỷ', next: '1.5 tỷ' },
   { item: 'Khuyến mãi (Trade)', past: '500 triệu', now: '800 triệu', next: '1.0 tỷ' },
-  { item: 'Sản xuất Media (TVC)', past: '200 triệu', now: '400 triệu', next: '800 triệu' },
+  { item: 'vận hành bếp Media (TVC)', past: '200 triệu', now: '400 triệu', next: '800 triệu' },
 ];
 
 export default function PageB3Budget() {

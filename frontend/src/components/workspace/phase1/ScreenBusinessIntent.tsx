@@ -22,7 +22,8 @@ const BUDGET_PRESETS = [
 
 export default function ScreenBusinessIntent({ onNext }: { onNext: () => void }) {
   const { language } = useLanguage();
-  const { businessIntent, setBusinessIntent } = useFormStore();
+  const { businessIntent, setBusinessIntent, wizardAnswers, brandDNA } = useFormStore();
+  const isBepNhaMoc = brandDNA?.brand_name?.includes('Nhà Mộc') || wizardAnswers?.company_name?.includes('Nhà Mộc');
   const [mode, setMode] = useState<'budget_first' | 'idea_first' | null>(businessIntent.mode);
   const [budget, setBudget] = useState<number>(businessIntent.budget || 0);
   const [idea, setIdea] = useState(businessIntent.idea || '');
@@ -205,6 +206,67 @@ export default function ScreenBusinessIntent({ onNext }: { onNext: () => void })
                         </span>
                       )}
                     </div>
+                    
+                    {/* Bep Nha Moc AI Packages */}
+                    {isBepNhaMoc && (
+                      <div className="mt-6 pt-6 border-t border-linear-border/50">
+                        <div className="flex items-center mb-4">
+                          <Lightbulb className="w-4 h-4 text-emerald-400 mr-2" />
+                          <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">AI CMO Đề xuất riêng cho Bếp Nhà Mộc</span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {/* Package 1 */}
+                          <div 
+                            onClick={() => {
+                              setBudget(350_000_000);
+                              setCustomBudget('');
+                              setGoal("Tái định vị (Brand Repositioning) thương hiệu Bếp Nhà Mộc lọt Top 3 'Must-visit F&B' dành cho giới chuyên gia/quản lý tại trung tâm TP.HCM. Tập trung vào 'Corporate Lunch' và triển khai Loyalty App.");
+                            }}
+                            className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                              budget === 350000000 
+                                ? 'bg-emerald-500/20 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
+                                : 'bg-slate-900/40 border-emerald-500/30 hover:border-emerald-500/80'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <h4 className="text-[11px] text-emerald-400 font-bold uppercase tracking-wider">Gói 1: Aggressive Scale</h4>
+                              <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono">350M VNĐ</span>
+                            </div>
+                            <p className="text-xs text-slate-300 leading-relaxed mb-2">
+                              Thống lĩnh ngách 'Mindful Dining' tại TP.HCM. Kích hoạt Corporate Lunch Combo, Zalo Mini App và Booking 30 KOLs. (Mục tiêu: Đạt 2.5 Tỷ MRR).
+                            </p>
+                            <div className="text-[10px] font-bold text-emerald-500 mt-2">
+                              {budget === 350000000 ? '✓ Đang chọn' : 'Nhấn để áp dụng'}
+                            </div>
+                          </div>
+                          
+                          {/* Package 2 */}
+                          <div 
+                            onClick={() => {
+                              setBudget(150_000_000);
+                              setCustomBudget('');
+                              setGoal("Mục tiêu chính là nén chi phí thu hút khách (CAC) và giữ chân khách hàng cũ (Retention Rate) thông qua Zalo O2O CRM. Ngừng giảm giá, tập trung vào Value-added.");
+                            }}
+                            className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                              budget === 150000000 
+                                ? 'bg-blue-500/20 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.2)]' 
+                                : 'bg-slate-900/40 border-blue-500/30 hover:border-blue-500/80'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <h4 className="text-[11px] text-blue-400 font-bold uppercase tracking-wider">Gói 2: O2O & Loyalty</h4>
+                              <span className="text-[9px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded font-mono">150M VNĐ</span>
+                            </div>
+                            <p className="text-xs text-slate-300 leading-relaxed mb-2">
+                              Tập trung giảm CAC bằng cách xây dựng hệ thống Zalo Mini App (CRM) và quay 1 Video Cinematic mộc mạc để tối ưu Word-of-Mouth.
+                            </p>
+                            <div className="text-[10px] font-bold text-blue-500 mt-2">
+                              {budget === 150000000 ? '✓ Đang chọn' : 'Nhấn để áp dụng'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 

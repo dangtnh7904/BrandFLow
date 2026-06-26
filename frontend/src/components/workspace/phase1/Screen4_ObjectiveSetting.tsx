@@ -8,7 +8,7 @@ import { useFormStore } from '@/store/useFormStore';
 
 export default function Screen4_ObjectiveSetting({ onBack, onGoToWorkspace }: { onBack: () => void, onGoToWorkspace: () => void }) {
   const { t, language } = useLanguage();
-  const { wizardAnswers, brandDNA } = useFormStore();
+  const { wizardAnswers, brandDNA, setWizardAnswer } = useFormStore();
   const isBepNhaMoc = brandDNA?.brand_name?.includes('Nhà Mộc') || wizardAnswers?.company_name?.includes('Nhà Mộc');
   
   const [objectives, setObjectives] = useState(isBepNhaMoc ? "Thương hiệu: Bếp Nhà Mộc\nTôi muốn xây dựng chiến lược truyền thông cực kỳ chi tiết về không gian ẩm thực chữa lành (Mindful Dining). Đối tượng là Gen Z và dân văn phòng đang kiệt sức (Burnout/Toxic Productivity). Cần kế hoạch cho PR, Social Media, Influencer, với mục tiêu bùng nổ doanh thu." : "");

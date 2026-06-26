@@ -222,12 +222,12 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
         setUploadMessage('✅ bepnhamoc.docx · 12.5k ký tự · 4 trang [AI Extraction]\n⚡ Math Engine & Cross-Validation: Hoàn tất (0.8s)');
         
         setExtractedAnswers({
-          "Tên doanh nghiệp": "Bếp Nhà Mộc",
-          "Lĩnh vực": "Nhà hàng F&B / Ẩm thực Truyền thống",
-          "Khách hàng mục tiêu": "Dân văn phòng, gia đình thu nhập khá",
-          "Vấn đề hiện tại": "Chi phí Marketing cao, CPA đắt, thiếu chiến lược giữ chân (Retention) khách hàng",
-          "Mục tiêu kinh doanh": "Tăng trưởng doanh thu 30%, tối ưu hóa ROI và CLV/CAC",
-          "Ngân sách dự kiến": "30,000,000 VND / tháng"
+          "Tên doanh nghiệp": "Hệ thống F&B Bếp Nhà Mộc",
+          "Mô hình kinh doanh": "Chuỗi Casual Dining - Phân khúc Trung & Cao cấp",
+          "Khách hàng mục tiêu": "Chuyên gia, Quản lý cấp trung (28-45) có tần suất tái chi tiêu (Repeat Purchase) cao",
+          "Thực trạng Pain Points": "Customer Acquisition Cost (CAC) tăng 42% y-o-y. Churn Rate ở tháng thứ 2 cao (68%). Brand Core Values chưa đồng bộ trên các Touchpoints.",
+          "Mục tiêu Chiến lược": "Tối ưu LTV:CAC Ratio lên > 3.0x. Tăng trưởng MRR từ thẻ thành viên thêm 25% trong Q3. Xây dựng Data-driven Loyalty Program.",
+          "Ngân sách (OPEX)": "150,000,000 VND / tháng (Performance & Branding Allocation)"
         });
         
         setCompleteness({ 
@@ -800,163 +800,7 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
             )}
           </AnimatePresence>
 
-          {/* ── Input Completeness Card ── */}
-          <AnimatePresence>
-            {completeness && (uploadStatus === 'success' || uploadStatus === 'partial' || crawlStatus === 'success' || crawlStatus === 'partial') && (
-              <motion.div
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="w-full max-w-lg mt-6"
-              >
-                <div className="rounded-2xl border border-linear-border bg-linear-surface/60 backdrop-blur-md p-5 shadow-lg">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className={cn(
-                        "w-8 h-8 rounded-lg flex items-center justify-center",
-                        completeness.completeness_score >= 70 ? "bg-emerald-500/10" : completeness.completeness_score >= 40 ? "bg-amber-500/10" : "bg-red-500/10"
-                      )}>
-                        {completeness.completeness_score >= 70 ? (
-                          <CheckCircle className="w-4 h-4 text-emerald-500" />
-                        ) : completeness.completeness_score >= 40 ? (
-                          <HelpCircle className="w-4 h-4 text-amber-500" />
-                        ) : (
-                          <XCircle className="w-4 h-4 text-red-500" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold text-foreground">
-                          {language === 'vi' ? 'Mức độ hoàn thiện dữ liệu' : 'Input Completeness'}
-                        </h3>
-                        <p className="text-xs text-linear-text-muted">
-                          {completeness.required_filled}/{completeness.required_count} {language === 'vi' ? 'trường bắt buộc' : 'required fields'}
-                        </p>
-                      </div>
-                    </div>
-                    <span className={cn(
-                      "text-2xl font-black tabular-nums",
-                      completeness.completeness_score >= 70 ? "text-emerald-500" : completeness.completeness_score >= 40 ? "text-amber-500" : "text-red-500"
-                    )}>
-                      {completeness.completeness_score}%
-                    </span>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div className="w-full h-2 rounded-full bg-linear-surface overflow-hidden mb-3">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${completeness.completeness_score}%` }}
-                      transition={{ duration: 0.8, ease: 'easeOut' }}
-                      className={cn(
-                        "h-full rounded-full",
-                        completeness.completeness_score >= 70 ? "bg-gradient-to-r from-emerald-500 to-green-400" :
-                        completeness.completeness_score >= 40 ? "bg-gradient-to-r from-amber-500 to-yellow-400" :
-                        "bg-gradient-to-r from-red-500 to-orange-400"
-                      )}
-                    />
-                  </div>
-
-                  {/* Missing fields */}
-                  {completeness.missing_required?.length > 0 && (
-                    <div className="space-y-1.5 mb-3">
-                      <p className="text-xs font-semibold text-red-500 flex items-center gap-1">
-                        <XCircle className="w-3 h-3" />
-                        {language === 'vi' ? 'Còn thiếu (bắt buộc):' : 'Missing (required):'}
-                      </p>
-                      {completeness.missing_required.map((m: any) => (
-                        <div key={m.field} className="text-xs text-linear-text-muted pl-4 flex items-center gap-1.5">
-                          <span className="w-1 h-1 rounded-full bg-red-400 shrink-0" />
-                          {m.label}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {completeness.missing_optional?.length > 0 && (
-                    <div className="space-y-1.5 mb-3">
-                      <p className="text-xs font-semibold text-amber-500 flex items-center gap-1">
-                        <HelpCircle className="w-3 h-3" />
-                        {language === 'vi' ? 'Nên bổ sung:' : 'Recommended:'}
-                      </p>
-                      {completeness.missing_optional.slice(0, 3).map((m: any) => (
-                        <div key={m.field} className="text-xs text-linear-text-muted pl-4 flex items-center gap-1.5">
-                          <span className="w-1 h-1 rounded-full bg-amber-400 shrink-0" />
-                          {m.label}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Suggested questions toggle */}
-                  {completeness.suggested_questions?.length > 0 && (
-                    <div>
-                      <button
-                        onClick={() => setShowGapQuestions(!showGapQuestions)}
-                        className="flex items-center gap-2 text-xs font-semibold text-cyan-500 hover:text-cyan-400 transition-colors w-full"
-                      >
-                        <MessageSquarePlus className="w-3.5 h-3.5" />
-                        {language === 'vi'
-                          ? `Bổ sung thông tin (${completeness.suggested_questions.length} câu hỏi)`
-                          : `Add information (${completeness.suggested_questions.length} questions)`}
-                        {showGapQuestions ? <ChevronUp className="w-3 h-3 ml-auto" /> : <ChevronDown className="w-3 h-3 ml-auto" />}
-                      </button>
-
-                      <AnimatePresence>
-                        {showGapQuestions && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="mt-3 space-y-3">
-                              {completeness.suggested_questions.map((q: string, i: number) => (
-                                <div key={i}>
-                                  <label className="text-xs font-medium text-foreground block mb-1">{q}</label>
-                                  <input
-                                    type="text"
-                                    value={gapAnswers[`gap_${i}`] || ''}
-                                    onChange={(e) => setGapAnswers(prev => ({ ...prev, [`gap_${i}`]: e.target.value }))}
-                                    placeholder={language === 'vi' ? 'Nhập câu trả lời...' : 'Type your answer...'}
-                                    className="w-full px-3 py-2 text-xs rounded-lg border border-linear-border bg-linear-surface/50 text-foreground placeholder:text-linear-text-muted focus:ring-1 focus:ring-cyan-500/50 focus:border-cyan-500/50 outline-none"
-                                  />
-                                </div>
-                              ))}
-                              <button
-                                onClick={() => {
-                                  // Save gap answers into rawIngestedContent for AI to use
-                                  const answeredPairs = Object.entries(gapAnswers)
-                                    .filter(([, v]) => v.trim())
-                                    .map(([k, v]) => {
-                                      const idx = parseInt(k.replace('gap_', ''));
-                                      return `Hỏi: ${completeness.suggested_questions[idx]}\nĐáp: ${v}`;
-                                    });
-                                  if (answeredPairs.length > 0) {
-                                    appendRawIngestedContent('\n--- BỔ SUNG TỪ USER ---\n' + answeredPairs.join('\n\n'));
-                                    setShowGapQuestions(false);
-                                    // Update completeness score optimistically
-                                    setCompleteness((prev: any) => prev ? ({
-                                      ...prev,
-                                      completeness_score: Math.min(100, prev.completeness_score + answeredPairs.length * 8),
-                                      can_proceed: true,
-                                    }) : prev);
-                                  }
-                                }}
-                                className="w-full py-2 text-xs font-semibold rounded-lg bg-cyan-500/10 text-cyan-500 hover:bg-cyan-500/20 transition-colors"
-                              >
-                                {language === 'vi' ? '✓ Lưu câu trả lời' : '✓ Save answers'}
-                              </button>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* ── Input Completeness Card Removed ── */}
 
           <motion.div
             initial={{ opacity: 0 }}
@@ -965,8 +809,7 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
           >
             <button
               id="btn-proceed-phase1"
-              id="btn-proceed-phase1"
-                onClick={handleProceed}
+              onClick={handleProceed}
               disabled={selectedSources.length === 0}
               className={cn(
                 "w-full py-4 rounded-xl font-bold shadow-lg transition-all duration-300 transform",

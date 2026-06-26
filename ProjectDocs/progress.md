@@ -97,3 +97,6 @@
 
 - **Fixed IDE Dependency Errors:**
   - Ran `pip install -r requirements.txt` to install missing packages like `slowapi`, `loguru`, and `openai`, resolving red IDE warnings.
+
+ -   * * [ 2 0 2 6 - 0 6 - 2 6 ] * *   T h ê m   l u Ón g   D e m o   ·c   b i Çt   c h o   B ¿p   N h à   M Ùc   ( T à i   k h o £n   U s e r   M o c k ) .   T ¡o   t r a n g   C . 4   D a s h b o a r d   C h i ¿n   l °ãc   m ô   p h Ïn g   W a r - R o o m   t h Ýi   g i a n   t h ñc ,   c ó   k h £  n n g   g i £  l ­p   s ñ  c Ñ  n g o ¡i   c £n h   s åt   g i £m   K P I   v à   k í c h   h o ¡t   A I   t á i   l ­p   k ¿  h o ¡c h   ( P i v o t i n g   B 2 B ) .  
+ 

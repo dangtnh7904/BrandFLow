@@ -107,6 +107,23 @@ function LoginForm() {
     setError('Đăng nhập LinkedIn chưa được backend hỗ trợ.');
   };
 
+  const loginWithBepNhaMoc = () => {
+    setLoading(true);
+    // Setup Mock Bếp Nhà Mộc state
+    localStorage.setItem('brandflow_token', 'mock_bepnhamoc_token');
+    localStorage.setItem('brandflow_user_id', 'bepnhamoc_001');
+    localStorage.setItem('brandflow_email', 'ceo@bepnhamoc.vn');
+    localStorage.setItem('brandflow_is_admin', 'false');
+    
+    // They are already past onboarding
+    localStorage.setItem('bf_ws_stage', '4');
+
+    // Go straight to C4 Dashboard (Exec Matrix) for the wow factor
+    setTimeout(() => {
+      window.location.href = '/planning/c4-dashboard';
+    }, 800);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -243,6 +260,16 @@ function LoginForm() {
                 </svg>
               )}
               Tiếp tục với LinkedIn
+            </button>
+
+            <button
+              type="button"
+              onClick={loginWithBepNhaMoc}
+              disabled={loading || socialLoading !== null}
+              className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-xl text-sm font-black text-emerald-600 dark:text-emerald-400 transition-all focus:ring-2 focus:ring-emerald-500 disabled:opacity-70 mt-4"
+            >
+              <Hexagon className="w-5 h-5" />
+              Demo: Trải nghiệm Bếp Nhà Mộc
             </button>
           </div>
 

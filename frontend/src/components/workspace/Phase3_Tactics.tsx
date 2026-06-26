@@ -164,24 +164,57 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
               <div className="flex items-center mb-6 text-emerald-400 font-mono text-sm">
                 <Terminal className="w-4 h-4 mr-2" /> [Agent: CMO & CFO] finalizing deployment tactics...
               </div>
-              <div className="space-y-4">
-                {(isBepNhaMoc ? [
-                  'Triển khai Zalo Mini App (Loyalty & O2O)', 
-                  'Sản xuất Cinematic Hero Video: Mùi Khói Bếp', 
-                  'Booking 30 Lifestyle/Biz Micro-KOLs'
-                ] : [
-                  'Setup Omni-channel Marketing Hub',
-                  'Produce Hero Launch Video',
-                  'Deploy Initial PR Articles'
-                ]).map((task, i) => (
-                  <div key={i} className="p-4 bg-emerald-950/20 border border-emerald-900/50 rounded-xl flex items-center justify-between">
-                    <div className="flex items-center">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500 mr-3" />
-                      <span className="font-semibold text-slate-200">{task}</span>
-                    </div>
-                    <span className="text-sm font-mono text-emerald-400">Month {i+1}</span>
+              <div className="flex-1 overflow-y-auto no-scrollbar pr-2">
+                {isBepNhaMoc ? (
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-emerald-900/50 text-[10px] uppercase tracking-widest text-emerald-500/70">
+                        <th className="pb-2 font-medium">Initiative</th>
+                        <th className="pb-2 font-medium text-center">Timeline</th>
+                        <th className="pb-2 font-medium">Lead Agent</th>
+                        <th className="pb-2 font-medium text-right">Budget</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                      <tr className="border-b border-emerald-900/20">
+                        <td className="py-3 text-emerald-100 flex items-center"><CheckCircle2 className="w-4 h-4 text-emerald-500 mr-2" /> Zalo Mini App (O2O Loyalty)</td>
+                        <td className="py-3 text-center"><span className="px-2 py-1 rounded bg-emerald-900/30 text-emerald-400 text-xs font-mono">M1-M2</span></td>
+                        <td className="py-3 text-emerald-400 font-mono text-xs">@TechLead</td>
+                        <td className="py-3 text-right text-emerald-100 font-mono">65M</td>
+                      </tr>
+                      <tr className="border-b border-emerald-900/20">
+                        <td className="py-3 text-emerald-100 flex items-center"><CheckCircle2 className="w-4 h-4 text-emerald-500 mr-2" /> Hero Video: Mùi Khói Bếp</td>
+                        <td className="py-3 text-center"><span className="px-2 py-1 rounded bg-emerald-900/30 text-emerald-400 text-xs font-mono">M1</span></td>
+                        <td className="py-3 text-emerald-400 font-mono text-xs">@CreativeDir</td>
+                        <td className="py-3 text-right text-emerald-100 font-mono">50M</td>
+                      </tr>
+                      <tr className="border-b border-emerald-900/20">
+                        <td className="py-3 text-emerald-100 flex items-center"><CheckCircle2 className="w-4 h-4 text-emerald-500 mr-2" /> 30 Lifestyle Micro-KOLs</td>
+                        <td className="py-3 text-center"><span className="px-2 py-1 rounded bg-emerald-900/30 text-emerald-400 text-xs font-mono">M2-M3</span></td>
+                        <td className="py-3 text-emerald-400 font-mono text-xs">@PRManager</td>
+                        <td className="py-3 text-right text-emerald-100 font-mono">100M</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 text-emerald-100 flex items-center"><CheckCircle2 className="w-4 h-4 text-emerald-500 mr-2" /> Corporate Lunch Activation</td>
+                        <td className="py-3 text-center"><span className="px-2 py-1 rounded bg-emerald-900/30 text-emerald-400 text-xs font-mono">M3</span></td>
+                        <td className="py-3 text-emerald-400 font-mono text-xs">@GrowthHacker</td>
+                        <td className="py-3 text-right text-emerald-100 font-mono">30M</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="space-y-4">
+                    {['Setup Omni-channel Marketing Hub', 'Produce Hero Launch Video', 'Deploy Initial PR Articles'].map((task, i) => (
+                      <div key={i} className="p-4 bg-emerald-950/20 border border-emerald-900/50 rounded-xl flex items-center justify-between">
+                        <div className="flex items-center">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-500 mr-3" />
+                          <span className="font-semibold text-slate-200">{task}</span>
+                        </div>
+                        <span className="text-sm font-mono text-emerald-400">Month {i+1}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
             </motion.div>
           )}

@@ -142,7 +142,7 @@ from app.core.access_audit import VisitorAuditStore
 from main import app
 
 client = TestClient(app)
-
+main.init_form_db()
 
 @pytest.fixture
 def isolated_audit_store(tmp_path):
@@ -193,8 +193,8 @@ def test_api_onboarding_interview(mock_generate):
     assert response.json()["status"] == "success"
     assert "rules" in response.json()
 
-@patch("main.DocumentIngestor")
-@patch("main.analyze_and_extract_dna")
+@patch("app.api.onboarding_routes.DocumentIngestor")
+@patch("app.api.onboarding_routes.extract_document_summary")
 def test_api_onboarding_upload(mock_analyze, MockIngestor):
     """
     Test 1.1: Kiểm tra endpoint /api/v1/onboarding/upload với mock file
@@ -225,7 +225,7 @@ def test_api_onboarding_upload(mock_analyze, MockIngestor):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "success"
-    assert "message" in data
+    assert "extracted_answers" in data
 
 
 def test_api_create_project_tdd():

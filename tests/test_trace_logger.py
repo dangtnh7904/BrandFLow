@@ -1,4 +1,5 @@
 from app.core.trace_logger import TraceLogger
+import json
 
 
 def test_trace_logger_creates_files(tmp_path, monkeypatch):
@@ -7,6 +8,8 @@ def test_trace_logger_creates_files(tmp_path, monkeypatch):
     run_dir = tmp_path / logger.run_id
 
     logger.log(agent="planner", role="assistant", content="hello", step=1)
+    logger.log(agent="customer", role="assistant", content="hello", step=1)
+    logger.log(agent="cfo", role="assistant", content="hello", step=1)
 
     assert (run_dir / "planner.json").exists()
     assert (run_dir / "customer.json").exists()
@@ -18,8 +21,9 @@ def test_trace_logger_appends_message(tmp_path, monkeypatch):
     logger = TraceLogger(goal="G", budget=100)
     logger.log(agent="planner", role="assistant", content="hello", step=1)
     logger.log(agent="planner", role="assistant", content="world", step=2)
-
-    data = logger.read_file(agent="planner")
+    
+    run_dir = tmp_path / logger.run_id
+    data = json.loads((run_dir / "planner.json").read_text(encoding="utf-8"))
     assert len(data["messages"]) == 2
     assert data["messages"][0]["content"] == "hello"
     assert data["messages"][1]["content"] == "world"

@@ -4,19 +4,17 @@ Tài liệu này cung cấp 2 phiên bản kịch bản thuyết trình (Pitch S
 
 ---
 
-## 1. Bản Elevator Pitch (Phiên bản C-Level / CMO | 45 - 60 giây)
+## 1. Bản Elevator Pitch (Phiên bản C-Level / CMO | 30 - 45 giây)
 
-**[Hook - Trực diện bài toán chi phí & ROI]**
-Chào các anh chị. Một CMO giỏi có thể mang lại doanh thu đột phá, nhưng chi phí chiêu mộ và rủi ro chiến lược lại quá lớn. Hiện nay, 98% SME tại Việt Nam đang "đốt tiền" quảng cáo một cách mù quáng vì thiếu một chiến lược lõi bài bản, hoặc phải trả hàng trăm triệu đồng mỗi tháng cho Agency.
+"Chào anh chị, tôi là Mạnh Đinh, CEO BrandFlow.
 
-**[Solution - Trọng tâm Giải pháp]**
-Đó là lý do chúng tôi xây dựng **BrandFlow** – AI Marketing Strategy Engine đầu tiên đủ sức đảm nhận vai trò của một Giám đốc Marketing thực thụ. Thay vì mất 4 tuần chờ đợi Agency, BrandFlow tự động thiết kế toàn bộ chiến lược, phân bổ ngân sách và dự báo doanh thu chỉ trong đúng 10 phút.
+Các SME hiện nay đang 'đốt tiền' quảng cáo vì không đủ chi phí thuê Agency chiến lược. BrandFlow giải quyết điều đó bằng một **AI Marketing Engine** đóng vai trò như một CMO thực thụ. 
 
-**[Secret Sauce - Công nghệ Lõi & Điểm khác biệt]**
-Điều khiến C-Level tin dùng BrandFlow không phải là AI viết content, mà là **cơ chế Kiểm duyệt chéo (Mandatory Debate)**. Các AI Agent (đóng vai CMO, CFO, Khách hàng) sẽ liên tục phản biện lẫn nhau, kết hợp cùng một **Math Engine** đảm bảo ngân sách được chia chính xác tới từng đồng. BrandFlow không "bịa" số liệu, chúng tôi tối ưu hóa lợi nhuận thực tế.
+Thay vì mất 4 tuần, hệ thống tự động thiết kế chiến lược và tính toán phân bổ ngân sách chính xác bằng **Math Engine** chỉ trong 10 phút. Không phải là tool viết content thông thường, nhờ cơ chế **AI Kiểm duyệt chéo**, chúng tôi tập trung tối ưu ROI thực tế.
 
-**[Traction & Ask - Kết quả & Lời kêu gọi]**
-Sản phẩm đã chứng minh Product-Market Fit với 112 doanh nghiệp B2B/SME, đạt **tỷ lệ giữ chân (Retention) kỷ lục 95.5%** và giúp tối ưu tỷ lệ CLV/CAC lên ngưỡng xuất sắc 22.8x. Hôm nay, chúng tôi gọi vốn [Số tiền] cho vòng Pre-Seed để mở rộng hạ tầng AI và chiếm lĩnh thị trường. Tôi là Mạnh Đinh, Founder & CEO BrandFlow. Rất mong được trao đổi sâu hơn với các anh chị!
+Sản phẩm hiện đạt tỷ lệ Retention kỷ lục 95.5% và tỷ lệ LTV/CAC siêu lợi nhuận 22.8x. Hôm nay, chúng tôi gọi vốn Pre-Seed để mở rộng hạ tầng công nghệ. 
+
+*(Chỉ tay vào màn hình điện thoại)* Hãy quét QR để kết nối cùng tôi nhé. Cảm ơn các anh chị!"
 
 ---
 

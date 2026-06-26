@@ -136,11 +136,11 @@ function LoginForm() {
       localStorage.setItem('brandflow_email', 'ceo@bepnhamoc.vn');
       localStorage.setItem('brandflow_is_admin', 'false');
       
-      // They are already past onboarding
-      localStorage.setItem('bf_ws_stage', '4');
+      localStorage.removeItem('bf_ws_stage');
+      localStorage.removeItem('bf_phase1_screen');
+      localStorage.removeItem('bf_doc_text');
 
-      // Go straight to C4 Dashboard (Exec Matrix) for the wow factor
-      window.location.href = '/planning/c4-dashboard';
+      window.location.href = '/workspace';
       return;
     }
 

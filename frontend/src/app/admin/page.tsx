@@ -671,6 +671,8 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 )}
+              </motion.div>
+            )}
 
             {/* ═══════════ TAB: AUDIT LOG ═══════════ */}
             {activeTab === 'audit' && (

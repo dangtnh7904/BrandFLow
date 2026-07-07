@@ -6,6 +6,7 @@ import { Target, Zap, Shield, ChevronRight, Activity, ArrowUpRight, Check } from
 import { useLanguage } from '@/contexts/LanguageContext';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 
 function cn(...inputs: ClassValue[]) {
  return twMerge(clsx(inputs));
@@ -111,6 +112,16 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToNext }: { onGoToHub
  const focusObjective = audit.marketing_objectives?.[0] || t('dashboard.focus_2');
  const allObjectives = audit.marketing_objectives || [focusObjective];
 
+ // Mock Radar Data cho Bếp Nhà Mộc (Current vs Benchmark)
+ const radarData = [
+   { subject: language === 'vi' ? 'Chất lượng Lõi' : 'Core Product', current: 95, benchmark: 80, fullMark: 100 },
+   { subject: language === 'vi' ? 'Trải nghiệm O2O' : 'O2O Experience', current: 30, benchmark: 85, fullMark: 100 },
+   { subject: language === 'vi' ? 'Chiến lược Giá' : 'Pricing Strategy', current: 45, benchmark: 80, fullMark: 100 },
+   { subject: language === 'vi' ? 'Mức độ Phủ sóng' : 'Channel Reach', current: 40, benchmark: 75, fullMark: 100 },
+   { subject: language === 'vi' ? 'Công suất Bàn' : 'Asset Utilization', current: 55, benchmark: 90, fullMark: 100 },
+   { subject: language === 'vi' ? 'Khách Văn phòng' : 'Corporate Base', current: 35, benchmark: 80, fullMark: 100 },
+ ];
+
  return (
  <div className="w-full h-full overflow-y-auto bg-slate-50 dark:bg-[#0B1120] relative">
  {/* Enhance Visuals: Background Ambient Glows */}
@@ -165,7 +176,7 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToNext }: { onGoToHub
  </div>
  </div>
  <div>
- <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-2">{language === 'vi' ? 'Đánh giá Vị thế (Executive Audit)' : 'Executive Status'}</h3>
+ <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-2">{language === 'vi' ? 'Thực trạng Doanh thu & Cạnh tranh (Market Reality)' : 'Revenue & Market Reality'}</h3>
  <p className="text-lg text-foreground leading-relaxed font-medium">
  {competitivePositioning}
  </p>
@@ -216,9 +227,25 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToNext }: { onGoToHub
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.3 }}
- className="bento-card p-6 border-linear-border"
+ className="bento-card p-6 border-linear-border flex flex-col"
  >
- <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-4">🔍 Market Audit</h3>
+ <h3 className="text-xs font-bold text-linear-text-muted uppercase tracking-widest mb-4">🔍 {language === 'vi' ? 'Năng lực Cốt lõi (VRIO Analysis)' : 'Market Audit'}</h3>
+ 
+ {/* Recharts Radar Chart */}
+ <div className="w-full h-48 mb-6 -ml-2">
+   <ResponsiveContainer width="100%" height="100%">
+     <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+       <PolarGrid stroke="#334155" opacity={0.3} />
+       <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 9, fontWeight: 'bold' }} />
+       <RechartsTooltip 
+         contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', border: '1px solid #1e293b', borderRadius: '8px', fontSize: '12px' }}
+         itemStyle={{ color: '#e2e8f0' }}
+       />
+       <Radar name={language === 'vi' ? 'Hiện tại' : 'Current'} dataKey="current" stroke="#06b6d4" fill="#06b6d4" fillOpacity={0.4} />
+       <Radar name={language === 'vi' ? 'Tiêu chuẩn ngành' : 'Benchmark'} dataKey="benchmark" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} strokeDasharray="3 3" />
+     </RadarChart>
+   </ResponsiveContainer>
+ </div>
  
  <div className="mb-4">
  <h4 className="text-[10px] text-amber-500 font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Điểm chưa hoàn thiện (Weaknesses)' : 'Areas for Refinement'}</h4>
@@ -230,7 +257,7 @@ export default function Screen3_Dashboard({ onGoToHub, onGoToNext }: { onGoToHub
  </div>
  
  <div>
- <h4 className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-2">{t('dashboard.radar_2')}</h4>
+ <h4 className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-2">{language === 'vi' ? 'Khuyến nghị Định hướng' : t('dashboard.radar_2')}</h4>
  <ul className="space-y-2">
  {radar2.map((r: string, idx: number) => (
    <li key={idx} className="flex items-start text-sm text-foreground"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 mr-2 shrink-0"></div> {r}</li>

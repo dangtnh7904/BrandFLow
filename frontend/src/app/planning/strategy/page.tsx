@@ -121,7 +121,7 @@ export default function StrategyPage() {
                 <div className="space-y-4">
                   <div className="p-4 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-semibold text-slate-800">Tier 1: Doanh nghiệp Sản xuất lớn</span>
+                      <span className="font-semibold text-slate-800">Tier 1: Doanh nghiệp vận hành bếp lớn</span>
                       <span className="text-xs font-bold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full">60% Ngân sách</span>
                     </div>
                     <p className="text-xs text-slate-500">Quy mô &gt;500 nhân sự, đau đầu vì quy trình rời rạc, cần hệ thống AI để dự báo chuỗi cung ứng.</p>

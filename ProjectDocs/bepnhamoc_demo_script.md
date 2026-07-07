@@ -1,0 +1,72 @@
+# 🚀 KỊCH BẢN DEMO BRANDFLOW - CASE STUDY BẾP NHÀ MỘC
+
+**ĐỐI TƯỢNG NGHE PITCH:** CEO, CMO, CFO của các chuỗi F&B, nhà đầu tư.
+**MỤC TIÊU:** Chứng minh năng lực "Đọc hiểu dữ liệu thô" -> "Tính toán chiến lược" -> "Đóng gói báo cáo chuẩn McKinsey" của BrandFlow chỉ trong 5 phút.
+
+---
+
+## 🎬 GIAI ĐOẠN 1: ONBOARDING & DATA INGESTION (Màn hình Upload Tài liệu)
+
+### Bước 1: Khởi động (Storytelling)
+**🗣️ Lời dẫn:** 
+*"Chào các anh/chị. Thông thường để làm một bản kế hoạch Marketing từ đầu, một Agency sẽ mất từ 2-3 tuần để thu thập brief, nghiên cứu đối thủ, và tính toán số liệu. Hôm nay, em sẽ chứng minh BrandFlow có thể làm khối lượng công việc 3 tuần đó trong đúng 3 phút."*
+
+### Bước 2: Tải file dữ liệu thô (Upload)
+👉 **Hành động:** 
+1. Mở màn hình **Upload Tài Liệu (Onboarding)**.
+2. Kéo và thả file có tên `bepnhamoc_brandflow.docx` vào vùng Upload.
+3. Bấm **Bắt đầu Trích xuất AI**.
+
+**🗣️ Lời dẫn trong lúc chờ (1.5s delay):** 
+*"Hệ thống Multi-Agent của chúng em hiện tại đang quét hàng chục trang dữ liệu thô từ file Word này. AI sẽ tự động bóc tách đâu là nỗi đau của khách hàng (Pain Points), đâu là mục tiêu tài chính, và đâu là lợi thế cạnh tranh cốt lõi."*
+
+### Bước 3: Show-off Bảng Phân Tích Brand DNA (Mới)
+👉 **Hành động:** Ngay sau khi trích xuất xong, màn hình sẽ tự động chuyển sang Bảng điều khiển **Brand DNA**. Chỉ vào biểu đồ nhện (Radar Chart) và các thẻ phân tích.
+**🗣️ Lời dẫn:** 
+*"Nhưng đó chưa phải là tất cả. BrandFlow lập tức dùng dữ liệu đó để vẽ ra một bảng X-quang toàn diện về Bếp Nhà Mộc. Anh/chị có thể thấy AI phân tích VRIO, chấm điểm sức mạnh cạnh tranh, và định vị lõi là 'Food Therapy' (Ẩm thực chữa lành). Không một thực tập sinh nào làm được điều này trong vài phút."*
+
+### Bước 4: Cấu hình Ngân sách bằng AI (AI Budget Recommendations)
+👉 **Hành động:** Bấm `Tiếp tục` từ màn hình Brand DNA để sang màn hình **Thiết lập Mục tiêu & Ngân sách**. Bấm vào nút `Áp dụng Gói này (Apply)` ở Gói "Gói 1: Aggressive Scale (350M VNĐ)" bên cột phải.
+**🗣️ Lời dẫn:** 
+*"Phần đỉnh cao nhất của Onboarding là đây. Dựa trên bản DNA vừa rồi, AI CMO tự động mớm sẵn 2 gói ngân sách phù hợp nhất cho Bếp Nhà Mộc. Một gói 150 Triệu tập trung giữ chân khách, và một gói 350 Triệu đánh thâm nhập thị trường Corporate Lunch. CEO chỉ cần bấm 1 chạm, toàn bộ mục tiêu phức tạp và ngân sách sẽ tự động điền vào Form mà không cần gõ một chữ nào."*
+
+---
+
+## 🎬 GIAI ĐOẠN 2: TACTICAL GANTT CHART (Phase 3 - Bảng tiến độ Chiến thuật)
+
+👉 **Hành động:** Chuyển sang màn hình **Phase 3 (Tactics & Gantt)**.
+**🗣️ Lời dẫn:** 
+*"Sau khi đã hiểu bài toán, thay vì đưa ra các chiến lược chung chung, AI của BrandFlow lập tức xuất ra một bảng tiến độ (Gantt Chart) chi tiết đến từng đầu việc và ngân sách."*
+
+👉 **Hành động:** Chỉ vào bảng Table cực đẹp trên màn hình.
+**🗣️ Lời dẫn:** 
+*"Như anh chị thấy: Tháng 1 là Sản xuất Hero Video trị giá 50M. Tháng 2 là Booking 30 KOLs (100M). Điểm đặc biệt là AI biết phân bổ cho đúng Agent phụ trách (@TechLead, @CreativeDir). Bản kế hoạch này không nằm trên giấy, nó là một dự án thực thi."*
+
+---
+
+## 🎬 GIAI ĐOẠN 3: FINANCIAL MATH ENGINE (Phase 4 - Tính toán Dòng tiền)
+
+👉 **Hành động:** Chuyển sang màn hình **Phase 4 (Execution & Math Engine)**.
+**🗣️ Lời dẫn:** 
+*"Nhưng làm Marketing mà không đo lường được dòng tiền thì không CFO nào duyệt. Đây là trái tim của BrandFlow: Khối Động cơ Tài chính (Math Engine)."*
+
+👉 **Hành động:** Nhấn chạy mô phỏng, đợi Terminal chạy code và xuất ra Biểu đồ (Recharts LineChart).
+**🗣️ Lời dẫn:** 
+*"Hệ thống đang chạy mô phỏng Monte Carlo để tìm điểm hòa vốn. Mời anh chị xem biểu đồ: Đường màu xanh lá (MRR) liên tục đi lên và đạt 2.5 Tỷ ở tháng thứ 6. Trong khi đó, đường màu xanh dương (CAC) giảm dần từ 250k xuống 145k. Đây chính là 'Điểm Ngọt' (Sweet Spot) mà mọi doanh nghiệp thèm khát."*
+
+---
+
+## 🎬 GIAI ĐOẠN 4: FINAL MASTER PLAN (Phase D.0 - Bản Cáo Bạch)
+
+👉 **Hành động:** Mở **Mục D.0 (Marketing Plan Report)** ở Menu bên trái và bấm tổ hợp phím **Ctrl + P** (hoặc Cmd + P).
+**🗣️ Lời dẫn:** 
+*"Cuối cùng, tất cả các con số, biểu đồ, chiến lược vừa rồi sẽ được tự động đóng gói thành một bản Cáo bạch mang tiêu chuẩn của McKinsey / Bain."*
+
+👉 **Hành động:** Trượt (Scroll) qua 3 mặt giấy A4 đang hiện trên màn hình Print.
+**🗣️ Lời dẫn:** 
+*"Trang 1 là Định vị và Sứ mệnh (Food Therapy). Trang 2 là Phân bổ ngân sách Zero-Based. Trang 3 là Biểu đồ Lợi nhuận và khu vực Ký duyệt (Sign-off) dành cho CEO & CMO. Mọi thứ đã sẵn sàng để xuất ra PDF, đi gọi vốn hoặc họp HĐQT ngay lập tức."*
+
+*"Anh/chị thấy sao? Chúng ta có thể bắt đầu với dữ liệu của chính công ty anh/chị ngay bây giờ!"*
+
+---
+*(HẾT DEMO - CHÚC BẠN CHỐT DEAL THÀNH CÔNG!)*

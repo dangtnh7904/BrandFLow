@@ -235,6 +235,10 @@ app.include_router(design_router)
 from app.api.content_lab import router as content_lab_router
 app.include_router(content_lab_router, prefix="/api/content-lab", tags=["Content Lab"])
 
+# ── Đăng ký Analytics / Media Buyer Router ────────────────────────
+from app.api.analytics_routes import router as analytics_router
+app.include_router(analytics_router)
+
 
 # ═══════════════════════════════════════════════════════════════════
 # NEW ENDPOINTS: Planning History + Security (GDPR) + Tier Info
@@ -945,7 +949,7 @@ async def home():
 
 
 @app.get("/api/v1/audit/visitors/summary")
-def get_audit_visitors_summary(_: str = Depends(get_admin_user)):
+def get_audit_visitors_summary(_ = Depends(_require_audit_admin_token)):
     """Thống kê tổng quan người đã vào app."""
     try:
         from app.core.database import SessionLocal
@@ -969,7 +973,7 @@ def get_audit_visitors_summary(_: str = Depends(get_admin_user)):
 
 
 @app.get("/api/v1/audit/visitors")
-def list_audit_visitors(limit: int = 100, _: str = Depends(get_admin_user)):
+def list_audit_visitors(limit: int = 100, _ = Depends(_require_audit_admin_token)):
     """Danh sách visitor đã truy cập (ưu tiên lượt gần nhất)."""
     try:
         return {
@@ -981,7 +985,7 @@ def list_audit_visitors(limit: int = 100, _: str = Depends(get_admin_user)):
 
 
 @app.get("/api/v1/audit/visits")
-def list_audit_visits(limit: int = 200, visitor_key: Optional[str] = None, _: str = Depends(get_admin_user)):
+def list_audit_visits(limit: int = 200, visitor_key: Optional[str] = None, _ = Depends(_require_audit_admin_token)):
     """Lịch sử truy cập theo event để làm minh chứng."""
     try:
         return {

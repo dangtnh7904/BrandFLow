@@ -12,6 +12,8 @@ class StrategicMarketingAudit2024(BaseModel):
     core_competences: List[str] = Field(description="Phân tích VRIO: 2-3 năng lực lõi/lợi thế cạnh tranh độc nhất của doanh nghiệp.")
     marketing_objectives: List[str] = Field(description="Đề xuất các mục tiêu chiến lược Marketing định hướng theo Ma trận Ansoff.")
     trust_score: int = Field(description="Điểm sức mạnh thương hiệu (0-100) theo đánh giá chuyên gia. BẮT BUỘC LÀ SỐ NGUYÊN (NUMBER), KHÔNG DÙNG STRING.")
+    key_competitors: List[str] = Field(default=[], description="2-4 đối thủ cạnh tranh trực tiếp kèm phân tích ngắn (VD: 'Quán ABC - Mạnh về giá rẻ nhưng yếu về trải nghiệm').")
+    customer_journey_stages: List[str] = Field(default=[], description="5 giai đoạn hành trình khách hàng: Awareness → Consideration → Purchase → Retention → Advocacy, mỗi giai đoạn kèm insight cụ thể.")
 
 class VisualBrandDNA(BaseModel):
     primary_colors: List[str] = Field(description="2-3 mã màu HEX phù hợp nhất với tính cách ngành (VD: #FF0000).")
@@ -20,10 +22,10 @@ class VisualBrandDNA(BaseModel):
     moodboard_keywords: List[str] = Field(description="3-5 từ khóa thẩm mỹ (VD: Luxury, Fast, Trust).")
 
 class ExpertBusinessAnalysis(BaseModel):
-    financial_health: str = Field(description="Phân tích sức khỏe tài chính doanh nghiệp (nhận diện các red flags như biên lợi nhuận, dòng tiền).")
-    operational_bottlenecks: str = Field(description="Các điểm nghẽn vận hành đang cản trở tăng trưởng.")
-    brand_equity_assessment: str = Field(description="Đánh giá tài sản thương hiệu trong tâm trí khách hàng (định giá thấp, mờ nhạt, v.v.).")
-    strategic_recommendation: str = Field(description="Đề xuất chiến lược định vị và hành động cốt lõi.")
+    financial_health: str = Field(description="Phân tích sức khỏe tài chính doanh nghiệp: Biên lợi nhuận, Dòng tiền, CAC/LTV ratio, so sánh benchmark ngành tại VN.")
+    operational_bottlenecks: str = Field(description="Các điểm nghẽn vận hành cụ thể đang cản trở tăng trưởng, kèm ước lượng tác động.")
+    brand_equity_assessment: str = Field(description="Đánh giá tài sản thương hiệu theo Keller's CBBE: Awareness, Perceived Quality, Brand Associations, Loyalty.")
+    strategic_recommendation: str = Field(description="Đề xuất 2-3 hành động CỤ THỂ theo cấu trúc: [Hành động] → [Kết quả mong đợi] → [Timeline].")
 
 class IntakeAnalysisResult(BaseModel):
     expert_business_analysis: ExpertBusinessAnalysis
@@ -31,9 +33,10 @@ class IntakeAnalysisResult(BaseModel):
     visual_brand_dna: VisualBrandDNA
     company_name: str = Field(description="Tên công ty / thương hiệu.")
     industry: str = Field(description="Phân loại ngành nghề chung.")
-    target_audience: str = Field(description="Tệp khách hàng mục tiêu.")
-    core_usps: List[str] = Field(description="2-3 đặc điểm bán hàng độc nhất (USP).")
-    tone_of_voice: str = Field(description="Giọng văn thương hiệu.")
+    target_audience: str = Field(description="Tệp khách hàng mục tiêu chi tiết: độ tuổi, thu nhập, hành vi, khu vực.")
+    core_usps: List[str] = Field(description="3-5 đặc điểm bán hàng độc nhất (USP) — cụ thể, có thể kiểm chứng.")
+    tone_of_voice: str = Field(description="Giọng văn thương hiệu chi tiết kèm ví dụ.")
+
 
 
 

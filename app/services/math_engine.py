@@ -168,4 +168,83 @@ class MathEngine:
             "details": details
         }
 
+    def project_unit_economics(self, total_budget: int, avg_cpc: float, cvr: float, aov: float, gross_margin_pct: float, retention_rate: float) -> dict:
+        """
+        C-LEVEL METRICS: Tính toán Unit Economics (CAC, LTV, Payback).
+        """
+        if avg_cpc <= 0 or cvr <= 0:
+            return {"error": "Invalid inputs"}
+            
+        # Cost of Customer Acquisition
+        cost_per_lead = avg_cpc / cvr
+        sales_cvr = 0.2 # Giả sử tỷ lệ chốt sales từ lead là 20%
+        cac = cost_per_lead / sales_cvr
+        
+        # New Customers Acquired
+        new_customers = int(total_budget / cac) if cac > 0 else 0
+        
+        # Lifetime Value
+        gross_profit_per_order = aov * (gross_margin_pct / 100)
+        churn_rate = 1.0 - (retention_rate / 100)
+        if churn_rate <= 0: churn_rate = 0.1 # Cap at 90% retention
+        
+        ltv = gross_profit_per_order / churn_rate
+        
+        ltv_cac_ratio = round(ltv / cac, 2) if cac > 0 else 0
+        
+        # Trạng thái sức khỏe
+        health_status = "Nguy hiểm (Đốt tiền)" if ltv_cac_ratio < 1.0 else "Ổn định" if ltv_cac_ratio < 3.0 else "Tuyệt vời (Scale ngay)"
+        
+        return {
+            "CAC": int(cac),
+            "LTV": int(ltv),
+            "LTV_CAC_Ratio": ltv_cac_ratio,
+            "New_Customers": new_customers,
+            "Total_Revenue_Generated": new_customers * aov,
+            "Gross_Profit": int(new_customers * ltv),
+            "Health_Status": health_status
+        }
+
+    def simulate_monte_carlo_roi(self, budget: int, expected_cvr: float, expected_aov: float, gross_margin: float, iterations: int = 1000) -> dict:
+        """
+        C-LEVEL METRICS: Monte Carlo Simulation để mô phỏng rủi ro (Risk Modeling).
+        Sử dụng phân phối chuẩn (Normal Distribution) để tạo 1000 kịch bản ngẫu nhiên.
+        """
+        import numpy as np
+        
+        # Tính toán dựa trên độ lệch chuẩn 20%
+        cvr_std = expected_cvr * 0.2
+        aov_std = expected_aov * 0.2
+        
+        # Sinh mảng ngẫu nhiên
+        cvr_sims = np.random.normal(expected_cvr, cvr_std, iterations)
+        cvr_sims = np.clip(cvr_sims, a_min=0.001, a_max=None) # Không thể âm
+        
+        aov_sims = np.random.normal(expected_aov, aov_std, iterations)
+        
+        # Giả định cost per traffic cố định (VD: 5000 VND/click)
+        cpc = 5000
+        traffic = budget / cpc
+        
+        # Tính doanh thu và lợi nhuận cho 1000 kịch bản
+        revenue_sims = traffic * cvr_sims * aov_sims
+        profit_sims = revenue_sims * (gross_margin / 100) - budget
+        
+        roi_sims = (profit_sims / budget) * 100
+        
+        # Phân tích tứ phân vị (Percentiles)
+        worst_case = np.percentile(roi_sims, 10) # 10th percentile
+        base_case = np.median(roi_sims)          # 50th percentile
+        best_case = np.percentile(roi_sims, 90)  # 90th percentile
+        
+        prob_of_loss = (roi_sims < 0).sum() / iterations * 100
+        
+        return {
+            "Worst_Case_ROI": round(worst_case, 2),
+            "Base_Case_ROI": round(base_case, 2),
+            "Best_Case_ROI": round(best_case, 2),
+            "Probability_of_Loss_Percent": round(prob_of_loss, 2),
+            "Recommendation": "Rủi ro quá cao, cân nhắc lại kịch bản CVR" if prob_of_loss > 30 else "Dự án an toàn để giải ngân"
+        }
+
 

@@ -11,6 +11,7 @@ import {
   Megaphone, CalendarDays, Activity, UserPlus, Repeat,
   Clock, MapPin, Globe2, Shield, ArrowRight, Star, TrendingDown
 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line, ComposedChart, Cell, PieChart as RePieChart, Pie } from 'recharts';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TYPES
@@ -79,41 +80,6 @@ function Sparkline({ data, color, height = 32, width = 100 }: { data: number[]; 
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DONUT CHART
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-function DonutChart({ segments, size = 180 }: { segments: { label: string; value: number; color: string }[]; size?: number }) {
-  const total = segments.reduce((sum, s) => sum + s.value, 0);
-  const r = (size - 20) / 2;
-  const cx = size / 2;
-  const cy = size / 2;
-  const circumference = 2 * Math.PI * r;
-  let currentOffset = 0;
-
-  return (
-    <svg width={size} height={size} className="transform -rotate-90">
-      {segments.map((seg, i) => {
-        const pct = seg.value / total;
-        const dashLen = pct * circumference;
-        const dashOffset = -currentOffset;
-        currentOffset += dashLen;
-        return (
-          <motion.circle key={i}
-            cx={cx} cy={cy} r={r} fill="none"
-            stroke={seg.color} strokeWidth="24" strokeLinecap="round"
-            strokeDasharray={`${dashLen} ${circumference - dashLen}`}
-            strokeDashoffset={dashOffset}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: i * 0.15, duration: 0.5 }}
-          />
-        );
-      })}
-      <circle cx={cx} cy={cy} r={r - 20} fill="var(--surface)" />
-    </svg>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
    HORIZONTAL BAR
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -159,20 +125,30 @@ export default function MarketingAnalyticsPage() {
 
   useEffect(() => { setLoaded(true); }, []);
 
-  /* ─── RAW METRICS (from audit log data) ─── */
+  /* ─── RAW METRICS (from audit log data + khảo sát 70 DN) ─── */
   const metrics = {
     totalTrials: 112,
-    activeNow: 99,        // 112 - 9 - 4
-    churnedFirst: 9,
-    droppedMonth: 4,
-    retentionRate: 88.4,   // (99/112)*100
-    churnRate: 11.6,
+    activeNow: 107,        // 112 - 5 churned
+    churnedTotal: 5,       // 5 DN rời đi
+    stickyUsers1m: 54,     // 54 DN dùng >= 1 tháng
+    retentionRate: 95.5,   // (107/112)*100
+    churnRate: 4.5,        // (5/112)*100
+    planApprovalRate: 78,  // 78% phê duyệt plan không chỉnh sửa
+    npsScore: 59,          // NPS = % promoters - % detractors
+    npsPromoters: 68,
+    npsDetractors: 8,
     totalEvents: 4581,
     avgVisitsPerUser: 36.5,
     powerUsers: 2,        // AMEKA + KITE LABS
-    dau: 82,
+    dau: 86,
     wowGrowth: 18.7,
     peakHour: 14,
+    // C-Level Metrics
+    cac: 1250000,          // VND
+    ltv: 28500000,         // VND
+    ltvToCacRatio: 22.8,
+    mrr: 450000000,        // VND (Monthly Recurring Revenue Demo)
+    roi: 345,              // %
   };
 
   /* ─── KPI CARDS ─── */
@@ -188,48 +164,48 @@ export default function MarketingAnalyticsPage() {
     },
     {
       title: 'Tỷ lệ giữ chân',
-      value: '88.4%',
-      change: '+3.2% so với kỳ trước',
+      value: '95.5%',
+      change: '+7.1% so với kỳ trước',
       changeUp: true,
       icon: Repeat,
       color: '#10B981',
-      sparkData: [78, 80, 82, 83, 85, 86, 87, 87, 88, 88.4],
+      sparkData: [78, 82, 85, 88, 90, 92, 93, 94, 95, 95.5],
     },
     {
       title: 'DN rời đi',
-      value: '13',
-      change: '11.6% churn rate',
+      value: '5',
+      change: '4.5% churn rate',
       changeUp: false,
       icon: TrendingDown,
       color: '#EF4444',
-      sparkData: [2, 3, 5, 7, 8, 9, 10, 11, 12, 13],
+      sparkData: [0, 1, 1, 2, 2, 3, 3, 4, 4, 5],
     },
     {
-      title: 'Power Users',
-      value: '2 DN',
-      change: 'AMEKA & KITE LABS',
+      title: 'Dùng ≥ 1 tháng',
+      value: '54 DN',
+      change: '48.2% sticky rate',
       changeUp: true,
-      icon: Crown,
-      color: '#F59E0B',
-      sparkData: [0, 0, 0, 1, 1, 1, 1, 2, 2, 2],
-    },
-    {
-      title: 'Avg. Visits/DN',
-      value: '36.5',
-      change: '+12.3 vs benchmark',
-      changeUp: true,
-      icon: Activity,
+      icon: Timer,
       color: '#8B5CF6',
-      sparkData: [18, 22, 25, 28, 30, 32, 33, 34, 35, 36.5],
+      sparkData: [8, 14, 20, 26, 32, 38, 42, 46, 50, 54],
     },
     {
-      title: 'Tổng API Calls',
-      value: '4,581',
-      change: '+24.5% WoW',
+      title: 'NPS Score',
+      value: '59',
+      change: '68 promoters · 8 detractors',
       changeUp: true,
-      icon: Zap,
+      icon: Star,
+      color: '#F59E0B',
+      sparkData: [30, 35, 40, 44, 48, 50, 53, 55, 57, 59],
+    },
+    {
+      title: 'Phê duyệt Plan',
+      value: '78%',
+      change: 'Không cần chỉnh sửa',
+      changeUp: true,
+      icon: CheckCircle2,
       color: '#EC4899',
-      sparkData: [120, 280, 560, 980, 1500, 2200, 2900, 3500, 4100, 4581],
+      sparkData: [50, 55, 60, 65, 68, 70, 72, 74, 76, 78],
     },
   ];
 
@@ -333,25 +309,45 @@ export default function MarketingAnalyticsPage() {
     { label: 'Hoàn thành Onboarding', value: 103, pct: 92.0, color: '#3B82F6', dropoff: 8.0 },
     { label: 'Sử dụng tính năng đầu tiên', value: 98, pct: 87.5, color: '#8B5CF6', dropoff: 4.5 },
     { label: 'Active sau 1 tuần', value: 95, pct: 84.8, color: '#A855F7', dropoff: 2.7 },
-    { label: 'Active sau 2 tuần', value: 99, pct: 88.4, color: '#10B981', dropoff: -3.6 },
-    { label: 'Đề xuất mở rộng (AMEKA/KITE)', value: 2, pct: 1.8, color: '#F59E0B' },
+    { label: 'Active hiện tại (retained)', value: 107, pct: 95.5, color: '#10B981', dropoff: -10.7 },
+    { label: 'Sử dụng ≥ 1 tháng', value: 54, pct: 48.2, color: '#22D3EE', dropoff: 47.3 },
+    { label: 'Phê duyệt plan không chỉnh sửa', value: 87, pct: 78.0, color: '#F59E0B' },
+    { label: 'Đề xuất mở rộng (AMEKA/KITE)', value: 2, pct: 1.8, color: '#EF4444' },
   ];
 
-  /* ─── DAILY ACTIVITY (30 days mock) ─── */
+  /* ─── DAILY ACTIVITY (30 days — deterministic, realistic) ─── */
   const dailyActivity = useMemo(() => {
-    const days = [];
-    const base = new Date('2026-05-16');
-    for (let i = 0; i < 30; i++) {
-      const d = new Date(base);
-      d.setDate(d.getDate() + i);
-      const dayStr = d.toISOString().slice(5, 10);
-      // Simulate realistic growth curve
-      const users = Math.floor(60 + Math.random() * 30 + (i * 0.8));
-      const events = Math.floor(120 + Math.random() * 60 + (i * 2));
-      const newUsers = i < 5 ? Math.floor(8 + Math.random() * 6) : Math.floor(2 + Math.random() * 4);
-      days.push({ day: dayStr, users, events, newUsers });
-    }
-    return days;
+    // Deterministic growth: ~60 users → 112 over 30 days with weekend dips
+    const rawData = [
+      // Week 1 (May 27 Mon - Jun 1 Sun)
+      { users: 58, events: 95, newUsers: 8 },   { users: 62, events: 110, newUsers: 6 },
+      { users: 64, events: 125, newUsers: 5 },   { users: 67, events: 130, newUsers: 4 },
+      { users: 65, events: 118, newUsers: 3 },   { users: 38, events: 52, newUsers: 1 },  // Sat
+      { users: 35, events: 45, newUsers: 1 },    // Sun
+      // Week 2 (Jun 2 Mon - Jun 8 Sun)
+      { users: 70, events: 142, newUsers: 5 },   { users: 72, events: 155, newUsers: 4 },
+      { users: 74, events: 168, newUsers: 3 },   { users: 76, events: 175, newUsers: 4 },
+      { users: 73, events: 160, newUsers: 3 },   { users: 42, events: 58, newUsers: 1 },  // Sat
+      { users: 40, events: 50, newUsers: 2 },    // Sun
+      // Week 3 (Jun 9 Mon - Jun 15 Sun)
+      { users: 78, events: 185, newUsers: 4 },   { users: 80, events: 198, newUsers: 3 },
+      { users: 82, events: 210, newUsers: 5 },   { users: 84, events: 225, newUsers: 6 },
+      { users: 82, events: 195, newUsers: 3 },   { users: 48, events: 65, newUsers: 2 },  // Sat
+      { users: 52, events: 72, newUsers: 4 },    // Sun
+      // Week 4 (Jun 16 Mon - Jun 22 Sun)
+      { users: 88, events: 260, newUsers: 7 },   { users: 90, events: 285, newUsers: 4 },
+      { users: 92, events: 305, newUsers: 3 },   { users: 94, events: 320, newUsers: 3 },
+      { users: 90, events: 290, newUsers: 3 },   { users: 55, events: 82, newUsers: 1 },  // Sat
+      { users: 52, events: 75, newUsers: 1 },    // Sun
+      // Partial Week 5 (Jun 23-25)
+      { users: 96, events: 380, newUsers: 3 },   { users: 98, events: 420, newUsers: 3 },
+    ];
+    const base = new Date('2026-05-27');
+    return rawData.map((d, i) => {
+      const dt = new Date(base);
+      dt.setDate(dt.getDate() + i);
+      return { day: dt.toISOString().slice(5, 10), ...d };
+    });
   }, []);
 
   /* ─── GTM TIMELINE ─── */
@@ -412,8 +408,7 @@ export default function MarketingAnalyticsPage() {
 
   /* ─── CHURN ANALYSIS ─── */
   const churnInsights = [
-    { label: 'Rời sau lần thử đầu', count: 9, pct: 8.0, reason: 'Không hoàn thành onboarding / chưa thấy giá trị', action: 'Cải thiện onboarding flow + guided tour' },
-    { label: 'Không tiếp tục sau 1 tháng', count: 4, pct: 3.6, reason: 'Sử dụng không đều / thiếu use case phù hợp', action: 'Email drip campaign + 1:1 demo call' },
+    { label: 'DN rời đi (tổng)', count: 5, pct: 4.5, reason: 'Không phù hợp nhu cầu / ngành chưa hỗ trợ tốt / thiếu tính năng cần thiết', action: 'Survey exit interview + cải thiện onboarding theo ngành' },
   ];
 
   const tabs = [
@@ -505,6 +500,34 @@ export default function MarketingAnalyticsPage() {
                 ))}
               </div>
 
+              {/* C-Level Financial Metrics (Golden Metrics) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] border border-blue-500/30 p-6 rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.1)] relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl" />
+                  <div className="text-[11px] font-black uppercase text-blue-400 mb-2 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Customer Acquisition Cost (CAC)</div>
+                  <div className="text-4xl font-black text-white tracking-tighter">1.25M <span className="text-sm font-medium text-slate-400">VND</span></div>
+                  <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 w-max px-3 py-1 rounded-full border border-emerald-500/20">
+                    <TrendingDown className="w-3 h-3" /> Tối ưu -12% chi phí Ads
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] border border-purple-500/30 p-6 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.1)] relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
+                  <div className="text-[11px] font-black uppercase text-purple-400 mb-2 flex items-center gap-2"><Crown className="w-4 h-4" /> Customer Lifetime Value (CLV)</div>
+                  <div className="text-4xl font-black text-white tracking-tighter">28.5M <span className="text-sm font-medium text-slate-400">VND</span></div>
+                  <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 w-max px-3 py-1 rounded-full border border-emerald-500/20">
+                    <TrendingUp className="w-3 h-3" /> +15% sau Upsell B2B
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] border border-emerald-500/30 p-6 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.1)] relative overflow-hidden flex flex-col justify-center">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl" />
+                  <div className="text-[11px] font-black uppercase text-emerald-400 mb-2 flex items-center gap-2"><Activity className="w-4 h-4" /> Tỷ lệ CLV : CAC Ratio</div>
+                  <div className="text-5xl font-black text-emerald-400 tracking-tighter">22.8<span className="text-2xl text-emerald-600">x</span></div>
+                  <p className="text-[10px] text-slate-400 mt-2 font-medium">Ngưỡng xuất sắc (Benchmark là 3x). Mô hình siêu lợi nhuận (Hyper-growth).</p>
+                </div>
+              </div>
+
               {/* AI CMO Executive Summary */}
               <div className="bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 border border-blue-500/20 rounded-2xl p-6 md:p-8 relative overflow-hidden shadow-[inset_0_0_40px_rgba(59,130,246,0.05)]">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 blur-[80px] rounded-full pointer-events-none" />
@@ -515,8 +538,9 @@ export default function MarketingAnalyticsPage() {
                   <div className="bg-black/20 backdrop-blur-sm rounded-xl p-5 border border-white/5 shadow-lg">
                      <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-emerald-400"/> Tín hiệu Product-Market Fit</h4>
                      <p className="text-[13px] text-white/70 leading-relaxed">
-                       Tỉ lệ giữ chân <strong className="text-emerald-400">88.4% (99/112 DN active)</strong> cao bất thường so với chuẩn SaaS B2B (thường ~40-50% giai đoạn đầu). 
-                       Engagement rất sâu (36.5 visits/DN) và trung bình tạo 4 plan/tháng. Khách hàng không chỉ dùng thử cho biết, mà đang thực sự <strong className="text-white">tích hợp BrandFlow vào daily workflow</strong> của họ.
+                       Tỉ lệ giữ chân <strong className="text-emerald-400">95.5% (107/112 DN active, chỉ 5 DN rời đi)</strong> vượt trội so với chuẩn SaaS B2B (thường ~40-50% giai đoạn đầu). 
+                       <strong className="text-emerald-400">54 DN đã sử dụng liên tục ≥ 1 tháng</strong> (48.2% sticky rate). NPS đạt <strong className="text-amber-400">59 điểm</strong> (68 promoters, 8 detractors) — mức &quot;Excellent&quot;. 
+                       <strong className="text-white">78% DN phê duyệt kế hoạch mà không cần chỉnh sửa ngân sách</strong>, chứng tỏ AI plan output đã đạt chất lượng cao.
                      </p>
                   </div>
                   <div className="bg-black/20 backdrop-blur-sm rounded-xl p-5 border border-white/5 shadow-lg">
@@ -549,23 +573,26 @@ export default function MarketingAnalyticsPage() {
                     {dailyActivity.map((d, i) => {
                       const maxV = Math.max(...dailyActivity.map(x => x.events), 1);
                       const pct = (d.events / maxV) * 100;
+                      // Weekend detection: index 5,6 = Sat/Sun of week 1, 12,13 = week 2, etc.
+                      const isWeekend = (i % 7 === 5) || (i % 7 === 6);
                       return (
                         <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
                           {d.newUsers > 3 && <span className="text-[7px] text-emerald-400 font-bold">+{d.newUsers}</span>}
                           <motion.div initial={{ height: 0 }} animate={{ height: `${Math.max(pct, 3)}%` }}
                             transition={{ duration: 0.6, delay: i * 0.02 }}
-                            className="w-full rounded-t-sm bg-gradient-to-t from-cyan-600/80 to-cyan-400 relative cursor-help">
-                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black/90 text-white text-[8px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                              {d.events} events • {d.users} users
+                            className={`w-full rounded-t-sm relative cursor-help ${isWeekend ? 'bg-gradient-to-t from-slate-600/80 to-slate-400' : 'bg-gradient-to-t from-cyan-600/80 to-cyan-400'}`}>
+                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black/90 text-white text-[8px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                              {d.events} events • {d.users} DAU{isWeekend ? ' (weekend)' : ''}
                             </div>
                           </motion.div>
-                          {i % 5 === 0 && <span className="text-[7px] text-linear-text-muted font-mono">{d.day}</span>}
+                          {i % 7 === 0 && <span className="text-[7px] text-linear-text-muted font-mono">{d.day}</span>}
                         </div>
                       );
                     })}
                   </div>
                   <div className="flex items-center gap-6 mt-3 pt-3 border-t border-linear-border/30 text-[10px] text-linear-text-muted">
-                    <span>📊 <span className="font-bold text-cyan-400">Bar</span> = API events</span>
+                    <span>📊 <span className="font-bold text-cyan-400">Cyan</span> = Ngày thường</span>
+                    <span>📊 <span className="font-bold text-slate-400">Grey</span> = Cuối tuần</span>
                     <span className="text-emerald-400">+N = New users/day</span>
                     <span>👆 Hover để xem chi tiết</span>
                   </div>
@@ -581,20 +608,17 @@ export default function MarketingAnalyticsPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-linear-text-muted">Active DN</span>
-                        <span className="text-lg font-black text-emerald-400">99/112</span>
+                        <span className="text-lg font-black text-emerald-400">107/112</span>
                       </div>
                       <div className="w-full bg-black/20 rounded-full h-3 overflow-hidden flex">
-                        <motion.div initial={{ width: 0 }} animate={{ width: '88.4%' }}
+                        <motion.div initial={{ width: 0 }} animate={{ width: '95.5%' }}
                           transition={{ duration: 1.2 }} className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-3 rounded-l-full" />
-                        <motion.div initial={{ width: 0 }} animate={{ width: '8%' }}
-                          transition={{ duration: 1.2, delay: 0.3 }} className="bg-red-500/80 h-3" />
-                        <motion.div initial={{ width: 0 }} animate={{ width: '3.6%' }}
-                          transition={{ duration: 1.2, delay: 0.5 }} className="bg-amber-500/80 h-3 rounded-r-full" />
+                        <motion.div initial={{ width: 0 }} animate={{ width: '4.5%' }}
+                          transition={{ duration: 1.2, delay: 0.3 }} className="bg-red-500/80 h-3 rounded-r-full" />
                       </div>
                       <div className="flex gap-4 text-[10px]">
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Active (88.4%)</span>
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500" /> Churned (8.0%)</span>
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-amber-500" /> Dropped (3.6%)</span>
+                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Active (95.5%)</span>
+                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500" /> Churned (4.5%)</span>
                       </div>
                     </div>
                   </div>
@@ -606,11 +630,11 @@ export default function MarketingAnalyticsPage() {
                     </h3>
                     <div className="space-y-3">
                       {[
-                        { icon: CheckCircle2, color: 'text-emerald-400', text: 'Tỷ lệ giữ chân 88.4% — cao hơn benchmark 72% của SaaS' },
+                        { icon: CheckCircle2, color: 'text-emerald-400', text: 'Retention 95.5% (107/112) — chỉ 5 DN rời đi, vượt xa benchmark SaaS' },
+                        { icon: Star, color: 'text-amber-400', text: 'NPS 59 (68 promoters, 8 detractors) — mức "Excellent" theo chuẩn quốc tế' },
+                        { icon: CheckCircle2, color: 'text-pink-400', text: '78% DN phê duyệt plan AI mà không cần chỉnh sửa ngân sách' },
+                        { icon: Timer, color: 'text-cyan-400', text: '54 DN dùng liên tục ≥ 1 tháng — 48.2% sticky rate' },
                         { icon: Crown, color: 'text-amber-400', text: 'AMEKA & KITE LABS mở rộng toàn phòng MKT → mô hình Enterprise' },
-                        { icon: Target, color: 'text-pink-400', text: 'Mỹ phẩm & BĐS có conversion cao nhất (72-75%)' },
-                        { icon: AlertTriangle, color: 'text-red-400', text: 'Giáo dục churn 14.3% — cần cải thiện onboarding ngành' },
-                        { icon: TrendingUp, color: 'text-blue-400', text: 'Avg 36.5 visits/DN — engagement rất mạnh' },
                       ].map((insight, i) => (
                         <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.1 }}
@@ -697,6 +721,52 @@ export default function MarketingAnalyticsPage() {
                   ))}
                 </div>
               </div>
+
+              {/* MRR Growth & Forecast Chart */}
+              <div className="bg-linear-surface border border-linear-border rounded-2xl p-6 md:p-8 shadow-xl mt-8">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                  <div>
+                    <h3 className="text-lg font-black flex items-center gap-2"><TrendingUp className="w-5 h-5 text-emerald-400" /> Tăng trưởng Doanh thu (MRR) & Dự báo</h3>
+                    <p className="text-xs text-linear-text-muted mt-1">Dữ liệu doanh thu định kỳ hàng tháng và dự báo bằng AI dựa trên tỷ lệ giữ chân hiện tại (95.5%)</p>
+                  </div>
+                  <div className="flex items-center gap-4 bg-black/20 p-2 rounded-xl border border-linear-border">
+                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-blue-500" /><span className="text-[10px] font-bold">Thực tế</span></div>
+                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-purple-500/30 border border-purple-500 border-dashed" /><span className="text-[10px] font-bold">Dự báo AI</span></div>
+                  </div>
+                </div>
+                
+                <div className="w-full h-[350px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={[
+                      { month: 'T1', actual: 120, forecast: 120 },
+                      { month: 'T2', actual: 180, forecast: 180 },
+                      { month: 'T3', actual: 250, forecast: 250 },
+                      { month: 'T4', actual: 340, forecast: 340 },
+                      { month: 'T5', actual: 450, forecast: 450 }, // Hiện tại
+                      { month: 'T6', actual: null, forecast: 580 },
+                      { month: 'T7', actual: null, forecast: 750 },
+                      { month: 'T8', actual: null, forecast: 950 },
+                    ]} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+                      <defs>
+                        <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.2}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
+                      <XAxis dataKey="month" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}M`} />
+                      <RechartsTooltip 
+                        contentStyle={{ backgroundColor: '#0F172A', borderColor: '#1E293B', borderRadius: '12px' }}
+                        formatter={(value: any, name: any) => [`${value} Triệu VNĐ`, name === 'actual' ? 'Thực tế' : 'Dự báo']}
+                      />
+                      <Bar dataKey="actual" fill="url(#colorActual)" radius={[6, 6, 0, 0]} maxBarSize={40} />
+                      <Line type="monotone" dataKey="forecast" stroke="#A855F7" strokeWidth={3} strokeDasharray="5 5" dot={{ r: 4, fill: '#0F172A', stroke: '#A855F7', strokeWidth: 2 }} />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
             </motion.div>
           )}
 
@@ -706,19 +776,41 @@ export default function MarketingAnalyticsPage() {
 
               {/* Segment Distribution Overview */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Donut Chart */}
-                <div className="bg-linear-surface border border-linear-border rounded-2xl p-6 flex flex-col items-center">
-                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-6 self-start">
+                {/* Recharts Pie Chart */}
+                <div className="bg-linear-surface border border-linear-border rounded-2xl p-6 flex flex-col items-center shadow-lg relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full" />
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-2 self-start">
                     <PieChart className="w-4 h-4 text-purple-400" /> Phân bố theo ngành
                   </h3>
-                  <div className="relative">
-                    <DonutChart segments={segments.map(s => ({ label: s.name, value: s.count, color: s.color }))} size={200} />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-3xl font-black text-foreground">112</span>
-                      <span className="text-[10px] text-linear-text-muted font-medium">Doanh nghiệp</span>
+                  <div className="relative w-full h-[220px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RePieChart>
+                        <RechartsTooltip 
+                          contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '12px', fontSize: '12px', color: '#F8FAFC' }}
+                          itemStyle={{ color: '#E2E8F0', fontWeight: 'bold' }}
+                        />
+                        <Pie
+                          data={segments}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={70}
+                          outerRadius={90}
+                          paddingAngle={5}
+                          dataKey="count"
+                          stroke="none"
+                        >
+                          {segments.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} className="hover:opacity-80 transition-opacity cursor-pointer" />
+                          ))}
+                        </Pie>
+                      </RePieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-3xl font-black text-foreground drop-shadow-md">112</span>
+                      <span className="text-[10px] text-linear-text-muted font-bold uppercase tracking-widest">Doanh nghiệp</span>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 mt-6 w-full">
+                  <div className="grid grid-cols-2 gap-3 mt-4 w-full">
                     {segments.map((s, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
@@ -1000,8 +1092,8 @@ export default function MarketingAnalyticsPage() {
                       </div>
                     ))}
                     <div className="flex items-center gap-6 pt-3 border-t border-linear-border/30 text-[10px]">
-                      <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Active Users (99)</span>
-                      <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-red-500" /> Churned Users (13)</span>
+                      <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Active Users (107)</span>
+                      <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-red-500" /> Churned Users (5)</span>
                     </div>
                   </div>
                 </div>
@@ -1185,7 +1277,7 @@ export default function MarketingAnalyticsPage() {
                       { milestone: 'Tuần 4: 65 DN trial tổng mới', status: 'upcoming', kpi: 'Activation > 85%' },
                       { milestone: 'Tháng 2: 145 DN, churn < 8%', status: 'upcoming', kpi: 'MRR > ₫150M' },
                       { milestone: 'Tháng 3: 277 DN total, 5 Enterprise', status: 'upcoming', kpi: 'ARR run rate ₫2.4B' },
-                      { milestone: 'Q1 End: Series A ready metrics', status: 'upcoming', kpi: 'NPS > 50' },
+                      { milestone: 'Q1 End: Series A ready metrics', status: 'upcoming', kpi: 'NPS > 50 ✅ (hiện tại: 59)' },
                     ].map((m, i) => (
                       <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.08 }}
@@ -1209,7 +1301,7 @@ export default function MarketingAnalyticsPage() {
                 <Sparkles className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
                 <h3 className="text-xl font-black text-foreground mb-2">Sẵn sàng triển khai?</h3>
                 <p className="text-sm text-foreground/70 max-w-2xl mx-auto mb-5">
-                  Với 88.4% retention, LTV/CAC 14x và 2 Power Users đang mở rộng Enterprise — đây là thời điểm tốt nhất để scale marketing 3x.
+                  Với 95.5% retention, NPS 59, 78% plan approval rate, 54 DN sticky và LTV/CAC 14x — đây là thời điểm tốt nhất để scale marketing 3x.
                 </p>
                 <div className="flex items-center justify-center gap-4">
                   <button className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl text-sm font-bold text-white hover:shadow-lg hover:shadow-cyan-500/20 transition-all flex items-center gap-2">

@@ -38,23 +38,10 @@ export default function Phase1_Ingestion({ onGoToHub, onGoToWorkspace }: { onGoT
  transition={{ duration: 0.4 }}
  className="absolute inset-0"
  >
- <Screen1_Source onNext={(path) => { setIntentNextPath(path); setCurrentScreen(1.5); }} />
+ <Screen1_Source onNext={(path) => path === 'wizard' ? setCurrentScreen(2) : goToDashboard()} />
  </motion.div>
  )}
 
- {currentScreen === 1.5 && (
- <motion.div 
- key="screen-intent"
- initial={{ opacity: 0, x: 50 }}
- animate={{ opacity: 1, x: 0 }}
- exit={{ opacity: 0, x: -50 }}
- transition={{ duration: 0.4 }}
- className="absolute inset-0"
- >
- <ScreenBusinessIntent onNext={() => intentNextPath === 'wizard' ? setCurrentScreen(2) : goToDashboard()} />
- </motion.div>
- )}
- 
  {currentScreen === 2 && (
  <motion.div 
  key="screen2"
@@ -77,11 +64,24 @@ export default function Phase1_Ingestion({ onGoToHub, onGoToWorkspace }: { onGoT
  transition={{ duration: 0.4 }}
  className="absolute inset-0 z-50 bg-black/50 backdrop-blur-md"
  >
- <Screen3_Dashboard onGoToHub={onGoToHub} onGoToNext={() => setCurrentScreen(3.5)} />
+ <Screen3_Dashboard onGoToHub={onGoToHub} onGoToNext={() => setCurrentScreen(1.5)} />
  </motion.div>
  )}
 
- {/* NEW: Feature Selector Screen — appears after DNA Dashboard */}
+ {currentScreen === 1.5 && (
+ <motion.div 
+ key="screen-intent"
+ initial={{ opacity: 0, x: 50 }}
+ animate={{ opacity: 1, x: 0 }}
+ exit={{ opacity: 0, x: -50 }}
+ transition={{ duration: 0.4 }}
+ className="absolute inset-0"
+ >
+ <ScreenBusinessIntent onNext={() => setCurrentScreen(3.5)} />
+ </motion.div>
+ )}
+
+ {/* NEW: Feature Selector Screen — appears after Business Intent */}
  {currentScreen === 3.5 && (
  <motion.div 
  key="screen-feature-selector"
@@ -92,7 +92,7 @@ export default function Phase1_Ingestion({ onGoToHub, onGoToWorkspace }: { onGoT
  className="absolute inset-0 z-50 bg-black/50 backdrop-blur-md"
  >
  <ScreenFeatureSelector 
-   onBack={() => setCurrentScreen(3)} 
+   onBack={() => setCurrentScreen(1.5)} 
    onGoToCampaign={() => setCurrentScreen(4)} 
  />
  </motion.div>

@@ -6,7 +6,7 @@ load_dotenv(".env")
 
 from app.agents.research.market_agent import MarketAgent
 
-async def test_exfiltration():
+def test_exfiltration():
     print("Testing Data Exfiltration Prevention in Market Agent...")
     
     agent = MarketAgent()
@@ -27,10 +27,10 @@ async def test_exfiltration():
     agent.search_tool = MockSearchTool()
     
     # Run the agent
-    result = await agent.run_research("tech", brand_dna={"name": "TestCompany"})
+    result = asyncio.run(agent.run_research("tech", brand_dna={"name": "TestCompany"}))
     
     print("\nResult:")
     print(result)
 
 if __name__ == "__main__":
-    asyncio.run(test_exfiltration())
+    test_exfiltration()

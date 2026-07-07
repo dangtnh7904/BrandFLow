@@ -4,10 +4,27 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Calculator, Download, CheckCircle, Terminal } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFormStore } from '@/store/useFormStore';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function Phase4_Execution({ onBack, onNext }: { onBack: () => void, onNext?: () => void }) {
   const { language } = useLanguage();
   const [step, setStep] = useState(0); 
+  const { brandDNA, wizardAnswers } = useFormStore();
+  const isBepNhaMoc = brandDNA?.brand_name?.includes('Nhà Mộc') || wizardAnswers?.company_name?.includes('Nhà Mộc');
+
+  const chartData = isBepNhaMoc ? [
+    { month: 'M1', mrr: 1.2, cac: 250 },
+    { month: 'M2', mrr: 1.45, cac: 210 },
+    { month: 'M3', mrr: 1.7, cac: 180 },
+    { month: 'M4', mrr: 2.0, cac: 160 },
+    { month: 'M5', mrr: 2.25, cac: 150 },
+    { month: 'M6', mrr: 2.5, cac: 145 },
+  ] : [
+    { month: 'M1', mrr: 1.0, cac: 200 },
+    { month: 'M3', mrr: 1.3, cac: 180 },
+    { month: 'M6', mrr: 1.8, cac: 150 },
+  ];
 
   useEffect(() => {
     if (window && (window as any).__DEMO_MODE__) {
@@ -82,19 +99,35 @@ export default function Phase4_Execution({ onBack, onNext }: { onBack: () => voi
         <div className="flex flex-col gap-6">
           <div className="bg-linear-surface/60 backdrop-blur-md border border-linear-border rounded-3xl p-6 shadow-xl flex-1 flex flex-col justify-center relative overflow-hidden">
              {step >= 2 ? (
-               <motion.div initial={{opacity:0, scale:0.9}} animate={{opacity:1, scale:1}} className="text-center">
-                 <Calculator className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
-                 <h3 className="text-xl font-bold text-white mb-2">Target P&L Secured</h3>
-                 <div className="flex justify-center items-center space-x-8 mt-6">
+               <motion.div initial={{opacity:0, scale:0.9}} animate={{opacity:1, scale:1}} className="text-center w-full h-full flex flex-col">
+                 <div className="flex items-center justify-center mb-2">
+                   <Calculator className="w-6 h-6 text-emerald-400 mr-2" />
+                   <h3 className="text-lg font-bold text-white">Target P&L Secured</h3>
+                 </div>
+                 <div className="flex justify-center items-center space-x-8 mb-4">
                    <div>
-                     <p className="text-slate-400 text-sm font-mono uppercase tracking-widest">Est. Revenue</p>
-                     <p className="text-3xl font-bold text-emerald-400 mt-1">1.8 Tỷ</p>
+                     <p className="text-slate-400 text-[10px] font-mono uppercase tracking-widest">Est. MRR</p>
+                     <p className="text-2xl font-bold text-emerald-400">{isBepNhaMoc ? "2.5 Tỷ" : "1.8 Tỷ"}</p>
                    </div>
-                   <div className="w-px h-12 bg-slate-700" />
+                   <div className="w-px h-8 bg-slate-700" />
                    <div>
-                     <p className="text-slate-400 text-sm font-mono uppercase tracking-widest">CAC / LTV</p>
-                     <p className="text-3xl font-bold text-blue-400 mt-1">1:4.2</p>
+                     <p className="text-slate-400 text-[10px] font-mono uppercase tracking-widest">CLV / CAC</p>
+                     <p className="text-2xl font-bold text-blue-400">{isBepNhaMoc ? "22.8x" : "4.2x"}</p>
                    </div>
+                 </div>
+                 
+                 <div className="flex-1 w-full min-h-[120px] mt-2">
+                   <ResponsiveContainer width="100%" height="100%">
+                     <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: -20 }}>
+                       <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                       <XAxis dataKey="month" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                       <YAxis yAxisId="left" stroke="#10b981" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => v + 'T'} />
+                       <YAxis yAxisId="right" orientation="right" stroke="#3b82f6" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => v + 'k'} />
+                       <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', fontSize: '12px' }} />
+                       <Line yAxisId="left" type="monotone" dataKey="mrr" name="MRR (Tỷ)" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} activeDot={{ r: 6 }} />
+                       <Line yAxisId="right" type="monotone" dataKey="cac" name="CAC (VNĐ)" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, fill: '#3b82f6' }} activeDot={{ r: 6 }} />
+                     </LineChart>
+                   </ResponsiveContainer>
                  </div>
                </motion.div>
              ) : (

@@ -67,3 +67,38 @@
   - **Fixed (Database Completeness / Foreign Keys):** Added an auto-create logic in `save_forms_to_db` when processing the `default_project` or randomly supplied UI projects to prevent the `psycopg2.errors.ForeignKeyViolation`. Attached SQLAlchemy `db.rollback()` safety net so if single form drops, the rest 22 forms safely insert. 
   - **Fixed (Data Structural Validation):** Rebuilt the logic inside `generate_all_forms` to actively analyze schemas from LLaMA 3 returning. Added `_is_valid_form_data()` enforcing exact items matches (must contain JSON arrays of > 0 items). Any corrupt structural AI strings are intercepted and instantly replaced by seamless Regex Mock Templates to prevent UI React `.map()` crashes.
   - **Fixed (Frontend Invisible Data bug):** Patched `Screen2_Wizard.tsx` to automatically call `await useFormStore.getState().initializeProject();`. This resolves the issue where forms were incorrectly generated in the `default_project` bucket while the Next.js Client rendered `a1-mission` fetching a newly auto-generated UUID matching the user session. All 23 forms now show dynamically in the Data Table grids right after AI generation finish.
+
+### 2026-06-26
+- **Traction Metrics Update (Admin Dashboard + Analytics):**
+  - Updated `frontend/src/app/admin/page.tsx` (Admin Command Center) with real traction data from kh·∫£o s√°t 70 DN v·ª´a v√† nh·ªè.
+  - Updated `frontend/src/app/admin/analytics/page.tsx` (Marketing Analytics & GTM) with matching metrics.
+  - **Key metrics updated across both pages:**
+    - T·ªïng DN d√πng th·ª≠: 112
+    - DN active (retained): 107 ‚Üí Retention 95.5% (was 88.4%)
+    - DN r·ªùi ƒëi (churned): 5 (was 13)
+    - DN s·ª≠ d·ª•ng ‚â• 1 th√°ng: 54 (48.2% sticky rate) ‚Äî **new metric**
+    - NPS Score: 59 (68 promoters, 8 detractors) ‚Äî **new metric**
+    - Ph√™ duy·ªát plan kh√¥ng ch·ªânh s·ª≠a ng√¢n s√°ch: 78% ‚Äî **new metric**
+  - Added new KPI cards: NPS Score, Sticky Users (1 month), Plan Approval Rate.
+  - Updated funnel stages with "S·ª≠ d·ª•ng ‚â• 1 th√°ng" and "Ph√™ duy·ªát plan kh√¥ng ch·ªânh s·ª≠a".
+  - Updated Traction Highlights section (replaced Investment Highlights/TAM-SAM-SOM).
+  - Updated Audit Log tab with traction summary card.
+  - Updated AI CMO Advisory text to reflect new metrics.
+  - Updated churn analysis (consolidated to single entry: 5 DN).
+  - Updated retention health bar, key insights, and all downstream calculations.
+
+- **Fixed Pytest Suite Failures:**
+  - Resolved 11 failing test cases in backend CI environment.
+  - Updated Pydantic schema missing fields in `test_ai_logic.py`.
+  - Converted async `test_exfiltration.py` and `test_api.py` to sync execution compatible with Github Actions lacking `pytest-asyncio`.
+  - Reverted the dependency injection back to `_require_audit_admin_token` for Audit APIs in `main.py` ensuring it properly blocks unauthorized CI scrape tests with HTTP 403.
+  - Fixed trace output directory mocking inside `test_trace_logger.py`.
+  - Fixed ModuleNotFoundError for `workflow_graph` and `memory_rag` in `test_api.py` and `test_memory_rag.py`.
+
+- **Fixed IDE Dependency Errors:**
+  - Ran `pip install -r requirements.txt` to install missing packages like `slowapi`, `loguru`, and `openai`, resolving red IDE warnings.
+
+ -   * * [ 2 0 2 6 - 0 6 - 2 6 ] * *   T h Í m   l u ”n g   D e m o   ∑c   b i «t   c h o   B øp   N h ‡   M Ÿc   ( T ‡ i   k h o £n   U s e r   M o c k ) .   T °o   t r a n g   C . 4   D a s h b o a r d   C h i øn   l ∞„c   m Ù   p h œn g   W a r - R o o m   t h ›i   g i a n   t h Òc ,   c Û   k h £  n n g   g i £  l ≠p   s Ò  c —  n g o °i   c £n h   s Ât   g i £m   K P I   v ‡   k Ì c h   h o °t   A I   t · i   l ≠p   k ø  h o °c h   ( P i v o t i n g   B 2 B ) .  
+ 
+ -   * * [ 2 0 2 6 - 0 6 - 2 6 ] * *   U p g r a d e   M a r k e t i n g   A n a l y t i c s   D a s h b o a r d   c h o   C - L e v e l / C M O .   N h ˙ n g   3   c h …  s —  v ‡ n g   ( C A C ,   C L V ,   L T V : C A C   R a t i o ) ,   t h a y   t h ø  S V G   t )n h   b ±n g   R e c h a r t s   ( P i e C h a r t   c h o   P h ‚ n   k h ˙ c   n g ‡ n h ,   C o m p o s e d C h a r t   c h o   T n g   t r ∞ﬂn g   M R R   &   D Ò  b · o   A I ) .  
+ 

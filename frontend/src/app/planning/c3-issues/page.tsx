@@ -8,8 +8,8 @@ import PastelTable from '@/components/b2b/PastelTable';
 import WizardNavigation from '@/components/b2b/WizardNavigation';
 
 const ISSUES_DATA = [
-  { sbu: 'Sữa chua sấy', market: 'Tăng trưởng nhanh (40%)', comp: 'Khốc liệt về giá, đa dạng đối thủ', issue: 'Mở rộng dung tích nhỏ để tối ưu giá dùng thử.' },
-  { sbu: 'Trái cây sấy', market: 'Bão hòa, tăng trưởng chậm', comp: 'Dẫn đầu thị phần, ít biến động', issue: 'Tối ưu hóa chuỗi cung ứng logistics lạnh chung.' },
+  { sbu: 'Thực đơn Chữa lành', market: 'Tăng trưởng nhanh (40%)', comp: 'Khốc liệt về giá, đa dạng đối thủ', issue: 'Mở rộng dung tích nhỏ để tối ưu giá dùng thử.' },
+  { sbu: 'Giao hàng O2O (Zalo Mini App)', market: 'Bão hòa, tăng trưởng chậm', comp: 'Dẫn đầu thị phần, ít biến động', issue: 'Tối ưu hóa chuỗi cung ứng logistics lạnh chung.' },
 ];
 
 export default function PageC3Issues() {

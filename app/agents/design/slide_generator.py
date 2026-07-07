@@ -139,6 +139,38 @@ Từ Brand DNA và Business Context, sinh ra Marketing Proposal gồm 7 slides.
 Trả về ĐÚNG JSON array. KHÔNG thêm markdown backticks.
 """
 
+EXECUTIVE_BOARD_PROMPT = """Bạn là Chief Financial Officer (CFO) & Chief Marketing Officer (CMO) cấp cao.
+Từ Brand DNA, Business Context và Financial Data, hãy sinh ra Board-Ready Pitch Deck (Bản Cáo Bạch Hội Đồng Quản Trị) gồm 8 slides.
+
+<BRAND_DNA>
+{brand_dna}
+</BRAND_DNA>
+
+<BUSINESS_CONTEXT>
+{business_context}
+</BUSINESS_CONTEXT>
+
+MỖI SLIDE phải có cấu trúc JSON chính xác giống format đã mô tả.
+
+═══ 8 SLIDES BẮT BUỘC ═══
+
+1. **Cover**: Tiêu đề "Executive Board Report" + tên khách hàng + ngày.
+2. **Executive Summary**: Tóm tắt kế hoạch, mục tiêu MRR và điểm hòa vốn.
+3. **Market Opportunity**: Đánh giá thị trường và khoảng trống (Market Gap).
+4. **Marketing Strategy**: Chiến lược tiếp cận và định vị.
+5. **Zero-Based Budget**: Phân bổ ngân sách chi tiết (VND) và tỷ trọng.
+6. **Unit Economics**: Phân tích CAC, LTV, tỷ lệ LTV:CAC và điểm hòa vốn (Payback period).
+7. **Monte Carlo Risk Analysis**: Các kịch bản lợi nhuận (Worst/Base/Best Case) và quản trị rủi ro.
+8. **Next Steps / Sign-off**: Các bước hành động ngay lập tức và biểu mẫu duyệt.
+
+═══ TIÊU CHUẨN ═══
+- Thiết kế cực kỳ tối giản, dùng bảng màu Corporate (Xanh navy, xám, trắng).
+- Số liệu tài chính phải NỔI BẬT và RÕ RÀNG. 
+- Ngôn ngữ chuyên môn tài chính và marketing (Unit Economics, CAC, LTV, ROI, Break-even).
+
+Trả về ĐÚNG JSON array. KHÔNG thêm markdown backticks.
+"""
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # SLIDE GENERATOR CLASS
@@ -151,6 +183,7 @@ class SlideGenerator:
         "brand_guideline": BRAND_GUIDELINE_PROMPT,
         "pitch_deck": PITCH_DECK_PROMPT,
         "proposal": PROPOSAL_PROMPT,
+        "executive_board": EXECUTIVE_BOARD_PROMPT,
     }
     
     def __init__(self):

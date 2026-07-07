@@ -88,6 +88,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     display_name: Optional[str] = "BrandFlow User"
+    invite_code: Optional[str] = None
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -122,11 +123,19 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     # Tự động set admin cho email nội bộ
     is_admin = True if user.email == "admin@brandflow.ai" else False
     
+    # Xác định Tier cho người dùng
+    tier = "FREE"
+    if user.invite_code == os.environ.get("BETA_INVITE_CODE", "ENTERPRISE_BETA_2026"):
+        tier = "PRO"
+    elif is_admin:
+        tier = "PRO"
+    
     new_user = User(
         email=user.email,
         password_hash=hashed_password,
         display_name=user.display_name,
-        is_admin=is_admin
+        is_admin=is_admin,
+        tier=tier
     )
     db.add(new_user)
     db.commit()
@@ -315,3 +324,79 @@ def export_user_data(db: Session = Depends(get_db), current_user_id: str = Depen
         export_data["projects"].append(proj_data)
         
     return export_data
+
+
+# ═══════════════════════════════════════════════════════════════════
+# ADMIN APIs (Quản lý User & Beta Testing)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/admin/users")
+def get_all_users(db: Session = Depends(get_db), admin_id: str = Depends(get_admin_user)):
+    """Admin lấy danh sách tất cả users trên hệ thống."""
+    users = db.query(User).all()
+    return {
+        "status": "success", 
+        "data": [
+            {
+                "id": u.id, 
+                "email": u.email, 
+                "display_name": u.display_name,
+                "tier": u.tier, 
+                "is_admin": u.is_admin,
+                "created_at": u.created_at.isoformat()
+            } for u in users
+        ]
+    }
+
+class UpgradeTierRequest(BaseModel):
+    tier: str
+
+@router.post("/admin/users/{user_id}/upgrade")
+def upgrade_user_tier(user_id: str, req: UpgradeTierRequest, db: Session = Depends(get_db), admin_id: str = Depends(get_admin_user)):
+    """Admin nâng cấp tier cho khách hàng doanh nghiệp."""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
+    
+    allowed_tiers = ["FREE", "PLUS", "PRO"]
+    if req.tier not in allowed_tiers:
+        raise HTTPException(status_code=400, detail=f"Tier không hợp lệ. Phải là một trong: {allowed_tiers}")
+        
+    user.tier = req.tier
+    db.commit()
+    return {"status": "success", "message": f"Tài khoản {user.email} đã được nâng cấp lên hạng {req.tier}."}
+
+class AdminCreateUserRequest(BaseModel):
+    email: EmailStr
+    password: str
+    display_name: str
+    tier: str = "PRO"
+
+@router.post("/admin/users/create")
+def admin_create_user(req: AdminCreateUserRequest, db: Session = Depends(get_db), admin_id: str = Depends(get_admin_user)):
+    """Admin chủ động tạo tài khoản (Concierge Onboarding) cho doanh nghiệp."""
+    db_user = db.query(User).filter(User.email == req.email).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email này đã tồn tại trong hệ thống.")
+    
+    hashed_password = get_password_hash(req.password)
+    new_user = User(
+        email=req.email,
+        password_hash=hashed_password,
+        display_name=req.display_name,
+        tier=req.tier
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return {
+        "status": "success",
+        "message": f"Đã tạo thành công tài khoản {req.email} với hạng {req.tier}.",
+        "data": {
+            "id": new_user.id,
+            "email": new_user.email,
+            "tier": new_user.tier
+        }
+    }
+

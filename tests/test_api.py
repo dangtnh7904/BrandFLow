@@ -142,7 +142,7 @@ from app.core.access_audit import VisitorAuditStore
 from main import app
 
 client = TestClient(app)
-
+main.init_form_db()
 
 @pytest.fixture
 def isolated_audit_store(tmp_path):
@@ -193,10 +193,9 @@ def test_api_onboarding_interview(mock_generate):
     assert response.json()["status"] == "success"
     assert "rules" in response.json()
 
-@pytest.mark.asyncio
-@patch("main.DocumentIngestor")
-@patch("main.analyze_and_extract_dna")
-async def test_api_onboarding_upload(mock_analyze, MockIngestor):
+@patch("app.api.onboarding_routes.DocumentIngestor")
+@patch("app.api.onboarding_routes.extract_document_summary")
+def test_api_onboarding_upload(mock_analyze, MockIngestor):
     """
     Test 1.1: Kiểm tra endpoint /api/v1/onboarding/upload với mock file
     """
@@ -226,7 +225,7 @@ async def test_api_onboarding_upload(mock_analyze, MockIngestor):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "success"
-    assert "message" in data
+    assert "extracted_answers" in data
 
 
 def test_api_create_project_tdd():
@@ -629,7 +628,7 @@ def test_planning_execute_provider_error_envelope_strict(isolated_plan_registry,
     plan_hash = submit_response.json()["plan_hash"]
 
     with patch(
-        "workflow_graph._resolve_model_router",
+        "app.workflows.workflow_graph._resolve_model_router",
         return_value={
             "tier": "FREE",
             "policy": "tier_router_local_first",
@@ -676,7 +675,7 @@ def test_planning_execute_output_validation_error_envelope_strict(isolated_plan_
     plan_hash = submit_response.json()["plan_hash"]
 
     with patch(
-        "workflow_graph._build_output_artifacts",
+        "app.workflows.workflow_graph._build_output_artifacts",
         return_value={
             "version": "week1-output-v1",
             "json": "not-a-dict",

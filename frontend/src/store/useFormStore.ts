@@ -295,6 +295,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
       await get().updateForm('market_research', realData);
     } catch (e) {
       console.error("Market research failed. Fallback to mock data.", e);
+      // Giả lập thời gian suy nghĩ của AI để tạo cảm giác chân thực
+      await new Promise(resolve => setTimeout(resolve, 3500));
       
       // Fallback an toàn nếu backend chưa chạy hoặc lỗi
       const mockData = {
@@ -351,6 +353,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
       }
     } catch (error) {
       console.error("Debate API failed:", error);
+      // Giả lập thời gian AI Agents tranh luận
+      await new Promise(resolve => setTimeout(resolve, 4500));
       const fallbackLogs = [
         { agent: "CMO", role: "Giám đốc Marketing", message: "Kính thưa Ban Giám đốc. Dựa trên AI Insight, Customer Acquisition Cost (CAC) hiện tại đang quá cao do lạm dụng Price-Promotion (giảm giá), trong khi Lifetime Value (LTV) lại suy giảm. Tôi đề xuất chiến dịch 'Thơm Khói Bếp - Chữa Lành Tâm Hồn' tái định vị hệ thống sang phân khúc 'Mindful Dining' nhằm nâng cao Perceived Value. Tổng ngân sách Phase 1 & 2 đề xuất là 355 triệu VNĐ, dồn trọng tâm vào Cinematic Hero Video và Booking 30 KOLs/Food Reviewers để kích hoạt Earned Media." },
         { agent: "SYSTEM", role: "Hệ thống AI Kiểm toán", message: "⚠️ CẢNH BÁO RỦI RO (RED FLAG): Phân bổ ngân sách Media/Production chiếm tới 65% tổng ngân sách khởi điểm (High Sunk Cost). Mức độ rủi ro dòng tiền ngắn hạn (Cashflow Risk): CAO. Yêu cầu CFO thẩm định lại cấu trúc chi phí." },
@@ -418,6 +422,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
       }
     } catch (e) {
       console.error("Error calling extract-dna API. Fallback to Mock Data:", e);
+      // Giả lập thời gian phân tích tài liệu
+      await new Promise(resolve => setTimeout(resolve, 3000));
       const mockBrandDNA = {
         brand_name: "Hệ thống Bếp Nhà Mộc (F&B Enterprise)",
         core_value: "Di sản Nguyên bản (Authentic Heritage) - Ẩm thực Chữa lành (Food Therapy) - Sinh thái Khép kín (Closed-loop Ecology)",

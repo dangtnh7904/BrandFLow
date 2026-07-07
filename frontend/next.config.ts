@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  allowedDevOrigins: ['127.0.0.1', 'localhost'],
+  turbopack: {
+    root: __dirname,
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "110mb",

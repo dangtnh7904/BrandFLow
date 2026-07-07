@@ -26,7 +26,8 @@ const handleUnauthorized = () => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('brandflow_token');
     localStorage.removeItem('brandflow_user_id');
-    window.location.href = '/login';
+    // Bỏ redirect cứng để không làm đứt mạch demo
+    // window.location.href = '/login';
   }
 };
 
@@ -105,8 +106,9 @@ export const useFormStore = create<FormStore>((set, get) => ({
     const token = typeof window !== 'undefined' ? localStorage.getItem('brandflow_token') : null;
     
     if (!tokenUserId || !token) {
-      if (typeof window !== 'undefined') window.location.href = '/login';
-      return;
+      console.warn("No token found. Falling back to Demo Mode instead of redirecting.");
+      // We don't redirect to /login here anymore. We just let it fail and fall into the catch block for Demo Mode.
+      throw new Error("No token - Falling back to Demo Mode");
     }
 
     set({ initialized: true });
@@ -131,7 +133,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
         }
       } else if (listRes.status === 401) {
         handleUnauthorized();
-        return;
+        throw new Error("Unauthorized 401 - Falling back to Demo Mode");
       }
 
       // 3. Nếu chưa có project nào, tạo mới

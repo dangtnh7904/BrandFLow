@@ -4,81 +4,80 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { Target, Briefcase, Zap, TrendingUp, ShieldAlert, BarChart3, Layers, MessageSquare, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
-// Bảng màu đơn sắc chuyên nghiệp kiểu McKinsey/Bain
-const COLORS = ['#0f172a', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0'];
+// Bảng màu kết hợp sự chuyên nghiệp của BrandFlow (Slate) và dấu ấn Bếp Nhà Mộc (Amber/Wood/Emerald)
+const COLORS = ['#d97706', '#0f172a', '#10b981', '#334155', '#f59e0b', '#475569', '#059669'];
 
 const DEMO_EXPERT_DATA = {
   "goal_setting": {
-    "mission_statement": "Kiến tạo Bếp Nhà Mộc thành 'Thánh địa Mindful Dining' tiên phong tại Sài Gòn — Nơi chữa lành tâm hồn thị dân thông qua nghệ thuật Ẩm thực Việt di sản. Mục tiêu trung hạn (3 năm): Trở thành chuỗi F&B 'Wellness Dining' đầu tiên tại Việt Nam có định giá Pre-Series A đạt ngưỡng 50 tỷ VNĐ.",
+    "mission_statement": "Kiến tạo Bếp Nhà Mộc thành 'Thánh địa Mindful Dining' (Ẩm thực chánh niệm) tiên phong tại Sài Gòn phồn hoa. Không chỉ bán một bữa ăn, chúng ta trao đi 'Liệu pháp Chữa Lành' qua mâm cơm di sản và không gian 100+ năm tuổi để giải tỏa hội chứng Burnout của giới trẻ thành thị.",
     "core_competencies": [
-      { "competency": "Lợi thế Độc quyền (VRIO): Không gian kiến trúc nhà gỗ cổ truyền 100+ năm tuổi mang âm hưởng hoài niệm, rào cản gia nhập tuyệt đối.", "is_vrio": true },
-      { "competency": "Chuỗi cung ứng Vertical Integration: Hệ sinh thái nguyên liệu 100% Organic khép kín từ 12 nông trại địa phương đạt chứng nhận VietGAP.", "is_vrio": true },
-      { "competency": "Intellectual Property (IP) Thương hiệu: Bộ nhận diện 'Mộc' đã đăng ký bảo hộ sở hữu trí tuệ, 15+ công thức gia truyền mã hóa thành SOP.", "is_vrio": false },
-      { "competency": "First-Mover Advantage trong ngách 'Wellness Dining': Chưa có đối thủ trực tiếp nào kết hợp được Ẩm thực di sản + Không gian trị liệu.", "is_vrio": true }
+      { "competency": "Lợi thế Độc quyền (VRIO): Kiến trúc nhà cổ Bắc Bộ nguyên bản tạo ra 'Môi trường trị liệu' tĩnh lặng tuyệt đối, rào cản gia nhập hoàn hảo.", "is_vrio": true },
+      { "competency": "Chuỗi cung ứng Vertical Integration: Nguồn cung 100% Organic khép kín, công thức di sản 3 đời hoàn toàn không sử dụng bột ngọt (No MSG).", "is_vrio": true },
+      { "competency": "Intellectual Property (IP): Bộ nhận diện 'Mộc' đã đăng ký bảo hộ, quy trình chuẩn hóa (SOPs) sẵn sàng cho lộ trình nhượng quyền (Franchise).", "is_vrio": false },
+      { "competency": "First-Mover Advantage: Khai phá đại dương xanh trong ngách 'Wellness Dining', kết hợp ẩm thực hoài niệm và mô hình O2O Loyalty.", "is_vrio": true }
     ],
     "objectives": {
       "financial_goals": [
-        "Vượt điểm hòa vốn trong Quý 1. Tăng trưởng Revenue từ 1.2 tỷ lên mốc 1.8 tỷ VNĐ/tháng (+50% MoM), đạt Gross Margin ≥ 65% và EBITDA Margin ≥ 18%.",
-        "Tối ưu hóa phễu khách hàng trung thành: Đẩy Retention Rate từ 15% lên mức tiêu chuẩn vàng 35%. MRR đạt 500 triệu VNĐ.",
-        "Xây dựng tệp First-Party Data: Thu thập tối thiểu 15,000 Qualified Leads trên Zalo Mini App."
+        "Vượt đỉnh trì trệ (1.2 tỷ). Tăng trưởng Net Revenue lên mốc 1.8 tỷ VNĐ/tháng (+50%) trong Quý 1, hướng tới 2.5 tỷ vào Quý 2.",
+        "Tối ưu hóa Food Cost (Giá vốn) xuống dưới 28%, đẩy Gross Margin lên mức 71.8%.",
+        "EBITDA dự phóng đạt 23.1% (Xuất sắc) tương đương 1.25 tỷ VNĐ/quý thông qua tối ưu hóa vận hành khung giờ thấp điểm."
       ],
       "marketing_goals": [
-        "Thống lĩnh Share of Voice (SOV ≥ 40%) trong ngách 'Ẩm thực chữa lành'. Đạt 5 triệu lượt Organic Reach. Engagement Rate trung bình ≥ 4.5%.",
-        "Định vị Top 3 điểm đến F&B 'Must-visit' khu vực Central HCMC. Google Reviews ≥ 4.8/5, TripAdvisor Top 10.",
-        "Đạt Net Promoter Score (NPS) ≥ 75. Tỷ lệ Referral chiếm ≥ 20% tổng Booking mới."
+        "Thống lĩnh Share of Voice (SOV) ngách 'Ẩm thực chữa lành'. Lọt Top 3 điểm check-in Cinematic nhất Q1/Q3.",
+        "Xây dựng tệp khách hàng trung thành: Thu thập 15,000+ First-Party Data qua Zalo Mini App. Nâng Retention Rate từ 15% lên 45%.",
+        "Tối ưu hóa phễu chuyển đổi (Funnel): Giảm CAC (Chi phí thu hút 1 khách mới) từ 250,000đ xuống dưới 40,000đ."
       ],
-      "cac_ltv_analysis": "Chiến lược Unit Economics: Khống chế CAC < 40,000 VNĐ. Đẩy LTV lên mức 12,500,000 VNĐ/khách. Tỷ lệ LTV:CAC = 312:1."
+      "cac_ltv_analysis": "Chiến lược Unit Economics: Tối đa hóa LTV (Life-Time Value) bằng mô hình thẻ thành viên 'Hạt Gạo'. Tỷ lệ LTV:CAC kỳ vọng đạt ngưỡng > 5:1."
     },
     "red_lines": [
-      "Brand Equity Protection: Tuyệt đối không chạy đua 'Deep Discounting' hoặc Flash Sale. Chỉ áp dụng Value-Add.",
-      "Service Quality Ceiling: Tỷ lệ Table Turnover tối đa 2.5 vòng/buổi — hy sinh Revenue ngắn hạn để bảo toàn NPS.",
-      "Data Privacy Compliance: Tuân thủ nghiêm ngặt Nghị định 13/2023/NĐ-CP về Bảo vệ Dữ liệu."
+      "Brand Equity Protection: Tuyệt đối KHÔNG chạy đua 'Deep Discounting' (Giảm giá sâu) hay cạnh tranh về giá trên các nền tảng Food Delivery.",
+      "Service Quality Ceiling: Giới hạn tối đa 50 khách/tối để bảo toàn tính độc quyền (Exclusivity) và sự tĩnh lặng của không gian.",
+      "Authenticity First: Không thỏa hiệp với chất lượng nguyên liệu. Mọi chiến dịch quảng cáo phải dựa trên sự thật (Truth in Advertising)."
     ]
   },
   "situation_audit": {
     "target_segments": [
       {
-        "segment_name": "Segment A: Urban Healers — Gen Z/Y Professionals (22-35 tuổi, thu nhập 15-40M)",
+        "segment_name": "Core Segment: Urban Healers (Gen Z/Y, 22-35 tuổi, Thu nhập Khá+)",
         "dmu_profiles": [
           {
-            "role": "Decider (Người ra quyết định)",
-            "pain_points": ["Hội chứng Burnout mãn tính", "Mất niềm tin vào nguồn gốc thực phẩm", "Decision Fatigue khi chọn quán ăn"],
-            "decision_drivers": ["Không gian Aesthetic giàu Storytelling", "Trải nghiệm cá nhân hóa tinh tế", "Social Proof mạnh (Reviews, KOLs)"]
+            "role": "Decider (Người chốt deal)",
+            "pain_points": ["Hội chứng Burnout do KPI/Deadline", "Ám ảnh thực phẩm bẩn, chán ngán Fastfood", "Cần không gian trốn áp lực MXH"],
+            "decision_drivers": ["Kiến trúc Cinematic để check-in chữa lành", "Cam kết 100% Organic, No MSG", "Storytelling thương hiệu chân thật"]
           }
         ],
-        "value_proposition": "Food Therapy: Mâm cơm nhà chuẩn vị di sản trong không gian 100+ năm tuổi giúp xoa dịu áp lực phố thị.",
-        "data_sources": ["Nielsen Vietnam 2024", "Phân tích CRM nội bộ Q1/2025"]
+        "value_proposition": "Food Therapy: Mâm cơm nhà chuẩn vị di sản trong không gian nhà gỗ mộc mạc, giúp xoa dịu áp lực phố thị và tái tạo năng lượng.",
+        "data_sources": ["Phân tích Sentiment Analysis trên 500+ Google Reviews", "Báo cáo nội bộ AI Intake Agent"]
       }
     ],
     "directional_policy": {
-      "market_attractiveness": "Rất Cao (8.2/10) — CAGR 22% ngành Wellness F&B.",
-      "business_strength": "Khá (6.8/10) — Concept sở hữu lõi văn hóa mạnh nhưng Nút thắt vận hành bếp cần tối ưu.",
-      "investment_decision": "Invest & Grow (Ô Star) — Bơm vốn mạnh tay vào Rebranding và Số hóa."
+      "market_attractiveness": "Rất Cao (8.5/10) — Xu hướng Mindful Dining đang tăng trưởng 45% YoY.",
+      "business_strength": "Mạnh (7.5/10) — Sở hữu 'Concept lõi' cực mạnh nhưng cần Rebranding để thoát mác 'quán cơm bình dân'.",
+      "investment_decision": "Invest & Grow (Ô Star) — Rót vốn mạnh vào Digital Transformation và O2O."
     }
   },
   "strategy": {
-    "ansoff_matrix_choice": "Market Penetration kết hợp Product Development.",
-    "positioning_statement": "Blue Ocean Strategy: Chốn về duy nhất trao đi trải nghiệm 'Ẩm thực Việt Chữa Lành' tại khu vực Central HCMC.",
-    "expected_roi_justification": "Ngân sách 350M VNĐ là Đòn bẩy Tăng trưởng. Incremental Revenue dự kiến: +600M VNĐ/tháng. ROI 71.4% trong 60 ngày."
+    "ansoff_matrix_choice": "Tái định vị (Market Penetration) & Khai phá (Product Development - Eco Lunch).",
+    "positioning_statement": "Blue Ocean Strategy: Bếp Nhà Mộc là 'Điểm trú ẩn tâm lý' duy nhất kết hợp Ẩm thực di sản và Trị liệu không gian tại trung tâm Sài Gòn.",
+    "expected_roi_justification": "Ngân sách đầu tư 350M VNĐ. Incremental Revenue dự kiến: +600M VNĐ/tháng. ROI ước tính 71.4% sau 60 ngày triển khai."
   },
   "tactics": {
     "tactics_7ps": [
-      { "p_name": "Product", "action_bullet": "Launch 'Thực Đơn Ký Ức' (Heritage Rotating Menu) và Business Lunch Combo.", "kpi": "Tăng 25% doanh thu khung giờ thấp điểm.", "budget_vnd": 30000000, "budget_allocation_percent": 8.6, "moscow_tag": "MUST_HAVE" },
-      { "p_name": "Price", "action_bullet": "Áp dụng Tiered Pricing và Dynamic Pricing nhẹ (+10% Peak Hours).", "kpi": "Average Check Size tăng +28%.", "budget_vnd": 0, "budget_allocation_percent": 0, "moscow_tag": "MUST_HAVE" },
-      { "p_name": "Promotion", "action_bullet": "Cinematic Brand Film & KOL Campaign đa nền tảng.", "kpi": "3M+ lượt xem Organic. 2000+ Bookings mới.", "budget_vnd": 150000000, "budget_allocation_percent": 42.8, "moscow_tag": "MUST_HAVE" },
-      { "p_name": "Place", "action_bullet": "Performance Ads tối ưu CPA và Local SEO Partnerships.", "kpi": "CAC < 40K VNĐ, ROAS ≥ 15x.", "budget_vnd": 90000000, "budget_allocation_percent": 25.7, "moscow_tag": "MUST_HAVE" },
-      { "p_name": "People", "action_bullet": "Mộc Academy: Service Mindset & Brand Storytelling Training.", "kpi": "Staff Turnover Rate < 15%/năm.", "budget_vnd": 20000000, "budget_allocation_percent": 5.7, "moscow_tag": "SHOULD_HAVE" },
-      { "p_name": "Physical Evidence", "action_bullet": "Visual Identity System: Bao bì Kraft, Đồng phục Linen.", "kpi": "Instagram Mentions ≥ 1,000/tháng.", "budget_vnd": 25000000, "budget_allocation_percent": 7.1, "moscow_tag": "SHOULD_HAVE" },
-      { "p_name": "Process", "action_bullet": "Zalo Mini App 'Mộc Loyalty' & Booking Automation.", "kpi": "Mini App Adoption ≥ 60%.", "budget_vnd": 35000000, "budget_allocation_percent": 10.0, "moscow_tag": "MUST_HAVE" }
+      { "p_name": "Product", "action_bullet": "Quy hoạch Menu: Giữ Cơm Niêu làm Core, Launch 'Corporate Eco Lunch' lấp khung giờ vắng.", "kpi": "Tăng 25% doanh thu 11h-14h.", "budget_vnd": 30000000, "budget_allocation_percent": 8.6, "moscow_tag": "MUST_HAVE" },
+      { "p_name": "Price", "action_bullet": "Áp dụng Premium Pricing (+15%) tương xứng với định vị mới. Không giảm giá.", "kpi": "Gross Margin > 70%.", "budget_vnd": 0, "budget_allocation_percent": 0, "moscow_tag": "MUST_HAVE" },
+      { "p_name": "Promotion", "action_bullet": "Cinematic Brand Film 'Về nhà ăn cơm' & Phủ sóng 30+ Micro-Influencers Lifestyle.", "kpi": "3M+ Views, 2000+ Bookings.", "budget_vnd": 150000000, "budget_allocation_percent": 42.8, "moscow_tag": "MUST_HAVE" },
+      { "p_name": "Place", "action_bullet": "Chạy Performance Lead Gen (Tặng tráng miệng khi Booking). O2O Conversion.", "kpi": "CAC < 40K VNĐ.", "budget_vnd": 90000000, "budget_allocation_percent": 25.7, "moscow_tag": "MUST_HAVE" },
+      { "p_name": "Physical Evid.", "action_bullet": "Rebranding Visuals: Bao bì Eco bã mía, Đồng phục Linen thêu tay.", "kpi": "Nâng cấp Perceived Value.", "budget_vnd": 45000000, "budget_allocation_percent": 12.9, "moscow_tag": "SHOULD_HAVE" },
+      { "p_name": "Process", "action_bullet": "Launch Zalo Mini App 'Hạt Gạo' (Loyalty & Real-time Booking).", "kpi": "Retention > 45%.", "budget_vnd": 35000000, "budget_allocation_percent": 10.0, "moscow_tag": "MUST_HAVE" }
     ],
     "total_budget_used": 350000000,
-    "task_ready_checklist": ["Duyệt Storyboard Brand Film", "Ký HĐ KOLs", "Nghiệm thu Zalo App Sprint 1", "Chốt Mộc Academy Batch 1"]
+    "task_ready_checklist": ["Duyệt Storyboard 'Về nhà ăn cơm'", "Chốt Hợp đồng 3 Farm vệ tinh", "Launch Zalo App Phase 1", "Sản xuất bao bì Eco mới"]
   },
   "cfo_risk": {
-    "cfo_comment": "Từ góc độ Tài chính: Đòn bẩy 350 triệu VNĐ hợp lý. Ép giảm ngân sách Brand Film từ 80M xuống 50M để bù cho Performance Ads. Đảm bảo Burn Rate kiểm soát.",
+    "cfo_comment": "Từ góc độ Quản trị tài chính: Đòn bẩy 350 triệu VNĐ (tương đương 6.4% mục tiêu doanh thu) là mức đầu tư tối ưu. Đã ép giảm chi phí Brand Film xuống 50M để dồn lực cho Performance Ads kéo dòng tiền nóng. Burn Rate hoàn toàn an toàn.",
     "risk_assessment": [
-      { "risk_scenario": "Rủi ro Truyền thông: Brand Film không tạo chuyển đổi do thuật toán.", "trigger_point_metric": "Booking qua App < 50 lượt sau 72h.", "contingency_plan_b": "Cắt Sunk-cost Boost video. Pivot toàn lực sang Performance Ads." },
-      { "risk_scenario": "Rủi ro Vận hành: Capacity Overflow vào Peak Days.", "trigger_point_metric": "Average Wait Time > 30 phút.", "contingency_plan_b": "Kích hoạt Scarcity Marketing: Đóng cổng Walk-in 100%, giảm Booking cap." }
+      { "risk_scenario": "Rủi ro Vận hành: Quá tải công suất bếp (Overload) do Marketing quá hiệu quả.", "trigger_point_metric": "Thời gian lên món (TAT) > 25 phút.", "contingency_plan_b": "Kích hoạt Scarcity Mode: Chỉ nhận khách Booking Zalo, ngưng Walk-in giờ vàng." },
+      { "risk_scenario": "Rủi ro Chuỗi cung ứng: Đứt gãy nguồn rau hữu cơ, giá nguyên liệu leo thang.", "trigger_point_metric": "Food Cost vọt lên > 32% (so với chuẩn 28%).", "contingency_plan_b": "Ký hợp đồng bao tiêu (Farming Contract) 12 tháng với 3 Farm vệ tinh." }
     ]
   }
 };

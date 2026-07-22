@@ -19,7 +19,8 @@
         "brand_dna": "$brand_dna",
         "scenario_type": "$scenario_type",
         "target_profit": "$target_profit",
-        "idea_description": "$idea_description"
+        "idea_description": "$idea_description",
+        "account_profile": "$account_profile"
       },
       "output_key": "phase1_data",
       "timeout": 120,
@@ -31,7 +32,8 @@
       "inputs": {
         "phase1_data": "$phase1_data",
         "industry": "$industry",
-        "target_audience": "$target_audience"
+        "target_audience": "$target_audience",
+        "account_profile": "$account_profile"
       },
       "output_key": "phase2_data",
       "timeout": 120,
@@ -63,7 +65,8 @@
       "function": "app.agents.planner.agents_core.run_cmo_phase3_strategy_formulation",
       "inputs": {
         "gap_analysis": "$gap_result",
-        "segments_data": "$phase2_data"
+        "segments_data": "$phase2_data",
+        "account_profile": "$account_profile"
       },
       "output_key": "phase3_data",
       "timeout": 120,
@@ -75,7 +78,8 @@
       "inputs": {
         "strategy_data": "$phase3_data",
         "budget": "$budget",
-        "scenario_type": "$scenario_type"
+        "scenario_type": "$scenario_type",
+        "account_profile": "$account_profile"
       },
       "output_key": "current_plan",
       "timeout": 120,

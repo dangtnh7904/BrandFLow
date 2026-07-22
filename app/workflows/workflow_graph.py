@@ -1220,6 +1220,7 @@ def run_pipeline(
     scenario_type: str = "budget_driven",
     target_profit: int = None,
     idea_description: str = None,
+    account_profile: str = "STANDARD",
 ) -> dict:
     """
     Pipeline tuyến tính: MasterPlanner → Python Interceptor → CFO/Persona Agents.
@@ -1238,7 +1239,7 @@ def run_pipeline(
 
     # Initialize TraceLogger for this run
     trace = TraceLogger(goal=goal, budget=budget, industry=industry, run_id=run_id)
-    trace.log("system", "system", f"Pipeline started: goal='{goal}', industry='{industry}', budget={budget:,}", step=0)
+    trace.log("system", "system", f"Pipeline started: goal='{goal}', industry='{industry}', budget={budget:,}, account_profile='{account_profile}'", step=0)
 
     initial_state = {
         "goal": goal,
@@ -1252,6 +1253,7 @@ def run_pipeline(
         "scenario_type": scenario_type,
         "target_profit": target_profit,
         "idea_description": idea_description,
+        "account_profile": account_profile,
         "agent_logs": [],
         "_trace_logger": trace,  # Pass trace to engine for per-node logging
     }

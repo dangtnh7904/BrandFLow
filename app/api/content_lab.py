@@ -70,6 +70,20 @@ async def analyze_vibe(req: AnalyzeRequest, user_id: str = Depends(get_current_u
 async def generate_content(req: GenerateRequest, user_id: str = Depends(get_current_user)):
     """Generate enterprise-grade content with Brand DNA + cached Google Trends + Platform optimization."""
     try:
+        from app.core.database import SessionLocal
+        from app.models.models import User
+        account_profile = "STANDARD"
+        if user_id:
+            try:
+                db = SessionLocal()
+                user = db.query(User).filter(User.id == user_id).first()
+                if user:
+                    account_profile = user.account_profile
+            except Exception as e:
+                print(f"Lỗi khi query User account_profile: {e}")
+            finally:
+                db.close()
+                
         agent = ContentLabAgent()
         
         # Fetch real-time trends (cached 1h)
@@ -83,6 +97,7 @@ async def generate_content(req: GenerateRequest, user_id: str = Depends(get_curr
             business_context=req.business_context,
             brand_dna=req.brand_dna,
             trending_topics=trending_topics,
+            account_profile=account_profile,
         )
         return {"status": "success", "data": result}
     except Exception as e:
@@ -97,7 +112,22 @@ async def batch_generate(req: BatchGenerateRequest, user_id: str = Depends(get_c
         raise HTTPException(status_code=400, detail="Cần ít nhất 1 chủ đề")
     
     try:
+        from app.core.database import SessionLocal
+        from app.models.models import User
+        account_profile = "STANDARD"
+        if user_id:
+            try:
+                db = SessionLocal()
+                user = db.query(User).filter(User.id == user_id).first()
+                if user:
+                    account_profile = user.account_profile
+            except Exception as e:
+                print(f"Lỗi khi query User account_profile: {e}")
+            finally:
+                db.close()
+                
         agent = ContentLabAgent()
+        
         results = await agent.batch_generate_content(
             topics=req.topics,
             format_type=req.format_type,
@@ -105,6 +135,7 @@ async def batch_generate(req: BatchGenerateRequest, user_id: str = Depends(get_c
             platform=req.platform,
             business_context=req.business_context,
             brand_dna=req.brand_dna,
+            account_profile=account_profile,
         )
         return {
             "status": "success",

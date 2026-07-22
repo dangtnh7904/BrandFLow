@@ -239,6 +239,10 @@ app.include_router(content_lab_router, prefix="/api/content-lab", tags=["Content
 from app.api.analytics_routes import router as analytics_router
 app.include_router(analytics_router)
 
+# === Agile Campaign Router ===
+from app.api.agile_routes import router as agile_router
+app.include_router(agile_router, prefix="/api/agile", tags=["Agile Campaign"])
+
 
 # ═══════════════════════════════════════════════════════════════════
 # NEW ENDPOINTS: Planning History + Security (GDPR) + Tier Info
@@ -1812,6 +1816,20 @@ async def process_intake(request: RawInputRequest):
         # 4. Đủ thông tin -> Gọi Pipeline tuyến tính (v7)
         print("[PIPELINE] Bat dau goi Pipeline Deterministic...")
         
+        account_profile = "STANDARD"
+        if tenant_id:
+            from app.core.database import SessionLocal
+            from app.models.models import User
+            try:
+                db = SessionLocal()
+                user = db.query(User).filter(User.id == tenant_id).first()
+                if user:
+                    account_profile = user.account_profile
+            except Exception as e:
+                print(f"Lỗi khi query User account_profile: {e}")
+            finally:
+                db.close()
+                
         result = run_pipeline(
             goal=parsed_data.get("goal", request.raw_text),
             industry=parsed_data.get("industry", "General"),
@@ -1821,7 +1839,8 @@ async def process_intake(request: RawInputRequest):
             brand_dna=request.brand_dna,
             scenario_type=parsed_data.get("scenario_type", "budget_driven"),
             target_profit=parsed_data.get("target_profit"),
-            idea_description=parsed_data.get("idea_description")
+            idea_description=parsed_data.get("idea_description"),
+            account_profile=account_profile
         )
         
         return {

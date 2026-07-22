@@ -419,6 +419,7 @@ class ContentLabAgent:
         business_context: Dict[str, Any] = None,
         brand_dna: Dict[str, Any] = None,
         trending_topics: List[str] = None,
+        account_profile: str = "STANDARD",
     ) -> Dict[str, Any]:
         """
         Generate enterprise-grade content that outperforms generic AI generators.
@@ -446,6 +447,8 @@ class ContentLabAgent:
 
         # 1. Build business context string
         context_parts = []
+        if account_profile == "BK_INNOVATION":
+            context_parts.append("[BỐI CẢNH ĐẶC BIỆT]: Khách hàng là Trung tâm Sáng tạo Khởi nghiệp Bách Khoa. Bối cảnh KHÔNG PHẢI BÁN HÀNG, MÀ LÀ TRUYỀN THÔNG CUỘC THI / SỰ KIỆN. Tập trung vào việc thu hút Sinh viên đăng ký tham gia thi, kêu gọi đội thi nộp đề án, lan tỏa tinh thần khởi nghiệp. Ngôn ngữ thân thiện với sinh viên Bách Khoa nhưng vẫn giữ được sự chuyên nghiệp.")
         if brand_dna:
             context_parts.append("BRAND DNA:\n" + json.dumps(brand_dna, ensure_ascii=False, indent=2))
         if business_context:
@@ -552,6 +555,7 @@ class ContentLabAgent:
         platform: str = "Facebook",
         business_context: Dict[str, Any] = None,
         brand_dna: Dict[str, Any] = None,
+        account_profile: str = "STANDARD",
     ) -> List[Dict[str, Any]]:
         """
         Generate multiple content pieces in parallel for a weekly calendar.
@@ -576,6 +580,7 @@ class ContentLabAgent:
                     business_context=business_context,
                     brand_dna=brand_dna,
                     trending_topics=trending,
+                    account_profile=account_profile,
                 )
 
         results = await asyncio.gather(*[gen_one(t) for t in topics], return_exceptions=True)

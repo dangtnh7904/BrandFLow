@@ -34,6 +34,7 @@ class User(Base):
     password_hash = Column(String(255), nullable=True) # Mật khẩu mã hoá (NẾU ĐĂNG KÝ BẰNG EMAIL)
     avatar_url = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
+    account_profile = Column(String(50), default="STANDARD", nullable=False) # e.g. BK_INNOVATION
     
     # SOC 2 Requirement: Multi-Factor Authentication
     is_2fa_enabled = Column(Boolean, default=False, nullable=False)

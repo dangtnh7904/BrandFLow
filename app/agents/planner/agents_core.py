@@ -172,7 +172,7 @@ BRAND DNA:
 Trả về đúng định dạng JSON Schema.
 """
 
-def run_cmo_phase1_goal_setting(goal: str, industry: str, budget: int, brand_dna: dict = None, scenario_type: str = "budget_driven", target_profit: int = None, idea_description: str = None) -> dict:
+def run_cmo_phase1_goal_setting(goal: str, industry: str, budget: int, brand_dna: dict = None, scenario_type: str = "budget_driven", target_profit: int = None, idea_description: str = None, account_profile: str = "STANDARD") -> dict:
     llm = _get_strategy_llm(temperature=0.3)
     structured_llm = llm.with_structured_output(GoalSettingPhase1)
     
@@ -184,6 +184,10 @@ def run_cmo_phase1_goal_setting(goal: str, industry: str, budget: int, brand_dna
     dna_str = json.dumps(brand_dna, ensure_ascii=False, indent=2) if brand_dna else "Không có dữ liệu Brand DNA."
     prompt = PHASE1_PROMPT.format(goal=goal, industry=industry, budget=budget, brand_dna=dna_str, scenario_type=scenario_type, target_profit=target_profit, idea_description=idea_description)
     prompt += f"\n\n{industry_context}"
+    
+    if account_profile == "BK_INNOVATION":
+        prompt += "\n\n[BỐI CẢNH ĐẶC BIỆT]: Khách hàng là Trung tâm Sáng tạo Khởi nghiệp Bách Khoa. Bối cảnh không phải bán hàng hóa mà là tổ chức CUỘC THI / SỰ KIỆN khởi nghiệp. Mục tiêu là thu hút SINH VIÊN, ĐỘI THI, MENTOR, GIÁM KHẢO. Hãy quy đổi các chỉ số như CAC thành CPA (Cost Per Applicant), Doanh thu thành Giá trị thương hiệu sự kiện, và thay vì 'khách hàng', hãy dùng từ 'người tham dự/đội thi'."
+        
     prompt += "\n\nDEEP DIVE: Trình bày một cách chi tiết, mạch lạc. Đảm bảo output có độ sâu tương đương hoặc hơn các bản kế hoạch cao cấp. Yêu cầu lập luận sâu sắc cho từng quyết định thay vì chỉ gạch đầu dòng hời hợt. Đừng lo lắng về độ dài, hãy ưu tiên chất lượng phân tích."
     print(f"\n{'═' * 70}")
     print(f"👑 [CMO] Đang thiết lập Mục tiêu & Ranh giới (Phase 1) — Ngành: {normalized_industry} / Quy mô: {company_size}...")
@@ -272,7 +276,7 @@ Dữ liệu thị trường mới nhất từ Internet:
 Trả về chuẩn JSON.
 """
 
-def run_cmo_phase2_situation_audit(phase1_data: dict, industry: str, target_audience: str) -> dict:
+def run_cmo_phase2_situation_audit(phase1_data: dict, industry: str, target_audience: str, account_profile: str = "STANDARD") -> dict:
     llm = _get_strategy_llm(temperature=0.3)
     structured_llm = llm.with_structured_output(SituationAuditPhase2)
     
@@ -290,6 +294,10 @@ def run_cmo_phase2_situation_audit(phase1_data: dict, industry: str, target_audi
         market_context=market_context
     )
     prompt += f"\n\n{industry_context}"
+    
+    if account_profile == "BK_INNOVATION":
+        prompt += "\n\n[BỐI CẢNH ĐẶC BIỆT]: Khách hàng là Trung tâm Sáng tạo Khởi nghiệp Bách Khoa. Đây là một cuộc thi Khởi nghiệp, không phải bán hàng. Phân tích insight của sinh viên, người trẻ đam mê khởi nghiệp (mong giải thưởng, networking, mentor). Khung cạnh tranh là các cuộc thi và CLB khác tại trường đại học."
+        
     prompt += "\n\nDEEP DIVE: Output phải thể hiện tầm nhìn của một chuyên gia McKinsey. Khuyến khích giải thích cặn kẽ, luận điểm bén và dựa trên dữ liệu. KHÔNG viết quá ngắn. Hãy duy trì chất lượng ngang ngửa bản mẫu 'Bếp Nhà Mộc'."
     
     print(f"👑 [CMO] Đang phân tích Thị trường & Chọn CSFs (Phase 2) — Ngành: {normalized_industry}...")
@@ -345,7 +353,7 @@ Dữ liệu khách hàng trọng tâm:
 Trả về JSON chứa giải thích chi tiết, đầy đủ ngữ cảnh chiến lược.
 """
 
-def run_cmo_phase3_strategy_formulation(gap_analysis: dict, segments_data: dict) -> dict:
+def run_cmo_phase3_strategy_formulation(gap_analysis: dict, segments_data: dict, account_profile: str = "STANDARD") -> dict:
     llm = _get_strategy_llm(temperature=0.3)
     structured_llm = llm.with_structured_output(StrategyPhase3)
     
@@ -353,6 +361,10 @@ def run_cmo_phase3_strategy_formulation(gap_analysis: dict, segments_data: dict)
         gap_analysis_result=json.dumps(gap_analysis, ensure_ascii=False),
         segments_data=json.dumps(segments_data, ensure_ascii=False)
     )
+    
+    if account_profile == "BK_INNOVATION":
+        prompt += "\n\n[BỐI CẢNH ĐẶC BIỆT]: Lập chiến lược cho Cuộc thi Khởi nghiệp Bách Khoa. Chiến lược nên hướng tới các mốc thời gian của sự kiện (Mở đơn, Vòng Sơ loại, Chung kết) thay vì chu kỳ sản phẩm thương mại."
+        
     prompt += "\n\nDEEP DIVE: Yêu cầu giải thích cặn kẽ TẠI SAO chọn chiến lược đó. Hãy cung cấp luận điểm mạnh mẽ, không bị giới hạn độ dài. Chất lượng phân tích phải xuất sắc."
     
     print(f"👑 [CMO] Đang hoạch định Chiến lược Ansoff (Phase 3)...")
@@ -416,7 +428,7 @@ Kịch bản: {scenario_type}
 Trả về định dạng chuẩn JSON Schema.
 """
 
-def run_cmo_phase4_tactical_allocator(strategy_data: dict, budget: int, scenario_type: str = "budget_driven", industry: str = "F&B", brand_dna: dict = None) -> dict:
+def run_cmo_phase4_tactical_allocator(strategy_data: dict, budget: int, scenario_type: str = "budget_driven", industry: str = "F&B", brand_dna: dict = None, account_profile: str = "STANDARD") -> dict:
     llm = _get_strategy_llm(temperature=0.3)
     structured_llm = llm.with_structured_output(TacticsPhase4)
     
@@ -430,6 +442,9 @@ def run_cmo_phase4_tactical_allocator(strategy_data: dict, budget: int, scenario
     
     if scenario_type == "idea_driven":
         prompt += "\n\nLƯU Ý ĐẶC BIỆT: Đây là kịch bản TÍNH TOÁN THEO Ý TƯỞNG (idea_driven). Ngân sách đầu vào có thể là 0. Bạn hãy tự tin định giá và đề xuất ngân sách phù hợp cho từng tactic dựa trên chi phí thực tế thị trường để hiện thực hóa ý tưởng này."
+        
+    if account_profile == "BK_INNOVATION":
+        prompt += "\n\n[BỐI CẢNH ĐẶC BIỆT]: Phân bổ chiến thuật truyền thông cho Cuộc thi Khởi nghiệp Bách Khoa. Tập trung vào Fanpage các Câu lạc bộ sinh viên, màn hình LED trong trường, Email nội bộ, Group Zalo chi đoàn. Không dùng TVC hay OOH đắt đỏ ngoài trời."
         
     prompt += "\n\nDEEP DIVE: Mỗi chiến thuật phải mô tả rõ bối cảnh (Context), Hành động cụ thể (Actionable steps) và Cách đo lường. Không giới hạn độ dài, cần sự chi tiết tuyệt đối để thực thi."
     print(f"👑 [CMO] Đang triển khai Bảng Khối lượng công việc & Ngân sách (Phase 4) — Ngành: {normalized_industry} / Quy mô: {company_size}...")

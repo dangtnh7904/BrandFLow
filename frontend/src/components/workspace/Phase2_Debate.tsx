@@ -215,7 +215,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
                     <div className="flex items-center mb-6">
                       <div className={`w-14 h-14 rounded-2xl ${getAgentTheme(currentMsg.agent, currentMsg.type).iconBg} flex items-center justify-center border border-white/10 shadow-lg relative`}>
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900 animate-pulse"></div>
-                        {React.createElement(getAgentTheme(currentMsg.agent, currentMsg.type).icon, { className: \`w-7 h-7 \${getAgentTheme(currentMsg.agent, currentMsg.type).text}\` })}
+                        {React.createElement(getAgentTheme(currentMsg.agent, currentMsg.type).icon, { className: `w-7 h-7 ${getAgentTheme(currentMsg.agent, currentMsg.type).text}` })}
                       </div>
                       <div className="ml-4">
                         <div className="flex items-center">

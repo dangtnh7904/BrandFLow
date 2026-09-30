@@ -275,7 +275,7 @@ export default function Phase2_Debate({ onNext, onBack }: { onNext: () => void, 
                     className={`p-3 rounded-xl border ${theme.border} ${theme.bg} flex gap-3 opacity-60 hover:opacity-100 transition-opacity`}
                   >
                     <div className={`w-8 h-8 rounded-lg ${theme.iconBg} flex items-center justify-center shrink-0`}>
-                      {React.createElement(theme.icon, { className: \`w-4 h-4 \${theme.text}\` })}
+                      {React.createElement(theme.icon, { className: `w-4 h-4 ${theme.text}` })}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex justify-between items-center mb-1">

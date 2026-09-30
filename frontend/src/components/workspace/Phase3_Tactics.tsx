@@ -110,13 +110,13 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
               onClick={() => setActivePanel(tab.id)}
               className={`
                 flex items-center px-5 py-3 rounded-xl transition-all duration-300 whitespace-nowrap shrink-0 border
-                \${isActive ? \`glassbox-card \${tab.border} shadow-lg scale-105\` : 'bg-linear-surface/30 border-transparent hover:bg-linear-surface/50 opacity-60 hover:opacity-100'}
+                ${isActive ? `glassbox-card ${tab.border} shadow-lg scale-105` : 'bg-linear-surface/30 border-transparent hover:bg-linear-surface/50 opacity-60 hover:opacity-100'}
               `}
             >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 \${isActive ? tab.bg : 'bg-slate-800/50'}`}>
-                <tab.icon className={`w-4 h-4 \${isActive ? tab.color : 'text-slate-400'}`} />
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${isActive ? tab.bg : 'bg-slate-800/50'}`}>
+                <tab.icon className={`w-4 h-4 ${isActive ? tab.color : 'text-slate-400'}`} />
               </div>
-              <span className={`font-bold \${isActive ? 'text-foreground' : 'text-slate-400'}`}>{tab.title}</span>
+              <span className={`font-bold ${isActive ? 'text-foreground' : 'text-slate-400'}`}>{tab.title}</span>
             </button>
           );
         })}
@@ -332,7 +332,7 @@ export default function Phase3_Tactics({ onNext, onBack, globalBudget }: { onNex
                              <div className="text-xs text-slate-500 mb-1">Allocated Budget</div>
                              <div className="font-bold text-emerald-400">{task.budget}</div>
                            </div>
-                           <div className={`px-3 py-1 text-xs font-bold rounded-full border \${task.status === 'Ready' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : task.status === 'Drafting' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
+                           <div className={`px-3 py-1 text-xs font-bold rounded-full border ${task.status === 'Ready' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : task.status === 'Drafting' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
                              {task.status}
                            </div>
                         </div>

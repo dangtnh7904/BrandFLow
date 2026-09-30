@@ -9,7 +9,7 @@ import { TranslationKey } from '@/i18n/translations';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, MessageSquare, Briefcase, FolderGit2, Settings,
-  Sparkles, Network, PanelLeftClose, PenSquare, Palette, Shield,
+  Cpu, Network, PanelLeftClose, PenSquare, Palette, Shield,
   ChevronRight, Zap, ArrowRight, BookOpen, Printer, LineChart, Rocket, MonitorPlay
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
@@ -87,7 +87,7 @@ const MENU_ITEMS = [
   { id: 'workspace', langKey: 'sidebar.workspace', icon: MessageSquare, href: '/onboarding', group: 'core', desc: { en: 'AI Interview', vi: 'Phỏng vấn AI' } },
   { id: 'daily-content', langKey: 'sidebar.daily_content', icon: PenSquare, href: '/daily-content', group: 'core', desc: { en: 'Posts & Captions', vi: 'Bài viết & Caption' } },
   { id: 'design-studio', langKey: 'sidebar.design_studio', icon: Palette, href: '/design-studio', group: 'core', desc: { en: 'Logo & Branding', vi: 'Logo & Nhận diện' } },
-  { id: 'content-lab', langKey: 'sidebar.content_lab', icon: Sparkles, href: '/content-lab', group: 'core', desc: { en: 'Advanced AI', vi: 'AI nâng cao' } },
+  { id: 'content-lab', langKey: 'sidebar.content_lab', icon: Cpu, href: '/content-lab', group: 'core', desc: { en: 'Advanced AI', vi: 'AI nâng cao' } },
   { id: 'b2b', langKey: 'b2b.title', icon: Briefcase, href: '/planning', group: 'advanced', desc: { en: 'Marketing Plan', vi: 'Kế hoạch MKT' } },
   { id: 'dashboard', langKey: 'sidebar.dashboard', icon: LayoutDashboard, href: '/dashboard', group: 'advanced', desc: { en: 'Dashboards', vi: 'Bảng theo dõi' } },
   { id: 'agents', langKey: 'sidebar.agents', icon: Network, href: '/agents', group: 'system', desc: { en: 'Agent Builder', vi: 'Xây Agent' } },

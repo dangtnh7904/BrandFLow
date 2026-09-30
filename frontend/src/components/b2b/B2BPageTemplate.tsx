@@ -55,37 +55,52 @@ export default function B2BPageTemplate({ title, description, children, saveStat
   }, [previewMode]);
 
   return (
-    <div className={previewMode === 'section' ? "fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex p-4 lg:p-8 print:p-0 print:bg-transparent print:backdrop-blur-none print:block" : "flex flex-col h-full w-full"}>
+    <div className={previewMode === 'section' ? "fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex p-4 lg:p-8 print:p-0 print:bg-transparent print:backdrop-blur-none print:block" : "flex flex-col h-full w-full bg-[#0B1120] relative text-slate-200"}>
       
-      {/* NORMAL TOP HEADER (Hidden in preview mode) */}
-      <div className={`print-hide sticky top-0 z-10 bg-linear-surface/90 backdrop-blur-md border-b border-linear-border px-8 py-5 flex items-center justify-between shadow-sm ${previewMode === 'section' ? 'hidden' : ''}`}>
-        <div>
-          <h1 className="page-title">{title}</h1>
-          <p className="page-desc">{description}</p>
+      {/* ── Background Ambient Glows ── */}
+      {previewMode !== 'section' && (
+        <>
+          <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
+          <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none z-0" />
+        </>
+      )}
+
+      {/* ── NORMAL TOP HEADER (HUD Style) ── */}
+      <div className={`print-hide sticky top-0 z-20 glassbox-card !rounded-none !border-t-0 !border-l-0 !border-r-0 border-b-white/10 px-8 py-5 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.1)] ${previewMode === 'section' ? 'hidden' : ''}`}>
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.15)]">
+            <BrainCircuit className="w-6 h-6 text-cyan-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300 font-heading tracking-tight drop-shadow-sm">{title}</h1>
+            <p className="text-slate-400 font-medium text-sm mt-0.5">{description}</p>
+          </div>
         </div>
-        <div className="flex items-center space-x-3 print-hide">
+        <div className="flex items-center space-x-4 print-hide">
           {saveStatus && <SaveIndicator status={saveStatus} />}
-          <button className="flex items-center px-4 py-2 border border-linear-border rounded-md bg-linear-surface text-sm font-medium text-foreground hover:bg-linear-surface/80 transition-colors shadow-sm">
-            <Save className="w-4 h-4 mr-2" />
+          <button className="flex items-center px-5 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200 transition-colors border border-white/5 hover:border-white/20 shadow-sm">
+            <Save className="w-4 h-4 mr-2 text-slate-400" />
             {t('b2b_tools.save_draft' as any)}
           </button>
           
           <button 
             onClick={() => setPreviewMode('section')}
-            className="btn-secondary text-sm font-semibold"
+            className="flex items-center px-5 py-2.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 text-sm font-bold border border-blue-500/30 transition-all hover:shadow-[0_0_15px_rgba(37,99,235,0.2)]"
           >
-            <Download className="w-4 h-4 mr-2 text-blue-600 dark:text-blue-400" />
-            {language === 'vi' ? 'Tải Xuống PDF' : 'Download PDF'}
+            <Download className="w-4 h-4 mr-2" />
+            {language === 'vi' ? 'Tải PDF' : 'Download PDF'}
           </button>
 
           {showFullReport && (
           <button 
             onClick={() => setPreviewMode('full')}
-            className="btn-primary text-sm font-bold relative overflow-hidden group"
+            className="group relative px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-sm font-bold shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all overflow-hidden flex items-center"
           >
-            <FileText className="w-4 h-4 mr-2" />
-            {language === 'vi' ? 'Export Full Report' : 'Export Full Report'}
-            <span className="ml-2 px-1.5 py-0.5 rounded text-[9px] bg-white/20 text-white uppercase tracking-widest font-bold border border-white/30">
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+            <FileText className="w-4 h-4 mr-2 relative z-10" />
+            <span className="relative z-10">{language === 'vi' ? 'Xuất Toàn bộ Báo cáo' : 'Export Full Report'}</span>
+            <span className="ml-2 px-1.5 py-0.5 rounded text-[9px] bg-black/30 text-cyan-300 uppercase tracking-widest font-black relative z-10 border border-cyan-500/30">
               Premium
             </span>
           </button>
@@ -93,20 +108,20 @@ export default function B2BPageTemplate({ title, description, children, saveStat
         </div>
       </div>
 
-      {/* MAIN CONTAINER (Section Preview Morphs here) */}
-      <div className={`flex-1 flex overflow-hidden print:p-0 print:bg-white print:overflow-visible relative ${previewMode === 'section' ? 'bg-slate-100 rounded-2xl shadow-2xl print:shadow-none print:rounded-none' : 'flex-col p-8 overflow-y-auto'}`}>
+      {/* ── MAIN CONTAINER ── */}
+      <div className={`flex-1 flex overflow-hidden print:p-0 print:bg-white print:overflow-visible relative z-10 ${previewMode === 'section' ? 'bg-slate-900 rounded-2xl shadow-2xl print:shadow-none print:rounded-none' : 'flex-col p-8 overflow-y-auto custom-scrollbar'}`}>
         
         {/* LEFT COLUMN: SECTION PREVIEW OR NORMAL VIEW */}
-        <div className={`flex-1 flex flex-col min-w-0 print:border-none print:block ${previewMode === 'section' ? 'border-r border-slate-200' : ''}`}>
+        <div className={`flex-1 flex flex-col min-w-0 print:border-none print:block ${previewMode === 'section' ? 'border-r border-slate-700' : ''}`}>
           
           {/* SECTION MODAL HEADER */}
           {previewMode === 'section' && (
-            <div className="bg-white px-6 py-4 border-b border-slate-200 flex justify-between items-center shrink-0 print:hidden">
+            <div className="bg-slate-800 px-6 py-4 border-b border-slate-700 flex justify-between items-center shrink-0 print:hidden">
               <div>
-                <h3 className="text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-bold text-slate-100">
                   {language === 'vi' ? 'Xem trước bản in (PDF)' : 'PDF Print Preview'}
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-400">
                   {`Section: ${title}`}
                 </p>
               </div>
@@ -119,14 +134,14 @@ export default function B2BPageTemplate({ title, description, children, saveStat
                       setTimeout(() => document.body.classList.remove('printing-section'), 500);
                     }, 50);
                   }}
-                  className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center shadow-md transition-all"
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-lg text-sm font-bold flex items-center shadow-[0_0_15px_rgba(37,99,235,0.3)] transition-all"
                 >
                   <Printer className="w-4 h-4 mr-2" />
                   {language === 'vi' ? 'Tải Xuống PDF' : 'Download PDF'}
                 </button>
                 <button 
                   onClick={() => setPreviewMode(null)}
-                  className="p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-lg transition-colors"
+                  className="p-2 text-slate-400 hover:bg-slate-700 hover:text-slate-200 rounded-lg transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -135,11 +150,11 @@ export default function B2BPageTemplate({ title, description, children, saveStat
           )}
 
           {/* SECTION CONTENT AREA */}
-          <div className={`flex-1 ${previewMode === 'section' ? 'overflow-auto p-4 lg:p-8 flex justify-center bg-slate-200/50 print:overflow-visible print:p-0' : 'flex flex-col relative'}`}>
+          <div className={`flex-1 ${previewMode === 'section' ? 'overflow-auto p-4 lg:p-8 flex justify-center bg-slate-900/50 print:overflow-visible print:p-0 custom-scrollbar' : 'flex flex-col relative'}`}>
             <div 
               className={`transition-all duration-500 flex flex-col
               ${previewMode === 'section' 
-                ? `w-[210mm] min-h-[297mm] mx-auto relative bg-white shadow-lg print:shadow-none p-[20mm] report-container print-section-view ${isRevising ? 'opacity-40 blur-[2px]' : 'opacity-100'}` 
+                ? `w-[210mm] min-h-[297mm] mx-auto relative bg-white text-slate-900 shadow-[0_0_40px_rgba(0,0,0,0.5)] print:shadow-none p-[20mm] report-container print-section-view ${isRevising ? 'opacity-40 blur-[2px]' : 'opacity-100'}` 
                 : 'max-w-6xl mx-auto w-full print:w-[210mm] print:mx-auto print:font-sans print:report-container print:p-[20mm] print-section-view flex-1 mb-20 print:mb-0'
               }`}
             >

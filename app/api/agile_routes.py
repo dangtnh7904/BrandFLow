@@ -20,6 +20,7 @@ async def evaluate_campaign(req: AgileEvaluateRequest, user_id: str = Depends(ge
     if user_id:
         from app.core.database import SessionLocal
         from app.models.models import User
+        db = None
         try:
             db = SessionLocal()
             user = db.query(User).filter(User.id == user_id).first()
@@ -28,7 +29,8 @@ async def evaluate_campaign(req: AgileEvaluateRequest, user_id: str = Depends(ge
         except Exception as e:
             print(f"Lỗi khi query User account_profile trong agile_routes: {e}")
         finally:
-            db.close()
+            if db is not None:
+                db.close()
             
     try:
         result = evaluate_agile_campaign(

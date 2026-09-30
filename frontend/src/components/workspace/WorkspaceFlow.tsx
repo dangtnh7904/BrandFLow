@@ -7,10 +7,24 @@ import Phase4_Execution from './Phase4_Execution';
 import Phase5_Creative from './Phase5_Creative';
 import Phase6_AgentDeploy from './Phase6_AgentDeploy';
 import Phase7_Report from './Phase7_Report';
+import PipelineProgress, { type PipelineStage } from './PipelineProgress';
 
 import { useLanguage } from '@/contexts/LanguageContext';
 
 import AmbientParticles from '@/components/AmbientParticles';
+
+// ═══════════════════════════════════════════════════════════════════
+// STAGE → PIPELINE MAPPING
+// Maps the current workspace stage to the 5-step pipeline progress
+// ═══════════════════════════════════════════════════════════════════
+const STAGE_TO_PIPELINE: Record<number, PipelineStage> = {
+  1: 2,  // Debate = Planning (stage 2)
+  2: 3,  // Tactics = Review (stage 3)
+  3: 4,  // Execution = Reconciliation (stage 4)
+  4: 5,  // Creative = Validation done (stage 5)
+  5: 5,  // Deploy = Done
+  6: 5,  // Report = Done
+};
 
 export default function WorkspaceFlow() {
   const { t } = useLanguage();
@@ -21,6 +35,8 @@ export default function WorkspaceFlow() {
     setCurrentStage(stage);
   };
 
+  const pipelineStage: PipelineStage = STAGE_TO_PIPELINE[currentStage] || 1;
+
   return (
     <div className="flex flex-col h-full w-full bg-background relative overflow-hidden z-0">
       <div className="absolute inset-0 bg-[url('/img/grid.svg')] opacity-[0.02] dark:opacity-[0.05] z-0 pointer-events-none" />
@@ -28,6 +44,7 @@ export default function WorkspaceFlow() {
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
       <AmbientParticles />
       
+      {/* ── Top Navigation Bar ── */}
       <div className="w-full bg-linear-surface/80 border-b border-linear-border backdrop-blur-lg px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] mt-12 md:mt-0 sticky top-0 z-50 transition-all duration-300">
         
         <div className="flex items-center gap-4">
@@ -77,6 +94,14 @@ export default function WorkspaceFlow() {
         </div>
       </div>
 
+      {/* ── Pipeline Progress Bar (Glass Box) ── */}
+      <div className="w-full bg-linear-surface/40 border-b border-linear-border/50 backdrop-blur-sm px-4 md:px-8 shrink-0">
+        <div className="max-w-4xl mx-auto">
+          <PipelineProgress currentStage={pipelineStage} />
+        </div>
+      </div>
+
+      {/* ── Main Content Area ── */}
       <div className="flex-1 w-full h-full overflow-hidden relative">
         <div className="absolute inset-0 transition-opacity duration-300">
           {currentStage === 1 && <Phase2_Debate onNext={() => goToState(2)} onBack={() => {}} />}

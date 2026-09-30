@@ -12,10 +12,33 @@
   --font-heading: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
 
   --animate-sweep: sweep 1.5s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s ease-in-out infinite;
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-slide-up: slide-up 0.5s ease-out;
   
   @keyframes sweep {
     0% { transform: translateX(-150%) skewX(30deg); }
     100% { transform: translateX(200%) skewX(30deg); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes slide-up {
+    0% { opacity: 0; transform: translateY(12px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 8px -2px rgba(6, 182, 212, 0.2); }
+    50% { box-shadow: 0 0 20px -2px rgba(6, 182, 212, 0.4); }
   }
 }
 
@@ -57,18 +80,24 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   .bento-card {
     background-color: var(--color-linear-surface);
     border: 1px solid var(--color-linear-border);
-    border-radius: 1rem;
-    padding: 1.5rem;
+    border-radius: 1.25rem;
+    padding: 2rem;
     position: relative;
     overflow: hidden;
-    transition: all 0.2s;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04);
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -1px rgb(0 0 0 / 0.03);
   }
   
   .dark .bento-card {
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(148, 163, 184, 0.1);
-    box-shadow: none;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+  .dark .bento-card:hover {
+    border-color: rgba(6, 182, 212, 0.3);
+    box-shadow: 0 10px 40px -10px rgba(6, 182, 212, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
   }
 
   .ultra-thin-border {
@@ -230,6 +259,42 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   }
   .btn-secondary:hover {
     background-color: var(--background);
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     GLASS BOX — Premium pitching UI utilities
+     ═══════════════════════════════════════════════════════ */
+  
+  .glassbox-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(148, 163, 184, 0.08);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  .glassbox-card:hover {
+    border-color: rgba(6, 182, 212, 0.15);
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(6, 182, 212, 0.05);
+  }
+
+  /* MoSCoW tag colors */
+  .moscow-must { color: #f87171; background: rgba(248, 113, 113, 0.1); border-color: rgba(248, 113, 113, 0.2); }
+  .moscow-should { color: #fbbf24; background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.2); }
+  .moscow-could { color: #94a3b8; background: rgba(148, 163, 184, 0.1); border-color: rgba(148, 163, 184, 0.2); }
+
+  /* Pipeline step animations */
+  .pipeline-node-active {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  
+  .pipeline-line-fill {
+    background: linear-gradient(90deg, #2563eb, #06b6d4, #10b981);
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
   }
 }
 

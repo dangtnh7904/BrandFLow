@@ -16,7 +16,17 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
 # JWT Config
-SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "SUPER_SECRET_KEY_BRANDFLOW_2026")
+# ⚠️ SECURITY: JWT_SECRET_KEY MUST be set via environment variable in production.
+#   Fallback is ONLY for local development. Deploy without it = catastrophic vulnerability.
+_DEFAULT_DEV_SECRET = "SUPER_SECRET_KEY_BRANDFLOW_2026"
+SECRET_KEY = os.environ.get("JWT_SECRET_KEY", _DEFAULT_DEV_SECRET)
+if SECRET_KEY == _DEFAULT_DEV_SECRET:
+    import warnings
+    warnings.warn(
+        "⚠️ [SECURITY] JWT_SECRET_KEY not set! Using insecure default. "
+        "SET JWT_SECRET_KEY env var before deploying to production.",
+        stacklevel=2,
+    )
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
@@ -27,23 +37,28 @@ FACEBOOK_APP_ID = os.environ.get("FACEBOOK_APP_ID", "YOUR_FACEBOOK_APP_ID")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
-    print(f"[AUTH_DEBUG] Received token: {token}")
     if not token:
-        print("[AUTH_DEBUG] Token is missing!")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Không tìm thấy token xác thực",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    # Guest token bypass — limited access, no JWT decode needed.
+    # NOTE: Guest users are isolated by their token string as user_id.
+    # All data queries filter by user_id, so guests can only see their own data.
     if token.startswith("guest_"):
-        print(f"[AUTH_DEBUG] Bypassing JWT decode for guest token: {token}")
+        # Sanitize: only allow alphanumeric + underscore, max 64 chars
+        import re
+        if not re.match(r'^guest_[a-zA-Z0-9_]{1,58}$', token):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid guest token format",
+            )
         return token
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
-        print(f"[AUTH_DEBUG] Decoded user_id: {user_id}")
         if user_id is None:
-            print("[AUTH_DEBUG] user_id in payload is None!")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token không hợp lệ",
@@ -51,14 +66,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
             )
         return user_id
     except jwt.ExpiredSignatureError:
-        print("[AUTH_DEBUG] Token expired!")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token đã hết hạn",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except jwt.PyJWTError as e:
-        print(f"[AUTH_DEBUG] PyJWTError: {e}")
+    except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Không thể xác thực token",

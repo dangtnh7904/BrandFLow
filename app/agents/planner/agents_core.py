@@ -14,8 +14,9 @@ Cốt lõi Hệ thống:
 import json
 import os
 import time
+import threading
 from typing import List, Literal, Any, Dict
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from app.agents.planner.industry_models import get_industry_prompt_context, detect_company_size, normalize_industry
 
 # Nhập các schemas b2b chuẩn
@@ -61,18 +62,118 @@ def _chat_completion_with_timeout(client, **kwargs):
 
 
 # =============================================================================
+# CIRCUIT BREAKER — Bảo vệ hệ thống khi API bên thứ 3 sập
+# =============================================================================
+
+class CircuitBreaker:
+    """
+    Simple Circuit Breaker pattern for LLM API calls.
+    States: CLOSED (normal) → OPEN (blocking) → HALF_OPEN (testing)
+    """
+    CLOSED = "CLOSED"
+    OPEN = "OPEN"
+    HALF_OPEN = "HALF_OPEN"
+
+    def __init__(self, failure_threshold: int = 3, recovery_timeout: float = 60.0, name: str = "default"):
+        self._state = self.CLOSED
+        self._failure_count = 0
+        self._failure_threshold = failure_threshold
+        self._recovery_timeout = recovery_timeout
+        self._last_failure_time: float = 0
+        self._lock = threading.Lock()
+        self._name = name
+
+    @property
+    def state(self) -> str:
+        with self._lock:
+            if self._state == self.OPEN:
+                if time.time() - self._last_failure_time >= self._recovery_timeout:
+                    self._state = self.HALF_OPEN
+                    print(f"⚡ [CIRCUIT:{self._name}] HALF_OPEN — Testing recovery...")
+            return self._state
+
+    def record_success(self):
+        with self._lock:
+            self._failure_count = 0
+            if self._state == self.HALF_OPEN:
+                self._state = self.CLOSED
+                print(f"✅ [CIRCUIT:{self._name}] CLOSED — Service recovered.")
+
+    def record_failure(self):
+        with self._lock:
+            self._failure_count += 1
+            self._last_failure_time = time.time()
+            if self._failure_count >= self._failure_threshold:
+                self._state = self.OPEN
+                print(f"🔴 [CIRCUIT:{self._name}] OPEN — {self._failure_count} failures. Blocking for {self._recovery_timeout}s.")
+
+    def can_execute(self) -> bool:
+        return self.state != self.OPEN
+
+
+# Singleton breakers per provider
+_gemini_breaker = CircuitBreaker(failure_threshold=3, recovery_timeout=60.0, name="Gemini")
+_groq_breaker = CircuitBreaker(failure_threshold=3, recovery_timeout=45.0, name="Groq")
+
+
+# =============================================================================
+# PYDANTIC MODELS FOR LOGIC FIREWALL (python_interceptor)
+# =============================================================================
+
+class InterceptorActivityItem(BaseModel):
+    """Strictly-typed model for each budget activity item inside the interceptor."""
+    p_name: str = Field(default="Unknown", description="Tên kênh Marketing (P)")
+    action_bullet: str = Field(default="", description="Hành động cốt lõi")
+    kpi: str = Field(default="", description="KPI")
+    budget_vnd: int = Field(default=0, ge=0, description="Ngân sách VND — phải >= 0")
+    budget_allocation_percent: float = Field(default=0.0, ge=0.0, le=100.0)
+    moscow_tag: str = Field(default="SHOULD_HAVE")
+
+    @field_validator("budget_vnd", mode="before")
+    @classmethod
+    def coerce_budget_to_int(cls, v: Any) -> int:
+        """Force-convert budget to int, reject garbage."""
+        if v is None:
+            return 0
+        if isinstance(v, (int, float)):
+            return max(0, int(v))
+        if isinstance(v, str):
+            cleaned = v.replace(",", "").replace(".", "").strip()
+            if cleaned.isdigit():
+                return max(0, int(cleaned))
+        return 0  # Fallback: garbage → 0, never crash
+
+
+class InterceptorInput(BaseModel):
+    """Pydantic gate for the entire interceptor input."""
+    tactics_7ps: list[InterceptorActivityItem] = Field(default_factory=list)
+    total_budget_used: int = Field(default=0, ge=0)
+    imc_phasing: Any = None
+    push_pull_strategy: Any = None
+    plan_5w1h: Any = None
+    distribution_channels: Any = None
+    omnichannel_crm_plan: Any = None
+    task_ready_checklist: Any = None
+
+    class Config:
+        extra = "allow"  # Cho phép các field bổ sung từ AI
+
+
+# =============================================================================
 # MODEL FACTORY — Gemini 2.0 Flash (primary) → Groq llama-3.3 (fallback)
+# With Circuit Breaker protection
 # =============================================================================
 
 def _get_strategy_llm(temperature: float = 0.3):
     """
-    Smart model selection:
+    Smart model selection with Circuit Breaker:
     - Primary: Gemini 2.0 Flash (best quality for Vietnamese strategic analysis)
     - Fallback: Groq llama-3.3-70b (fast, decent quality)
+    - If both circuits OPEN: raise clear error instead of hanging
     """
-    # Try Gemini first
+    # Try Gemini first (if circuit allows)
     google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-    if google_key:
+    if google_key and _gemini_breaker.can_execute():
         try:
             from langchain_google_genai import ChatGoogleGenerativeAI
             llm = ChatGoogleGenerativeAI(
@@ -81,39 +182,67 @@ def _get_strategy_llm(temperature: float = 0.3):
                 max_retries=1,
                 timeout=60.0,
             )
+            _gemini_breaker.record_success()
             print("   🧠 [Model] Using Gemini 2.0 Flash (primary)")
             return llm
         except Exception as e:
+            _gemini_breaker.record_failure()
             print(f"   ⚠️ [Model] Gemini unavailable ({e}), falling back to Groq")
+    elif google_key and not _gemini_breaker.can_execute():
+        print(f"   🔴 [Model] Gemini circuit OPEN — skipping to Groq")
 
-    # Fallback to Groq
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY", "dummy_key")
-    print("   🧠 [Model] Using Groq llama-3.3-70b (fallback)")
-    return ChatGroq(model="llama-3.3-70b-versatile", temperature=temperature, api_key=api_key)
+    # Fallback to Groq (if circuit allows)
+    if _groq_breaker.can_execute():
+        try:
+            from langchain_groq import ChatGroq
+            api_key = os.getenv("GROQ_API_KEY", "dummy_key")
+            print("   🧠 [Model] Using Groq llama-3.3-70b (fallback)")
+            _groq_breaker.record_success()
+            return ChatGroq(model="llama-3.3-70b-versatile", temperature=temperature, api_key=api_key)
+        except Exception as e:
+            _groq_breaker.record_failure()
+            print(f"   ❌ [Model] Groq also unavailable: {e}")
+    else:
+        print(f"   🔴 [Model] Groq circuit OPEN — all providers blocked")
+
+    # Both circuits open — raise clear error
+    raise RuntimeError(
+        "🚨 All LLM providers unavailable (Circuit Breakers OPEN). "
+        f"Gemini: {_gemini_breaker.state}, Groq: {_groq_breaker.state}. "
+        "Please wait 60s for auto-recovery or check API keys."
+    )
 
 
 def _get_review_llm(temperature: float = 0.2):
     """
     For review/validation agents (CFO, Persona, COO) — prioritize speed.
-    Uses Gemini 2.0 Flash-Lite or Groq.
+    Uses Gemini 2.0 Flash-Lite or Groq. With Circuit Breaker.
     """
     google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-    if google_key:
+    if google_key and _gemini_breaker.can_execute():
         try:
             from langchain_google_genai import ChatGoogleGenerativeAI
+            _gemini_breaker.record_success()
             return ChatGoogleGenerativeAI(
                 model="gemini-2.0-flash",
                 temperature=temperature,
                 max_retries=1,
                 timeout=45.0,
             )
-        except Exception:
-            pass
+        except Exception as e:
+            _gemini_breaker.record_failure()
+            print(f"   ⚠️ [Review LLM] Gemini failed: {e}")
 
-    from langchain_groq import ChatGroq
-    api_key = os.getenv("GROQ_API_KEY", "dummy_key")
-    return ChatGroq(model="llama-3.3-70b-versatile", temperature=temperature, api_key=api_key)
+    if _groq_breaker.can_execute():
+        try:
+            from langchain_groq import ChatGroq
+            api_key = os.getenv("GROQ_API_KEY", "dummy_key")
+            _groq_breaker.record_success()
+            return ChatGroq(model="llama-3.3-70b-versatile", temperature=temperature, api_key=api_key)
+        except Exception as e:
+            _groq_breaker.record_failure()
+
+    raise RuntimeError("🚨 All LLM providers unavailable for review agents.")
 
 
 # =============================================================================
@@ -456,17 +585,45 @@ def run_cmo_phase4_tactical_allocator(strategy_data: dict, budget: int, scenario
 # GIAI ĐOẠN 5: PYTHON BUDGET INTERCEPTOR & CFO RISK (CROSS-FUNCTIONAL)
 # =============================================================================
 def python_interceptor(raw_plan: dict, allowed_budget: int, scenario_type: str = "budget_driven") -> dict:
+    """
+    Logic Firewall / Python Interceptor — Budget Enforcer.
+    
+    Security: ALL input is validated through Pydantic InterceptorInput model
+    before any arithmetic. This guarantees:
+    - budget_vnd is always int >= 0 (garbage → 0, never crash)
+    - sum(item_cost) <= total_budget is mathematically sound
+    - No string/NaN/None can bypass the budget check
+    """
     import copy
-    plan = copy.deepcopy(raw_plan)
-    raw_total = 0
+    
+    # ══ PYDANTIC GATE — Validate & coerce all data before arithmetic ══
+    try:
+        validated = InterceptorInput.model_validate(raw_plan)
+        plan = validated.model_dump()
+    except Exception as e:
+        print(f"⚠️ [INTERCEPTOR] Validation warning: {e}. Using safe defaults.")
+        plan = copy.deepcopy(raw_plan)
+        # Force-validate each activity individually
+        safe_activities = []
+        for act in plan.get("tactics_7ps", []):
+            try:
+                safe_act = InterceptorActivityItem.model_validate(act)
+                safe_activities.append(safe_act.model_dump())
+            except Exception:
+                safe_activities.append({"p_name": "Invalid", "budget_vnd": 0, "moscow_tag": "COULD_HAVE"})
+        plan["tactics_7ps"] = safe_activities
+    
     all_activities = plan.get("tactics_7ps", [])
     
-    # Defensive: budget có thể là None nếu parse từ input không có budget
-    allowed_budget = int(allowed_budget or 0)
+    # ══ SAFE BUDGET COERCION — int only, never crash ══
+    try:
+        allowed_budget = max(0, int(allowed_budget or 0))
+    except (ValueError, TypeError):
+        print(f"⚠️ [INTERCEPTOR] Invalid budget value: {allowed_budget!r}. Defaulting to 0.")
+        allowed_budget = 0
     
-    for act in all_activities:
-        raw_total += act.get("budget_vnd", 0)
-            
+    # ══ ARITHMETIC — Now guaranteed safe: all budget_vnd are int >= 0 ══
+    raw_total = sum(act.get("budget_vnd", 0) for act in all_activities)
     overflow_amount = max(0, raw_total - allowed_budget) if allowed_budget > 0 else 0
     cut_items = []
     
@@ -476,9 +633,11 @@ def python_interceptor(raw_plan: dict, allowed_budget: int, scenario_type: str =
         
         remaining_overflow = overflow_amount
         for act in could_have_items:
-            if remaining_overflow <= 0: break
+            if remaining_overflow <= 0:
+                break
             cost = act.get("budget_vnd", 0)
-            if cost == 0: continue
+            if cost == 0:
+                continue
             
             reduction = min(cost, remaining_overflow)
             act["budget_vnd"] = cost - reduction
@@ -488,9 +647,22 @@ def python_interceptor(raw_plan: dict, allowed_budget: int, scenario_type: str =
                 cut_items.append(f"Cắt hẳn: {act.get('p_name', '')} (-{reduction:,} VND)")
             else:
                 cut_items.append(f"Ép giá: {act.get('p_name', '')} (-{reduction:,} VND)")
-                
+    
+    # ══ FINAL ASSERTION — Mathematical guarantee ══
     final_total = sum(act.get("budget_vnd", 0) for act in all_activities)
+    
+    if scenario_type == "budget_driven" and allowed_budget > 0:
+        assert final_total <= allowed_budget, (
+            f"[INTERCEPTOR BUG] final_total={final_total:,} > allowed_budget={allowed_budget:,}. "
+            "This should never happen. Please report this bug."
+        )
+    
     plan["total_budget_used"] = final_total
+    
+    print(f"🛡️ [INTERCEPTOR] Budget check: {raw_total:,} → {final_total:,} / {allowed_budget:,} VND")
+    if cut_items:
+        print(f"   ✂️ CFO cắt giảm: {len(cut_items)} hạng mục")
+    
     return {
         "final_activities": plan,
         "raw_total": raw_total,

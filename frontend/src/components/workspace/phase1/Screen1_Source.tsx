@@ -114,6 +114,15 @@ export default function Screen1_Source({ onNext }: { onNext: (path: 'wizard' | '
     setCrawlMessage('');
     setCrawlResults([]);
     try {
+      if (typeof window !== 'undefined' && (window as any).__DEMO_MODE__) {
+        await new Promise(r => setTimeout(r, 1500));
+        const demoResults = urls.map(u => ({ url: u, status: 'success', char_count: 5000 }));
+        setCrawlResults(demoResults);
+        setCrawlStatus('success');
+        setCrawlMessage(language === 'vi' ? `Đã thu thập và lưu ${urls.length} trang web vào bộ não.` : `Crawled and saved ${urls.length} URL(s) successfully.`);
+        return;
+      }
+
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const res = await fetch(`${API_URL}/api/v1/onboarding/upload-url`, {
         method: 'POST',
